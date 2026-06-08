@@ -1,0 +1,782 @@
+//@version=6
+indicator("Macro Pressure Map V6.5 [GPI/IPI/FCPI]", shorttitle="MPM V6.5", overlay=false, max_labels_count=50, max_lines_count=50)
+
+// ============================================================================
+// Macro Pressure Map V6.5
+// Growth x Inflation x Financial Conditions
+//
+// Purpose:
+// This is a macro pressure and risk-posture dashboard, not an entry signal.
+// GPI = market-implied growth pressure.
+// IPI = inflation pressure.
+// FCPI = financial conditions pressure.
+//
+// Engineering principle:
+// request.security() calls are kept in the main script body. Scoring functions
+// only receive already-fetched series.
+// ============================================================================
+
+// ============================================================================
+// 1. Inputs
+// ============================================================================
+
+groupCore = "Core Settings"
+groupWeights = "Weights"
+groupSymbolsGPI = "Symbols - GPI"
+groupSymbolsIPI = "Symbols - IPI"
+groupSymbolsFCPI = "Symbols - FCPI"
+groupSymbolsMacro = "Symbols - Macro Confirmation"
+groupVisual = "Visual / Dashboard"
+
+marketTf = input.timeframe("D", "Market Proxy Timeframe", group=groupCore)
+weeklyTf = input.timeframe("W", "Weekly / Official Data Timeframe", group=groupCore)
+macroTf = input.timeframe("M", "Macro Confirmation Timeframe", group=groupCore)
+
+zLenDaily = input.int(252, "Daily Z-score Length", minval=20, group=groupCore)
+zLenWeekly = input.int(156, "Weekly Z-score Length", minval=20, group=groupCore)
+zLenMacro = input.int(60, "Macro Confirmation Z-score Length", minval=12, group=groupCore)
+fastLen = input.int(20, "Fast Momentum Length", minval=2, group=groupCore)
+midLen = input.int(63, "Mid Momentum Length", minval=5, group=groupCore)
+
+useMacroData = input.bool(false, "Use Economic Data", group=groupCore)
+useOfficialFCI = input.bool(false, "Use Official Financial Conditions Data", group=groupCore)
+useT5YIE = input.bool(false, "Use 5Y Breakeven in Breakeven Pressure", group=groupCore)
+useIndustrialMetalsInIPI = input.bool(false, "Use Industrial Metals in IPI", group=groupCore)
+useKREStressAddon = input.bool(false, "Use KRE/SPY Stress Add-on", group=groupCore)
+
+growthThreshold = input.float(10.0, "Growth Threshold", step=1.0, group=groupCore)
+inflationThreshold = input.float(10.0, "Inflation Threshold", step=1.0, group=groupCore)
+fcThreshold = input.float(30.0, "Financial Conditions Threshold", step=1.0, group=groupCore)
+stressThreshold = input.float(60.0, "Stress Threshold", step=1.0, group=groupCore)
+
+wCreditStress = input.float(0.40, "FCPI Weight: Credit Stress", minval=0.0, step=0.05, group=groupWeights)
+wRatesDollar = input.float(0.35, "FCPI Weight: Rates/Dollar Constraint", minval=0.0, step=0.05, group=groupWeights)
+wVolShock = input.float(0.25, "FCPI Weight: Volatility Shock", minval=0.0, step=0.05, group=groupWeights)
+
+wBreakeven = input.float(0.35, "IPI Weight: Breakeven Pressure", minval=0.0, step=0.05, group=groupWeights)
+wCommodity = input.float(0.40, "IPI Weight: Commodity Basket", minval=0.0, step=0.05, group=groupWeights)
+wEnergy = input.float(0.25, "IPI Weight: Energy Pressure", minval=0.0, step=0.05, group=groupWeights)
+wIndustrialMetals = input.float(0.10, "IPI Weight: Industrial Metals Optional", minval=0.0, step=0.05, group=groupWeights)
+
+wGpiMarket = input.float(0.70, "GPI Weight: Market Proxy", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wGpiMacro = input.float(0.30, "GPI Weight: Macro Confirmation", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wIpiMarket = input.float(0.70, "IPI Weight: Market Proxy", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wIpiMacro = input.float(0.30, "IPI Weight: Macro Confirmation", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wFcpiMarket = input.float(0.80, "FCPI Weight: Market Stress", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wFcpiOfficial = input.float(0.20, "FCPI Weight: Official FCI", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+
+symSPY = input.string("AMEX:SPY", "SPY", group=groupSymbolsGPI)
+symIWM = input.string("AMEX:IWM", "IWM", group=groupSymbolsGPI)
+symRSP = input.string("AMEX:RSP", "RSP", group=groupSymbolsGPI)
+symXLY = input.string("AMEX:XLY", "XLY", group=groupSymbolsGPI)
+symXLP = input.string("AMEX:XLP", "XLP", group=groupSymbolsGPI)
+symXLI = input.string("AMEX:XLI", "XLI", group=groupSymbolsGPI)
+symXLU = input.string("AMEX:XLU", "XLU", group=groupSymbolsGPI)
+symCopper = input.string("COMEX:HG1!", "Copper", group=groupSymbolsGPI)
+symGold = input.string("COMEX:GC1!", "Gold", group=groupSymbolsGPI)
+
+symBreakeven10Y = input.string("FRED:T10YIE", "10Y Breakeven", group=groupSymbolsIPI)
+symBreakeven5Y = input.string("FRED:T5YIE", "5Y Breakeven", group=groupSymbolsIPI)
+symOil = input.string("NYMEX:CL1!", "Crude Oil", group=groupSymbolsIPI)
+symGasoline = input.string("NYMEX:RB1!", "Gasoline", group=groupSymbolsIPI)
+symCommodityBasket = input.string("AMEX:DBC", "Commodity Basket", group=groupSymbolsIPI)
+symIndustrialMetals = input.string("AMEX:DBB", "Industrial Metals Optional", group=groupSymbolsIPI)
+
+symDXY = input.string("TVC:DXY", "DXY", group=groupSymbolsFCPI)
+symVIX = input.string("CBOE:VIX", "VIX", group=groupSymbolsFCPI)
+symMOVE = input.string("TVC:MOVE", "MOVE", group=groupSymbolsFCPI)
+symHYG = input.string("AMEX:HYG", "HYG", group=groupSymbolsFCPI)
+symIEF = input.string("NASDAQ:IEF", "IEF", group=groupSymbolsFCPI)
+symKRE = input.string("AMEX:KRE", "KRE", group=groupSymbolsFCPI)
+symHYSpread = input.string("FRED:BAMLH0A0HYM2", "HY OAS", group=groupSymbolsFCPI)
+symRealYield = input.string("FRED:DFII10", "10Y Real Yield", group=groupSymbolsFCPI)
+symNFCI = input.string("FRED:NFCI", "NFCI", group=groupSymbolsFCPI)
+symSTLFSI = input.string("FRED:STLFSI4", "STLFSI4", group=groupSymbolsFCPI)
+
+// These macro symbols are editable because TradingView/FRED availability may vary.
+symPMI = input.string("FRED:NAPM", "PMI / ISM Proxy", group=groupSymbolsMacro)
+symCFNAI = input.string("FRED:CFNAI", "Chicago Fed National Activity Index", group=groupSymbolsMacro)
+symBuildingPermits = input.string("FRED:PERMIT", "Building Permits", group=groupSymbolsMacro)
+symInitialClaims = input.string("FRED:ICSA", "Initial Jobless Claims", group=groupSymbolsMacro)
+symUnemployment = input.string("FRED:UNRATE", "Unemployment Rate", group=groupSymbolsMacro)
+symCPI = input.string("FRED:CPIAUCSL", "CPI", group=groupSymbolsMacro)
+symCoreCPI = input.string("FRED:CPILFESL", "Core CPI", group=groupSymbolsMacro)
+symPCE = input.string("FRED:PCEPI", "PCE Price Index", group=groupSymbolsMacro)
+symCorePCE = input.string("FRED:PCEPILFE", "Core PCE", group=groupSymbolsMacro)
+symPPI = input.string("FRED:PPIACO", "PPI", group=groupSymbolsMacro)
+symWage = input.string("FRED:CES0500000003", "Average Hourly Earnings Proxy", group=groupSymbolsMacro)
+
+useSmoothing = input.bool(true, "Smooth Main Pressure Lines", group=groupVisual)
+smoothLen = input.int(5, "Pressure Line Smoothing Length", minval=1, group=groupVisual)
+showDashboard = input.bool(true, "Show Current Regime Dashboard", group=groupVisual)
+showComponentDiagnostics = input.bool(false, "Show Component Diagnostics", group=groupVisual)
+diagnosticGroup = input.string("Main", "Diagnostic Group", options=["Main", "GPI", "IPI", "FCPI", "Symbols"], group=groupVisual)
+dashboardLanguage = input.string("English", "Dashboard Language", options=["English", "中文", "日本語", "한국어"], group=groupVisual)
+dashboardTextSizeInput = input.string("Small", "Dashboard Text Size", options=["Tiny", "Small", "Normal", "Large", "Huge"], group=groupVisual)
+dashboardTextColor = input.color(color.white, "Dashboard Text Color", group=groupVisual)
+dashboardHeaderBg = input.color(color.new(color.black, 0), "Dashboard Header Background", group=groupVisual)
+dashboardLabelBg = input.color(color.new(color.black, 25), "Dashboard Label Background", group=groupVisual)
+dashboardCellBg = input.color(color.new(color.gray, 85), "Dashboard Cell Background", group=groupVisual)
+dashboardNeutralBg = input.color(color.new(color.gray, 82), "Dashboard Neutral / Info Background", group=groupVisual)
+dashboardRiskOnBg = input.color(color.new(color.green, 75), "Dashboard Risk-on / Positive Background", group=groupVisual)
+dashboardCautionBg = input.color(color.new(color.orange, 60), "Dashboard Caution Background", group=groupVisual)
+dashboardStressBg = input.color(color.new(color.red, 55), "Dashboard Stress Background", group=groupVisual)
+dashboardNegativeBg = input.color(color.new(color.red, 75), "Dashboard Negative Background", group=groupVisual)
+dashboardInflationBg = input.color(color.new(color.orange, 78), "Dashboard IPI Background", group=groupVisual)
+dashboardOkBg = input.color(color.new(color.green, 76), "Symbol Health OK Background", group=groupVisual)
+dashboardNaBg = input.color(color.new(color.red, 62), "Symbol Health NA Background", group=groupVisual)
+
+// ============================================================================
+// 2. Utility functions
+// ============================================================================
+
+f_dashboardTextSize(sz) =>
+    sz == "Tiny" ? size.tiny : sz == "Small" ? size.small : sz == "Normal" ? size.normal : sz == "Large" ? size.large : size.huge
+
+dashTextSize = f_dashboardTextSize(dashboardTextSizeInput)
+
+f_lang(en, zh, ja, ko) =>
+    dashboardLanguage == "中文" ? zh : dashboardLanguage == "日本語" ? ja : dashboardLanguage == "한국어" ? ko : en
+
+f_diagGroupName(g) =>
+    g == "Main" ? f_lang("Main", "主線", "メイン", "메인") : g == "Symbols" ? f_lang("Symbols", "商品代碼", "シンボル", "심볼") : g
+
+f_safeRatio(a, b) =>
+    not na(a) and not na(b) and b != 0.0 ? a / b : na
+
+f_zscore(src, len) =>
+    mean = ta.sma(src, len)
+    sd = ta.stdev(src, len)
+    not na(src) and not na(mean) and not na(sd) and sd != 0.0 ? (src - mean) / sd : na
+
+f_tanh(x) =>
+    if na(x)
+        na
+    else if x > 10.0
+        1.0
+    else if x < -10.0
+        -1.0
+    else
+        e2x = math.exp(2.0 * x)
+        (e2x - 1.0) / (e2x + 1.0)
+
+f_componentScore(src, invert, len) =>
+    lvl = f_zscore(src, len)
+    rocFast = ta.roc(src, fastLen)
+    rocMid = ta.roc(src, midLen)
+    momRaw = 0.6 * rocFast + 0.4 * rocMid
+    mom = f_zscore(momRaw, len)
+    sd = ta.stdev(src, len)
+    fastSma = ta.sma(src, fastLen)
+    midSma = ta.sma(src, midLen)
+    dirRaw = not na(sd) and sd != 0.0 and not na(fastSma) and not na(midSma) ? (fastSma - midSma) / sd : na
+    dir = not na(dirRaw) ? f_tanh(dirRaw) : na
+    raw = not na(lvl) and not na(mom) and not na(dir) ? 0.5 * lvl + 0.3 * mom + 0.2 * dir : na
+    scaled = not na(raw) ? 100.0 * f_tanh(raw / 2.0) : na
+    invert ? -scaled : scaled
+
+f_avg2(v1, v2) =>
+    float sum = 0.0
+    float count = 0.0
+    if not na(v1)
+        sum += v1
+        count += 1.0
+    if not na(v2)
+        sum += v2
+        count += 1.0
+    count > 0.0 ? sum / count : na
+
+f_avg5(v1, v2, v3, v4, v5) =>
+    float sum = 0.0
+    float count = 0.0
+    if not na(v1)
+        sum += v1
+        count += 1.0
+    if not na(v2)
+        sum += v2
+        count += 1.0
+    if not na(v3)
+        sum += v3
+        count += 1.0
+    if not na(v4)
+        sum += v4
+        count += 1.0
+    if not na(v5)
+        sum += v5
+        count += 1.0
+    count > 0.0 ? sum / count : na
+
+f_avg6(v1, v2, v3, v4, v5, v6) =>
+    float sum = 0.0
+    float count = 0.0
+    if not na(v1)
+        sum += v1
+        count += 1.0
+    if not na(v2)
+        sum += v2
+        count += 1.0
+    if not na(v3)
+        sum += v3
+        count += 1.0
+    if not na(v4)
+        sum += v4
+        count += 1.0
+    if not na(v5)
+        sum += v5
+        count += 1.0
+    if not na(v6)
+        sum += v6
+        count += 1.0
+    count > 0.0 ? sum / count : na
+
+f_wavg2(v1, w1, v2, w2) =>
+    float sum = 0.0
+    float wsum = 0.0
+    if not na(v1) and w1 > 0.0
+        sum += v1 * w1
+        wsum += w1
+    if not na(v2) and w2 > 0.0
+        sum += v2 * w2
+        wsum += w2
+    wsum > 0.0 ? sum / wsum : na
+
+f_wavg3(v1, w1, v2, w2, v3, w3) =>
+    float sum = 0.0
+    float wsum = 0.0
+    if not na(v1) and w1 > 0.0
+        sum += v1 * w1
+        wsum += w1
+    if not na(v2) and w2 > 0.0
+        sum += v2 * w2
+        wsum += w2
+    if not na(v3) and w3 > 0.0
+        sum += v3 * w3
+        wsum += w3
+    wsum > 0.0 ? sum / wsum : na
+
+f_wavg4(v1, w1, v2, w2, v3, w3, v4, w4) =>
+    float sum = 0.0
+    float wsum = 0.0
+    if not na(v1) and w1 > 0.0
+        sum += v1 * w1
+        wsum += w1
+    if not na(v2) and w2 > 0.0
+        sum += v2 * w2
+        wsum += w2
+    if not na(v3) and w3 > 0.0
+        sum += v3 * w3
+        wsum += w3
+    if not na(v4) and w4 > 0.0
+        sum += v4 * w4
+        wsum += w4
+    wsum > 0.0 ? sum / wsum : na
+
+f_fmt(v) =>
+    na(v) ? "n/a" : str.tostring(v, "#.0")
+
+f_symbolStatus(src) =>
+    not na(src) ? "OK" : "NA"
+
+f_symbolStatusBg(src) =>
+    not na(src) ? dashboardOkBg : dashboardNaBg
+
+// ============================================================================
+// 3. Data requests - main body only
+// ============================================================================
+
+spyClose = request.security(symSPY, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+iwmClose = request.security(symIWM, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+rspClose = request.security(symRSP, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+xlyClose = request.security(symXLY, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+xlpClose = request.security(symXLP, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+xliClose = request.security(symXLI, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+xluClose = request.security(symXLU, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+copperClose = request.security(symCopper, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+goldClose = request.security(symGold, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+t10yieClose = request.security(symBreakeven10Y, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+t5yieClose = request.security(symBreakeven5Y, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+oilClose = request.security(symOil, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+gasolineClose = request.security(symGasoline, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+commodityBasketClose = request.security(symCommodityBasket, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+industrialMetalsClose = request.security(symIndustrialMetals, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+dxyClose = request.security(symDXY, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+vixClose = request.security(symVIX, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+moveClose = request.security(symMOVE, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+hygClose = request.security(symHYG, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+iefClose = request.security(symIEF, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+kreClose = request.security(symKRE, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+hySpreadClose = request.security(symHYSpread, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+realYieldClose = request.security(symRealYield, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+nfciClose = request.security(symNFCI, weeklyTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+stlfsiClose = request.security(symSTLFSI, weeklyTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+pmiClose = request.security(symPMI, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+cfnaiClose = request.security(symCFNAI, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+buildingPermitsClose = request.security(symBuildingPermits, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+initialClaimsClose = request.security(symInitialClaims, weeklyTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+unemploymentClose = request.security(symUnemployment, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+cpiClose = request.security(symCPI, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+coreCpiClose = request.security(symCoreCPI, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+pceClose = request.security(symPCE, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+corePceClose = request.security(symCorePCE, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+ppiClose = request.security(symPPI, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+wageClose = request.security(symWage, macroTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+// ============================================================================
+// 4. Component scores
+// ============================================================================
+
+// GPI ratios
+iwmSpyRatio = f_safeRatio(iwmClose, spyClose)
+rspSpyRatio = f_safeRatio(rspClose, spyClose)
+xlyXlpRatio = f_safeRatio(xlyClose, xlpClose)
+xliXluRatio = f_safeRatio(xliClose, xluClose)
+copperGoldRatio = f_safeRatio(copperClose, goldClose)
+
+scoreIwmSpy = f_componentScore(iwmSpyRatio, false, zLenDaily)
+scoreRspSpy = f_componentScore(rspSpyRatio, false, zLenDaily)
+scoreXlyXlp = f_componentScore(xlyXlpRatio, false, zLenDaily)
+scoreXliXlu = f_componentScore(xliXluRatio, false, zLenDaily)
+scoreCopperGold = f_componentScore(copperGoldRatio, false, zLenDaily)
+
+// IPI components
+scoreT10YIE = f_componentScore(t10yieClose, false, zLenDaily)
+scoreT5YIE = f_componentScore(t5yieClose, false, zLenDaily)
+scoreBreakevenPressure = useT5YIE ? f_avg2(scoreT10YIE, scoreT5YIE) : scoreT10YIE
+scoreCommodityBasket = f_componentScore(commodityBasketClose, false, zLenDaily)
+scoreOil = f_componentScore(oilClose, false, zLenDaily)
+scoreGasoline = f_componentScore(gasolineClose, false, zLenDaily)
+scoreEnergyPressure = f_avg2(scoreOil, scoreGasoline)
+scoreIndustrialMetals = f_componentScore(industrialMetalsClose, false, zLenDaily)
+
+// FCPI components
+hygIefRatio = f_safeRatio(hygClose, iefClose)
+kreSpyRatio = f_safeRatio(kreClose, spyClose)
+scoreHYOAS = f_componentScore(hySpreadClose, false, zLenDaily)
+scoreHygIefReversed = f_componentScore(hygIefRatio, true, zLenDaily)
+scoreKreSpyReversed = f_componentScore(kreSpyRatio, true, zLenDaily)
+scoreRealYield = f_componentScore(realYieldClose, false, zLenDaily)
+scoreDXY = f_componentScore(dxyClose, false, zLenDaily)
+scoreVIX = f_componentScore(vixClose, false, zLenDaily)
+scoreMOVE = f_componentScore(moveClose, false, zLenDaily)
+
+// Macro confirmation components
+scorePMI = f_componentScore(pmiClose, false, zLenMacro)
+scoreCFNAI = f_componentScore(cfnaiClose, false, zLenMacro)
+scoreBuildingPermits = f_componentScore(buildingPermitsClose, false, zLenMacro)
+scoreInitialClaimsReversed = f_componentScore(initialClaimsClose, true, zLenMacro)
+scoreUnemploymentReversed = f_componentScore(unemploymentClose, true, zLenMacro)
+
+scoreCPI = f_componentScore(cpiClose, false, zLenMacro)
+scoreCoreCPI = f_componentScore(coreCpiClose, false, zLenMacro)
+scorePCE = f_componentScore(pceClose, false, zLenMacro)
+scoreCorePCE = f_componentScore(corePceClose, false, zLenMacro)
+scorePPI = f_componentScore(ppiClose, false, zLenMacro)
+scoreWage = f_componentScore(wageClose, false, zLenMacro)
+
+// Official financial conditions components
+scoreNFCI = f_componentScore(nfciClose, false, zLenWeekly)
+scoreSTLFSI = f_componentScore(stlfsiClose, false, zLenWeekly)
+
+// ============================================================================
+// 5. Composite indices
+// ============================================================================
+
+gpiMarket = f_avg5(scoreIwmSpy, scoreRspSpy, scoreXlyXlp, scoreXliXlu, scoreCopperGold)
+gpiMacro = f_avg5(scorePMI, scoreCFNAI, scoreBuildingPermits, scoreInitialClaimsReversed, scoreUnemploymentReversed)
+GPI = useMacroData ? f_wavg2(gpiMarket, wGpiMarket, gpiMacro, wGpiMacro) : gpiMarket
+
+ipiMarketBase = f_wavg3(scoreBreakevenPressure, wBreakeven, scoreCommodityBasket, wCommodity, scoreEnergyPressure, wEnergy)
+ipiMarketWithMetals = f_wavg4(scoreBreakevenPressure, wBreakeven, scoreCommodityBasket, wCommodity, scoreEnergyPressure, wEnergy, scoreIndustrialMetals, wIndustrialMetals)
+ipiMarket = useIndustrialMetalsInIPI ? ipiMarketWithMetals : ipiMarketBase
+ipiMacro = f_avg6(scoreCPI, scoreCoreCPI, scorePCE, scoreCorePCE, scorePPI, scoreWage)
+IPI = useMacroData ? f_wavg2(ipiMarket, wIpiMarket, ipiMacro, wIpiMacro) : ipiMarket
+
+creditStressBase = f_avg2(scoreHYOAS, scoreHygIefReversed)
+creditStressWithKRE = f_wavg3(scoreHYOAS, 0.45, scoreHygIefReversed, 0.45, scoreKreSpyReversed, 0.10)
+CreditStress = useKREStressAddon ? creditStressWithKRE : creditStressBase
+RatesDollarConstraint = f_avg2(scoreRealYield, scoreDXY)
+VolatilityShock = f_avg2(scoreVIX, scoreMOVE)
+fcpiMarket = f_wavg3(CreditStress, wCreditStress, RatesDollarConstraint, wRatesDollar, VolatilityShock, wVolShock)
+fcpiOfficial = f_avg2(scoreNFCI, scoreSTLFSI)
+FCPI = useOfficialFCI ? f_wavg2(fcpiMarket, wFcpiMarket, fcpiOfficial, wFcpiOfficial) : fcpiMarket
+
+plotGPI = useSmoothing ? ta.ema(GPI, smoothLen) : GPI
+plotIPI = useSmoothing ? ta.ema(IPI, smoothLen) : IPI
+plotFCPI = useSmoothing ? ta.ema(FCPI, smoothLen) : FCPI
+
+// ============================================================================
+// 6. Regime logic and dashboard language packs
+// ============================================================================
+
+growthImproving = GPI > growthThreshold
+growthWeakening = GPI < -growthThreshold
+inflationRising = IPI > inflationThreshold
+inflationCooling = IPI < -inflationThreshold
+
+quadrantEnglish = growthImproving and inflationCooling ? "Goldilocks / Disinflationary Expansion" : growthImproving and inflationRising ? "Reflation / Overheating Risk" : growthWeakening and inflationCooling ? "Slowdown / Disinflation" : growthWeakening and inflationRising ? "Stagflation Pressure" : "Mixed / Transition"
+quadrantChinese = growthImproving and inflationCooling ? "成長改善 / 通膨降溫" : growthImproving and inflationRising ? "再通膨 / 過熱風險" : growthWeakening and inflationCooling ? "成長放緩 / 通膨降溫" : growthWeakening and inflationRising ? "滯脹壓力" : "混合 / 轉換期"
+quadrantJapanese = growthImproving and inflationCooling ? "ゴルディロックス / ディスインフレ型拡大" : growthImproving and inflationRising ? "リフレ / 過熱リスク" : growthWeakening and inflationCooling ? "景気減速 / ディスインフレ" : growthWeakening and inflationRising ? "スタグフレーション圧力" : "混合 / 移行期"
+quadrantKorean = growthImproving and inflationCooling ? "골디락스 / 디스인플레이션 확장" : growthImproving and inflationRising ? "리플레이션 / 과열 위험" : growthWeakening and inflationCooling ? "둔화 / 디스인플레이션" : growthWeakening and inflationRising ? "스태그플레이션 압력" : "혼조 / 전환기"
+
+fcStateEnglish = FCPI > stressThreshold ? "Stress rising" : FCPI > fcThreshold ? "Conditions tightening" : FCPI < -fcThreshold ? "Conditions easing" : "Neutral conditions"
+fcStateChinese = FCPI > stressThreshold ? "金融壓力升高" : FCPI > fcThreshold ? "金融條件轉緊" : FCPI < -fcThreshold ? "金融條件轉鬆" : "金融條件中性"
+fcStateJapanese = FCPI > stressThreshold ? "金融ストレス上昇" : FCPI > fcThreshold ? "金融環境引き締まり" : FCPI < -fcThreshold ? "金融環境緩和" : "金融環境中立"
+fcStateKorean = FCPI > stressThreshold ? "금융 스트레스 상승" : FCPI > fcThreshold ? "금융 여건 긴축" : FCPI < -fcThreshold ? "금융 여건 완화" : "금융 여건 중립"
+
+riskPostureEnglish = FCPI > stressThreshold ? "Defensive posture" : FCPI > fcThreshold ? "Risk budget reduced" : FCPI < -fcThreshold ? "Risk-on allowed" : "Standard risk budget"
+riskPostureChinese = FCPI > stressThreshold ? "防禦姿態" : FCPI > fcThreshold ? "降低風險預算" : FCPI < -fcThreshold ? "可提高進攻姿態" : "標準風險預算"
+riskPostureJapanese = FCPI > stressThreshold ? "防御姿勢" : FCPI > fcThreshold ? "リスク予算縮小" : FCPI < -fcThreshold ? "リスクオン許容" : "標準リスク予算"
+riskPostureKorean = FCPI > stressThreshold ? "방어적 자세" : FCPI > fcThreshold ? "위험 예산 축소" : FCPI < -fcThreshold ? "리스크온 허용" : "표준 위험 예산"
+
+growthPhraseEnglish = growthImproving ? "Growth improving" : growthWeakening ? "Growth weakening" : "Growth mixed"
+inflationPhraseEnglish = inflationRising ? "inflation rising" : inflationCooling ? "inflation cooling" : "inflation mixed"
+growthPhraseChinese = growthImproving ? "成長改善" : growthWeakening ? "成長轉弱" : "成長混合"
+inflationPhraseChinese = inflationRising ? "通膨升溫" : inflationCooling ? "通膨降溫" : "通膨混合"
+growthPhraseJapanese = growthImproving ? "成長改善" : growthWeakening ? "成長悪化" : "成長まちまち"
+inflationPhraseJapanese = inflationRising ? "インフレ上昇" : inflationCooling ? "インフレ低下" : "インフレまちまち"
+growthPhraseKorean = growthImproving ? "성장 개선" : growthWeakening ? "성장 약화" : "성장 혼조"
+inflationPhraseKorean = inflationRising ? "인플레 상승" : inflationCooling ? "인플레 둔화" : "인플레 혼조"
+
+regimeSentenceEnglish = growthPhraseEnglish + ", " + inflationPhraseEnglish + ", " + fcStateEnglish + ". " + riskPostureEnglish + "."
+regimeSentenceChinese = growthPhraseChinese + "、" + inflationPhraseChinese + "、" + fcStateChinese + "：" + riskPostureChinese + "。"
+regimeSentenceJapanese = growthPhraseJapanese + "、" + inflationPhraseJapanese + "、" + fcStateJapanese + "：" + riskPostureJapanese + "。"
+regimeSentenceKorean = growthPhraseKorean + ", " + inflationPhraseKorean + ", " + fcStateKorean + ": " + riskPostureKorean + "."
+
+quadrant = f_lang(quadrantEnglish, quadrantChinese, quadrantJapanese, quadrantKorean)
+fcState = f_lang(fcStateEnglish, fcStateChinese, fcStateJapanese, fcStateKorean)
+riskPosture = f_lang(riskPostureEnglish, riskPostureChinese, riskPostureJapanese, riskPostureKorean)
+regimeSentence = f_lang(regimeSentenceEnglish, regimeSentenceChinese, regimeSentenceJapanese, regimeSentenceKorean)
+
+dataMode = useMacroData ? f_lang("Macro confirmation on", "總經確認開啟", "マクロ確認オン", "매크로 확인 켜짐") : f_lang("Market proxy only", "僅市場代理資料", "市場プロキシのみ", "시장 프록시만")
+officialMode = useOfficialFCI ? f_lang("Official FCI on", "官方 FCI 開啟", "公式 FCI オン", "공식 FCI 켜짐") : f_lang("Official FCI off", "官方 FCI 關閉", "公式 FCI オフ", "공식 FCI 꺼짐")
+diagMode = showComponentDiagnostics ? f_lang("On: ", "開啟：", "オン：", "켜짐: ") + f_diagGroupName(diagnosticGroup) : f_lang("Off", "關閉", "オフ", "꺼짐")
+
+// Main dashboard labels
+lblTitle = f_lang("Macro Pressure Map", "宏觀壓力地圖", "マクロ圧力マップ", "매크로 압력 지도")
+lblQuadrant = f_lang("Quadrant", "象限", "象限", "사분면")
+lblRiskPosture = f_lang("Risk Posture", "風險姿態", "リスク姿勢", "위험 자세")
+lblFCState = f_lang("FC State", "金融條件", "金融環境", "금융 여건")
+lblCreditStress = f_lang("Credit Stress", "信用壓力", "信用ストレス", "신용 스트레스")
+lblRatesDollar = f_lang("Rates/Dollar", "利率/美元", "金利/ドル", "금리/달러")
+lblVolShock = f_lang("Vol Shock", "波動衝擊", "ボラ衝撃", "변동성 충격")
+lblDataMode = f_lang("Data Mode", "資料模式", "データモード", "데이터 모드")
+lblOfficialFCI = f_lang("Official FCI", "官方 FCI", "公式 FCI", "공식 FCI")
+lblDiagnostics = f_lang("Diagnostics", "診斷模式", "診断", "진단")
+lblSentence = f_lang("Sentence", "狀態句", "状態文", "상태 문장")
+lblGpiWeight = f_lang("GPI Wgt", "GPI 權重", "GPI 重み", "GPI 가중치")
+lblIpiWeight = f_lang("IPI Wgt", "IPI 權重", "IPI 重み", "IPI 가중치")
+lblFcpiWeight = f_lang("FCPI Wgt", "FCPI 權重", "FCPI 重み", "FCPI 가중치")
+lblMarket = f_lang("Mkt", "市場", "市場", "시장")
+lblMacro = f_lang("Macro", "總經", "マクロ", "매크로")
+lblOfficial = f_lang("Official", "官方", "公式", "공식")
+lblMarketOnly = f_lang("Market only", "僅市場", "市場のみ", "시장만")
+
+f_pctWeight(w) =>
+    str.tostring(w * 100.0, "#.0")
+
+f_marketMacroWeightText(wMarket, wMacro, enabled) =>
+    enabled ? lblMarket + " " + f_pctWeight(wMarket) + " / " + lblMacro + " " + f_pctWeight(wMacro) : lblMarketOnly
+
+f_marketOfficialWeightText(wMarket, wOfficial, enabled) =>
+    enabled ? lblMarket + " " + f_pctWeight(wMarket) + " / " + lblOfficial + " " + f_pctWeight(wOfficial) : lblMarketOnly
+
+gpiWeightText = f_marketMacroWeightText(wGpiMarket, wGpiMacro, useMacroData)
+ipiWeightText = f_marketMacroWeightText(wIpiMarket, wIpiMacro, useMacroData)
+fcpiWeightText = f_marketOfficialWeightText(wFcpiMarket, wFcpiOfficial, useOfficialFCI)
+
+// Symbol health dashboard labels
+lblSymbolHealth = f_lang("Symbol Health", "商品代碼檢查", "シンボル確認", "심볼 상태")
+lblTicker = f_lang("Ticker", "代碼", "ティッカー", "티커")
+lblStatus = f_lang("Status", "狀態", "状態", "상태")
+lblGroup = f_lang("Group", "群組", "グループ", "그룹")
+lblNote = f_lang("Note", "備註", "メモ", "메모")
+lblNaInvalid = f_lang("NA = invalid or unavailable", "NA = 代碼無效或資料不可用", "NA = 無効または利用不可", "NA = 무효 또는 사용 불가")
+lblEditTicker = f_lang("Edit ticker", "修改代碼", "ティッカー修正", "티커 수정")
+lblThenReload = f_lang("then reload", "再重新載入", "再読み込み", "다시 불러오기")
+
+// Symbol health row labels
+lblCopperGold = f_lang("Copper/Gold", "銅/黃金", "銅/金", "구리/금")
+lblOilGasoline = f_lang("Oil/Gasoline", "原油/汽油", "原油/ガソリン", "원유/휘발유")
+lblCommodity = f_lang("Commodity", "商品籃子", "商品バスケット", "원자재 바스켓")
+lblMetals = f_lang("Metals", "工業金屬", "産業用金属", "산업금속")
+lblRealYield = f_lang("Real Yield", "實質利率", "実質金利", "실질금리")
+lblPermits = f_lang("Permits", "建築許可", "住宅着工許可", "건축 허가")
+lblClaims = f_lang("Claims", "初領失業金", "失業保険申請", "실업수당 청구")
+lblUnemployment = f_lang("Unemployment", "失業率", "失業率", "실업률")
+lblCore = f_lang("Core", "核心", "コア", "근원")
+lblWage = f_lang("Wage", "薪資", "賃金", "임금")
+
+grpIPIOpt = f_lang("IPI opt", "IPI 選用", "IPI 任意", "IPI 선택")
+grpFCPIOpt = f_lang("FCPI opt", "FCPI 選用", "FCPI 任意", "FCPI 선택")
+grpMacroOpt = f_lang("Macro opt", "總經選用", "マクロ任意", "매크로 선택")
+
+// ============================================================================
+// 7. Visuals: reference lines, plots, FCPI background
+// ============================================================================
+
+hline(0, "Zero", color=color.new(color.gray, 30), linestyle=hline.style_solid)
+hline(fcThreshold, "+30 / FC Threshold", color=color.new(color.gray, 65), linestyle=hline.style_dashed)
+hline(-fcThreshold, "-30 / FC Threshold", color=color.new(color.gray, 65), linestyle=hline.style_dashed)
+hline(stressThreshold, "+60 / Stress Threshold", color=color.new(color.gray, 75), linestyle=hline.style_dotted)
+hline(-stressThreshold, "-60 / Stress Threshold", color=color.new(color.gray, 75), linestyle=hline.style_dotted)
+
+showMain = not showComponentDiagnostics or diagnosticGroup == "Main"
+showGPIGroup = showComponentDiagnostics and diagnosticGroup == "GPI"
+showIPIGroup = showComponentDiagnostics and diagnosticGroup == "IPI"
+showFCPIGroup = showComponentDiagnostics and diagnosticGroup == "FCPI"
+showSymbolsGroup = showComponentDiagnostics and diagnosticGroup == "Symbols"
+
+plot(showMain ? plotGPI : na, "GPI - Growth Pressure", color=color.new(color.lime, 0), linewidth=2)
+plot(showMain ? plotIPI : na, "IPI - Inflation Pressure", color=color.new(color.orange, 0), linewidth=2)
+plot(showMain ? plotFCPI : na, "FCPI - Financial Conditions Pressure", color=color.new(color.red, 0), linewidth=2)
+
+plot(showGPIGroup ? scoreIwmSpy : na, "GPI: IWM/SPY", color=color.new(color.lime, 0), linewidth=1)
+plot(showGPIGroup ? scoreRspSpy : na, "GPI: RSP/SPY", color=color.new(color.green, 0), linewidth=1)
+plot(showGPIGroup ? scoreXlyXlp : na, "GPI: XLY/XLP", color=color.new(color.teal, 0), linewidth=1)
+plot(showGPIGroup ? scoreXliXlu : na, "GPI: XLI/XLU", color=color.new(color.aqua, 0), linewidth=1)
+plot(showGPIGroup ? scoreCopperGold : na, "GPI: Copper/Gold", color=color.new(color.blue, 0), linewidth=1)
+
+plot(showIPIGroup ? scoreBreakevenPressure : na, "IPI: Breakeven Pressure", color=color.new(color.orange, 0), linewidth=1)
+plot(showIPIGroup ? scoreT10YIE : na, "IPI: 10Y Breakeven", color=color.new(color.yellow, 0), linewidth=1)
+plot(showIPIGroup ? scoreT5YIE : na, "IPI: 5Y Breakeven Optional", color=color.new(color.yellow, 0), linewidth=1)
+plot(showIPIGroup ? scoreCommodityBasket : na, "IPI: Commodity Basket", color=color.new(color.maroon, 0), linewidth=1)
+plot(showIPIGroup ? scoreEnergyPressure : na, "IPI: Energy Pressure", color=color.new(color.red, 0), linewidth=1)
+plot(showIPIGroup ? scoreIndustrialMetals : na, "IPI: Industrial Metals Optional", color=color.new(color.purple, 0), linewidth=1)
+
+plot(showFCPIGroup ? CreditStress : na, "FCPI: Credit Stress", color=color.new(color.red, 0), linewidth=2)
+plot(showFCPIGroup ? scoreHYOAS : na, "FCPI: HY OAS", color=color.new(color.maroon, 0), linewidth=1)
+plot(showFCPIGroup ? scoreHygIefReversed : na, "FCPI: HYG/IEF Reversed", color=color.new(color.orange, 0), linewidth=1)
+plot(showFCPIGroup ? scoreKreSpyReversed : na, "FCPI: KRE/SPY Optional", color=color.new(color.yellow, 0), linewidth=1)
+plot(showFCPIGroup ? RatesDollarConstraint : na, "FCPI: Rates/Dollar Constraint", color=color.new(color.blue, 0), linewidth=2)
+plot(showFCPIGroup ? scoreRealYield : na, "FCPI: Real Yield", color=color.new(color.navy, 0), linewidth=1)
+plot(showFCPIGroup ? scoreDXY : na, "FCPI: DXY", color=color.new(color.aqua, 0), linewidth=1)
+plot(showFCPIGroup ? VolatilityShock : na, "FCPI: Volatility Shock", color=color.new(color.fuchsia, 0), linewidth=2)
+plot(showFCPIGroup ? scoreVIX : na, "FCPI: VIX", color=color.new(color.purple, 0), linewidth=1)
+plot(showFCPIGroup ? scoreMOVE : na, "FCPI: MOVE", color=color.new(color.gray, 0), linewidth=1)
+
+fcBg = FCPI > stressThreshold ? color.new(color.red, 86) : FCPI > fcThreshold ? color.new(color.orange, 90) : FCPI < -fcThreshold ? color.new(color.green, 92) : na
+bgcolor(fcBg, title="FCPI Background Risk State")
+
+// ============================================================================
+// 8. Dashboard / Symbol health table
+// ============================================================================
+
+f_valueBg(v, positiveIsRisk) =>
+    na(v) ? dashboardCellBg : positiveIsRisk ? (v > stressThreshold ? dashboardStressBg : v > fcThreshold ? dashboardCautionBg : v < -fcThreshold ? dashboardRiskOnBg : dashboardNeutralBg) : (v > fcThreshold ? dashboardRiskOnBg : v < -fcThreshold ? dashboardNegativeBg : dashboardNeutralBg)
+
+var table dash = table.new(position.top_right, 4, 32, border_width=1)
+
+if barstate.islast
+    table.clear(dash, 0, 0, 3, 31)
+
+if showDashboard and barstate.islast and showSymbolsGroup
+    table.cell(dash, 0, 0, lblSymbolHealth, text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
+    table.cell(dash, 1, 0, lblTicker, text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
+    table.cell(dash, 2, 0, lblStatus, text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
+    table.cell(dash, 3, 0, lblGroup, text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 1, "SPY", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 1, symSPY, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 1, f_symbolStatus(spyClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(spyClose), text_size=dashTextSize)
+    table.cell(dash, 3, 1, "GPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 2, "IWM", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 2, symIWM, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 2, f_symbolStatus(iwmClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(iwmClose), text_size=dashTextSize)
+    table.cell(dash, 3, 2, "GPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 3, "RSP", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 3, symRSP, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 3, f_symbolStatus(rspClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(rspClose), text_size=dashTextSize)
+    table.cell(dash, 3, 3, "GPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 4, "XLY/XLP", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 4, symXLY + " / " + symXLP, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 4, f_symbolStatus(xlyXlpRatio), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(xlyXlpRatio), text_size=dashTextSize)
+    table.cell(dash, 3, 4, "GPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 5, "XLI/XLU", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 5, symXLI + " / " + symXLU, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 5, f_symbolStatus(xliXluRatio), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(xliXluRatio), text_size=dashTextSize)
+    table.cell(dash, 3, 5, "GPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 6, lblCopperGold, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 6, symCopper + " / " + symGold, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 6, f_symbolStatus(copperGoldRatio), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(copperGoldRatio), text_size=dashTextSize)
+    table.cell(dash, 3, 6, "GPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 7, "T10YIE", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 7, symBreakeven10Y, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 7, f_symbolStatus(t10yieClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(t10yieClose), text_size=dashTextSize)
+    table.cell(dash, 3, 7, "IPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 8, "T5YIE", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 8, symBreakeven5Y, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 8, f_symbolStatus(t5yieClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(t5yieClose), text_size=dashTextSize)
+    table.cell(dash, 3, 8, grpIPIOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 9, lblOilGasoline, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 9, symOil + " / " + symGasoline, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 9, f_symbolStatus(scoreEnergyPressure), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(scoreEnergyPressure), text_size=dashTextSize)
+    table.cell(dash, 3, 9, "IPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 10, lblCommodity, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 10, symCommodityBasket, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 10, f_symbolStatus(commodityBasketClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(commodityBasketClose), text_size=dashTextSize)
+    table.cell(dash, 3, 10, "IPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 11, lblMetals, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 11, symIndustrialMetals, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 11, f_symbolStatus(industrialMetalsClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(industrialMetalsClose), text_size=dashTextSize)
+    table.cell(dash, 3, 11, grpIPIOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 12, "HY OAS", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 12, symHYSpread, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 12, f_symbolStatus(hySpreadClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(hySpreadClose), text_size=dashTextSize)
+    table.cell(dash, 3, 12, "FCPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 13, "HYG/IEF", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 13, symHYG + " / " + symIEF, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 13, f_symbolStatus(hygIefRatio), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(hygIefRatio), text_size=dashTextSize)
+    table.cell(dash, 3, 13, "FCPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 14, "KRE/SPY", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 14, symKRE + " / " + symSPY, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 14, f_symbolStatus(kreSpyRatio), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(kreSpyRatio), text_size=dashTextSize)
+    table.cell(dash, 3, 14, grpFCPIOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 15, lblRealYield, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 15, symRealYield, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 15, f_symbolStatus(realYieldClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(realYieldClose), text_size=dashTextSize)
+    table.cell(dash, 3, 15, "FCPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 16, "DXY", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 16, symDXY, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 16, f_symbolStatus(dxyClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(dxyClose), text_size=dashTextSize)
+    table.cell(dash, 3, 16, "FCPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 17, "VIX", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 17, symVIX, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 17, f_symbolStatus(vixClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(vixClose), text_size=dashTextSize)
+    table.cell(dash, 3, 17, "FCPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 18, "MOVE", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 18, symMOVE, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 18, f_symbolStatus(moveClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(moveClose), text_size=dashTextSize)
+    table.cell(dash, 3, 18, "FCPI", text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 19, "NFCI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 19, symNFCI, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 19, f_symbolStatus(nfciClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(nfciClose), text_size=dashTextSize)
+    table.cell(dash, 3, 19, grpFCPIOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 20, "STLFSI4", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 20, symSTLFSI, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 20, f_symbolStatus(stlfsiClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(stlfsiClose), text_size=dashTextSize)
+    table.cell(dash, 3, 20, grpFCPIOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 21, "PMI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 21, symPMI, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 21, f_symbolStatus(pmiClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(pmiClose), text_size=dashTextSize)
+    table.cell(dash, 3, 21, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 22, "CFNAI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 22, symCFNAI, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 22, f_symbolStatus(cfnaiClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(cfnaiClose), text_size=dashTextSize)
+    table.cell(dash, 3, 22, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 23, lblPermits, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 23, symBuildingPermits, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 23, f_symbolStatus(buildingPermitsClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(buildingPermitsClose), text_size=dashTextSize)
+    table.cell(dash, 3, 23, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 24, lblClaims, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 24, symInitialClaims, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 24, f_symbolStatus(initialClaimsClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(initialClaimsClose), text_size=dashTextSize)
+    table.cell(dash, 3, 24, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 25, lblUnemployment, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 25, symUnemployment, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 25, f_symbolStatus(unemploymentClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(unemploymentClose), text_size=dashTextSize)
+    table.cell(dash, 3, 25, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 26, "CPI/" + lblCore, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 26, symCPI + " / " + symCoreCPI, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 26, f_symbolStatus(f_avg2(cpiClose, coreCpiClose)), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(f_avg2(cpiClose, coreCpiClose)), text_size=dashTextSize)
+    table.cell(dash, 3, 26, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 27, "PCE/" + lblCore, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 27, symPCE + " / " + symCorePCE, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 27, f_symbolStatus(f_avg2(pceClose, corePceClose)), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(f_avg2(pceClose, corePceClose)), text_size=dashTextSize)
+    table.cell(dash, 3, 27, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 28, "PPI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 28, symPPI, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 28, f_symbolStatus(ppiClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(ppiClose), text_size=dashTextSize)
+    table.cell(dash, 3, 28, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 29, lblWage, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 29, symWage, text_color=dashboardTextColor, bgcolor=dashboardCellBg, text_size=dashTextSize)
+    table.cell(dash, 2, 29, f_symbolStatus(wageClose), text_color=dashboardTextColor, bgcolor=f_symbolStatusBg(wageClose), text_size=dashTextSize)
+    table.cell(dash, 3, 29, grpMacroOpt, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 30, lblNote, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 30, lblNaInvalid, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+    table.cell(dash, 2, 30, lblEditTicker, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+    table.cell(dash, 3, 30, lblThenReload, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+if showDashboard and barstate.islast and not showSymbolsGroup
+    table.cell(dash, 0, 0, lblTitle, text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
+    table.cell(dash, 1, 0, "V6.5", text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 1, "GPI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 1, f_fmt(GPI), text_color=dashboardTextColor, bgcolor=f_valueBg(GPI, false), text_size=dashTextSize)
+
+    table.cell(dash, 0, 2, "IPI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 2, f_fmt(IPI), text_color=dashboardTextColor, bgcolor=dashboardInflationBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 3, "FCPI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 3, f_fmt(FCPI), text_color=dashboardTextColor, bgcolor=f_valueBg(FCPI, true), text_size=dashTextSize)
+
+    table.cell(dash, 0, 4, lblQuadrant, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 4, quadrant, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 5, lblRiskPosture, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 5, riskPosture, text_color=dashboardTextColor, bgcolor=f_valueBg(FCPI, true), text_size=dashTextSize)
+
+    table.cell(dash, 0, 6, lblFCState, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 6, fcState, text_color=dashboardTextColor, bgcolor=f_valueBg(FCPI, true), text_size=dashTextSize)
+
+    table.cell(dash, 0, 7, lblCreditStress, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 7, f_fmt(CreditStress), text_color=dashboardTextColor, bgcolor=f_valueBg(CreditStress, true), text_size=dashTextSize)
+
+    table.cell(dash, 0, 8, lblRatesDollar, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 8, f_fmt(RatesDollarConstraint), text_color=dashboardTextColor, bgcolor=f_valueBg(RatesDollarConstraint, true), text_size=dashTextSize)
+
+    table.cell(dash, 0, 9, lblVolShock, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 9, f_fmt(VolatilityShock), text_color=dashboardTextColor, bgcolor=f_valueBg(VolatilityShock, true), text_size=dashTextSize)
+
+    table.cell(dash, 0, 10, lblDataMode, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 10, dataMode, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 11, lblOfficialFCI, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 11, officialMode, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 12, lblGpiWeight, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 12, gpiWeightText, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 13, lblIpiWeight, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 13, ipiWeightText, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 14, lblFcpiWeight, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 14, fcpiWeightText, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 15, lblDiagnostics, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 15, diagMode, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 16, lblSentence, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 16, regimeSentence, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
