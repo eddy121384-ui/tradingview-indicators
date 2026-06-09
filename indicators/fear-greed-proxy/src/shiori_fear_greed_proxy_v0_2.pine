@@ -1,4 +1,4 @@
-//@version=5
+//@version=6
 indicator("Shiori Fear & Greed Proxy v0.2", shorttitle="Shiori F&G Proxy", overlay=false, max_labels_count=50)
 
 // ============================================================================
