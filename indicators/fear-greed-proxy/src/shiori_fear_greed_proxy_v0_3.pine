@@ -1,0 +1,295 @@
+//@version=6
+indicator("Shiori Fear & Greed Proxy v0.3", shorttitle="Shiori F&G Proxy", overlay=false, max_labels_count=50)
+
+// ============================================================================
+// Shiori Fear & Greed Proxy v0.3
+// ----------------------------------------------------------------------------
+// CNN-like market sentiment proxy for TradingView.
+// This script is NOT the official CNN Fear & Greed Index and does NOT attempt
+// to exactly reproduce CNN's proprietary data processing or calibration.
+//
+// v0.3 calibration patch:
+// - Keeps ETF-safe defaults from v0.2.
+// - Changes Safe Haven and Junk Bond Demand from long-level percentiles to
+//   recent relative-return spreads.
+// - Changes VIX from absolute-level percentile to VIX deviation from its own MA.
+// - Uses a direct 52-week range-position proxy for Stock Price Strength.
+//
+// Purpose:
+// - Build a transparent 0-100 fear/greed proxy.
+// - Decompose the score into interpretable components.
+// - Handle missing TradingView symbols through auto reweighting.
+// - Avoid buy/sell signals; this is a sentiment thermometer, not a strategy.
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// Inputs
+// -----------------------------------------------------------------------------
+
+groupGeneral = "General"
+lookback = input.int(252, "Normalization Lookback", minval=20, maxval=1000, group=groupGeneral)
+maLen = input.int(125, "Momentum MA Length", minval=20, maxval=300, group=groupGeneral)
+relativeReturnLen = input.int(20, "Relative Return Length", minval=5, maxval=120, group=groupGeneral)
+vixMaLen = input.int(50, "VIX Relative MA Length", minval=10, maxval=200, group=groupGeneral)
+minValidFactors = input.int(4, "Minimum Valid Factors", minval=1, maxval=7, group=groupGeneral)
+missingMode = input.string("Auto Reweight", "Missing Data Mode", options=["Strict", "Auto Reweight", "Proxy Lite"], group=groupGeneral)
+showDashboard = input.bool(true, "Show Dashboard", group=groupGeneral)
+showComponents = input.bool(false, "Show Component Lines", group=groupGeneral)
+
+groupSymbols = "Symbols"
+symbolEquity = input.symbol("SPY", "Equity / S&P 500 Proxy", group=groupSymbols)
+symbolVix = input.symbol("CBOE:VIX", "VIX", group=groupSymbols)
+symbolPutCall = input.symbol("CBOE:VIX", "Optional Put/Call Slot (replace manually)", group=groupSymbols)
+symbolStrength = input.symbol("SPY", "Stock Strength Proxy (52W range)", group=groupSymbols)
+symbolBreadth = input.symbol("RSP", "Breadth Proxy Numerator", group=groupSymbols)
+symbolBond = input.symbol("IEF", "Bond / Safe Haven Proxy", group=groupSymbols)
+symbolJunk = input.symbol("HYG", "Junk Bond Proxy", group=groupSymbols)
+
+groupWeights = "Weights"
+wMomentum = input.float(1.0, "Market Momentum Weight", minval=0.0, step=0.1, group=groupWeights)
+wStrength = input.float(1.0, "Stock Price Strength Weight", minval=0.0, step=0.1, group=groupWeights)
+wBreadth = input.float(1.0, "Stock Price Breadth Weight", minval=0.0, step=0.1, group=groupWeights)
+wPutCall = input.float(0.0, "Put/Call Options Weight (off by default)", minval=0.0, step=0.1, group=groupWeights)
+wVix = input.float(1.0, "Market Volatility Weight", minval=0.0, step=0.1, group=groupWeights)
+wSafeHaven = input.float(1.0, "Safe Haven Demand Weight", minval=0.0, step=0.1, group=groupWeights)
+wJunk = input.float(1.0, "Junk Bond Demand Weight", minval=0.0, step=0.1, group=groupWeights)
+
+groupVisual = "Visual"
+showZones = input.bool(true, "Show Sentiment Zones", group=groupVisual)
+dashPositionInput = input.string("Top Right", "Dashboard Position", options=["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group=groupVisual)
+
+// -----------------------------------------------------------------------------
+// Helpers
+// -----------------------------------------------------------------------------
+
+f_clamp_0_100(x) =>
+    na(x) ? na : math.min(math.max(x, 0.0), 100.0)
+
+f_sec_close(sym) =>
+    request.security(sym, "D", close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_momentum(sym, len) =>
+    request.security(sym, "D", (close / ta.sma(close, len) - 1.0) * 100.0, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_return(sym, len) =>
+    request.security(sym, "D", close[len] != 0.0 ? (close / close[len] - 1.0) * 100.0 : na, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_range_position(sym, len) =>
+    request.security(sym, "D", (ta.highest(high, len) - ta.lowest(low, len)) != 0.0 ? (close - ta.lowest(low, len)) / (ta.highest(high, len) - ta.lowest(low, len)) * 100.0 : na, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_vix_deviation(sym, len) =>
+    request.security(sym, "D", ta.sma(close, len) != 0.0 ? (close / ta.sma(close, len) - 1.0) * 100.0 : na, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_ratio(a, b) =>
+    not na(a) and not na(b) and b != 0.0 ? a / b : na
+
+f_score(metric, invert) =>
+    raw = ta.percentrank(metric, lookback)
+    score = invert ? 100.0 - raw : raw
+    f_clamp_0_100(score)
+
+f_valid(score, weight) =>
+    not na(score) and weight > 0.0
+
+f_enabled(weight) =>
+    weight > 0.0 ? 1 : 0
+
+f_weighted(score, weight) =>
+    f_valid(score, weight) ? score * weight : 0.0
+
+f_weight(score, weight) =>
+    f_valid(score, weight) ? weight : 0.0
+
+f_valid_int(score, weight) =>
+    f_valid(score, weight) ? 1 : 0
+
+f_regime(score) =>
+    na(score) ? "Insufficient" :
+     score < 25.0 ? "Extreme Fear" :
+     score < 45.0 ? "Fear" :
+     score <= 55.0 ? "Neutral" :
+     score <= 75.0 ? "Greed" : "Extreme Greed"
+
+f_regime_color(score) =>
+    na(score) ? color.new(color.gray, 20) :
+     score < 25.0 ? color.new(color.red, 0) :
+     score < 45.0 ? color.new(color.orange, 0) :
+     score <= 55.0 ? color.new(color.gray, 0) :
+     score <= 75.0 ? color.new(color.lime, 0) : color.new(color.green, 0)
+
+f_score_text(score) =>
+    na(score) ? "na" : str.tostring(score, "#.0")
+
+f_dash_position(posInput) =>
+    posInput == "Top Left" ? position.top_left :
+     posInput == "Bottom Right" ? position.bottom_right :
+     posInput == "Bottom Left" ? position.bottom_left : position.top_right
+
+f_dash_row(tbl, row, name, score, weight) =>
+    table.cell(tbl, 0, row, name, text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(tbl, 1, row, weight > 0.0 ? f_score_text(score) : "off", text_color=color.white, bgcolor=weight > 0.0 ? f_regime_color(score) : color.new(color.gray, 40))
+    table.cell(tbl, 2, row, str.tostring(weight, "#.##"), text_color=color.white, bgcolor=color.new(color.black, 0))
+
+// -----------------------------------------------------------------------------
+// Daily source data
+// -----------------------------------------------------------------------------
+
+// Core equity proxy.
+equityClose = f_sec_close(symbolEquity)
+
+// CNN-like component 1: Market Momentum.
+momentumMetric = f_sec_momentum(symbolEquity, maLen)
+momentumScore = f_score(momentumMetric, false)
+
+// CNN-like component 2: Stock Price Strength.
+// Original CNN concept: NYSE 52W highs vs lows.
+// v0.3 safe proxy: selected equity proxy's raw position inside its own 52W range.
+strengthMetric = f_sec_range_position(symbolStrength, 252)
+strengthScore = f_clamp_0_100(strengthMetric)
+
+// CNN-like component 3: Stock Price Breadth.
+// v0.3 safe proxy: equal-weight equity proxy / market-cap equity proxy, e.g. RSP / SPY.
+breadthClose = f_sec_close(symbolBreadth)
+breadthMetric = f_ratio(breadthClose, equityClose)
+breadthScore = f_score(breadthMetric, false)
+
+// CNN-like component 4: Put/Call Options.
+// Disabled by default to avoid invalid-symbol errors. Replace symbol and set weight > 0 to enable.
+putCallMetric = wPutCall > 0.0 ? f_sec_close(symbolPutCall) : na
+putCallScore = f_score(putCallMetric, true)
+
+// CNN-like component 5: Market Volatility.
+// v0.3 uses VIX deviation from its moving average, then inverts the percentile.
+// Higher relative VIX = more fear.
+vixMetric = f_sec_vix_deviation(symbolVix, vixMaLen)
+vixScore = f_score(vixMetric, true)
+
+// CNN-like component 6: Safe Haven Demand.
+// v0.3 uses recent equity return minus bond return, not long-level SPY/IEF percentile.
+equityRet = f_sec_return(symbolEquity, relativeReturnLen)
+bondRet = f_sec_return(symbolBond, relativeReturnLen)
+safeHavenMetric = not na(equityRet) and not na(bondRet) ? equityRet - bondRet : na
+safeHavenScore = f_score(safeHavenMetric, false)
+
+// CNN-like component 7: Junk Bond Demand.
+// v0.3 uses recent high-yield return minus bond return.
+junkRet = f_sec_return(symbolJunk, relativeReturnLen)
+junkMetric = not na(junkRet) and not na(bondRet) ? junkRet - bondRet : na
+junkScore = f_score(junkMetric, false)
+
+// -----------------------------------------------------------------------------
+// Weighted aggregation with missing-data handling
+// -----------------------------------------------------------------------------
+
+enabledCount =
+     f_enabled(wMomentum) +
+     f_enabled(wStrength) +
+     f_enabled(wBreadth) +
+     f_enabled(wPutCall) +
+     f_enabled(wVix) +
+     f_enabled(wSafeHaven) +
+     f_enabled(wJunk)
+
+validCount =
+     f_valid_int(momentumScore, wMomentum) +
+     f_valid_int(strengthScore, wStrength) +
+     f_valid_int(breadthScore, wBreadth) +
+     f_valid_int(putCallScore, wPutCall) +
+     f_valid_int(vixScore, wVix) +
+     f_valid_int(safeHavenScore, wSafeHaven) +
+     f_valid_int(junkScore, wJunk)
+
+weightedSum =
+     f_weighted(momentumScore, wMomentum) +
+     f_weighted(strengthScore, wStrength) +
+     f_weighted(breadthScore, wBreadth) +
+     f_weighted(putCallScore, wPutCall) +
+     f_weighted(vixScore, wVix) +
+     f_weighted(safeHavenScore, wSafeHaven) +
+     f_weighted(junkScore, wJunk)
+
+weightSum =
+     f_weight(momentumScore, wMomentum) +
+     f_weight(strengthScore, wStrength) +
+     f_weight(breadthScore, wBreadth) +
+     f_weight(putCallScore, wPutCall) +
+     f_weight(vixScore, wVix) +
+     f_weight(safeHavenScore, wSafeHaven) +
+     f_weight(junkScore, wJunk)
+
+strictOk = enabledCount > 0 and validCount == enabledCount
+reweightOk = validCount >= minValidFactors and weightSum > 0.0
+
+finalScore = missingMode == "Strict" ? (strictOk ? weightedSum / weightSum : na) :
+     (reweightOk ? weightedSum / weightSum : na)
+
+currentRegime = f_regime(finalScore)
+dataQuality = na(finalScore) ? "Insufficient" :
+     validCount == enabledCount and enabledCount >= 6 ? "Calibrated ETF" :
+     validCount == enabledCount ? "Full Enabled" :
+     missingMode == "Proxy Lite" ? "Lite" : "Proxy"
+
+// -----------------------------------------------------------------------------
+// Plots
+// -----------------------------------------------------------------------------
+
+plot(finalScore, "Fear & Greed Proxy", color=f_regime_color(finalScore), linewidth=3)
+
+plot(showComponents ? momentumScore : na, "Momentum Score", color=color.new(color.blue, 20))
+plot(showComponents ? strengthScore : na, "Strength Score", color=color.new(color.purple, 20))
+plot(showComponents ? breadthScore : na, "Breadth Score", color=color.new(color.teal, 20))
+plot(showComponents and wPutCall > 0.0 ? putCallScore : na, "Put/Call Score", color=color.new(color.orange, 20))
+plot(showComponents ? vixScore : na, "VIX Score", color=color.new(color.red, 20))
+plot(showComponents ? safeHavenScore : na, "Safe Haven Score", color=color.new(color.green, 20))
+plot(showComponents ? junkScore : na, "Junk Bond Score", color=color.new(color.yellow, 20))
+
+h0 = hline(0, "0", color=color.new(color.gray, 80))
+h25 = hline(25, "Extreme Fear / Fear", color=color.new(color.red, 30))
+h45 = hline(45, "Fear / Neutral", color=color.new(color.orange, 40))
+h55 = hline(55, "Neutral / Greed", color=color.new(color.gray, 40))
+h75 = hline(75, "Greed / Extreme Greed", color=color.new(color.green, 30))
+h100 = hline(100, "100", color=color.new(color.gray, 80))
+
+fill(h0, h25, color=showZones ? color.new(color.red, 92) : na, title="Extreme Fear Zone")
+fill(h25, h45, color=showZones ? color.new(color.orange, 94) : na, title="Fear Zone")
+fill(h45, h55, color=showZones ? color.new(color.gray, 95) : na, title="Neutral Zone")
+fill(h55, h75, color=showZones ? color.new(color.lime, 94) : na, title="Greed Zone")
+fill(h75, h100, color=showZones ? color.new(color.green, 92) : na, title="Extreme Greed Zone")
+
+// -----------------------------------------------------------------------------
+// Dashboard
+// -----------------------------------------------------------------------------
+
+var table dash = table.new(f_dash_position(dashPositionInput), 3, 12, border_width=1)
+
+if barstate.islast and showDashboard
+    table.cell(dash, 0, 0, "Shiori F&G", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 1, 0, f_score_text(finalScore), text_color=color.white, bgcolor=f_regime_color(finalScore))
+    table.cell(dash, 2, 0, currentRegime, text_color=color.white, bgcolor=f_regime_color(finalScore))
+
+    table.cell(dash, 0, 1, "Quality", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 1, 1, dataQuality, text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 2, 1, str.tostring(validCount) + "/" + str.tostring(enabledCount), text_color=color.white, bgcolor=color.new(color.black, 0))
+
+    table.cell(dash, 0, 2, "Component", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 1, 2, "Score", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 2, 2, "Weight", text_color=color.white, bgcolor=color.new(color.black, 0))
+
+    f_dash_row(dash, 3, "Momentum", momentumScore, wMomentum)
+    f_dash_row(dash, 4, "Strength", strengthScore, wStrength)
+    f_dash_row(dash, 5, "Breadth", breadthScore, wBreadth)
+    f_dash_row(dash, 6, "Put/Call", putCallScore, wPutCall)
+    f_dash_row(dash, 7, "VIX Rel", vixScore, wVix)
+    f_dash_row(dash, 8, "Safe Haven", safeHavenScore, wSafeHaven)
+    f_dash_row(dash, 9, "Junk Bond", junkScore, wJunk)
+
+    table.cell(dash, 0, 10, "Mode", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 1, 10, missingMode, text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 2, 10, "R=" + str.tostring(relativeReturnLen), text_color=color.white, bgcolor=color.new(color.black, 0))
+
+    table.cell(dash, 0, 11, "Note", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 1, 11, "v0.3 calib", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 2, 11, "No signals", text_color=color.white, bgcolor=color.new(color.black, 0))
+
+if barstate.islast and not showDashboard
+    table.clear(dash, 0, 0, 2, 11)
