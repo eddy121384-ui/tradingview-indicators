@@ -258,4 +258,4 @@ if barstate.islast and showDashboard
     table.cell(dash, 2, 11, "No signals", text_color=color.white, bgcolor=color.new(color.black, 0))
 
 if barstate.islast and not showDashboard
-    table.clear(dash)
+    table.clear(dash, 0, 0, 2, 11)
