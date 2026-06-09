@@ -1,0 +1,307 @@
+//@version=6
+indicator("Shiori Fear & Greed Proxy v0.5", shorttitle="Shiori F&G Proxy", overlay=false, max_labels_count=50)
+
+// ============================================================================
+// Shiori Fear & Greed Proxy v0.5
+// ----------------------------------------------------------------------------
+// CNN-like market sentiment proxy for TradingView.
+// This script is NOT the official CNN Fear & Greed Index and does NOT attempt
+// to exactly reproduce CNN's proprietary data processing or calibration.
+//
+// v0.5 release-candidate patch:
+// - Keeps v0.4 calculation logic.
+// - Adds four-language UI output: English / Traditional Chinese / Japanese / Korean.
+// - Default language is English.
+// - Adds multilingual input tooltips for settings.
+// - Adds editable dashboard / regime colors.
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// Multilingual tooltips used in TradingView settings.
+// Pine input titles cannot be dynamically translated, so the title stays English
+// while the tooltip contains EN / ZH / JA / KO explanations.
+// -----------------------------------------------------------------------------
+
+tipLanguage = "EN: Select dashboard language.\n繁中：選擇儀表板顯示語言。\n日本語：ダッシュボードの表示言語を選択します。\n한국어: 대시보드 표시 언어를 선택합니다."
+tipLookback = "EN: Rolling window for percentile-rank normalization. Larger = smoother, smaller = more responsive.\n繁中：百分位標準化的回看天數。越大越平滑，越小越靈敏。\n日本語：パーセンタイル正規化の期間。長いほど滑らか、短いほど敏感です。\n한국어: 백분위 정규화 기간입니다. 길수록 부드럽고 짧을수록 민감합니다."
+tipMomentum = "EN: Moving-average length for market momentum.\n繁中：市場動能使用的均線長度。\n日本語：市場モメンタムに使う移動平均期間です。\n한국어: 시장 모멘텀에 사용하는 이동평균 기간입니다."
+tipRelRet = "EN: Return-spread window for Breadth, Safe Haven, and Junk Bond components.\n繁中：Breadth、避險需求與高收益債需求的相對報酬觀察期。\n日本語：Breadth、安全資産需要、ジャンク債需要の相対リターン期間です。\n한국어: 시장 폭, 안전자산 수요, 하이일드 수요 계산에 쓰는 상대수익률 기간입니다."
+tipVixMa = "EN: Moving-average length used to measure VIX relative stress.\n繁中：用來衡量 VIX 相對壓力的均線長度。\n日本語：VIX の相対的なストレスを測る移動平均期間です。\n한국어: VIX 상대 스트레스를 측정하는 이동평균 기간입니다."
+tipMinValid = "EN: Minimum active and valid factors required to display a final score.\n繁中：產生總分所需的最低有效因子數。\n日本語：最終スコア表示に必要な有効ファクター数です。\n한국어: 최종 점수를 표시하기 위한 최소 유효 팩터 수입니다."
+tipMissing = "EN: Strict requires all enabled factors; Auto Reweight recalculates with available factors; Proxy Lite is a looser proxy mode.\n繁中：Strict 要求所有啟用因子有效；Auto Reweight 會用可用因子重新配權；Proxy Lite 為較寬鬆代理模式。\n日本語：Strict は有効化された全ファクターを要求し、Auto Reweight は利用可能なファクターで再加重し、Proxy Lite は緩めの代替モードです。\n한국어: Strict는 활성화된 모든 팩터를 요구하고, Auto Reweight는 사용 가능한 팩터로 재가중하며, Proxy Lite는 완화된 대체 모드입니다."
+tipDashboard = "EN: Show or hide the dashboard table.\n繁中：顯示或隱藏儀表板表格。\n日本語：ダッシュボード表を表示または非表示にします。\n한국어: 대시보드 표를 표시하거나 숨깁니다."
+tipComponents = "EN: Plot individual component lines. Useful for debugging, noisy for publishing.\n繁中：顯示各因子分數線，適合除錯，但公開版可能較雜。\n日本語：各コンポーネント線を表示します。デバッグ向きですが公開時はやや煩雑です。\n한국어: 각 구성요소 선을 표시합니다. 디버깅에는 좋지만 공개용으로는 복잡할 수 있습니다."
+tipSymbols = "EN: Replace symbols only if your TradingView account supports them. Invalid symbols are ignored where possible.\n繁中：只有在你的 TradingView 帳號可使用該資料時才替換商品代碼。無效商品會盡量忽略。\n日本語：TradingView アカウントで利用可能な場合のみシンボルを置き換えてください。無効シンボルは可能な限り無視されます。\n한국어: TradingView 계정에서 사용할 수 있는 심볼일 때만 교체하세요. 잘못된 심볼은 가능한 경우 무시됩니다."
+tipPutCall = "EN: Put/Call is disabled by default. Replace this with a real Put/Call symbol such as PCSP/PCSX if available, then set Put/Call weight above 0.\n繁中：Put/Call 預設關閉。若可用，請改成 PCSP/PCSX 等真實 Put/Call 代碼，再把權重調高。\n日本語：Put/Call は初期設定でオフです。利用可能なら PCSP/PCSX などの実シンボルに変更し、重みを 0 より大きくしてください。\n한국어: Put/Call은 기본적으로 꺼져 있습니다. 가능하면 PCSP/PCSX 같은 실제 Put/Call 심볼로 바꾸고 가중치를 0보다 크게 설정하세요."
+tipWeights = "EN: Weight of each component. Set to 0 to disable.\n繁中：各因子的權重，設為 0 即關閉。\n日本語：各コンポーネントの重みです。0 にすると無効化されます。\n한국어: 각 구성요소의 가중치입니다. 0으로 설정하면 비활성화됩니다."
+tipColors = "EN: Customize dashboard and regime colors. These also affect score cells and the main line color.\n繁中：自訂儀表板與情緒區間顏色，也會影響分數格與主線顏色。\n日本語：ダッシュボードとレジーム色を調整します。スコアセルとメインライン色にも反映されます。\n한국어: 대시보드와 구간 색상을 조정합니다. 점수 셀과 메인 라인 색상에도 적용됩니다."
+
+// -----------------------------------------------------------------------------
+// Inputs
+// -----------------------------------------------------------------------------
+
+groupGeneral = "General"
+language = input.string("English", "Language", options=["English", "繁體中文", "日本語", "한국어"], group=groupGeneral, tooltip=tipLanguage)
+lookback = input.int(252, "Normalization Lookback", minval=20, maxval=1000, group=groupGeneral, tooltip=tipLookback)
+maLen = input.int(125, "Momentum MA Length", minval=20, maxval=300, group=groupGeneral, tooltip=tipMomentum)
+relativeReturnLen = input.int(20, "Relative Return Length", minval=5, maxval=120, group=groupGeneral, tooltip=tipRelRet)
+vixMaLen = input.int(50, "VIX Relative MA Length", minval=10, maxval=200, group=groupGeneral, tooltip=tipVixMa)
+minValidFactors = input.int(4, "Minimum Valid Factors", minval=1, maxval=7, group=groupGeneral, tooltip=tipMinValid)
+missingMode = input.string("Auto Reweight", "Missing Data Mode", options=["Strict", "Auto Reweight", "Proxy Lite"], group=groupGeneral, tooltip=tipMissing)
+showDashboard = input.bool(true, "Show Dashboard", group=groupGeneral, tooltip=tipDashboard)
+showComponents = input.bool(false, "Show Component Lines", group=groupGeneral, tooltip=tipComponents)
+
+groupSymbols = "Symbols"
+symbolEquity = input.symbol("SPY", "Equity / S&P 500 Proxy", group=groupSymbols, tooltip=tipSymbols)
+symbolVix = input.symbol("CBOE:VIX", "VIX", group=groupSymbols, tooltip=tipSymbols)
+symbolPutCall = input.symbol("CBOE:VIX", "Put/Call Slot — replace before enabling", group=groupSymbols, tooltip=tipPutCall)
+symbolStrength = input.symbol("SPY", "Stock Strength Proxy (52W range)", group=groupSymbols, tooltip=tipSymbols)
+symbolBreadth = input.symbol("RSP", "Breadth Proxy (equal-weight ETF)", group=groupSymbols, tooltip=tipSymbols)
+symbolBond = input.symbol("IEF", "Bond / Safe Haven Proxy", group=groupSymbols, tooltip=tipSymbols)
+symbolJunk = input.symbol("HYG", "Junk Bond Proxy", group=groupSymbols, tooltip=tipSymbols)
+
+groupWeights = "Weights"
+wMomentum = input.float(1.0, "Market Momentum Weight", minval=0.0, step=0.1, group=groupWeights, tooltip=tipWeights)
+wStrength = input.float(1.0, "Stock Price Strength Weight", minval=0.0, step=0.1, group=groupWeights, tooltip=tipWeights)
+wBreadth = input.float(1.0, "Stock Price Breadth Weight", minval=0.0, step=0.1, group=groupWeights, tooltip=tipWeights)
+wPutCall = input.float(0.0, "Put/Call Options Weight (off by default)", minval=0.0, step=0.1, group=groupWeights, tooltip=tipPutCall)
+wVix = input.float(1.0, "Market Volatility Weight", minval=0.0, step=0.1, group=groupWeights, tooltip=tipWeights)
+wSafeHaven = input.float(1.0, "Safe Haven Demand Weight", minval=0.0, step=0.1, group=groupWeights, tooltip=tipWeights)
+wJunk = input.float(1.0, "Junk Bond Demand Weight", minval=0.0, step=0.1, group=groupWeights, tooltip=tipWeights)
+
+groupVisual = "Visual"
+showZones = input.bool(true, "Show Sentiment Zones", group=groupVisual, tooltip=tipColors)
+dashPositionInput = input.string("Top Right", "Dashboard Position", options=["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group=groupVisual, tooltip=tipDashboard)
+
+groupDashColors = "Dashboard / Color Settings"
+dashHeaderBg = input.color(color.new(color.black, 0), "Header Background", group=groupDashColors, tooltip=tipColors)
+dashCellBg = input.color(color.new(color.black, 0), "Cell Background", group=groupDashColors, tooltip=tipColors)
+dashTextColor = input.color(color.white, "Text Color", group=groupDashColors, tooltip=tipColors)
+dashBorderColor = input.color(color.new(color.gray, 40), "Border Color", group=groupDashColors, tooltip=tipColors)
+dashOffBg = input.color(color.new(color.gray, 40), "Disabled Cell Background", group=groupDashColors, tooltip=tipColors)
+dashWarmupBg = input.color(color.new(color.orange, 20), "Warm-up Background", group=groupDashColors, tooltip=tipColors)
+colExtremeFear = input.color(color.new(color.red, 0), "Extreme Fear Color", group=groupDashColors, tooltip=tipColors)
+colFear = input.color(color.new(color.orange, 0), "Fear Color", group=groupDashColors, tooltip=tipColors)
+colNeutral = input.color(color.new(color.gray, 0), "Neutral Color", group=groupDashColors, tooltip=tipColors)
+colGreed = input.color(color.new(color.lime, 0), "Greed Color", group=groupDashColors, tooltip=tipColors)
+colExtremeGreed = input.color(color.new(color.green, 0), "Extreme Greed Color", group=groupDashColors, tooltip=tipColors)
+colInsufficient = input.color(color.new(color.gray, 20), "Insufficient Color", group=groupDashColors, tooltip=tipColors)
+zoneTransparency = input.int(92, "Zone Transparency", minval=70, maxval=100, group=groupDashColors, tooltip=tipColors)
+
+// -----------------------------------------------------------------------------
+// Language helpers
+// -----------------------------------------------------------------------------
+
+f_lang(en, zh, ja, ko) =>
+    language == "繁體中文" ? zh : language == "日本語" ? ja : language == "한국어" ? ko : en
+
+f_mode_text(mode) =>
+    mode == "Strict" ? f_lang("Strict", "嚴格", "厳格", "엄격") :
+     mode == "Proxy Lite" ? f_lang("Proxy Lite", "代理簡化", "簡易代理", "프록시 라이트") :
+     f_lang("Auto Reweight", "自動重配", "自動再加重", "자동 재가중")
+
+// -----------------------------------------------------------------------------
+// Calculation helpers
+// -----------------------------------------------------------------------------
+
+f_clamp_0_100(x) =>
+    na(x) ? na : math.min(math.max(x, 0.0), 100.0)
+
+f_sec_close(sym) =>
+    request.security(sym, "D", close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_momentum(sym, len) =>
+    request.security(sym, "D", (close / ta.sma(close, len) - 1.0) * 100.0, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_return(sym, len) =>
+    request.security(sym, "D", close[len] != 0.0 ? (close / close[len] - 1.0) * 100.0 : na, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_roc(sym, len) =>
+    request.security(sym, "D", close[len] != 0.0 ? (close / close[len] - 1.0) * 100.0 : na, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_range_position(sym, len) =>
+    request.security(sym, "D", (ta.highest(high, len) - ta.lowest(low, len)) != 0.0 ? (close - ta.lowest(low, len)) / (ta.highest(high, len) - ta.lowest(low, len)) * 100.0 : na, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_sec_vix_deviation(sym, len) =>
+    request.security(sym, "D", ta.sma(close, len) != 0.0 ? (close / ta.sma(close, len) - 1.0) * 100.0 : na, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_score(metric, invert) =>
+    raw = ta.percentrank(metric, lookback)
+    score = invert ? 100.0 - raw : raw
+    f_clamp_0_100(score)
+
+f_valid(score, weight) =>
+    not na(score) and weight > 0.0
+
+f_enabled(weight) =>
+    weight > 0.0 ? 1 : 0
+
+f_weighted(score, weight) =>
+    f_valid(score, weight) ? score * weight : 0.0
+
+f_weight(score, weight) =>
+    f_valid(score, weight) ? weight : 0.0
+
+f_valid_int(score, weight) =>
+    f_valid(score, weight) ? 1 : 0
+
+f_regime(score) =>
+    na(score) ? f_lang("Insufficient", "資料不足", "データ不足", "데이터 부족") :
+     score < 25.0 ? f_lang("Extreme Fear", "極端恐懼", "極端な恐怖", "극단적 공포") :
+     score < 45.0 ? f_lang("Fear", "恐懼", "恐怖", "공포") :
+     score <= 55.0 ? f_lang("Neutral", "中性", "中立", "중립") :
+     score <= 75.0 ? f_lang("Greed", "貪婪", "強欲", "탐욕") : f_lang("Extreme Greed", "極端貪婪", "極端な強欲", "극단적 탐욕")
+
+f_regime_color(score) =>
+    na(score) ? colInsufficient :
+     score < 25.0 ? colExtremeFear :
+     score < 45.0 ? colFear :
+     score <= 55.0 ? colNeutral :
+     score <= 75.0 ? colGreed : colExtremeGreed
+
+f_score_text(score) =>
+    na(score) ? "na" : str.tostring(score, "#.0")
+
+f_dash_position(posInput) =>
+    posInput == "Top Left" ? position.top_left :
+     posInput == "Bottom Right" ? position.bottom_right :
+     posInput == "Bottom Left" ? position.bottom_left : position.top_right
+
+f_dash_row(tbl, row, name, score, weight) =>
+    table.cell(tbl, 0, row, name, text_color=dashTextColor, bgcolor=dashCellBg)
+    table.cell(tbl, 1, row, weight > 0.0 ? f_score_text(score) : f_lang("off", "關閉", "オフ", "꺼짐"), text_color=dashTextColor, bgcolor=weight > 0.0 ? f_regime_color(score) : dashOffBg)
+    table.cell(tbl, 2, row, str.tostring(weight, "#.##"), text_color=dashTextColor, bgcolor=dashCellBg)
+
+// -----------------------------------------------------------------------------
+// Component calculations
+// -----------------------------------------------------------------------------
+
+// Core equity proxy.
+equityClose = f_sec_close(symbolEquity)
+
+// 1. Market Momentum: equity vs long-term MA.
+momentumMetric = f_sec_momentum(symbolEquity, maLen)
+momentumScore = f_score(momentumMetric, false)
+
+// 2. Stock Price Strength: 52W range-position proxy, percentile-ranked.
+strengthMetric = f_sec_range_position(symbolStrength, 252)
+strengthScore = f_score(strengthMetric, false)
+
+// 3. Stock Price Breadth: equal-weight ROC minus cap-weight ROC.
+breadthRocRSP = f_sec_roc(symbolBreadth, relativeReturnLen)
+breadthRocSPY = f_sec_roc(symbolEquity, relativeReturnLen)
+breadthMetric = not na(breadthRocRSP) and not na(breadthRocSPY) ? breadthRocRSP - breadthRocSPY : na
+breadthScore = f_score(breadthMetric, false)
+
+// 4. Put/Call Options: guarded placeholder, disabled if still equal to VIX placeholder.
+putCallActive = wPutCall > 0.0 and symbolPutCall != symbolVix
+putCallMetric = putCallActive ? f_sec_close(symbolPutCall) : na
+putCallScore = f_score(putCallMetric, true)
+
+// 5. Market Volatility: VIX deviation from MA, inverted.
+vixMetric = f_sec_vix_deviation(symbolVix, vixMaLen)
+vixScore = f_score(vixMetric, true)
+
+// 6. Safe Haven Demand: equity return minus bond return.
+equityRet = f_sec_return(symbolEquity, relativeReturnLen)
+bondRet = f_sec_return(symbolBond, relativeReturnLen)
+safeHavenMetric = not na(equityRet) and not na(bondRet) ? equityRet - bondRet : na
+safeHavenScore = f_score(safeHavenMetric, false)
+
+// 7. Junk Bond Demand: high-yield return minus bond proxy return.
+junkRet = f_sec_return(symbolJunk, relativeReturnLen)
+junkMetric = not na(junkRet) and not na(bondRet) ? junkRet - bondRet : na
+junkScore = f_score(junkMetric, false)
+
+// -----------------------------------------------------------------------------
+// Weighted aggregation with missing-data handling
+// -----------------------------------------------------------------------------
+
+enabledCount = f_enabled(wMomentum) + f_enabled(wStrength) + f_enabled(wBreadth) + (putCallActive ? f_enabled(wPutCall) : 0) + f_enabled(wVix) + f_enabled(wSafeHaven) + f_enabled(wJunk)
+
+validCount = f_valid_int(momentumScore, wMomentum) + f_valid_int(strengthScore, wStrength) + f_valid_int(breadthScore, wBreadth) + (putCallActive ? f_valid_int(putCallScore, wPutCall) : 0) + f_valid_int(vixScore, wVix) + f_valid_int(safeHavenScore, wSafeHaven) + f_valid_int(junkScore, wJunk)
+
+weightedSum = f_weighted(momentumScore, wMomentum) + f_weighted(strengthScore, wStrength) + f_weighted(breadthScore, wBreadth) + (putCallActive ? f_weighted(putCallScore, wPutCall) : 0.0) + f_weighted(vixScore, wVix) + f_weighted(safeHavenScore, wSafeHaven) + f_weighted(junkScore, wJunk)
+
+weightSum = f_weight(momentumScore, wMomentum) + f_weight(strengthScore, wStrength) + f_weight(breadthScore, wBreadth) + (putCallActive ? f_weight(putCallScore, wPutCall) : 0.0) + f_weight(vixScore, wVix) + f_weight(safeHavenScore, wSafeHaven) + f_weight(junkScore, wJunk)
+
+strictOk = enabledCount > 0 and validCount == enabledCount
+reweightOk = validCount >= minValidFactors and weightSum > 0.0
+
+rawScore = missingMode == "Strict" ? (strictOk ? weightedSum / weightSum : na) : (reweightOk ? weightedSum / weightSum : na)
+finalScore = bar_index < lookback ? na : rawScore
+
+currentRegime = f_regime(finalScore)
+dataQuality = na(finalScore) ? (bar_index < lookback ? f_lang("Warming up", "暖機中", "ウォームアップ中", "워밍업 중") : f_lang("Insufficient", "資料不足", "データ不足", "데이터 부족")) :
+     validCount == enabledCount and enabledCount >= 6 ? f_lang("Calibrated ETF", "ETF 校準", "ETF 調整版", "ETF 보정") :
+     validCount == enabledCount ? f_lang("Full Enabled", "啟用因子完整", "有効ファクター完全", "활성 팩터 완전") :
+     missingMode == "Proxy Lite" ? f_lang("Lite", "簡化", "簡易", "라이트") : f_lang("Proxy", "代理", "代理", "프록시")
+
+// -----------------------------------------------------------------------------
+// Plots
+// -----------------------------------------------------------------------------
+
+plot(finalScore, "Fear & Greed Proxy", color=f_regime_color(finalScore), linewidth=3)
+
+plot(showComponents ? momentumScore : na, "Momentum Score", color=color.new(color.blue, 20))
+plot(showComponents ? strengthScore : na, "Strength Score", color=color.new(color.purple, 20))
+plot(showComponents ? breadthScore : na, "Breadth Score", color=color.new(color.teal, 20))
+plot(showComponents and putCallActive ? putCallScore : na, "Put/Call Score", color=color.new(color.orange, 20))
+plot(showComponents ? vixScore : na, "VIX Score", color=color.new(color.red, 20))
+plot(showComponents ? safeHavenScore : na, "Safe Haven Score", color=color.new(color.green, 20))
+plot(showComponents ? junkScore : na, "Junk Bond Score", color=color.new(color.yellow, 20))
+
+h0 = hline(0, "0", color=color.new(color.gray, 80))
+h25 = hline(25, "Extreme Fear / Fear", color=color.new(color.red, 30))
+h45 = hline(45, "Fear / Neutral", color=color.new(color.orange, 40))
+h55 = hline(55, "Neutral / Greed", color=color.new(color.gray, 40))
+h75 = hline(75, "Greed / Extreme Greed", color=color.new(color.green, 30))
+h100 = hline(100, "100", color=color.new(color.gray, 80))
+
+fill(h0, h25, color=showZones ? color.new(colExtremeFear, zoneTransparency) : na, title="Extreme Fear Zone")
+fill(h25, h45, color=showZones ? color.new(colFear, zoneTransparency) : na, title="Fear Zone")
+fill(h45, h55, color=showZones ? color.new(colNeutral, zoneTransparency) : na, title="Neutral Zone")
+fill(h55, h75, color=showZones ? color.new(colGreed, zoneTransparency) : na, title="Greed Zone")
+fill(h75, h100, color=showZones ? color.new(colExtremeGreed, zoneTransparency) : na, title="Extreme Greed Zone")
+
+// -----------------------------------------------------------------------------
+// Dashboard
+// -----------------------------------------------------------------------------
+
+var table dash = table.new(f_dash_position(dashPositionInput), 3, 13, bgcolor=dashCellBg, frame_color=dashBorderColor, frame_width=1, border_color=dashBorderColor, border_width=1)
+
+if barstate.islast and showDashboard
+    table.cell(dash, 0, 0, f_lang("Shiori F&G", "Shiori 恐貪", "Shiori 恐怖強欲", "Shiori 공포탐욕"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+    table.cell(dash, 1, 0, f_score_text(finalScore), text_color=dashTextColor, bgcolor=f_regime_color(finalScore))
+    table.cell(dash, 2, 0, currentRegime, text_color=dashTextColor, bgcolor=f_regime_color(finalScore))
+
+    table.cell(dash, 0, 1, f_lang("Quality", "品質", "品質", "품질"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+    table.cell(dash, 1, 1, dataQuality, text_color=dashTextColor, bgcolor=dashCellBg)
+    table.cell(dash, 2, 1, str.tostring(validCount) + "/" + str.tostring(enabledCount), text_color=dashTextColor, bgcolor=dashCellBg)
+
+    table.cell(dash, 0, 2, f_lang("Component", "因子", "項目", "구성"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+    table.cell(dash, 1, 2, f_lang("Score", "分數", "スコア", "점수"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+    table.cell(dash, 2, 2, f_lang("Weight", "權重", "重み", "가중치"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+
+    f_dash_row(dash, 3, f_lang("Momentum", "動能", "モメンタム", "모멘텀"), momentumScore, wMomentum)
+    f_dash_row(dash, 4, f_lang("Strength", "強度", "強さ", "강도"), strengthScore, wStrength)
+    f_dash_row(dash, 5, f_lang("Breadth", "廣度", "市場の広がり", "시장 폭"), breadthScore, wBreadth)
+    f_dash_row(dash, 6, f_lang("Put/Call", "買賣權比", "Put/Call", "풋콜"), putCallScore, putCallActive ? wPutCall : 0.0)
+    f_dash_row(dash, 7, f_lang("VIX Rel", "VIX 相對", "VIX 相対", "VIX 상대"), vixScore, wVix)
+    f_dash_row(dash, 8, f_lang("Safe Haven", "避險需求", "安全資産", "안전자산"), safeHavenScore, wSafeHaven)
+    f_dash_row(dash, 9, f_lang("Junk Bond", "高收益債", "ジャンク債", "하이일드"), junkScore, wJunk)
+
+    table.cell(dash, 0, 10, f_lang("Warmup", "暖機", "準備期間", "워밍업"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+    table.cell(dash, 1, 10, bar_index < lookback ? f_lang("Active", "進行中", "進行中", "진행 중") : f_lang("Done", "完成", "完了", "완료"), text_color=dashTextColor, bgcolor=bar_index < lookback ? dashWarmupBg : dashCellBg)
+    table.cell(dash, 2, 10, str.tostring(math.min(bar_index, lookback)) + "/" + str.tostring(lookback), text_color=dashTextColor, bgcolor=dashCellBg)
+
+    table.cell(dash, 0, 11, f_lang("Mode", "模式", "モード", "모드"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+    table.cell(dash, 1, 11, f_mode_text(missingMode), text_color=dashTextColor, bgcolor=dashCellBg)
+    table.cell(dash, 2, 11, "R=" + str.tostring(relativeReturnLen), text_color=dashTextColor, bgcolor=dashCellBg)
+
+    table.cell(dash, 0, 12, f_lang("Note", "備註", "注記", "메모"), text_color=dashTextColor, bgcolor=dashHeaderBg)
+    table.cell(dash, 1, 12, f_lang("v0.5", "v0.5", "v0.5", "v0.5"), text_color=dashTextColor, bgcolor=dashCellBg)
+    table.cell(dash, 2, 12, f_lang("No signals", "非訊號", "シグナルなし", "신호 아님"), text_color=dashTextColor, bgcolor=dashCellBg)
+
+if barstate.islast and not showDashboard
+    table.clear(dash, 0, 0, 2, 12)
