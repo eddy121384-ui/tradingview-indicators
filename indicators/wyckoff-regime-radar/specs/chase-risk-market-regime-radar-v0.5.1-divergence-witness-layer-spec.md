@@ -1,7 +1,8 @@
 # Chase Risk Market Regime Radar v0.5.1｜Divergence Witness Layer Patch Spec
 
 > 本文件是 v0.5 完整規格書的 patch spec。  
-> 目的：在不重寫主模型的前提下，新增「追價風險背離 / 共振」判斷，作為 Volume 與 MTF 之外的第三個 witness layer。
+> 目的：在不重寫主模型的前提下，新增「追價風險背離 / 共振」判斷，作為 Volume 與 MTF 之外的第三個 witness layer。  
+> **v0.5.1-r1 更新重點**：根據實際圖表測試，單純用「價格 pivot 當根的 chase risk」太容易漏判。背離應改成「價格 pivot 附近的 chase-risk peak 對位」，並新增 soft divergence 與 signal hold。
 
 ---
 
@@ -40,9 +41,57 @@ bearChaseRisk = endRiskDn
 
 ---
 
-## 1. 核心設計原則
+## 1. 實測問題與 r1 修正方向
 
-### 1.1 Divergence layer 是證人，不是主引擎
+### 1.1 實測問題
+
+使用 v0.5.1 第一版套到實際圖表後，出現以下問題：
+
+```text
+價格在高位測高 / 創高，
+下方 bullChaseRisk / endRiskUp 的高峰明顯下降，
+人眼判讀符合頂背離或高位供給觀察，
+但 Dashboard 顯示「背離｜無」。
+```
+
+這不是使用者觀察錯，而是第一版偵測邏輯太嚴格。
+
+### 1.2 問題原因
+
+第一版使用：
+
+```pine
+bullRiskAtHighPivot = bullChaseRisk[divPivotRight]
+bearRiskAtLowPivot = bearChaseRisk[divPivotRight]
+```
+
+也就是只取「價格 pivot 那一根」的追價風險。
+
+但真實市場常見狀況是：
+
+```text
+chase-risk peak 可能先於 price pivot 出現，
+也可能晚於 price pivot 出現，
+或在 price pivot 附近幾根內形成峰值。
+```
+
+因此背離不應要求 price pivot 與 risk peak 完全同根對齊。
+
+### 1.3 r1 修正方向
+
+v0.5.1-r1 必須新增三個能力：
+
+1. **Risk alignment window**：用價格 pivot 前後 N 根內的 chase-risk peak，對應該價格 pivot。
+2. **Signal hold**：背離 / 共振確認後保留 N 根，避免下一個小 pivot 出現後立刻消失。
+3. **Soft divergence**：價格接近前高 / 前低，或高位測壓 / 低位測底，即使沒有嚴格創高 / 破低，也能標為高位供給觀察 / 低位承接觀察。
+
+這三項是 v0.5.1 實測修正的必做項目。
+
+---
+
+## 2. 核心設計原則
+
+### 2.1 Divergence layer 是證人，不是主引擎
 
 Divergence layer 不得直接改寫：
 
@@ -64,9 +113,9 @@ Flat Action No Chase
 Dashboard / Debug / Alerts
 ```
 
-若未來要讓 divergence 參與 effective score，只能透過小權重 multiplier，且預設應為 Observe Only。
+若讓 divergence 參與 effective score，只能透過小權重 multiplier，且預設應為 Observe Only。
 
-### 1.2 背離不是反轉
+### 2.2 背離不是反轉
 
 頂背離不等於做空。  
 底背離不等於做多。
@@ -78,9 +127,7 @@ Dashboard / Debug / Alerts
 底背離 = 追空品質下降 / 低位承接觀察
 ```
 
-### 1.3 共振不是背離
-
-v0.5.1 不只看背離，也要看共振。
+### 2.3 共振不是背離
 
 同樣是創新高 / 新低，應分成四種狀態：
 
@@ -98,11 +145,21 @@ v0.5.1 不只看背離，也要看共振。
 → 底背離 / 低位承接觀察。
 ```
 
-這個四格語意是本 patch 的核心。
+### 2.4 Strict 與 Soft 必須分層
+
+v0.5.1-r1 必須把背離分成：
+
+```text
+Strict Divergence：價格明確創高 / 破低，風險 peak 反向下降。
+Soft Divergence：價格接近前高 / 前低，或高位測壓 / 低位測底，風險 peak 已明顯下降。
+```
+
+Strict 可用於更高強度的 clue / no-chase。  
+Soft 只能用於 observation / dashboard / no-chase，不得直接推動 formal regime。
 
 ---
 
-## 2. 新增 Input Group
+## 3. 新增 Input Group
 
 新增：
 
@@ -114,20 +171,23 @@ groupDivergence = "參數｜Divergence Witness Layer v0.5.1"
 
 ---
 
-## 3. 新增 Inputs
+## 4. 新增 Inputs
 
 ```pine
 divMode = input.string("Observe Only", "Divergence Mode", options=["Off", "Observe Only", "Auto"], group=groupDivergence)
 divPivotLeft = input.int(5, "背離 Pivot Left", minval=1, maxval=20, group=groupDivergence)
 divPivotRight = input.int(5, "背離 Pivot Right", minval=1, maxval=20, group=groupDivergence)
+divRiskAlignWindow = input.int(3, "追價風險對位視窗", minval=0, maxval=10, group=groupDivergence)
+divSignalHoldBars = input.int(20, "背離訊號保留根數", minval=1, maxval=100, group=groupDivergence)
 divMinPricePct = input.float(0.5, "最小創高 / 破低幅度 %", minval=0.0, maxval=10.0, step=0.1, group=groupDivergence)
+divNearPricePct = input.float(1.0, "Soft 背離｜接近前高 / 前低容許 %", minval=0.0, maxval=10.0, step=0.1, group=groupDivergence)
 divMinRiskGap = input.float(8.0, "最小風險背離差距", minval=0.0, maxval=50.0, step=0.5, group=groupDivergence)
 divRiskMin = input.float(55.0, "最低有效追價風險", minval=0.0, maxval=100.0, step=0.5, group=groupDivergence)
 divMaxWeight = input.float(10.0, "背離最大參與權重 %", minval=0.0, maxval=20.0, step=0.5, group=groupDivergence)
 showDivInCompact = input.bool(true, "Dashboard 精簡模式顯示背離層", group=groupDivergence)
 ```
 
-### 3.1 divMode 語意
+### 4.1 divMode 語意
 
 - `Off`：完全關閉 Divergence layer。
 - `Observe Only`：預設，只顯示 / 警示，不參與主模型。
@@ -135,9 +195,29 @@ showDivInCompact = input.bool(true, "Dashboard 精簡模式顯示背離層", gro
 
 v0.5.1 不建議加入 `Force On`。背離訊號在強趨勢中容易過早出現，強制參與會讓模型太敏感。
 
+### 4.2 新增參數語意
+
+#### divRiskAlignWindow
+
+價格 pivot 與 chase-risk peak 不一定同根。此參數定義在價格 pivot 前後多少根內尋找 chase-risk peak。
+
+預設 3，代表：
+
+```text
+pivot bar 前後 3 根內，取 bullChaseRisk / bearChaseRisk 最高值作為該 pivot 對應風險。
+```
+
+#### divSignalHoldBars
+
+背離 / 共振確認後，Dashboard、Debug 與 alert 狀態應保留 N 根，不要因下一個小 pivot 出現立刻消失。
+
+#### divNearPricePct
+
+Soft divergence 使用。當價格沒有嚴格創新高 / 破低，但仍接近前高 / 前低時，可視為「測壓 / 測底」。
+
 ---
 
-## 4. 追價風險來源
+## 5. 追價風險來源
 
 Divergence layer 不另建 RSI、MACD 或外部 oscillator。
 
@@ -157,13 +237,13 @@ bearChaseRisk = endRiskDn
 
 ---
 
-## 5. Pivot 設計
+## 6. Pivot 與 Risk Peak 對位設計
 
-### 5.1 為什麼使用 confirmed pivot
+### 6.1 confirmed price pivot
 
-背離如果即時偵測，容易重繪與誤導。
+背離若即時偵測，容易重繪與誤導。
 
-因此使用：
+因此使用 confirmed pivot：
 
 ```pine
 pricePivotHigh = ta.pivothigh(high, divPivotLeft, divPivotRight)
@@ -172,28 +252,77 @@ pricePivotLow = ta.pivotlow(low, divPivotLeft, divPivotRight)
 
 當 pivot 確認時，訊號會延遲 `divPivotRight` 根 K 棒，但較穩定。
 
-### 5.2 對應 pivot bar 的 risk
+### 6.2 不可只取 pivot 當根 risk
 
-pivot 在確認時，真正的 pivot 發生在 `divPivotRight` 根之前。
-
-因此 risk 也要取同一根：
+以下寫法太嚴格，會漏判：
 
 ```pine
 bullRiskAtHighPivot = bullChaseRisk[divPivotRight]
 bearRiskAtLowPivot = bearChaseRisk[divPivotRight]
 ```
 
-不得使用當前 bar 的 risk 直接對應歷史 pivot，否則價格與風險時間點會錯位。
+這只能拿到 price pivot bar 當根的 risk，無法捕捉「risk peak 早於 / 晚於 price pivot」的常見情況。
 
-### 5.3 保存前一個 pivot
+### 6.3 必須使用 risk alignment window
+
+正確做法：
+
+```text
+對每一個 confirmed price pivot，
+找到該 pivot bar 前後 divRiskAlignWindow 根內的 chase-risk peak，
+作為該 price pivot 對應的 risk peak。
+```
+
+概念：
+
+```text
+high pivot → 尋找 bullChaseRisk peak
+low pivot  → 尋找 bearChaseRisk peak
+```
+
+### 6.4 Pine 實作提示
+
+若 Pine 不方便往「未來 bar」看，可在 pivot confirmation 當下，用已知資料重建視窗。
+
+當 `pricePivotHigh` 在目前 bar 被確認時，真正 pivot 位於 `divPivotRight` 根之前。可用：
+
+```text
+risk window = [divPivotRight - divRiskAlignWindow, divPivotRight + divRiskAlignWindow]
+```
+
+在 Pine 的歷史索引語意下，這些都是目前 bar 已知的過去資料。
+
+需要注意：
+
+- index 不得小於 0。
+- `divRiskAlignWindow = 0` 時，退回 pivot 當根 risk。
+- 建議寫 helper function，以 loop 取得 window max。
+
+概念函式：
+
+```pine
+f_windowMaxRisk(src, pivotRight, win) =>
+    float _max = na
+    int _from = math.max(pivotRight - win, 0)
+    int _to = pivotRight + win
+    for i = _from to _to
+        _v = src[i]
+        if not na(_v)
+            _max := na(_max) ? _v : math.max(_max, _v)
+    _max
+```
+
+此函式只使用當前 bar 可見的歷史資料，不應重繪。
+
+### 6.5 保存最近兩個 pivot 與 risk peak
 
 需要保存最近兩個有效高點 pivot：
 
 ```text
 prevPriceHighPivot
 lastPriceHighPivot
-prevBullRiskAtHigh
-lastBullRiskAtHigh
+prevBullRiskAtHighPeak
+lastBullRiskAtHighPeak
 ```
 
 以及最近兩個有效低點 pivot：
@@ -201,42 +330,44 @@ lastBullRiskAtHigh
 ```text
 prevPriceLowPivot
 lastPriceLowPivot
-prevBearRiskAtLow
-lastBearRiskAtLow
+prevBearRiskAtLowPeak
+lastBearRiskAtLowPeak
 ```
+
+命名應使用 `Peak`，避免與舊版 `AtPivot` 混淆。
 
 ---
 
-## 6. 頂背離 / 空頭背離
+## 7. Strict 頂背離 / 空頭背離
 
-### 6.1 定義
+### 7.1 定義
 
-頂背離成立條件：
+Strict 頂背離成立條件：
 
 ```text
 lastPriceHighPivot > prevPriceHighPivot
-AND lastBullRiskAtHigh < prevBullRiskAtHigh
+AND lastBullRiskAtHighPeak < prevBullRiskAtHighPeak
 AND priceHighBreakPct >= divMinPricePct
 AND riskGap >= divMinRiskGap
-AND max(lastBullRiskAtHigh, prevBullRiskAtHigh) >= divRiskMin
+AND max(lastBullRiskAtHighPeak, prevBullRiskAtHighPeak) >= divRiskMin
 ```
 
 其中：
 
 ```text
 priceHighBreakPct = (lastPriceHighPivot / prevPriceHighPivot - 1) × 100
-riskGap = prevBullRiskAtHigh - lastBullRiskAtHigh
+riskGap = prevBullRiskAtHighPeak - lastBullRiskAtHighPeak
 ```
 
-### 6.2 語意
+### 7.2 語意
 
-頂背離代表：
+Strict 頂背離代表：
 
 ```text
-價格創新高，但多頭追價風險沒有同步確認。
+價格明確創新高，但多頭追價風險 peak 沒有同步確認。
 ```
 
-它應被翻譯為：
+翻譯：
 
 - 追多品質下降。
 - 高位供給觀察。
@@ -244,9 +375,9 @@ riskGap = prevBullRiskAtHigh - lastBullRiskAtHigh
 - 多單續抱可，但不宜無腦加碼。
 - 空手者不追多，等待回測或更清楚訊號。
 
-### 6.3 不可翻譯為
+### 7.3 不可翻譯為
 
-頂背離不得直接翻譯為：
+不得直接翻譯為：
 
 - 做空訊號。
 - 派發確認。
@@ -255,36 +386,36 @@ riskGap = prevBullRiskAtHigh - lastBullRiskAtHigh
 
 ---
 
-## 7. 底背離 / 多頭背離
+## 8. Strict 底背離 / 多頭背離
 
-### 7.1 定義
+### 8.1 定義
 
-底背離成立條件：
+Strict 底背離成立條件：
 
 ```text
 lastPriceLowPivot < prevPriceLowPivot
-AND lastBearRiskAtLow < prevBearRiskAtLow
+AND lastBearRiskAtLowPeak < prevBearRiskAtLowPeak
 AND priceLowBreakPct >= divMinPricePct
 AND riskGap >= divMinRiskGap
-AND max(lastBearRiskAtLow, prevBearRiskAtLow) >= divRiskMin
+AND max(lastBearRiskAtLowPeak, prevBearRiskAtLowPeak) >= divRiskMin
 ```
 
 其中：
 
 ```text
 priceLowBreakPct = (prevPriceLowPivot / lastPriceLowPivot - 1) × 100
-riskGap = prevBearRiskAtLow - lastBearRiskAtLow
+riskGap = prevBearRiskAtLowPeak - lastBearRiskAtLowPeak
 ```
 
-### 7.2 語意
+### 8.2 語意
 
-底背離代表：
+Strict 底背離代表：
 
 ```text
-價格創新低，但空頭追價風險沒有同步確認。
+價格明確創新低，但空頭追價風險 peak 沒有同步確認。
 ```
 
-它應被翻譯為：
+翻譯：
 
 - 追空品質下降。
 - 低位承接觀察。
@@ -292,9 +423,9 @@ riskGap = prevBearRiskAtLow - lastBearRiskAtLow
 - 空單續抱可，但應保護利潤。
 - 空手者不追空，等待反彈失敗或更清楚訊號。
 
-### 7.3 不可翻譯為
+### 8.3 不可翻譯為
 
-底背離不得直接翻譯為：
+不得直接翻譯為：
 
 - 買進訊號。
 - 吸籌確認。
@@ -303,27 +434,135 @@ riskGap = prevBearRiskAtLow - lastBearRiskAtLow
 
 ---
 
-## 8. 多頭過熱共振
+## 9. Soft 高位供給背離
 
-### 8.1 定義
+### 9.1 設計目的
+
+實際市場常見狀況是：價格沒有精準創新高，但已接近前高、測壓、或形成高位雙頂；同時 bullChaseRisk peak 明顯下降。
+
+這種情況不應叫 Strict 頂背離，但應顯示為：
+
+```text
+高位供給觀察 / 追多品質下降
+```
+
+### 9.2 定義
+
+Soft 高位供給背離成立條件：
+
+```text
+priceNearHigh = lastPriceHighPivot >= prevPriceHighPivot × (1 - divNearPricePct / 100)
+AND lastBullRiskAtHighPeak < prevBullRiskAtHighPeak
+AND riskGap >= divMinRiskGap
+AND max(lastBullRiskAtHighPeak, prevBullRiskAtHighPeak) >= divRiskMin
+AND NOT strictBearishDivValid
+```
+
+可選擇加入：
+
+```text
+uptrendGate > 0.25 OR bullBg >= 50 OR close > maturityMa
+```
+
+用來確保這是高位測壓，不是低位亂跳。
+
+### 9.3 語意
+
+Soft 高位供給背離代表：
+
+```text
+價格仍在高位測壓，但多頭追價風險 peak 已下降。
+```
+
+文字應使用：
+
+- 高位供給觀察。
+- 追多品質下降。
+- 高位背離觀察。
+
+不應使用：
+
+- 頂背離確認。
+- 派發確認。
+- 做空。
+
+---
+
+## 10. Soft 低位承接背離
+
+### 10.1 設計目的
+
+實際市場常見狀況是：價格沒有精準破低，但已接近前低、測底、或形成低位雙底；同時 bearChaseRisk peak 明顯下降。
+
+這種情況不應叫 Strict 底背離，但應顯示為：
+
+```text
+低位承接觀察 / 追空品質下降
+```
+
+### 10.2 定義
+
+Soft 低位承接背離成立條件：
+
+```text
+priceNearLow = lastPriceLowPivot <= prevPriceLowPivot × (1 + divNearPricePct / 100)
+AND lastBearRiskAtLowPeak < prevBearRiskAtLowPeak
+AND riskGap >= divMinRiskGap
+AND max(lastBearRiskAtLowPeak, prevBearRiskAtLowPeak) >= divRiskMin
+AND NOT strictBullishDivValid
+```
+
+可選擇加入：
+
+```text
+downtrendGate > 0.25 OR bearBg >= 50 OR close < maturityMa
+```
+
+用來確保這是低位測底，不是高位亂跳。
+
+### 10.3 語意
+
+Soft 低位承接背離代表：
+
+```text
+價格仍在低位測底，但空頭追價風險 peak 已下降。
+```
+
+文字應使用：
+
+- 低位承接觀察。
+- 追空品質下降。
+- 低位背離觀察。
+
+不應使用：
+
+- 底背離確認。
+- 吸籌確認。
+- 買進。
+
+---
+
+## 11. 多頭過熱共振
+
+### 11.1 定義
 
 多頭過熱共振成立條件：
 
 ```text
 lastPriceHighPivot > prevPriceHighPivot
-AND lastBullRiskAtHigh > prevBullRiskAtHigh
+AND lastBullRiskAtHighPeak > prevBullRiskAtHighPeak
 AND priceHighBreakPct >= divMinPricePct
 AND riskRise >= divMinRiskGap
-AND lastBullRiskAtHigh >= divRiskMin
+AND lastBullRiskAtHighPeak >= divRiskMin
 ```
 
 其中：
 
 ```text
-riskRise = lastBullRiskAtHigh - prevBullRiskAtHigh
+riskRise = lastBullRiskAtHighPeak - prevBullRiskAtHighPeak
 ```
 
-### 8.2 語意
+### 11.2 語意
 
 多頭過熱共振代表：
 
@@ -342,27 +581,27 @@ riskRise = lastBullRiskAtHigh - prevBullRiskAtHigh
 
 ---
 
-## 9. 空頭恐慌共振
+## 12. 空頭恐慌共振
 
-### 9.1 定義
+### 12.1 定義
 
 空頭恐慌共振成立條件：
 
 ```text
 lastPriceLowPivot < prevPriceLowPivot
-AND lastBearRiskAtLow > prevBearRiskAtLow
+AND lastBearRiskAtLowPeak > prevBearRiskAtLowPeak
 AND priceLowBreakPct >= divMinPricePct
 AND riskRise >= divMinRiskGap
-AND lastBearRiskAtLow >= divRiskMin
+AND lastBearRiskAtLowPeak >= divRiskMin
 ```
 
 其中：
 
 ```text
-riskRise = lastBearRiskAtLow - prevBearRiskAtLow
+riskRise = lastBearRiskAtLowPeak - prevBearRiskAtLowPeak
 ```
 
-### 9.2 語意
+### 12.2 語意
 
 空頭恐慌共振代表：
 
@@ -381,20 +620,22 @@ riskRise = lastBearRiskAtLow - prevBearRiskAtLow
 
 ---
 
-## 10. 四格判讀總表
+## 13. 六格判讀總表
 
-| 價格行為 | 追價風險行為 | 狀態名稱 | 語意 | 行動語氣 |
-|---|---|---|---|---|
-| 創新高 | 多頭追價風險也創新高 | 多頭過熱共振 | 趨勢仍強但追多風險升高 | 續抱可，不追多 |
-| 創新高 | 多頭追價風險沒有創新高 | 頂背離 / 高位供給觀察 | 上攻效率下降 | 降低追多、觀察供給 |
-| 創新低 | 空頭追價風險也創新高 | 空頭恐慌共振 | 下跌仍強但追空風險升高 | 續抱可，不追空 |
-| 創新低 | 空頭追價風險沒有創新高 | 底背離 / 低位承接觀察 | 下跌效率下降 | 降低追空、觀察承接 |
+| 價格行為 | 追價風險行為 | 狀態名稱 | 強度 | 語意 | 行動語氣 |
+|---|---|---|---|---|---|
+| 明確創新高 | 多頭追價風險 peak 也創新高 | 多頭過熱共振 | 強 | 趨勢仍強但追多風險升高 | 續抱可，不追多 |
+| 明確創新高 | 多頭追價風險 peak lower high | Strict 頂背離 | 強 | 上攻效率下降 | 降低追多、觀察供給 |
+| 接近前高 / 高位測壓 | 多頭追價風險 peak lower high | Soft 高位供給觀察 | 中 | 高位追多品質下降 | 不追多，等回測 |
+| 明確創新低 | 空頭追價風險 peak 也創新高 | 空頭恐慌共振 | 強 | 下跌仍強但追空風險升高 | 續抱可，不追空 |
+| 明確創新低 | 空頭追價風險 peak lower high | Strict 底背離 | 強 | 下跌效率下降 | 降低追空、觀察承接 |
+| 接近前低 / 低位測底 | 空頭追價風險 peak lower high | Soft 低位承接觀察 | 中 | 低位追空品質下降 | 不追空，等反彈失敗 |
 
 ---
 
-## 11. 分數設計
+## 14. 分數設計
 
-### 11.1 頂背離分數
+### 14.1 Strict 頂背離分數
 
 ```text
 bearishDivergenceScore = weighted(
@@ -412,7 +653,7 @@ riskGapScore        0.50
 riskRelevanceScore  0.20
 ```
 
-### 11.2 底背離分數
+### 14.2 Strict 底背離分數
 
 ```text
 bullishDivergenceScore = weighted(
@@ -430,48 +671,117 @@ riskGapScore       0.50
 riskRelevanceScore 0.20
 ```
 
-### 11.3 多頭過熱共振分數
+### 14.3 Soft 高位供給分數
+
+```text
+softHighSupplyDivScore = weighted(
+    priceNearHighScore,
+    riskGapScore,
+    riskRelevanceScore
+)
+```
+
+### 14.4 Soft 低位承接分數
+
+```text
+softLowDemandDivScore = weighted(
+    priceNearLowScore,
+    riskGapScore,
+    riskRelevanceScore
+)
+```
+
+### 14.5 多頭過熱共振分數
 
 ```text
 bullChaseClimaxScore = weighted(
     priceHighBreakScore,
     riskRiseScore,
-    lastBullRiskAtHigh
+    lastBullRiskAtHighPeak
 )
 ```
 
-### 11.4 空頭恐慌共振分數
+### 14.6 空頭恐慌共振分數
 
 ```text
 bearChaseClimaxScore = weighted(
     priceLowBreakScore,
     riskRiseScore,
-    lastBearRiskAtLow
+    lastBearRiskAtLowPeak
 )
 ```
 
-### 11.5 有效旗標
+### 14.7 有效旗標
 
 ```text
-bearishDivValid
-bullishDivValid
+strictBearishDivValid
+strictBullishDivValid
+softHighSupplyDivValid
+softLowDemandDivValid
 bullClimaxValid
 bearClimaxValid
 ```
 
-有效條件應包括：
+---
 
-- `divMode != "Off"`。
-- 已有兩個有效 pivot。
-- 對應分數達 `divRiskMin` 或自訂門檻。
-- 價格突破幅度達 `divMinPricePct`。
-- 風險差距達 `divMinRiskGap`。
+## 15. Signal Hold 設計
+
+### 15.1 為什麼需要 hold
+
+若背離只在 pivot confirmation 當根顯示，使用者在圖上很容易看不到。若下一個小 pivot 出現，狀態又被覆蓋，Dashboard 會顯示「無」，造成肉眼看到背離但指標不承認。
+
+因此必須新增 signal hold。
+
+### 15.2 必要變數
+
+```text
+var int strictBearishDivBarsSince = na
+var int strictBullishDivBarsSince = na
+var int softHighSupplyDivBarsSince = na
+var int softLowDemandDivBarsSince = na
+var int bullClimaxBarsSince = na
+var int bearClimaxBarsSince = na
+```
+
+或等價設計。
+
+### 15.3 Hold flags
+
+```text
+strictBearishDivRecent = strictBearishDivBarsSince <= divSignalHoldBars
+strictBullishDivRecent = strictBullishDivBarsSince <= divSignalHoldBars
+softHighSupplyDivRecent = softHighSupplyDivBarsSince <= divSignalHoldBars
+softLowDemandDivRecent = softLowDemandDivBarsSince <= divSignalHoldBars
+bullClimaxRecent = bullClimaxBarsSince <= divSignalHoldBars
+bearClimaxRecent = bearClimaxBarsSince <= divSignalHoldBars
+```
+
+### 15.4 Dashboard 必須使用 recent flags
+
+Dashboard 不應只看當根 valid flags。
+
+正確：
+
+```text
+divClueText 使用 recent flags
+```
+
+不是：
+
+```text
+divClueText 只使用當根 valid flags
+```
+
+### 15.5 模型參與仍應保守
+
+Observe Only：recent flags 只顯示，不改模型。  
+Auto：可使用 recent flags 參與 no-chase / downgrade，但不要讓過期訊號長期干擾。
 
 ---
 
-## 12. 權重接入方式
+## 16. 權重接入方式
 
-### 12.1 Observe Only
+### 16.1 Observe Only
 
 預設 `Observe Only`：
 
@@ -488,7 +798,7 @@ divActive = false
 
 不影響模型。
 
-### 12.2 Auto
+### 16.2 Auto
 
 Auto 模式下：
 
@@ -496,6 +806,8 @@ Auto 模式下：
 divTopScore = max(
     bearishDivergenceScore,
     bullishDivergenceScore,
+    softHighSupplyDivScore,
+    softLowDemandDivScore,
     bullChaseClimaxScore,
     bearChaseClimaxScore
 )
@@ -503,7 +815,7 @@ divTopScore = max(
 divWeightApplied = divMaxWeight / 100 × gate(divTopScore, divRiskMin, 90)
 ```
 
-### 12.3 建議最大權重
+### 16.3 建議最大權重
 
 ```text
 divMaxWeight default = 10%
@@ -513,9 +825,9 @@ divMaxWeight default = 10%
 
 ---
 
-## 13. 對主模型的接入位置
+## 17. 對主模型的接入位置
 
-### 13.1 不直接改 formal regime
+### 17.1 不直接改 formal regime
 
 Divergence 不直接改：
 
@@ -526,44 +838,44 @@ candidateBars
 confirmedId
 ```
 
-### 13.2 可加強 clue observation
+### 17.2 可加強 clue observation
 
 高位：
 
 ```text
-highClueObservation 可加入 bearishDivValid
-trendClueDispute 可加入 bearishDivValid 或 bullClimaxValid
+highClueObservation 可加入 strictBearishDivRecent OR softHighSupplyDivRecent
+trendClueDispute 可加入 strictBearishDivRecent OR softHighSupplyDivRecent OR bullClimaxRecent
 ```
 
 低位：
 
 ```text
-lowClueObservation 可加入 bullishDivValid
-trendClueDispute 可加入 bullishDivValid 或 bearClimaxValid
+lowClueObservation 可加入 strictBullishDivRecent OR softLowDemandDivRecent
+trendClueDispute 可加入 strictBullishDivRecent OR softLowDemandDivRecent OR bearClimaxRecent
 ```
 
-### 13.3 可加強 candidateConflict
+### 17.3 可加強 candidateConflict
 
 多方候選遇到高位背離 / 多頭過熱共振時，可形成供給 conflict：
 
 ```text
-longSideDivergenceConflict = bearishDivValid OR bullClimaxValid
+longSideDivergenceConflict = strictBearishDivRecent OR softHighSupplyDivRecent OR bullClimaxRecent
 ```
 
 空方候選遇到底背離 / 空頭恐慌共振時，可形成承接 conflict：
 
 ```text
-shortSideDivergenceConflict = bullishDivValid OR bearClimaxValid
+shortSideDivergenceConflict = strictBullishDivRecent OR softLowDemandDivRecent OR bearClimaxRecent
 ```
 
-### 13.4 可加強 Flat Action No Chase
+### 17.4 可加強 Flat Action No Chase
 
 ```text
-flatNoChaseLong 可加入 bearishDivValid OR bullClimaxValid
-flatNoChaseShort 可加入 bullishDivValid OR bearClimaxValid
+flatNoChaseLong 可加入 strictBearishDivRecent OR softHighSupplyDivRecent OR bullClimaxRecent
+flatNoChaseShort 可加入 strictBullishDivRecent OR softLowDemandDivRecent OR bearClimaxRecent
 ```
 
-### 13.5 可加強 Pace Context Downgrade
+### 17.5 可加強 Pace Context Downgrade
 
 多方降級：
 
@@ -575,7 +887,7 @@ F2 小試多 → F1 等回測
 觸發：
 
 ```text
-bearishDivValid OR bullClimaxValid
+strictBearishDivRecent OR softHighSupplyDivRecent OR bullClimaxRecent
 ```
 
 空方降級：
@@ -588,16 +900,16 @@ F4 小試空 → F1 等反彈失敗
 觸發：
 
 ```text
-bullishDivValid OR bearClimaxValid
+strictBullishDivRecent OR softLowDemandDivRecent OR bearClimaxRecent
 ```
 
-### 13.6 可低權重加強 effective scores
+### 17.6 可低權重加強 effective scores
 
 若使用 Auto 模式，可低權重加強：
 
 ```text
-bearishDivergenceScore → distEff / upsideExhaustion witness
-bullishDivergenceScore → accEff / downsideExhaustion witness
+strictBearishDivScore / softHighSupplyDivScore → distEff / upsideExhaustion witness
+strictBullishDivScore / softLowDemandDivScore → accEff / downsideExhaustion witness
 bullChaseClimaxScore → no-chase long / end-risk witness，不直接加派發
 bearChaseClimaxScore → no-chase short / panic-risk witness，不直接加吸籌
 ```
@@ -606,7 +918,7 @@ bearChaseClimaxScore → no-chase short / panic-risk witness，不直接加吸�
 
 ---
 
-## 14. Dashboard 顯示
+## 18. Dashboard 顯示
 
 新增 dashboard 文本：
 
@@ -616,7 +928,7 @@ divClueText
 divCompactText
 ```
 
-### 14.1 狀態文字
+### 18.1 狀態文字
 
 ```text
 Off → 背離關閉
@@ -625,31 +937,55 @@ Observe Only → 背離觀察
 Auto → 背離自動參與
 ```
 
-### 14.2 線索文字
+### 18.2 線索文字
+
+Dashboard 必須能區分 strict / soft / climax：
 
 ```text
 頂背離｜追多品質下降
+高位供給觀察｜追多品質下降
 底背離｜追空品質下降
+低位承接觀察｜追空品質下降
 多頭過熱｜不追多
 空頭恐慌｜不追空
 背離中性
 ```
 
-### 14.3 精簡顯示
+### 18.3 優先順序
+
+若多個 recent flags 同時成立，Dashboard 顯示優先順序：
 
 ```text
-背離｜頂背離 / 底背離 / 多頭過熱 / 空頭恐慌 / 無｜W x%
+Strict 頂背離 / Strict 底背離
+→ Soft 高位供給 / Soft 低位承接
+→ 多頭過熱 / 空頭恐慌
+→ 中性
+```
+
+也可以依當前方向決定優先：
+
+```text
+formal/candidate 偏多 → 優先顯示高位相關風險
+formal/candidate 偏空 → 優先顯示低位相關風險
+```
+
+### 18.4 精簡顯示
+
+```text
+背離｜頂背離 / 高位供給 / 底背離 / 低位承接 / 多頭過熱 / 空頭恐慌 / 無｜W x%
 ```
 
 ---
 
-## 15. Debug 單線
+## 19. Debug 單線
 
 新增 Debug 選項：
 
 ```text
 頂背離
+高位供給觀察
 底背離
+低位承接觀察
 多頭追價共振
 空頭追價共振
 背離權重
@@ -659,29 +995,35 @@ Auto → 背離自動參與
 
 ```text
 bearishDivergenceScore
+softHighSupplyDivScore
 bullishDivergenceScore
+softLowDemandDivScore
 bullChaseClimaxScore
 bearChaseClimaxScore
 divWeightApplied * 100
 ```
 
+Debug 分數可顯示當根 score；Dashboard 顯示應使用 recent flags。
+
 ---
 
-## 16. Alerts
+## 20. Alerts
 
-### 16.1 新增 alertcondition
+### 20.1 新增 alertcondition
 
 ```text
 Divergence Witness Layer 重要事件
 ```
 
-### 16.2 Dynamic alerts
+### 20.2 Dynamic alerts
 
 新增 dynamic alert：
 
 ```text
 頂背離｜追多品質下降
+高位供給觀察｜追多品質下降
 底背離｜追空品質下降
+低位承接觀察｜追空品質下降
 多頭過熱共振｜不追多
 空頭恐慌共振｜不追空
 ```
@@ -709,16 +1051,17 @@ wait for failed rebound
 
 ---
 
-## 17. 驗收標準
+## 21. 驗收標準
 
-### 17.1 編譯
+### 21.1 編譯
 
 - Pine v6 編譯通過。
 - 不超過 plot count。
 - 不造成 table row overflow。
 - confirmed pivot 不重繪。
+- `divRiskAlignWindow` 不使用未來資料。
 
-### 17.2 Observe Only
+### 21.2 Observe Only
 
 `Divergence Mode = Observe Only` 時：
 
@@ -729,18 +1072,45 @@ wait for failed rebound
 - 不改背景。
 - 只影響 Dashboard / Debug / Alerts。
 
-### 17.3 語意測試
+### 21.3 語意測試
 
 測試場景：
 
-1. 強多頭一路創高，追價風險也創高：應顯示多頭過熱共振，不是頂背離。
-2. 價格創高但追價風險下降：應顯示頂背離 / 追多品質下降。
-3. 強空頭一路創低，追價風險也創高：應顯示空頭恐慌共振，不是底背離。
-4. 價格創低但追價風險下降：應顯示底背離 / 追空品質下降。
-5. 高位背離出現時，Flat Action 不應繼續無條件順勢試多。
-6. 低位背離出現時，Flat Action 不應繼續無條件順勢試空。
+1. 強多頭一路創高，追價風險 peak 也創高：應顯示多頭過熱共振，不是頂背離。
+2. 價格明確創高，但追價風險 peak 下降：應顯示頂背離 / 追多品質下降。
+3. 價格高位測壓或接近前高，但追價風險 peak 下降：應顯示高位供給觀察，不應顯示無。
+4. 強空頭一路創低，追價風險 peak 也創高：應顯示空頭恐慌共振，不是底背離。
+5. 價格明確創低，但追價風險 peak 下降：應顯示底背離 / 追空品質下降。
+6. 價格低位測底或接近前低，但追價風險 peak 下降：應顯示低位承接觀察，不應顯示無。
+7. 背離確認後，Dashboard 應在 `divSignalHoldBars` 內保留訊號，不應下一個小 pivot 出現就變成無。
+8. 高位背離出現時，Flat Action 不應繼續無條件順勢試多。
+9. 低位背離出現時，Flat Action 不應繼續無條件順勢試空。
 
-### 17.4 強趨勢保護
+### 21.4 實測案例：高位測高但未偵測
+
+若出現以下圖形：
+
+```text
+價格在高位測高 / 創高，
+bullChaseRisk 的前一段 peak 明顯高於後一段 peak，
+但 Dashboard 顯示「背離｜無」
+```
+
+則此實作未通過 v0.5.1-r1 驗收。
+
+此情境至少應顯示：
+
+```text
+高位供給觀察｜追多品質下降
+```
+
+若價格明確創新高，則應顯示：
+
+```text
+頂背離｜追多品質下降
+```
+
+### 21.5 強趨勢保護
 
 在強趨勢中，背離不得過度提早反轉主模型。
 
@@ -758,35 +1128,42 @@ wait for failed rebound
 
 ---
 
-## 18. AI 實作摘要
+## 22. AI 實作摘要
 
-未來請 Codex 或 AI 實作此 patch 時，使用以下摘要：
+未來請 Codex 或 AI 實作 / 修正此 patch 時，使用以下摘要：
 
 ```text
-請在 Chase Risk Market Regime Radar v0.5 上實作 v0.5.1 Divergence Witness Layer。
-此層使用 price pivot 與 endRiskUp / endRiskDn 的 pivot 對應值，偵測頂背離、底背離、多頭過熱共振、空頭恐慌共振。
+請修正 Chase Risk Market Regime Radar v0.5.1 Divergence Witness Layer。
+此層使用 price pivot 與 endRiskUp / endRiskDn 的 pivot 附近 window peak，偵測頂背離、底背離、高位供給觀察、低位承接觀察、多頭過熱共振、空頭恐慌共振。
+不要只用 price pivot 當根的 chase risk；必須新增 divRiskAlignWindow，預設 3。
+新增 divSignalHoldBars，預設 20，讓 Dashboard / Debug / Alerts 保留近期背離狀態。
+新增 soft divergence：高位接近前高但 bullChaseRisk peak lower high → 高位供給觀察；低位接近前低但 bearChaseRisk peak lower high → 低位承接觀察。
 Divergence layer 是 witness layer，不是交易訊號，不得直接改 formalId / candidateId。
 預設 Divergence Mode = Observe Only，只顯示 Dashboard / Debug / Alerts。
 Auto 模式才可低權重參與 clue observation、candidate conflict、Flat Action no-chase、Pace Context Downgrade。
 頂背離語意是追多品質下降；底背離語意是追空品質下降；共振語意是原趨勢仍強但追價風險升高。
 請避免使用 Buy / Sell / Short / Cover 等交易指令文字。
+不要重構整份 Pine Script，只修 Divergence Witness Layer。
 ```
 
 ---
 
-## 19. 結論
+## 23. 結論
 
 Divergence Witness Layer 應該補上 v0.5 之後最自然的一塊拼圖：
 
 ```text
 價格是否仍在創高 / 創低？
-追價風險是否同步確認？
+追價風險 peak 是否同步確認？
 若沒有同步，是否代表原方向追價品質下降？
 若同步創高，是否代表雖然趨勢仍強，但追價風險也升高？
 ```
 
-這一層的價值不在於預測反轉，而在於讓使用者更早知道：
+v0.5.1-r1 的重點不是讓指標更會猜反轉，而是讓它更貼近真實圖表上的背離語意：
 
 ```text
-現在不是不能續抱，而是不能再用原本那種無腦追價心態看待市場。
+人眼看到的是一段區域的峰與峰，
+不是單根 K 棒對單根 K 棒。
 ```
+
+因此，正確實作應該像市場偵探，而不是只接受完全同根對齊的法院證據。
