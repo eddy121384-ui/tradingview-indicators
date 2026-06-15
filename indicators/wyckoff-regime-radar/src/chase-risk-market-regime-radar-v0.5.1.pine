@@ -111,6 +111,8 @@ showMTFInCompact = input.bool(true, "Dashboard 精簡模式顯示 MTF 層", grou
 divMode = input.string("Observe Only", "Divergence Mode", options=["Off", "Observe Only", "Auto"], group=groupDivergence)
 divPivotLeft = input.int(5, "背離 Pivot Left", minval=1, maxval=20, group=groupDivergence)
 divPivotRight = input.int(5, "背離 Pivot Right", minval=1, maxval=20, group=groupDivergence)
+divRiskAlignWindow = input.int(2, "風險對齊視窗", minval=0, maxval=10, group=groupDivergence)
+divSignalHoldBars = input.int(5, "背離訊號保留根數", minval=1, maxval=50, group=groupDivergence)
 divMinPricePct = input.float(0.5, "最小創高 / 破低幅度 %", minval=0.0, maxval=10.0, step=0.1, group=groupDivergence)
 divMinRiskGap = input.float(8.0, "最小風險背離差距", minval=0.0, maxval=50.0, step=0.5, group=groupDivergence)
 divRiskMin = input.float(55.0, "最低有效追價風險", minval=0.0, maxval=100.0, step=0.5, group=groupDivergence)
@@ -153,7 +155,7 @@ showTable        = input.bool(true, "顯示 Dashboard", group=groupDisplay)
 tableMode        = input.string("精簡", "Dashboard 模式", options=["極簡", "精簡", "完整", "除錯"], group=groupDisplay)
 tableTextSizeOpt = input.string("小", "Dashboard 字體", options=["迷你", "小", "正常"], group=groupDisplay)
 tablePosOpt      = input.string("右上", "Dashboard 位置", options=["右上", "右下", "左上", "左下"], group=groupDisplay)
-debugPlotMode = input.string("關閉", "Debug 單線顯示", options=["關閉", "吸籌權重", "拉升權重", "再吸籌權重", "派發權重", "崩跌權重", "再出貨權重", "吸籌Gate", "拉升Gate", "再吸籌Gate", "派發Gate", "崩跌Gate", "再出貨Gate", "下跌鈍化", "上漲鈍化", "支撐守住", "壓力壓回", "上漲延伸", "下跌延伸", "上漲續", "下跌續", "量能品質", "量能參與", "量能吸收", "量能派發", "量能上攻無效", "量能下跌無效", "量能突破確認", "量能下破確認", "量能權重", "MTF空方努力", "MTF多方努力", "MTF吸收", "MTF派發", "MTF拉升確認", "MTF崩跌確認", "MTF權重", "頂背離", "底背離", "多頭追價共振", "空頭追價共振", "背離權重"], group=groupDisplay)
+debugPlotMode = input.string("關閉", "Debug 單線顯示", options=["關閉", "吸籌權重", "拉升權重", "再吸籌權重", "派發權重", "崩跌權重", "再出貨權重", "吸籌Gate", "拉升Gate", "再吸籌Gate", "派發Gate", "崩跌Gate", "再出貨Gate", "下跌鈍化", "上漲鈍化", "支撐守住", "壓力壓回", "上漲延伸", "下跌延伸", "上漲續", "下跌續", "量能品質", "量能參與", "量能吸收", "量能派發", "量能上攻無效", "量能下跌無效", "量能突破確認", "量能下破確認", "量能權重", "MTF空方努力", "MTF多方努力", "MTF吸收", "MTF派發", "MTF拉升確認", "MTF崩跌確認", "MTF權重", "頂背離", "底背離", "多頭追價共振", "空頭追價共振", "高位供給背離", "低位承接背離", "背離權重"], group=groupDisplay)
 
 // === Pace Guide / Flat Action v0.5 ===
 showPaceGuide   = input.bool(true, "顯示 Pace Guide 操作節奏", group=groupPace)
@@ -643,7 +645,8 @@ mtfCompactText = mtfStatusText + "｜" + mtfClueText + "｜W " + f_num(mtfWeight
 // ============================================================================
 // v0.5.1 Divergence Witness Layer｜追價風險背離 / 共振證人
 // ----------------------------------------------------------------------------
-// 使用 confirmed price pivot 與同一 pivot bar 的 endRiskUp / endRiskDn 對位。
+// 使用 confirmed price pivot 與 pivot 附近視窗的 endRiskUp / endRiskDn 對位。
+// soft divergence 補足價格測高 / 測低但尚未形成 confirmed pivot 時的觀察空窗。
 // Observe Only 只顯示 / 警示；Auto 才低權重參與 clue、conflict、Flat Action 與 Pace downgrade。
 // ============================================================================
 
@@ -653,8 +656,11 @@ divEnabled = divMode != "Off"
 
 pricePivotHigh = ta.pivothigh(high, divPivotLeft, divPivotRight)
 pricePivotLow = ta.pivotlow(low, divPivotLeft, divPivotRight)
-bullRiskAtHighPivot = bullChaseRisk[divPivotRight]
-bearRiskAtLowPivot = bearChaseRisk[divPivotRight]
+divAlignWindow = math.min(divRiskAlignWindow, divPivotRight)
+divAlignLen = divAlignWindow * 2 + 1
+// Align risk to the confirmed pivot neighborhood instead of a single bar, so a nearby chase-risk peak is not missed.
+bullRiskAtHighPivot = ta.highest(bullChaseRisk[divPivotRight - divAlignWindow], divAlignLen)
+bearRiskAtLowPivot = ta.highest(bearChaseRisk[divPivotRight - divAlignWindow], divAlignLen)
 
 var float prevPriceHighPivot = na
 var float lastPriceHighPivot = na
@@ -702,16 +708,32 @@ bullishDivergenceScore = divLowDataOk ? f_clamp(f_weighted3(priceLowBreakScore, 
 bullChaseClimaxScore = divHighDataOk ? f_clamp(f_weighted3(priceHighBreakScore, 0.30, bullRiskRiseScore, 0.50, lastBullRiskAtHigh, 0.20), 0.0, 100.0) : 0.0
 bearChaseClimaxScore = divLowDataOk ? f_clamp(f_weighted3(priceLowBreakScore, 0.30, bearRiskRiseScore, 0.50, lastBearRiskAtLow, 0.20), 0.0, 100.0) : 0.0
 
-bearishDivValid = divHighDataOk and lastPriceHighPivot > prevPriceHighPivot and lastBullRiskAtHigh < prevBullRiskAtHigh and priceHighBreakPct >= divMinPricePct and bullRiskGap >= divMinRiskGap and bullRiskRelevanceScore >= divRiskMin and bearishDivergenceScore >= divRiskMin
-bullishDivValid = divLowDataOk and lastPriceLowPivot < prevPriceLowPivot and lastBearRiskAtLow < prevBearRiskAtLow and priceLowBreakPct >= divMinPricePct and bearRiskGap >= divMinRiskGap and bearRiskRelevanceScore >= divRiskMin and bullishDivergenceScore >= divRiskMin
-bullClimaxValid = divHighDataOk and lastPriceHighPivot > prevPriceHighPivot and lastBullRiskAtHigh > prevBullRiskAtHigh and priceHighBreakPct >= divMinPricePct and bullRiskRise >= divMinRiskGap and lastBullRiskAtHigh >= divRiskMin and bullChaseClimaxScore >= divRiskMin
-bearClimaxValid = divLowDataOk and lastPriceLowPivot < prevPriceLowPivot and lastBearRiskAtLow > prevBearRiskAtLow and priceLowBreakPct >= divMinPricePct and bearRiskRise >= divMinRiskGap and lastBearRiskAtLow >= divRiskMin and bearChaseClimaxScore >= divRiskMin
+bearishDivEvent = divHighDataOk and lastPriceHighPivot > prevPriceHighPivot and lastBullRiskAtHigh < prevBullRiskAtHigh and priceHighBreakPct >= divMinPricePct and bullRiskGap >= divMinRiskGap and bullRiskRelevanceScore >= divRiskMin and bearishDivergenceScore >= divRiskMin
+bullishDivEvent = divLowDataOk and lastPriceLowPivot < prevPriceLowPivot and lastBearRiskAtLow < prevBearRiskAtLow and priceLowBreakPct >= divMinPricePct and bearRiskGap >= divMinRiskGap and bearRiskRelevanceScore >= divRiskMin and bullishDivergenceScore >= divRiskMin
+bullClimaxEvent = divHighDataOk and lastPriceHighPivot > prevPriceHighPivot and lastBullRiskAtHigh > prevBullRiskAtHigh and priceHighBreakPct >= divMinPricePct and bullRiskRise >= divMinRiskGap and lastBullRiskAtHigh >= divRiskMin and bullChaseClimaxScore >= divRiskMin
+bearClimaxEvent = divLowDataOk and lastPriceLowPivot < prevPriceLowPivot and lastBearRiskAtLow > prevBearRiskAtLow and priceLowBreakPct >= divMinPricePct and bearRiskRise >= divMinRiskGap and lastBearRiskAtLow >= divRiskMin and bearChaseClimaxScore >= divRiskMin
 
-divTopScore = math.max(math.max(bearishDivergenceScore, bullishDivergenceScore), math.max(bullChaseClimaxScore, bearChaseClimaxScore))
+softHighPriceBreakPct = divHighDataOk and lastPriceHighPivot > 0.0 ? (high / lastPriceHighPivot - 1.0) * 100.0 : 0.0
+softLowPriceBreakPct = divLowDataOk and low > 0.0 ? (lastPriceLowPivot / low - 1.0) * 100.0 : 0.0
+softBullRiskGap = divHighDataOk ? lastBullRiskAtHigh - bullChaseRisk : 0.0
+softBearRiskGap = divLowDataOk ? lastBearRiskAtLow - bearChaseRisk : 0.0
+softHighSupplyScore = divHighDataOk ? f_clamp(f_weighted3(f_gate(softHighPriceBreakPct, 0.0, math.max(divMinPricePct * 2.0, 1.0)) * 100.0, 0.30, f_gate(softBullRiskGap, divMinRiskGap * 0.50, math.max(divMinRiskGap * 2.0, divMinRiskGap + 10.0)) * 100.0, 0.50, math.max(lastBullRiskAtHigh, bullChaseRisk), 0.20), 0.0, 100.0) : 0.0
+softLowDemandScore = divLowDataOk ? f_clamp(f_weighted3(f_gate(softLowPriceBreakPct, 0.0, math.max(divMinPricePct * 2.0, 1.0)) * 100.0, 0.30, f_gate(softBearRiskGap, divMinRiskGap * 0.50, math.max(divMinRiskGap * 2.0, divMinRiskGap + 10.0)) * 100.0, 0.50, math.max(lastBearRiskAtLow, bearChaseRisk), 0.20), 0.0, 100.0) : 0.0
+softHighSupplyEvent = divHighDataOk and high >= lastPriceHighPivot * (1.0 - divMinPricePct / 100.0) and bullChaseRisk < lastBullRiskAtHigh and softBullRiskGap >= divMinRiskGap * 0.50 and math.max(lastBullRiskAtHigh, bullChaseRisk) >= divRiskMin and softHighSupplyScore >= divRiskMin and not bearishDivEvent and not bullClimaxEvent
+softLowDemandEvent = divLowDataOk and low <= lastPriceLowPivot * (1.0 + divMinPricePct / 100.0) and bearChaseRisk < lastBearRiskAtLow and softBearRiskGap >= divMinRiskGap * 0.50 and math.max(lastBearRiskAtLow, bearChaseRisk) >= divRiskMin and softLowDemandScore >= divRiskMin and not bullishDivEvent and not bearClimaxEvent
+
+bearishDivValid = ta.barssince(bearishDivEvent) >= 0 and ta.barssince(bearishDivEvent) < divSignalHoldBars
+bullishDivValid = ta.barssince(bullishDivEvent) >= 0 and ta.barssince(bullishDivEvent) < divSignalHoldBars
+bullClimaxValid = ta.barssince(bullClimaxEvent) >= 0 and ta.barssince(bullClimaxEvent) < divSignalHoldBars
+bearClimaxValid = ta.barssince(bearClimaxEvent) >= 0 and ta.barssince(bearClimaxEvent) < divSignalHoldBars
+softHighSupplyValid = ta.barssince(softHighSupplyEvent) >= 0 and ta.barssince(softHighSupplyEvent) < divSignalHoldBars
+softLowDemandValid = ta.barssince(softLowDemandEvent) >= 0 and ta.barssince(softLowDemandEvent) < divSignalHoldBars
+
+divTopScore = math.max(math.max(math.max(bearishDivergenceScore, bullishDivergenceScore), math.max(bullChaseClimaxScore, bearChaseClimaxScore)), math.max(softHighSupplyScore, softLowDemandScore))
 divWeightApplied = divMode == "Auto" and divDataOk ? divMaxWeight / 100.0 * f_gate(divTopScore, divRiskMin, 90.0) : 0.0
 divActive = divWeightApplied > 0.0
-divSupplyClue = divActive and (bearishDivValid or bullClimaxValid)
-divDemandClue = divActive and (bullishDivValid or bearClimaxValid)
+divSupplyClue = divActive and (bearishDivValid or bullClimaxValid or softHighSupplyValid)
+divDemandClue = divActive and (bullishDivValid or bearClimaxValid or softLowDemandValid)
 
 divStatusText = divMode == "Off" ? "背離關閉" :
      not divDataOk ? "背離資料不足" :
@@ -721,8 +743,10 @@ divClueText = divMode == "Off" ? "背離關閉" :
      bearishDivValid ? "頂背離｜追多品質下降" :
      bullishDivValid ? "底背離｜追空品質下降" :
      bullClimaxValid ? "多頭過熱｜不追多" :
-     bearClimaxValid ? "空頭恐慌｜不追空" : "背離中性"
-divCompactText = "背離｜" + (bearishDivValid ? "頂背離" : bullishDivValid ? "底背離" : bullClimaxValid ? "多頭過熱" : bearClimaxValid ? "空頭恐慌" : "無") + "｜W " + f_num(divWeightApplied * 100.0) + "%"
+     bearClimaxValid ? "空頭恐慌｜不追空" :
+     softHighSupplyValid ? "高位測高｜供給背離觀察" :
+     softLowDemandValid ? "低位測低｜承接背離觀察" : "背離中性"
+divCompactText = "背離｜" + (bearishDivValid ? "頂背離" : bullishDivValid ? "底背離" : bullClimaxValid ? "多頭過熱" : bearClimaxValid ? "空頭恐慌" : softHighSupplyValid ? "高位測高" : softLowDemandValid ? "低位測低" : "無") + "｜W " + f_num(divWeightApplied * 100.0) + "%"
 
 // ============================================================================
 // v0.3.8 Trend Extension Layer
@@ -1543,6 +1567,8 @@ debugValue = debugPlotMode == "吸籌權重" ? probAcc :
      debugPlotMode == "底背離" ? bullishDivergenceScore :
      debugPlotMode == "多頭追價共振" ? bullChaseClimaxScore :
      debugPlotMode == "空頭追價共振" ? bearChaseClimaxScore :
+     debugPlotMode == "高位供給背離" ? softHighSupplyScore :
+     debugPlotMode == "低位承接背離" ? softLowDemandScore :
      debugPlotMode == "背離權重" ? divWeightApplied * 100.0 : na
 
 debugColor = debugPlotMode == "吸籌權重" or debugPlotMode == "吸籌Gate" or debugPlotMode == "下跌鈍化" ? colAcc :
@@ -1559,8 +1585,8 @@ debugColor = debugPlotMode == "吸籌權重" or debugPlotMode == "吸籌Gate" or
      debugPlotMode == "量能突破確認" or debugPlotMode == "MTF拉升確認" or debugPlotMode == "MTF多方努力" ? colBreakout :
      debugPlotMode == "量能下破確認" or debugPlotMode == "MTF崩跌確認" or debugPlotMode == "MTF空方努力" ? colBreakdown :
      debugPlotMode == "MTF權重" or debugPlotMode == "背離權重" ? colPaceNeutral :
-     debugPlotMode == "頂背離" or debugPlotMode == "多頭追價共振" ? colDist :
-     debugPlotMode == "底背離" or debugPlotMode == "空頭追價共振" ? colAcc : colNeutral
+     debugPlotMode == "頂背離" or debugPlotMode == "多頭追價共振" or debugPlotMode == "高位供給背離" ? colDist :
+     debugPlotMode == "底背離" or debugPlotMode == "空頭追價共振" or debugPlotMode == "低位承接背離" ? colAcc : colNeutral
 
 plot(debugValue, "Debug 單線", color=debugColor, linewidth=1)
 
@@ -1758,7 +1784,7 @@ if barstate.islast and showTable
         table.cell(dash, 1, rowOffset + 16, "↑" + f_num(markupExtensionGate * 100.0) + "/續" + f_num(markupContinuationGate * 100.0) + "｜↓" + f_num(markdownExtensionGate * 100.0) + "/續" + f_num(markdownContinuationGate * 100.0), text_color=colText, bgcolor=rowBg, text_size=ts)
         if showDowngradeReason
             table.cell(dash, 0, rowOffset + 23, "背離分數" , text_color=colText, bgcolor=rowBg, text_size=ts)
-            table.cell(dash, 1, rowOffset + 23, "頂 " + f_num(bearishDivergenceScore) + " / 底 " + f_num(bullishDivergenceScore) + "｜熱 " + f_num(bullChaseClimaxScore) + " / 慌 " + f_num(bearChaseClimaxScore), text_color=colText, bgcolor=rowBg, text_size=ts)
+            table.cell(dash, 1, rowOffset + 23, "頂 " + f_num(bearishDivergenceScore) + " / 底 " + f_num(bullishDivergenceScore) + "｜熱 " + f_num(bullChaseClimaxScore) + " / 慌 " + f_num(bearChaseClimaxScore) + "｜軟高 " + f_num(softHighSupplyScore) + " / 軟低 " + f_num(softLowDemandScore), text_color=colText, bgcolor=rowBg, text_size=ts)
             table.cell(dash, 0, rowOffset + 17, "Flat Raw/Final", text_color=colText, bgcolor=rowBg, text_size=ts)
             table.cell(dash, 1, rowOffset + 17, "F" + str.tostring(rawFlatActionLevel) + "→F" + str.tostring(flatActionLevel) + "｜" + actionDowngradeReason, text_color=colText, bgcolor=rowBg, text_size=ts)
             table.cell(dash, 0, rowOffset + 18, "背景模式", text_color=colText, bgcolor=rowBg, text_size=ts)
@@ -1773,7 +1799,7 @@ if barstate.islast and showTable
             table.cell(dash, 1, rowOffset + 22, "↓R " + f_num(htfDownResult) + " / ↑R " + f_num(htfUpResult) + "｜W " + f_num(mtfWeightApplied * 100.0) + "%", text_color=colText, bgcolor=rowBg, text_size=ts)
         else
             table.cell(dash, 0, rowOffset + 23, "背離分數", text_color=colText, bgcolor=rowBg, text_size=ts)
-            table.cell(dash, 1, rowOffset + 23, "頂 " + f_num(bearishDivergenceScore) + " / 底 " + f_num(bullishDivergenceScore) + "｜熱 " + f_num(bullChaseClimaxScore) + " / 慌 " + f_num(bearChaseClimaxScore), text_color=colText, bgcolor=rowBg, text_size=ts)
+            table.cell(dash, 1, rowOffset + 23, "頂 " + f_num(bearishDivergenceScore) + " / 底 " + f_num(bullishDivergenceScore) + "｜熱 " + f_num(bullChaseClimaxScore) + " / 慌 " + f_num(bearChaseClimaxScore) + "｜軟高 " + f_num(softHighSupplyScore) + " / 軟低 " + f_num(softLowDemandScore), text_color=colText, bgcolor=rowBg, text_size=ts)
             table.cell(dash, 0, rowOffset + 17, "Sharp γ", text_color=colText, bgcolor=rowBg, text_size=ts)
             table.cell(dash, 1, rowOffset + 17, str.tostring(regimeGamma, "#.00"), text_color=colText, bgcolor=rowBg, text_size=ts)
             table.cell(dash, 0, rowOffset + 18, "背景模式", text_color=colText, bgcolor=rowBg, text_size=ts)
@@ -1808,7 +1834,7 @@ anyExtensionCross = ta.crossover(markupExtensionScore, trendExtThreshold) or ta.
 anyAbsorbCross = ta.crossover(downsideExhaustion, absorbThreshold) or ta.crossover(upsideExhaustion, absorbThreshold) or ta.crossover(supportHolding, absorbThreshold) or ta.crossover(resistanceHolding, absorbThreshold)
 anyVolumeEvent = volumeMode != "Off" and (ta.crossover(volumeQualityScore, volumeQualityMin) or ta.crossunder(volumeQualityScore, volumeQualityMin) or ta.crossover(volumeAbsorptionScore, effortResultThreshold) or ta.crossover(volumeDistributionScore, effortResultThreshold) or ta.crossover(volumeBreakoutConfirmation, effortResultThreshold) or ta.crossover(volumeBreakdownConfirmation, effortResultThreshold) or volumeSpikePolluted or volumeForceLowQuality)
 anyMTFEvent = mtfMode != "Off" and mtfDataOk and (ta.crossover(mtfAbsorptionScore, mtfEffortThreshold) or ta.crossover(mtfDistributionScore, mtfEffortThreshold) or ta.crossover(mtfMarkupConfirmScore, mtfEffortThreshold) or ta.crossover(mtfMarkdownConfirmScore, mtfEffortThreshold) or (mtfActive and not mtfActive[1]))
-anyDivEvent = divMode != "Off" and divDataOk and ((bearishDivValid and not bearishDivValid[1]) or (bullishDivValid and not bullishDivValid[1]) or (bullClimaxValid and not bullClimaxValid[1]) or (bearClimaxValid and not bearClimaxValid[1]) or (divActive and not divActive[1]))
+anyDivEvent = divMode != "Off" and divDataOk and ((bearishDivValid and not bearishDivValid[1]) or (bullishDivValid and not bullishDivValid[1]) or (bullClimaxValid and not bullClimaxValid[1]) or (bearClimaxValid and not bearClimaxValid[1]) or (softHighSupplyValid and not softHighSupplyValid[1]) or (softLowDemandValid and not softLowDemandValid[1]) or (divActive and not divActive[1]))
 fastSwitchStarted = fastSwitchActive and not fastSwitchActive[1]
 flatTryLongStarted = flatActionChanged and (flatActionLevel == 2 or flatActionLevel == 3)
 flatTryShortStarted = flatActionChanged and (flatActionLevel == 4 or flatActionLevel == 5)
@@ -1921,6 +1947,10 @@ if barstate.isconfirmed
         alert("Chase Risk v0.5.1｜多頭過熱共振｜no chase wait for retest｜Score " + f_num(bullChaseClimaxScore) + "｜Risk " + f_num(lastBullRiskAtHigh), alert.freq_once_per_bar_close)
     if bearClimaxValid and not bearClimaxValid[1]
         alert("Chase Risk v0.5.1｜空頭恐慌共振｜no chase wait for failed rebound｜Score " + f_num(bearChaseClimaxScore) + "｜Risk " + f_num(lastBearRiskAtLow), alert.freq_once_per_bar_close)
+    if softHighSupplyValid and not softHighSupplyValid[1]
+        alert("Chase Risk v0.5.1｜高位測高｜供給背離觀察｜observe no chase｜Score " + f_num(softHighSupplyScore) + "｜Risk " + f_num(bullChaseRisk) + " vs " + f_num(lastBullRiskAtHigh), alert.freq_once_per_bar_close)
+    if softLowDemandValid and not softLowDemandValid[1]
+        alert("Chase Risk v0.5.1｜低位測低｜承接背離觀察｜observe protect profit｜Score " + f_num(softLowDemandScore) + "｜Risk " + f_num(bearChaseRisk) + " vs " + f_num(lastBearRiskAtLow), alert.freq_once_per_bar_close)
 
 // ============================================================================
 // Notes
