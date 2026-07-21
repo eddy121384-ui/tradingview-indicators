@@ -49,14 +49,22 @@ jobs:
             --output "artifacts/$TICKER/ohlc.csv"
 
       - name: Train and evaluate HMM
+        id: train
+        continue-on-error: true
         run: |
+          mkdir -p "artifacts/$TICKER/output"
           python indicators/hidden-regime-map/research/train_hmm.py \
             --input "artifacts/$TICKER/ohlc.csv" \
             --output-dir "artifacts/$TICKER/output" \
             --symbol "$TICKER" \
-            --timeframe 1D
+            --timeframe 1D \
+            > "artifacts/$TICKER/output/train.log" 2>&1
+          status=$?
+          cat "artifacts/$TICKER/output/train.log"
+          exit $status
 
       - name: Write diagnostic summary
+        if: always()
         run: |
           python - <<'PY'
           import json
@@ -67,40 +75,58 @@ jobs:
 
           ticker = os.environ["TICKER"]
           root = Path("artifacts") / ticker / "output"
-          model = json.loads((root / "model-parameters.json").read_text(encoding="utf-8"))
-          diagnostics = pd.read_csv(root / "state-diagnostics.csv")
-          interpretation = model["interpretation"]
+          model_path = root / "model-parameters.json"
+          diagnostics_path = root / "state-diagnostics.csv"
+          train_log = root / "train.log"
+          lines = [f"## {ticker} Hidden Regime validation", ""]
 
-          lines = [
-              f"## {ticker} Hidden Regime validation",
-              "",
-              f"- Training rows: {model['training']['train_rows']}",
-              f"- Out-of-sample rows: {model['training']['out_of_sample_rows']}",
-              f"- Selected seed: {model['training']['selected_seed']}",
-              f"- Converged: {model['training']['converged']}",
-              f"- Interpretation supported: {interpretation['interpretation_supported']}",
-              f"- Suggested labels: {interpretation['suggested_labels']}",
-              "",
-              "| State | Occupancy | OOS occupancy | Mean duration | OOS duration | Self-transition | Mean return | Mean ATR % | Mean trend |",
-              "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
-          ]
-          for row in diagnostics.to_dict(orient="records"):
-              lines.append(
-                  "| {state} | {occupancy_all:.3f} | {occupancy_oos:.3f} | "
-                  "{mean_duration_all:.2f} | {mean_duration_oos:.2f} | "
-                  "{self_transition_probability:.3f} | {mean_standardized_return:.3f} | "
-                  "{mean_atr_pct:.4f} | {mean_trend_strength:.3f} |".format(**row)
+          if not model_path.exists() or not diagnostics_path.exists():
+              lines.extend(["- Training failed.", "", "```text"])
+              if train_log.exists():
+                  lines.extend(train_log.read_text(encoding="utf-8").splitlines()[-40:])
+              else:
+                  lines.append("No training log was produced.")
+              lines.append("```")
+          else:
+              model = json.loads(model_path.read_text(encoding="utf-8"))
+              diagnostics = pd.read_csv(diagnostics_path)
+              interpretation = model["interpretation"]
+              lines.extend(
+                  [
+                      f"- Training rows: {model['training']['train_rows']}",
+                      f"- Out-of-sample rows: {model['training']['out_of_sample_rows']}",
+                      f"- Selected seed: {model['training']['selected_seed']}",
+                      f"- Converged: {model['training']['converged']}",
+                      f"- Interpretation supported: {interpretation['interpretation_supported']}",
+                      f"- Suggested labels: {interpretation['suggested_labels']}",
+                      "",
+                      "| State | Occupancy | OOS occupancy | Mean duration | OOS duration | Self-transition | Mean return | Mean ATR % | Mean trend |",
+                      "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+                  ]
               )
+              for row in diagnostics.to_dict(orient="records"):
+                  lines.append(
+                      "| {state} | {occupancy_all:.3f} | {occupancy_oos:.3f} | "
+                      "{mean_duration_all:.2f} | {mean_duration_oos:.2f} | "
+                      "{self_transition_probability:.3f} | {mean_standardized_return:.3f} | "
+                      "{mean_atr_pct:.4f} | {mean_trend_strength:.3f} |".format(**row)
+                  )
 
           summary = "\n".join(lines) + "\n"
+          root.mkdir(parents=True, exist_ok=True)
           (root / "summary.md").write_text(summary, encoding="utf-8")
           with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
               handle.write(summary)
           PY
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: hidden-regime-${{ matrix.ticker }}
           path: artifacts/${{ matrix.ticker }}
           retention-days: 14
           if-no-files-found: error
+
+      - name: Fail job when training failed
+        if: steps.train.outcome == 'failure'
+        run: exit 1
