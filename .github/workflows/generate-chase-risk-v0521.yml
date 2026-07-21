@@ -1,0 +1,112 @@
+name: Generate Chase Risk Radar v0.5.2.1
+
+on:
+  push:
+    branches:
+      - cleanup/chase-risk-radar-v0-5-2-1
+    paths:
+      - .github/workflows/generate-chase-risk-v0521.yml
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cleanup/chase-risk-radar-v0-5-2-1
+          fetch-depth: 0
+
+      - name: Generate and verify non-functional cleanup
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          source = Path("indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-v0.5.2.pine")
+          target = Path("indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-v0.5.2.1.pine")
+
+          src_lines = source.read_text(encoding="utf-8").splitlines()
+
+          try:
+              body_start = next(i for i, line in enumerate(src_lines) if line.startswith("groupHeat"))
+          except StopIteration as exc:
+              raise SystemExit("Could not find Input Groups body start") from exc
+
+          # The final Notes block is documentation only and sits after all executable code.
+          notes_index = next(
+              (i for i, line in enumerate(src_lines) if line.strip() == "// Notes"),
+              len(src_lines),
+          )
+
+          body = src_lines[body_start:notes_index]
+          decorative = re.compile(r"^\s*//\s*(?:={10,}|-{10,})\s*$")
+          dead_aliases = ("mtfBreakoutClue =", "mtfBreakdownClue =")
+
+          cleaned_body = [
+              line
+              for line in body
+              if not decorative.match(line)
+              and not line.lstrip().startswith(dead_aliases)
+          ]
+
+          header = [
+              "//@version=6",
+              'indicator("Chase Risk Market Regime Radar v0.5.2.1｜Non-functional Cleanup", shorttitle="ChaseRisk Radar v0.5.2.1", overlay=false, precision=1)',
+              "",
+              "// Chase Risk Market Regime Radar v0.5.2.1",
+              "// Non-functional cleanup of v0.5.2: calculations, inputs, plots, dashboard, and alert logic are unchanged.",
+              "// Price action remains the primary engine; Volume, MTF, and Divergence remain auxiliary witnesses.",
+              "// Six stage values are relative weights, not statistical probabilities. Risk warnings are not reversal signals.",
+              "",
+              "// Input Groups",
+              "",
+          ]
+
+          result = header + cleaned_body
+          target.write_text("\n".join(result).rstrip() + "\n", encoding="utf-8")
+
+          def executable(lines):
+              kept = []
+              for line in lines:
+                  stripped = line.strip()
+                  if not stripped or stripped.startswith("//"):
+                      continue
+                  if stripped.startswith("indicator("):
+                      continue
+                  if line.lstrip().startswith(dead_aliases):
+                      continue
+                  kept.append(line)
+              return kept
+
+          before = executable(src_lines)
+          after = executable(result)
+          if before != after:
+              for i, (old, new) in enumerate(zip(before, after), start=1):
+                  if old != new:
+                      raise SystemExit(
+                          f"Executable mismatch at normalized line {i}:\nOLD: {old}\nNEW: {new}"
+                      )
+              raise SystemExit(
+                  f"Executable line counts differ: source={len(before)}, target={len(after)}"
+              )
+
+          if "max_labels_count" in target.read_text(encoding="utf-8"):
+              raise SystemExit("Unused max_labels_count was not removed")
+
+          print(f"Generated {target}: {len(src_lines)} -> {len(result)} lines")
+          print(f"Verified {len(before)} executable lines are identical")
+          PY
+
+      - name: Commit generated source and remove bootstrap workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-v0.5.2.1.pine
+          git rm .github/workflows/generate-chase-risk-v0521.yml
+          git commit -m "Add Chase Risk Radar v0.5.2.1 cleanup"
+          git push origin HEAD:cleanup/chase-risk-radar-v0-5-2-1
