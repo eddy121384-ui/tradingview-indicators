@@ -37,7 +37,7 @@ python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
 
 On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`.
 
-Run the prototype:
+Run the prototype with an existing CSV:
 
 ```bash
 python indicators/hidden-regime-map/research/train_hmm.py \
@@ -52,6 +52,25 @@ The script fits the scaler and HMM on the chronological training segment only, t
 - `model-parameters.json` — feature configuration, scaler, transition matrix, emission parameters, metadata, and interpretation checks;
 - `state-diagnostics.csv` — occupancy, state characteristics, duration, and persistence;
 - `filtered-posteriors.csv` — per-row posterior probabilities and dominant state.
+
+## Public-data validation
+
+For research-only validation, `research/download_yfinance.py` downloads one daily Yahoo Finance series into the required CSV shape. Adjusted OHLC is the default so ETF distributions and splits do not create artificial price jumps.
+
+```bash
+python indicators/hidden-regime-map/research/download_yfinance.py \
+  --ticker SPY \
+  --start 2010-01-01 \
+  --output /tmp/spy.csv
+
+python indicators/hidden-regime-map/research/train_hmm.py \
+  --input /tmp/spy.csv \
+  --output-dir /tmp/spy-output \
+  --symbol SPY \
+  --timeframe 1D
+```
+
+The repository workflow runs the same research check for SPY and TLT and uploads temporary artifacts. Yahoo Finance data is suitable for method validation, not the final Bloomberg-calibrated deployment model. yfinance is an unofficial research client and downloaded data remains subject to Yahoo's terms of use.
 
 Generated data and model outputs are research artifacts and are not committed by default. A Pine implementation remains blocked until real-market diagnostics show persistent and defensibly interpretable states.
 
