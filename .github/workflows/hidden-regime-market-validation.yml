@@ -1,0 +1,106 @@
+name: Hidden Regime Market Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - indicators/hidden-regime-map/**
+      - .github/workflows/hidden-regime-market-validation.yml
+  push:
+    branches:
+      - research/hidden-regime-map-hmm-prototype
+    paths:
+      - indicators/hidden-regime-map/**
+      - .github/workflows/hidden-regime-market-validation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-market:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        ticker: [SPY, TLT]
+    env:
+      TICKER: ${{ matrix.ticker }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Download adjusted daily OHLC
+        run: |
+          python indicators/hidden-regime-map/research/download_yfinance.py \
+            --ticker "$TICKER" \
+            --start 2010-01-01 \
+            --output "artifacts/$TICKER/ohlc.csv"
+
+      - name: Train and evaluate HMM
+        run: |
+          python indicators/hidden-regime-map/research/train_hmm.py \
+            --input "artifacts/$TICKER/ohlc.csv" \
+            --output-dir "artifacts/$TICKER/output" \
+            --symbol "$TICKER" \
+            --timeframe 1D
+
+      - name: Write diagnostic summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          import pandas as pd
+
+          ticker = os.environ["TICKER"]
+          root = Path("artifacts") / ticker / "output"
+          model = json.loads((root / "model-parameters.json").read_text(encoding="utf-8"))
+          diagnostics = pd.read_csv(root / "state-diagnostics.csv")
+          interpretation = model["interpretation"]
+
+          lines = [
+              f"## {ticker} Hidden Regime validation",
+              "",
+              f"- Training rows: {model['training']['train_rows']}",
+              f"- Out-of-sample rows: {model['training']['out_of_sample_rows']}",
+              f"- Selected seed: {model['training']['selected_seed']}",
+              f"- Converged: {model['training']['converged']}",
+              f"- Interpretation supported: {interpretation['interpretation_supported']}",
+              f"- Suggested labels: {interpretation['suggested_labels']}",
+              "",
+              "| State | Occupancy | OOS occupancy | Mean duration | OOS duration | Self-transition | Mean return | Mean ATR % | Mean trend |",
+              "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+          ]
+          for row in diagnostics.to_dict(orient="records"):
+              lines.append(
+                  "| {state} | {occupancy_all:.3f} | {occupancy_oos:.3f} | "
+                  "{mean_duration_all:.2f} | {mean_duration_oos:.2f} | "
+                  "{self_transition_probability:.3f} | {mean_standardized_return:.3f} | "
+                  "{mean_atr_pct:.4f} | {mean_trend_strength:.3f} |".format(**row)
+              )
+
+          summary = "\n".join(lines) + "\n"
+          (root / "summary.md").write_text(summary, encoding="utf-8")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+              handle.write(summary)
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hidden-regime-${{ matrix.ticker }}
+          path: artifacts/${{ matrix.ticker }}
+          retention-days: 14
+          if-no-files-found: error
