@@ -29,6 +29,26 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def canonicalize_float_noise(result: pd.DataFrame) -> pd.DataFrame:
+    """Repair only machine-epsilon OHLC ordering noise from adjusted prices."""
+    high_bound = result[["Open", "High", "Low", "Close"]].max(axis=1)
+    low_bound = result[["Open", "High", "Low", "Close"]].min(axis=1)
+    scale = result[["Open", "High", "Low", "Close"]].abs().max(axis=1).clip(lower=1.0)
+    tolerance = scale * 1e-12
+
+    high_gap = high_bound - result["High"]
+    low_gap = result["Low"] - low_bound
+    if (high_gap > tolerance).any():
+        raise RuntimeError("download contains a material high-price ordering violation")
+    if (low_gap > tolerance).any():
+        raise RuntimeError("download contains a material low-price ordering violation")
+
+    result = result.copy()
+    result["High"] = high_bound
+    result["Low"] = low_bound
+    return result
+
+
 def download(args: argparse.Namespace) -> pd.DataFrame:
     ticker = args.ticker.strip().upper()
     if not ticker:
@@ -72,6 +92,7 @@ def download(args: argparse.Namespace) -> pd.DataFrame:
     if (result[["Open", "High", "Low", "Close"]] <= 0).any().any():
         raise RuntimeError("download contains non-positive OHLC values")
 
+    result = canonicalize_float_noise(result)
     return result.reset_index(drop=True)
 
 
