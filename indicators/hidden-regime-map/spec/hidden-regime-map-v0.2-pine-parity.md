@@ -33,7 +33,7 @@ The script is unsupported when:
 - the chart symbol is not SPY;
 - the chart timeframe is not one day;
 - the required adjusted series is unavailable;
-- the chart does not contain enough history to reach the anchored feature start.
+- the chart does not contain the exact anchored feature-start bar.
 
 Unsupported use must produce a visible warning rather than silently calculating a misleading regime.
 
@@ -56,7 +56,10 @@ No future values, secondary smoothing, confirmation delay, clipping, or feature 
 
 ## Forward-filter contract
 
-Initialize once at the frozen feature-start date using the exported start probabilities.
+Initialize once on the frozen feature-start bar. The first posterior is the normalized product of:
+
+- exported start probabilities; and
+- that bar's diagonal Gaussian emission likelihood.
 
 For each subsequent confirmed bar:
 
@@ -115,6 +118,8 @@ Any material feature mismatch is a data or formula mismatch. Do not diagnose it 
 
 Only after feature parity is acceptable, compare posterior A/B/C.
 
+`research/compare_pine_export.py` resolves the exported plot columns, checks all fixture dates, and writes JSON and Markdown parity reports.
+
 The first report must publish:
 
 - per-checkpoint absolute feature errors;
@@ -143,7 +148,7 @@ The spike must end in one explicit result:
 ## Implementation sequence
 
 1. Commit the frozen profile and checkpoint fixture.
-2. Implement the Pine v6 reference filter.
+2. Implement `pine/hidden-regime-map-spy-parity.pine`.
 3. Export TradingView chart data on SPY 1D with dividend-adjusted prices.
-4. Compare the export to the fixture in Python.
+4. Run `research/compare_pine_export.py` against the export.
 5. Record the parity decision before any release work.
