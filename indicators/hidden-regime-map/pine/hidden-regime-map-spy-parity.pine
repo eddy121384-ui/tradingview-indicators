@@ -19,6 +19,7 @@ const float PROB_SUM_TOL = 1e-10
 
 bool showBackground = input.bool(true, "Shade dominant state", group = "Display")
 bool showDebugTable = input.bool(true, "Show parity diagnostics", group = "Display")
+bool showCheckpointEvidence = input.bool(true, "Show checkpoint evidence", group = "Display")
 
 // Explicitly request standard, dividend-adjusted prices so non-standard candles and
 // chart-level adjustment settings do not silently change the model inputs.
@@ -170,6 +171,13 @@ var float maxAtrPctError = 0.0
 var float maxTrendError = 0.0
 var float maxPosteriorError = 0.0
 var float maxProbabilitySumError = 0.0
+var float[] checkpointCloseErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointStdErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointAtrErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointTrendErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointPosteriorErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointSumErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var int[] checkpointDominantMatches = array.new_int(CHECKPOINT_TOTAL, na)
 
 if initialized and not na(probabilitySum)
     maxProbabilitySumError := math.max(maxProbabilitySumError, math.abs(probabilitySum - 1.0))
@@ -186,34 +194,53 @@ if supported and initialized and barstate.isconfirmed and refIndex >= 0 and (na(
     float expectedPC = array.get(refPC, refIndex)
     int expectedDominant = array.get(refDom, refIndex)
 
-    maxCloseRelativeError := math.max(maxCloseRelativeError, math.abs(adjClose - expectedClose) / expectedClose)
-    maxStdReturnError := math.max(maxStdReturnError, math.abs(standardizedReturn - expectedStd))
-    maxAtrPctError := math.max(maxAtrPctError, math.abs(atrPct - expectedAtr))
-    maxTrendError := math.max(maxTrendError, math.abs(trendStrength - expectedTrend))
+    float closeRelativeError = math.abs(adjClose - expectedClose) / expectedClose
+    float stdReturnError = math.abs(standardizedReturn - expectedStd)
+    float atrPctError = math.abs(atrPct - expectedAtr)
+    float trendError = math.abs(trendStrength - expectedTrend)
     float checkpointPosteriorError = math.max(
          math.abs(posteriorA - expectedPA),
          math.max(math.abs(posteriorB - expectedPB), math.abs(posteriorC - expectedPC)))
+    float checkpointSumError = math.abs(probabilitySum - 1.0)
+    int dominantMatched = dominantState == expectedDominant ? 1 : 0
+
+    maxCloseRelativeError := math.max(maxCloseRelativeError, closeRelativeError)
+    maxStdReturnError := math.max(maxStdReturnError, stdReturnError)
+    maxAtrPctError := math.max(maxAtrPctError, atrPctError)
+    maxTrendError := math.max(maxTrendError, trendError)
     maxPosteriorError := math.max(maxPosteriorError, checkpointPosteriorError)
+    array.set(checkpointCloseErrors, refIndex, closeRelativeError)
+    array.set(checkpointStdErrors, refIndex, stdReturnError)
+    array.set(checkpointAtrErrors, refIndex, atrPctError)
+    array.set(checkpointTrendErrors, refIndex, trendError)
+    array.set(checkpointPosteriorErrors, refIndex, checkpointPosteriorError)
+    array.set(checkpointSumErrors, refIndex, checkpointSumError)
+    array.set(checkpointDominantMatches, refIndex, dominantMatched)
     checkpointCount += 1
-    dominantMatchCount += dominantState == expectedDominant ? 1 : 0
+    dominantMatchCount += dominantMatched
     lastCheckpointKey := dateKey
 
+bool checkpointsComplete = checkpointCount == CHECKPOINT_TOTAL
 bool featureParityPassed =
-     checkpointCount == CHECKPOINT_TOTAL and
+     checkpointsComplete and
      maxCloseRelativeError <= CLOSE_REL_TOL and
      maxStdReturnError <= STD_RETURN_TOL and
      maxAtrPctError <= ATR_PCT_TOL and
      maxTrendError <= TREND_TOL
-bool posteriorParityPassed =
-     featureParityPassed and
+bool posteriorAgreementPassed =
+     checkpointsComplete and
      maxPosteriorError <= POSTERIOR_TOL and
-     maxProbabilitySumError <= PROB_SUM_TOL and
      dominantMatchCount == CHECKPOINT_TOTAL
+bool probabilitySumPassed =
+     checkpointsComplete and
+     maxProbabilitySumError <= PROB_SUM_TOL
+bool inferenceDiagnosticsPassed = posteriorAgreementPassed and probabilitySumPassed
 
 string parityVerdict =
-     checkpointCount < CHECKPOINT_TOTAL ? "Need more history" :
+     not checkpointsComplete ? "Need more history" :
+     not featureParityPassed and not inferenceDiagnosticsPassed ? "Feed + inference mismatch" :
      not featureParityPassed ? "Feed mismatch" :
-     not posteriorParityPassed ? "Inference mismatch" :
+     not inferenceDiagnosticsPassed ? "Inference mismatch" :
      "Parity passed"
 color parityColor =
      parityVerdict == "Parity passed" ? color.new(color.green, 65) :
@@ -239,7 +266,19 @@ plot(posteriorC, "HRM Posterior C", display = display.none)
 plot(probabilitySum, "HRM Probability Sum", display = display.none)
 plot(dominantState, "HRM Dominant State Index", display = display.none)
 
-var table diagnostics = table.new(position.top_right, 2, 17, border_width = 1)
+f_fmt8(float value) =>
+    na(value) ? "n/a" : str.tostring(value, "#.########")
+
+f_fmt12(float value) =>
+    na(value) ? "n/a" : str.tostring(value, "0.000000000000")
+
+f_pass_text(bool passed) =>
+    passed ? "PASS" : "FAIL"
+
+f_pass_color(bool passed) =>
+    passed ? color.new(color.green, 65) : color.new(color.red, 65)
+
+var table diagnostics = table.new(position.top_right, 2, 21, border_width = 1)
 if barstate.islast and showDebugTable
     string status = not supportedSymbol ? "Unsupported symbol" : not supportedTimeframe ? "Use 1D timeframe" : not initialized ? "Need history from 2010-05-26" : "Parity spike active"
     color statusColor = supported and initialized ? color.new(color.green, 70) : color.new(color.red, 65)
@@ -251,30 +290,66 @@ if barstate.islast and showDebugTable
     table.cell(diagnostics, 0, 2, "Dominant")
     table.cell(diagnostics, 1, 2, stateText)
     table.cell(diagnostics, 0, 3, "Posterior sum")
-    table.cell(diagnostics, 1, 3, str.tostring(probabilitySum, "#.########"))
+    table.cell(diagnostics, 1, 3, f_fmt12(probabilitySum))
     table.cell(diagnostics, 0, 4, "Checkpoints")
     table.cell(diagnostics, 1, 4, str.tostring(checkpointCount) + "/" + str.tostring(CHECKPOINT_TOTAL))
-    table.cell(diagnostics, 0, 5, "Parity verdict")
+    table.cell(diagnostics, 0, 5, "Overall verdict")
     table.cell(diagnostics, 1, 5, parityVerdict, bgcolor = parityColor)
-    table.cell(diagnostics, 0, 6, "Max close rel err")
-    table.cell(diagnostics, 1, 6, str.tostring(maxCloseRelativeError, "#.########"))
-    table.cell(diagnostics, 0, 7, "Max std err")
-    table.cell(diagnostics, 1, 7, str.tostring(maxStdReturnError, "#.########"))
-    table.cell(diagnostics, 0, 8, "Max ATR err")
-    table.cell(diagnostics, 1, 8, str.tostring(maxAtrPctError, "#.########"))
-    table.cell(diagnostics, 0, 9, "Max trend err")
-    table.cell(diagnostics, 1, 9, str.tostring(maxTrendError, "#.########"))
-    table.cell(diagnostics, 0, 10, "Max posterior err")
-    table.cell(diagnostics, 1, 10, str.tostring(maxPosteriorError, "#.########"))
-    table.cell(diagnostics, 0, 11, "Max sum err")
-    table.cell(diagnostics, 1, 11, str.tostring(maxProbabilitySumError, "#.########"))
-    table.cell(diagnostics, 0, 12, "Dominant matches")
-    table.cell(diagnostics, 1, 12, str.tostring(dominantMatchCount) + "/" + str.tostring(CHECKPOINT_TOTAL))
-    table.cell(diagnostics, 0, 13, "Std return")
-    table.cell(diagnostics, 1, 13, str.tostring(standardizedReturn, "#.########"))
-    table.cell(diagnostics, 0, 14, "ATR %")
-    table.cell(diagnostics, 1, 14, str.tostring(atrPct, "#.########"))
-    table.cell(diagnostics, 0, 15, "Trend / ATR")
-    table.cell(diagnostics, 1, 15, str.tostring(trendStrength, "#.########"))
-    table.cell(diagnostics, 0, 16, "Research only")
-    table.cell(diagnostics, 1, 16, "No cross-asset claim")
+    table.cell(diagnostics, 0, 6, "Feature check")
+    table.cell(diagnostics, 1, 6, f_pass_text(featureParityPassed), bgcolor = f_pass_color(featureParityPassed))
+    table.cell(diagnostics, 0, 7, "Posterior agreement")
+    table.cell(diagnostics, 1, 7, f_pass_text(posteriorAgreementPassed), bgcolor = f_pass_color(posteriorAgreementPassed))
+    table.cell(diagnostics, 0, 8, "Probability-sum check")
+    table.cell(diagnostics, 1, 8, f_pass_text(probabilitySumPassed), bgcolor = f_pass_color(probabilitySumPassed))
+    table.cell(diagnostics, 0, 9, "Dominant check")
+    table.cell(diagnostics, 1, 9, dominantMatchCount == CHECKPOINT_TOTAL ? "PASS" : "FAIL", bgcolor = f_pass_color(dominantMatchCount == CHECKPOINT_TOTAL))
+    table.cell(diagnostics, 0, 10, "Max close rel err")
+    table.cell(diagnostics, 1, 10, f_fmt8(maxCloseRelativeError))
+    table.cell(diagnostics, 0, 11, "Max std err")
+    table.cell(diagnostics, 1, 11, f_fmt8(maxStdReturnError))
+    table.cell(diagnostics, 0, 12, "Max ATR err")
+    table.cell(diagnostics, 1, 12, f_fmt8(maxAtrPctError))
+    table.cell(diagnostics, 0, 13, "Max trend err")
+    table.cell(diagnostics, 1, 13, f_fmt8(maxTrendError))
+    table.cell(diagnostics, 0, 14, "Max posterior err")
+    table.cell(diagnostics, 1, 14, f_fmt8(maxPosteriorError))
+    table.cell(diagnostics, 0, 15, "Max sum err")
+    table.cell(diagnostics, 1, 15, f_fmt12(maxProbabilitySumError))
+    table.cell(diagnostics, 0, 16, "Dominant matches")
+    table.cell(diagnostics, 1, 16, str.tostring(dominantMatchCount) + "/" + str.tostring(CHECKPOINT_TOTAL))
+    table.cell(diagnostics, 0, 17, "Std return")
+    table.cell(diagnostics, 1, 17, f_fmt8(standardizedReturn))
+    table.cell(diagnostics, 0, 18, "ATR %")
+    table.cell(diagnostics, 1, 18, f_fmt8(atrPct))
+    table.cell(diagnostics, 0, 19, "Trend / ATR")
+    table.cell(diagnostics, 1, 19, f_fmt8(trendStrength))
+    table.cell(diagnostics, 0, 20, "Research only")
+    table.cell(diagnostics, 1, 20, "No inference claim across feeds")
+
+var table checkpointEvidence = table.new(position.bottom_right, 8, CHECKPOINT_TOTAL + 1, border_width = 1)
+if barstate.islast and showCheckpointEvidence
+    table.cell(checkpointEvidence, 0, 0, "Date")
+    table.cell(checkpointEvidence, 1, 0, "Close")
+    table.cell(checkpointEvidence, 2, 0, "Std")
+    table.cell(checkpointEvidence, 3, 0, "ATR")
+    table.cell(checkpointEvidence, 4, 0, "Trend")
+    table.cell(checkpointEvidence, 5, 0, "Posterior")
+    table.cell(checkpointEvidence, 6, 0, "Sum")
+    table.cell(checkpointEvidence, 7, 0, "Dom")
+    for checkpointIndex = 0 to CHECKPOINT_TOTAL - 1
+        int evidenceRow = checkpointIndex + 1
+        float closeError = array.get(checkpointCloseErrors, checkpointIndex)
+        float stdError = array.get(checkpointStdErrors, checkpointIndex)
+        float atrError = array.get(checkpointAtrErrors, checkpointIndex)
+        float trendCheckpointError = array.get(checkpointTrendErrors, checkpointIndex)
+        float posteriorError = array.get(checkpointPosteriorErrors, checkpointIndex)
+        float sumError = array.get(checkpointSumErrors, checkpointIndex)
+        int dominantMatch = array.get(checkpointDominantMatches, checkpointIndex)
+        table.cell(checkpointEvidence, 0, evidenceRow, str.tostring(array.get(refDates, checkpointIndex)))
+        table.cell(checkpointEvidence, 1, evidenceRow, f_fmt8(closeError))
+        table.cell(checkpointEvidence, 2, evidenceRow, f_fmt8(stdError))
+        table.cell(checkpointEvidence, 3, evidenceRow, f_fmt8(atrError))
+        table.cell(checkpointEvidence, 4, evidenceRow, f_fmt8(trendCheckpointError))
+        table.cell(checkpointEvidence, 5, evidenceRow, f_fmt8(posteriorError))
+        table.cell(checkpointEvidence, 6, evidenceRow, f_fmt12(sumError))
+        table.cell(checkpointEvidence, 7, evidenceRow, na(dominantMatch) ? "n/a" : dominantMatch == 1 ? "Y" : "N", bgcolor = na(dominantMatch) ? na : f_pass_color(dominantMatch == 1))
