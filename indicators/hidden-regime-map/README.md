@@ -101,6 +101,28 @@ The repository workflow runs the same training and characterization checks for S
 
 Generated data and model outputs are research artifacts and are not committed by default. A Pine implementation remains blocked until the state-characterization evidence is reviewed and judged sufficiently stable and interpretable.
 
+## Pine parity spike
+
+The first Pine step is intentionally narrow:
+
+- `models/spy-1d-v0.1.json` freezes the approved SPY 1D model profile and provenance;
+- `pine/hidden-regime-map-spy-parity.pine` reproduces the fixed-parameter causal filter;
+- `research/fixtures/spy-1d-parity-checkpoints.json` provides a small verification fixture;
+- `research/compare_pine_export.py` compares a TradingView chart-data export with the fixture.
+
+This spike supports SPY on the one-day timeframe only. It is not a cross-asset release indicator.
+
+Run the comparator after exporting the Pine plots from TradingView:
+
+```bash
+python indicators/hidden-regime-map/research/compare_pine_export.py \
+  --export path/to/tradingview-export.csv \
+  --fixture indicators/hidden-regime-map/research/fixtures/spy-1d-parity-checkpoints.json \
+  --output-dir path/to/parity-report
+```
+
+Feature errors must be examined before posterior errors. A Yahoo-versus-TradingView adjusted-price difference is a feed mismatch, not permission to loosen the posterior tolerance.
+
 ## What v0.1 is not
 
 - It is not a trading strategy or profitability claim.
@@ -109,4 +131,7 @@ Generated data and model outputs are research artifacts and are not committed by
 - It does not integrate with the existing Wyckoff indicator.
 - It does not add notebooks, Docker, a model registry, or an MLOps framework.
 
-See [`spec/hidden-regime-map-v0.1.md`](spec/hidden-regime-map-v0.1.md) for the current design contract.
+Design contracts:
+
+- [`spec/hidden-regime-map-v0.1.md`](spec/hidden-regime-map-v0.1.md)
+- [`spec/hidden-regime-map-v0.2-pine-parity.md`](spec/hidden-regime-map-v0.2-pine-parity.md)
