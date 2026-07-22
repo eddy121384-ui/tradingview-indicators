@@ -9,7 +9,7 @@ The first version asks one narrow question: can three latent states separate per
 The model starts with three unnamed states—A, B, and C—and three observations:
 
 - standardized return;
-- realized volatility or ATR percentage;
+- ATR as a percentage of price;
 - MA spread normalized by ATR.
 
 State names are assigned only after training by inspecting each state's return, volatility, trend strength, and persistence. The training process must not force State A to mean Bull in advance.
@@ -22,6 +22,57 @@ State names are assigned only after training by inspecting each state's return, 
 4. TradingView displays the three posterior state probabilities and the dominant state.
 
 Training and live inference are deliberately separate. Pine Script will not retrain the model.
+
+## Research prototype
+
+The first executable step is `research/train_hmm.py`. It accepts a chronological OHLC CSV with `Date`, `Open`, `High`, `Low`, and `Close` columns by default.
+
+Create an isolated environment and install the small research dependency set:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+```
+
+On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`.
+
+Run the prototype with an existing CSV:
+
+```bash
+python indicators/hidden-regime-map/research/train_hmm.py \
+  --input path/to/ohlc.csv \
+  --output-dir path/to/output \
+  --symbol SPY \
+  --timeframe 1D
+```
+
+The script fits the scaler and HMM on the chronological training segment only, then calculates causal forward-filtered probabilities across the full sample. It writes:
+
+- `model-parameters.json` — feature configuration, scaler, transition matrix, emission parameters, metadata, and interpretation checks;
+- `state-diagnostics.csv` — occupancy, state characteristics, duration, and persistence;
+- `filtered-posteriors.csv` — per-row posterior probabilities and dominant state.
+
+## Public-data validation
+
+For research-only validation, `research/download_yfinance.py` downloads one daily Yahoo Finance series into the required CSV shape. Adjusted OHLC is the default so ETF distributions and splits do not create artificial price jumps.
+
+```bash
+python indicators/hidden-regime-map/research/download_yfinance.py \
+  --ticker SPY \
+  --start 2010-01-01 \
+  --output /tmp/spy.csv
+
+python indicators/hidden-regime-map/research/train_hmm.py \
+  --input /tmp/spy.csv \
+  --output-dir /tmp/spy-output \
+  --symbol SPY \
+  --timeframe 1D
+```
+
+The repository workflow runs the same research check for SPY and TLT and uploads temporary artifacts. Yahoo Finance data is suitable for method validation, not the final Bloomberg-calibrated deployment model. yfinance is an unofficial research client and downloaded data remains subject to Yahoo's terms of use.
+
+Generated data and model outputs are research artifacts and are not committed by default. A Pine implementation remains blocked until real-market diagnostics show persistent and defensibly interpretable states.
 
 ## What v0.1 is not
 
