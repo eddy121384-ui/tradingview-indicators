@@ -18,10 +18,10 @@ State names are assigned only after training by inspecting each state's return, 
 
 1. Python calculates the observations and trains the HMM on historical data.
 2. Python exports the initial probabilities, transition matrix, and emission parameters.
-3. Pine Script later uses those fixed parameters to run forward filtering on each confirmed bar.
-4. TradingView displays the three posterior state probabilities and the dominant state.
+3. Python characterizes each fitted state without changing the model.
+4. Pine Script may later use fixed parameters to run forward filtering on confirmed bars.
 
-Training and live inference are deliberately separate. Pine Script will not retrain the model.
+Training, post-fit characterization, and live inference are deliberately separate. Pine Script will not retrain the model.
 
 ## Research prototype
 
@@ -49,9 +49,42 @@ python indicators/hidden-regime-map/research/train_hmm.py \
 
 The script fits the scaler and HMM on the chronological training segment only, then calculates causal forward-filtered probabilities across the full sample. It writes:
 
-- `model-parameters.json` — feature configuration, scaler, transition matrix, emission parameters, metadata, and interpretation checks;
+- `model-parameters.json` — feature configuration, scaler, transition matrix, emission parameters, metadata, and the original provisional interpretation check;
 - `state-diagnostics.csv` — occupancy, state characteristics, duration, and persistence;
 - `filtered-posteriors.csv` — per-row posterior probabilities and dominant state.
+
+## State characterization
+
+`research/characterize_states.py` replaces forced Bull/Bear/Range naming with an auditable post-fit report. It combines:
+
+- posterior-weighted trend and volatility;
+- dominant-state occupancy, duration, and self-transition probability;
+- train versus out-of-sample behavior;
+- 5-day and 20-day forward returns;
+- explicit historical event windows from `research/event-windows.json`.
+
+Forward returns and event windows are **ex-post diagnostics only**. They do not alter HMM training, filtering, exported model parameters, or future Pine inputs.
+
+Run characterization after the model outputs exist:
+
+```bash
+python indicators/hidden-regime-map/research/characterize_states.py \
+  --posteriors path/to/output/filtered-posteriors.csv \
+  --diagnostics path/to/output/state-diagnostics.csv \
+  --model path/to/output/model-parameters.json \
+  --events indicators/hidden-regime-map/research/event-windows.json \
+  --output-dir path/to/output \
+  --symbol SPY
+```
+
+It writes:
+
+- `state-characterization.csv` — state metrics across full, training, and out-of-sample periods;
+- `event-window-analysis.csv` — average posterior and dominant-state share in each named event window;
+- `characterization.json` — machine-readable descriptions, confidence, thresholds, and contradictions;
+- `characterization.md` — a review-ready report.
+
+Descriptions are fit- and asset-specific. Valid outputs include calm advance, downside stress, upside stress, orderly decline, quiet range, volatile range, mixed regime, and ambiguous regime. The report must preserve contradictions instead of hiding them behind a directional label.
 
 ## Public-data validation
 
@@ -62,17 +95,11 @@ python indicators/hidden-regime-map/research/download_yfinance.py \
   --ticker SPY \
   --start 2010-01-01 \
   --output /tmp/spy.csv
-
-python indicators/hidden-regime-map/research/train_hmm.py \
-  --input /tmp/spy.csv \
-  --output-dir /tmp/spy-output \
-  --symbol SPY \
-  --timeframe 1D
 ```
 
-The repository workflow runs the same research check for SPY and TLT and uploads temporary artifacts. Yahoo Finance data is suitable for method validation, not the final Bloomberg-calibrated deployment model. yfinance is an unofficial research client and downloaded data remains subject to Yahoo's terms of use.
+The repository workflow runs the same training and characterization checks for SPY and TLT and uploads temporary artifacts. Yahoo Finance data is suitable for method validation, not the final Bloomberg-calibrated deployment model. yfinance is an unofficial research client and downloaded data remains subject to Yahoo's terms of use.
 
-Generated data and model outputs are research artifacts and are not committed by default. A Pine implementation remains blocked until real-market diagnostics show persistent and defensibly interpretable states.
+Generated data and model outputs are research artifacts and are not committed by default. A Pine implementation remains blocked until the state-characterization evidence is reviewed and judged sufficiently stable and interpretable.
 
 ## What v0.1 is not
 
