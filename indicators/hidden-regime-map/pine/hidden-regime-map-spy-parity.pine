@@ -229,12 +229,14 @@ bool featureParityPassed =
      maxTrendError <= TREND_TOL
 bool posteriorAgreementPassed =
      checkpointsComplete and
-     maxPosteriorError <= POSTERIOR_TOL and
-     dominantMatchCount == CHECKPOINT_TOTAL
+     maxPosteriorError <= POSTERIOR_TOL
 bool probabilitySumPassed =
      checkpointsComplete and
      maxProbabilitySumError <= PROB_SUM_TOL
-bool inferenceDiagnosticsPassed = posteriorAgreementPassed and probabilitySumPassed
+bool dominantStatePassed =
+     checkpointsComplete and
+     dominantMatchCount == CHECKPOINT_TOTAL
+bool inferenceDiagnosticsPassed = posteriorAgreementPassed and probabilitySumPassed and dominantStatePassed
 
 string parityVerdict =
      not checkpointsComplete ? "Need more history" :
@@ -302,7 +304,7 @@ if barstate.islast and showDebugTable
     table.cell(diagnostics, 0, 8, "Probability-sum check")
     table.cell(diagnostics, 1, 8, f_pass_text(probabilitySumPassed), bgcolor = f_pass_color(probabilitySumPassed))
     table.cell(diagnostics, 0, 9, "Dominant check")
-    table.cell(diagnostics, 1, 9, dominantMatchCount == CHECKPOINT_TOTAL ? "PASS" : "FAIL", bgcolor = f_pass_color(dominantMatchCount == CHECKPOINT_TOTAL))
+    table.cell(diagnostics, 1, 9, f_pass_text(dominantStatePassed), bgcolor = f_pass_color(dominantStatePassed))
     table.cell(diagnostics, 0, 10, "Max close rel err")
     table.cell(diagnostics, 1, 10, f_fmt8(maxCloseRelativeError))
     table.cell(diagnostics, 0, 11, "Max std err")
