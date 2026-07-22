@@ -22,6 +22,7 @@ POSTERIOR_COLUMNS = {state: f"posterior_{state}" for state in STATE_NAMES}
 TREND_THRESHOLD = 0.25
 FORWARD_20D_THRESHOLD = 0.005
 MIN_OOS_OCCUPANCY = 0.05
+MIN_DIRECTION_WEIGHT = 1.0
 
 
 def parse_args() -> argparse.Namespace:
@@ -252,12 +253,47 @@ def characterize_states(
         direction, contradictions = direction_from_metrics(
             float(row["trend_all"]), float(row["forward_20d_all"])
         )
+        train_direction, _ = direction_from_metrics(
+            float(row["trend_train"]), float(row["forward_20d_train"])
+        )
         oos_direction, _ = direction_from_metrics(
             float(row["trend_oos"]), float(row["forward_20d_oos"])
         )
-        if oos_direction != direction and oos_direction != "flat":
+        train_mask = frame["sample"].eq("train") & frame["forward_20d_return"].notna()
+        oos_mask = frame["sample"].eq("out_of_sample") & frame["forward_20d_return"].notna()
+        posterior_column = POSTERIOR_COLUMNS[str(row["state"])]
+        train_weight = float(frame.loc[train_mask, posterior_column].sum())
+        oos_weight = float(frame.loc[oos_mask, posterior_column].sum())
+        sufficient_train = train_weight >= MIN_DIRECTION_WEIGHT
+        sufficient_oos = (
+            float(row["occupancy_oos"]) >= MIN_OOS_OCCUPANCY
+            and oos_weight >= MIN_DIRECTION_WEIGHT
+        )
+
+        if (
+            sufficient_train
+            and sufficient_oos
+            and train_direction in {"positive", "negative"}
+            and oos_direction in {"positive", "negative"}
+            and train_direction != oos_direction
+        ):
+            contradictions.append(
+                f"train direction is {train_direction}, but out-of-sample direction is {oos_direction}"
+            )
+        elif sufficient_oos and oos_direction != direction and oos_direction != "flat":
             contradictions.append(
                 f"out-of-sample direction is {oos_direction}, versus {direction} overall"
+            )
+        if (
+            sufficient_oos
+            and oos_direction == "flat"
+            and (
+                direction in {"positive", "negative"}
+                or train_direction in {"positive", "negative"}
+            )
+        ):
+            contradictions.append(
+                "directional train or full-sample evidence is flat out of sample"
             )
         if float(row["occupancy_oos"]) < MIN_OOS_OCCUPANCY:
             contradictions.append("state has low out-of-sample occupancy")
@@ -270,6 +306,7 @@ def characterize_states(
 
         label = descriptor(direction, str(row["volatility_bucket"]))
         result.loc[index, "direction"] = direction
+        result.loc[index, "train_direction"] = train_direction
         result.loc[index, "oos_direction"] = oos_direction
         result.loc[index, "descriptive_label"] = label
         result.loc[index, "confidence"] = confidence
@@ -278,6 +315,8 @@ def characterize_states(
         descriptions[str(row["state"])] = {
             "label": label,
             "direction": direction,
+            "train_direction": train_direction,
+            "oos_direction": oos_direction,
             "volatility": str(row["volatility_bucket"]),
             "confidence": confidence,
             "contradictions": contradictions,
@@ -312,6 +351,8 @@ def analyze_events(
     frame: pd.DataFrame, events: list[dict[str, str]]
 ) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
+    data_start = frame["date"].min()
+    data_end = frame["date"].max()
     for event in events:
         start = pd.Timestamp(event["start"], tz="UTC")
         end = pd.Timestamp(event["end"], tz="UTC")
@@ -323,6 +364,10 @@ def analyze_events(
                     "start": event["start"],
                     "end": event["end"],
                     "context": event["context"],
+                    "coverage_status": "unavailable",
+                    "actual_start": None,
+                    "actual_end": None,
+                    "coverage_ratio": 0.0,
                     "bars": 0,
                     "state": "NONE",
                     "average_posterior": float("nan"),
@@ -332,6 +377,15 @@ def analyze_events(
             )
             continue
 
+        actual_start = window["date"].min()
+        actual_end = window["date"].max()
+        full_coverage = data_start <= start and data_end >= end
+        overlap_start = max(data_start, start)
+        overlap_end = min(data_end, end)
+        event_span = max((end - start).total_seconds(), 0.0)
+        covered_span = max((overlap_end - overlap_start).total_seconds(), 0.0)
+        coverage_ratio = 1.0 if event_span == 0.0 else min(covered_span / event_span, 1.0)
+        coverage_status = "complete" if full_coverage else "partial_coverage"
         window_return = float(window["close"].iloc[-1] / window["close"].iloc[0] - 1.0)
         for state in STATE_NAMES:
             rows.append(
@@ -340,6 +394,10 @@ def analyze_events(
                     "start": event["start"],
                     "end": event["end"],
                     "context": event["context"],
+                    "coverage_status": coverage_status,
+                    "actual_start": actual_start.date().isoformat(),
+                    "actual_end": actual_end.date().isoformat(),
+                    "coverage_ratio": coverage_ratio,
                     "bars": len(window),
                     "state": state,
                     "average_posterior": float(
@@ -393,8 +451,8 @@ def markdown_report(
                 "",
                 "## Historical event windows",
                 "",
-                "| Event | Context | Bars | Window return | Leading state | Avg posterior | Dominant share |",
-                "|---|---|---:|---:|---|---:|---:|",
+                "| Event | Coverage | Actual dates | Context | Bars | Window return | Leading state | Avg posterior | Dominant share |",
+                "|---|---|---|---|---:|---:|---|---:|---:|",
             ]
         )
         for event_name, group in event_analysis.groupby("event", sort=False):
@@ -402,14 +460,18 @@ def markdown_report(
             first = group.iloc[0]
             if valid.empty:
                 lines.append(
-                    f"| {event_name} | {first['context']} | 0 | n/a | n/a | n/a | n/a |"
+                    f"| {event_name} | unavailable | n/a | {first['context']} | 0 | n/a | n/a | n/a | n/a |"
                 )
                 continue
             leader = valid.sort_values("average_posterior", ascending=False).iloc[0]
             lines.append(
-                "| {event} | {context} | {bars} | {window_return:.2%} | {state} | "
+                "| {event} | {coverage_status} | {actual_start}–{actual_end} | "
+                "{context} | {bars} | {window_return:.2%} | {state} | "
                 "{average_posterior:.3f} | {dominant_share:.3f} |".format(
                     event=event_name,
+                    coverage_status=leader["coverage_status"],
+                    actual_start=leader["actual_start"],
+                    actual_end=leader["actual_end"],
                     context=leader["context"],
                     bars=int(leader["bars"]),
                     window_return=leader["window_return"],
@@ -433,14 +495,20 @@ def markdown_report(
     return "\n".join(lines)
 
 
-def json_ready(value: Any) -> Any:
-    if isinstance(value, (np.integer, np.floating)):
-        return value.item()
+def strict_json_value(value: Any) -> Any:
+    """Recursively convert report values into strict JSON-compatible values."""
+    if isinstance(value, dict):
+        return {key: strict_json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [strict_json_value(item) for item in value]
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, (float, np.floating)):
+        converted = float(value)
+        return converted if math.isfinite(converted) else None
     if isinstance(value, pd.Timestamp):
         return value.isoformat()
-    if isinstance(value, float) and math.isnan(value):
-        return None
-    raise TypeError(f"cannot serialize {type(value).__name__}")
+    return value
 
 
 def main() -> int:
@@ -463,6 +531,7 @@ def main() -> int:
             "trend_strength": TREND_THRESHOLD,
             "forward_20d_return": FORWARD_20D_THRESHOLD,
             "minimum_oos_occupancy": MIN_OOS_OCCUPANCY,
+            "minimum_direction_weight": MIN_DIRECTION_WEIGHT,
         },
         "state_descriptions": descriptions,
         "states": characterization.to_dict(orient="records"),
@@ -474,7 +543,10 @@ def main() -> int:
     )
     event_analysis.to_csv(args.output_dir / "event-window-analysis.csv", index=False)
     (args.output_dir / "characterization.json").write_text(
-        json.dumps(output, indent=2, ensure_ascii=False, default=json_ready) + "\n",
+        json.dumps(
+            strict_json_value(output), indent=2, ensure_ascii=False, allow_nan=False
+        )
+        + "\n",
         encoding="utf-8",
     )
     report = markdown_report(symbol, characterization, descriptions, event_analysis)
