@@ -1,0 +1,183 @@
+//@version=6
+indicator("Hidden Regime Map — SPY 1D Pine Parity Spike", shorttitle = "HRM SPY Parity", overlay = false, max_bars_back = 5000)
+
+// Research-only profile. This script intentionally supports SPY on the 1D timeframe only.
+const string PROFILE_ID = "spy-1d-v0.1"
+const int FEATURE_START = timestamp("GMT+0", 2010, 5, 26, 0, 0)
+const int FEATURE_START_NEXT_DAY = timestamp("GMT+0", 2010, 5, 27, 0, 0)
+const float EPSILON = 1e-300
+const float TWO_PI = 6.283185307179586
+
+bool showBackground = input.bool(true, "Shade dominant state", group = "Display")
+bool showDebugTable = input.bool(true, "Show parity diagnostics", group = "Display")
+
+// Explicitly request standard, dividend-adjusted prices so non-standard candles and
+// chart-level adjustment settings do not silently change the model inputs.
+string standardTicker = ticker.standard(syminfo.tickerid)
+string adjustedTicker = ticker.modify(standardTicker, adjustment = adjustment.dividends)
+[adjOpen, adjHigh, adjLow, adjClose] = request.security(
+     adjustedTicker,
+     "1D",
+     [open, high, low, close],
+     gaps = barmerge.gaps_off,
+     lookahead = barmerge.lookahead_off)
+
+bool supportedSymbol = syminfo.ticker == "SPY"
+bool supportedTimeframe = timeframe.isdaily and timeframe.multiplier == 1
+bool supported = supportedSymbol and supportedTimeframe
+
+// Exact research features.
+float logReturn = math.log(adjClose / adjClose[1])
+float logReturnMean = ta.sma(logReturn, 20)
+float logReturnMeanSquare = ta.sma(logReturn * logReturn, 20)
+float returnVariance = math.max(logReturnMeanSquare - logReturnMean * logReturnMean, 0.0)
+float returnVolatility = math.sqrt(returnVariance)
+float standardizedReturn = returnVolatility > 0.0 ? logReturn / returnVolatility : na
+float trueRange = math.max(adjHigh - adjLow, math.max(math.abs(adjHigh - adjClose[1]), math.abs(adjLow - adjClose[1])))
+float atr = ta.sma(trueRange, 20)
+float atrPct = atr > 0.0 ? atr / adjClose : na
+float fastAverage = ta.sma(adjClose, 20)
+float slowAverage = ta.sma(adjClose, 100)
+float trendStrength = atr > 0.0 ? (fastAverage - slowAverage) / atr : na
+bool featuresReady = not na(standardizedReturn) and not na(atrPct) and not na(trendStrength)
+
+// Frozen StandardScaler parameters.
+float x0 = (standardizedReturn - 0.07482489133979355) / 1.0454684699762082
+float x1 = (atrPct - 0.012670512182703287) / 0.007191739442742329
+float x2 = (trendStrength - 2.450268592092003) / 2.990554292240692
+
+f_logsumexp3(float a, float b, float c) =>
+    float maximum = math.max(a, math.max(b, c))
+    maximum + math.log(math.exp(a - maximum) + math.exp(b - maximum) + math.exp(c - maximum))
+
+f_log_emission(
+     float value0,
+     float value1,
+     float value2,
+     float mean0,
+     float mean1,
+     float mean2,
+     float variance0,
+     float variance1,
+     float variance2) =>
+    -0.5 * (
+         math.log(TWO_PI * variance0) + math.pow(value0 - mean0, 2.0) / variance0 +
+         math.log(TWO_PI * variance1) + math.pow(value1 - mean1, 2.0) / variance1 +
+         math.log(TWO_PI * variance2) + math.pow(value2 - mean2, 2.0) / variance2)
+
+float emissionA = f_log_emission(
+     x0, x1, x2,
+     -0.017568103450812604, 1.3585523933529304, -1.4422651971708662,
+     0.8769876121917453, 1.8372083218932571, 0.09702474904048229)
+float emissionB = f_log_emission(
+     x0, x1, x2,
+     -0.02167999703048412, -0.002025599737878038, -0.30725602717113204,
+     0.8933516698059509, 0.24772288255634398, 0.13135716024287522)
+float emissionC = f_log_emission(
+     x0, x1, x2,
+     0.030165420804613468, -0.63870286387411, 0.9903143586036746,
+     1.1641408071895616, 0.08593171726068849, 0.24547316254244986)
+
+// Frozen transition matrix in previous-state → current-state order.
+const float T_AA = 0.9788632405266485
+const float T_AB = 0.02113675947335151
+const float T_AC = 2.797020703428349e-109
+const float T_BA = 0.009128235455344675
+const float T_BB = 0.9740566697446494
+const float T_BC = 0.016815094800005786
+const float T_CA = 6.806142872011186e-131
+const float T_CB = 0.016951746866736256
+const float T_CC = 0.9830482531332637
+
+var float logAlphaA = na
+var float logAlphaB = na
+var float logAlphaC = na
+var float posteriorA = na
+var float posteriorB = na
+var float posteriorC = na
+var bool initialized = false
+
+bool firstEligibleBar = time >= FEATURE_START and time < FEATURE_START_NEXT_DAY
+
+if supported and featuresReady and barstate.isconfirmed
+    if not initialized and firstEligibleBar
+        float rawA = math.log(math.max(1.0, EPSILON)) + emissionA
+        float rawB = math.log(math.max(1.0331893762513777e-162, EPSILON)) + emissionB
+        float rawC = math.log(EPSILON) + emissionC
+        float normalizer = f_logsumexp3(rawA, rawB, rawC)
+        logAlphaA := rawA - normalizer
+        logAlphaB := rawB - normalizer
+        logAlphaC := rawC - normalizer
+        posteriorA := math.exp(logAlphaA)
+        posteriorB := math.exp(logAlphaB)
+        posteriorC := math.exp(logAlphaC)
+        initialized := true
+    else if initialized
+        float priorA = f_logsumexp3(
+             logAlphaA + math.log(math.max(T_AA, EPSILON)),
+             logAlphaB + math.log(math.max(T_BA, EPSILON)),
+             logAlphaC + math.log(math.max(T_CA, EPSILON)))
+        float priorB = f_logsumexp3(
+             logAlphaA + math.log(math.max(T_AB, EPSILON)),
+             logAlphaB + math.log(math.max(T_BB, EPSILON)),
+             logAlphaC + math.log(math.max(T_CB, EPSILON)))
+        float priorC = f_logsumexp3(
+             logAlphaA + math.log(math.max(T_AC, EPSILON)),
+             logAlphaB + math.log(math.max(T_BC, EPSILON)),
+             logAlphaC + math.log(math.max(T_CC, EPSILON)))
+        float rawA = priorA + emissionA
+        float rawB = priorB + emissionB
+        float rawC = priorC + emissionC
+        float normalizer = f_logsumexp3(rawA, rawB, rawC)
+        logAlphaA := rawA - normalizer
+        logAlphaB := rawB - normalizer
+        logAlphaC := rawC - normalizer
+        posteriorA := math.exp(logAlphaA)
+        posteriorB := math.exp(logAlphaB)
+        posteriorC := math.exp(logAlphaC)
+
+float probabilitySum = posteriorA + posteriorB + posteriorC
+int dominantState = na
+if initialized
+    dominantState := posteriorA >= posteriorB and posteriorA >= posteriorC ? 0 : posteriorB >= posteriorC ? 1 : 2
+
+color stateColor = dominantState == 0 ? color.red : dominantState == 1 ? color.orange : color.teal
+bgcolor(showBackground and supported and initialized ? color.new(stateColor, 88) : na)
+
+plot(supported ? posteriorA * 100.0 : na, "State A — two-sided stress", color = color.red, linewidth = 2)
+plot(supported ? posteriorB * 100.0 : na, "State B — advance", color = color.orange, linewidth = 2)
+plot(supported ? posteriorC * 100.0 : na, "State C — calm advance", color = color.teal, linewidth = 2)
+hline(50.0, "50%", color = color.new(color.gray, 70))
+
+// Hidden export channels used by the Python parity comparator.
+plot(adjClose, "HRM Adjusted Close", display = display.none)
+plot(standardizedReturn, "HRM Standardized Return", display = display.none)
+plot(atrPct, "HRM ATR Percent", display = display.none)
+plot(trendStrength, "HRM Trend Strength", display = display.none)
+plot(posteriorA, "HRM Posterior A", display = display.none)
+plot(posteriorB, "HRM Posterior B", display = display.none)
+plot(posteriorC, "HRM Posterior C", display = display.none)
+plot(probabilitySum, "HRM Probability Sum", display = display.none)
+plot(dominantState, "HRM Dominant State Index", display = display.none)
+
+var table diagnostics = table.new(position.top_right, 2, 8, border_width = 1)
+if barstate.islast and showDebugTable
+    string status = not supportedSymbol ? "Unsupported symbol" : not supportedTimeframe ? "Use 1D timeframe" : not initialized ? "Need history from 2010-05-26" : "Parity spike active"
+    color statusColor = supported and initialized ? color.new(color.green, 70) : color.new(color.red, 65)
+    string stateText = dominantState == 0 ? "A — two-sided stress" : dominantState == 1 ? "B — advance" : dominantState == 2 ? "C — calm advance" : "n/a"
+    table.cell(diagnostics, 0, 0, "Profile")
+    table.cell(diagnostics, 1, 0, PROFILE_ID)
+    table.cell(diagnostics, 0, 1, "Status")
+    table.cell(diagnostics, 1, 1, status, bgcolor = statusColor)
+    table.cell(diagnostics, 0, 2, "Dominant")
+    table.cell(diagnostics, 1, 2, stateText)
+    table.cell(diagnostics, 0, 3, "Posterior sum")
+    table.cell(diagnostics, 1, 3, str.tostring(probabilitySum, "#.########"))
+    table.cell(diagnostics, 0, 4, "Std return")
+    table.cell(diagnostics, 1, 4, str.tostring(standardizedReturn, "#.########"))
+    table.cell(diagnostics, 0, 5, "ATR %")
+    table.cell(diagnostics, 1, 5, str.tostring(atrPct, "#.########"))
+    table.cell(diagnostics, 0, 6, "Trend / ATR")
+    table.cell(diagnostics, 1, 6, str.tostring(trendStrength, "#.########"))
+    table.cell(diagnostics, 0, 7, "Research only")
+    table.cell(diagnostics, 1, 7, "No cross-asset claim")
