@@ -1,57 +1,76 @@
 # SPY 1D Pine Parity Report
 
-## Outcome
+## Current outcome
 
-Primary outcome: **feed mismatch observed; Pine inference parity passed within the provisional research tolerance**.
+Primary outcome: **feed mismatch**.
 
-The TradingView on-chart verification reproduced the Python model closely enough to validate the Pine forward-filter implementation, while also confirming small vendor-data differences between Yahoo Finance adjusted OHLC and TradingView dividend-adjusted OHLC.
+The TradingView run used dividend-adjusted SPY daily OHLC, while the frozen Python fixture was generated from Yahoo Finance adjusted OHLC. ATR percentage and trend strength exceeded the provisional feature tolerances, so the current run cannot independently establish Pine inference parity against the Python posteriors.
 
-This is a research acceptance result for the SPY 1D parity spike. It is not a claim of exact cross-vendor data equality, cross-asset validity, strategy profitability, or a production-ready universal indicator.
+The observed 12/12 dominant-state agreement and small posterior differences are useful diagnostics, but they are not proof that initialization, transition orientation, and filtering math are correct under identical inputs.
+
+This remains a research spike. It is not a cross-asset claim, strategy result, or production acceptance.
 
 ## Test setup
 
 - profile: `spy-1d-v0.1`
 - chart: SPY, 1D
 - Pine version: v6
-- verification method: on-chart embedded checkpoints because CSV chart-data export was unavailable on the active TradingView plan
+- verification method: embedded on-chart checkpoints because CSV chart-data export was unavailable on the active TradingView plan
 - checkpoint source: `research/fixtures/spy-1d-parity-checkpoints.json`
 - checkpoint count: 12
-- date of manual verification: 2026-07-22
+- first manual verification: 2026-07-22
 
-## Results
+## First observed run
 
-| Metric | Result |
-|---|---:|
-| Checkpoints evaluated | 12 / 12 |
-| Dominant-state agreement | 12 / 12 |
-| Maximum close relative error | 0.00000964 |
-| Maximum standardized-return error | 0.00100710 |
-| Maximum ATR-percent error | 0.00052424 |
-| Maximum trend-strength error | 0.02947913 |
-| Maximum posterior error | 0.00200773 |
-| Maximum probability-sum error | 0 |
+| Metric | Result | Provisional tolerance | Status |
+|---|---:|---:|---|
+| Checkpoints evaluated | 12 / 12 | 12 / 12 | pass |
+| Dominant-state agreement | 12 / 12 | 12 / 12 | diagnostic pass |
+| Maximum close relative error | 0.00000964 | 0.0005 | pass |
+| Maximum standardized-return error | 0.00100710 | 0.005 | pass |
+| Maximum ATR-percent error | 0.00052424 | 0.00005 | fail |
+| Maximum trend-strength error | 0.02947913 | 0.01 | fail |
+| Maximum posterior error | 0.00200773 | 0.01 | diagnostic pass |
+| Maximum probability-sum error | not established at sufficient display precision | 1e-10 | pending |
 
-## Interpretation
+## Interpretation boundary
 
-The close and standardized-return differences remained small. ATR percentage and trend strength exceeded the initial provisional feature thresholds, so exact feature-feed parity did not pass.
+Feature parity failed because two feature errors exceeded their thresholds. Therefore:
 
-The inference layer remained stable despite those input differences:
+- the formal result is `feed mismatch`;
+- posterior and dominant-state agreement are recorded only as cross-feed diagnostics;
+- Pine inference parity is not declared from this run;
+- a posterior failure must still remain visible even when a feature failure also exists.
 
-- all 12 dominant states matched the Python fixture;
-- the largest posterior difference was approximately 0.20 percentage points;
-- posterior probabilities remained normalized;
-- no checkpoint changed state classification.
+A separate scalar Python mirror reproduces the frozen model artifact to machine precision. That supports the exported parameter orientation and log-space formula, but it does not replace a Pine runtime comparison on identical inputs.
 
-Therefore the observed discrepancy is classified as a **minor vendor-feed mismatch**, not a Pine HMM implementation failure.
+## Tolerance rationale
 
-## Decision
+The feature thresholds are provisional research gates intended to catch formula or vendor-feed differences before posterior comparison:
 
-- Accept the Pine causal forward-filter implementation as correct for the SPY 1D research spike.
-- Preserve the feed mismatch in the record rather than loosening tolerances until it disappears.
-- Do not claim exact Yahoo-to-TradingView feature parity.
-- Do not generalize the SPY profile to other symbols or timeframes.
-- Any future production profile should either be refit from the intended deployment feed or explicitly accept and document bounded cross-feed differences.
+- close relative error: `0.0005`;
+- standardized-return error: `0.005`;
+- ATR-percent error: `0.00005`;
+- trend-strength error: `0.01`.
+
+The posterior threshold of `0.01` means one percentage point in state probability. It is a diagnostic threshold only when feature parity fails; it cannot independently approve inference across different input feeds.
+
+The probability-sum threshold is `1e-10`. The first table displayed only eight decimal places, so its apparent zero was not sufficient evidence.
+
+## Review-fix verification path
+
+The revised Pine script now:
+
+- reports feature, posterior-agreement, probability-sum, and dominant-state checks independently;
+- reports a combined verdict when feature and inference diagnostics both fail;
+- displays probability-sum errors to twelve decimal places and a separate pass/fail result;
+- displays a 12-row checkpoint table containing per-checkpoint close, standardized-return, ATR, trend, posterior, probability-sum, and dominant-state results.
+
+The checkpoint-level measurements from the revised script are **pending a new TradingView run**. They must be captured before this report is final and before PR #23 returns to Ready for review.
 
 ## Next gate
 
-The parity spike is ready for correctness review. Product work such as visual simplification, alerts, multi-asset profiles, public-release copy, or strategy claims remains out of scope until this research PR is reviewed and merged.
+1. Compile the revised Pine script in TradingView Pine v6 on SPY 1D.
+2. Capture the summary diagnostics and the 12-row checkpoint evidence table.
+3. Update this report with the new checkpoint-level results.
+4. Re-run correctness review.
