@@ -7,6 +7,15 @@ int FEATURE_START = timestamp("GMT+0", 2010, 5, 26, 0, 0)
 int FEATURE_START_NEXT_DAY = timestamp("GMT+0", 2010, 5, 27, 0, 0)
 const float EPSILON = 1e-300
 const float TWO_PI = 6.283185307179586
+const int CHECKPOINT_TOTAL = 12
+
+// Provisional on-chart tolerances used when CSV export is unavailable.
+const float CLOSE_REL_TOL = 0.0005
+const float STD_RETURN_TOL = 0.005
+const float ATR_PCT_TOL = 0.00005
+const float TREND_TOL = 0.01
+const float POSTERIOR_TOL = 0.01
+const float PROB_SUM_TOL = 1e-10
 
 bool showBackground = input.bool(true, "Shade dominant state", group = "Display")
 bool showDebugTable = input.bool(true, "Show parity diagnostics", group = "Display")
@@ -141,6 +150,76 @@ int dominantState = na
 if initialized
     dominantState := posteriorA >= posteriorB and posteriorA >= posteriorC ? 0 : posteriorB >= posteriorC ? 1 : 2
 
+// Python reference checkpoints. These are verification points, not training data.
+var int[] refDates = array.from(20100526, 20100921, 20101027, 20110808, 20170630, 20181224, 20200316, 20200608, 20220613, 20230421, 20230424, 20260721)
+var float[] refClose = array.from(80.31062316894531, 86.2796859741211, 89.61039733886719, 86.22103881835938, 210.1547698974609, 209.6357879638672, 218.6279296875, 296.33544921875, 353.9408569335937, 395.6432495117188, 396.0559692382813, 748.280029296875)
+var float[] refStd = array.from(-0.3313461315398305, -0.191214122518324, -0.4361790784144477, -3.4996566469161934, 0.4231206224730521, -1.7966564827203642, -2.410585938212497, 0.9542949497796598, -2.029504425433917, 0.1325146085022864, 0.1801652956689094, 1.1288222197278304)
+var float[] refAtr = array.from(0.0310441137098758, 0.013545157568383, 0.0124218656527318, 0.0236726812844855, 0.0064907879967638, 0.0256429495530706, 0.0585115785974455, 0.0180940769177217, 0.0258839951885774, 0.0095257354164001, 0.0090347481882392, 0.0115451368780292)
+var float[] refTrend = array.from(-0.0517518463552785, 0.1034975358316055, 4.31767077040259, -0.7043493347491951, 3.6832367468963096, -2.498369941293379, -1.0088740827379323, 0.9895413230645016, -2.677162980062966, 2.6504385051145034, 2.964233498174217, 3.772848772761024)
+var float[] refPA = array.from(1.0, 0.0828826541978755, 6.409193240860045e-12, 0.943805800418862, 2.9597449250121533e-14, 0.999999904113368, 1.0, 0.0003241504055848, 0.9999999526662792, 3.328415765277324e-08, 9.03514565807144e-09, 1.3436473026158562e-10)
+var float[] refPB = array.from(1.5031901719885807e-167, 0.9171150272695082, 0.3628817709603676, 0.0561941995811375, 0.0013157048288817, 9.588663180420305e-08, 1.1356433092134305e-35, 0.9996758383615804, 4.733372120892187e-08, 0.9927808055708732, 0.9757912908856902, 0.6267621946458717)
+var float[] refPC = array.from(0.0, 2.318532616102944e-06, 0.6371182290332232, 1.0151780373001309e-15, 0.9986842951710886, 2.3111239304547007e-29, 4.9451609047422823e-147, 1.1232834843058964e-08, 2.607933240858385e-30, 0.0072191611449692, 0.0242087000791643, 0.3732378052197636)
+var int[] refDom = array.from(0, 1, 2, 0, 2, 0, 0, 1, 0, 1, 1, 1)
+
+var int checkpointCount = 0
+var int dominantMatchCount = 0
+var int lastCheckpointKey = na
+var float maxCloseRelativeError = 0.0
+var float maxStdReturnError = 0.0
+var float maxAtrPctError = 0.0
+var float maxTrendError = 0.0
+var float maxPosteriorError = 0.0
+var float maxProbabilitySumError = 0.0
+
+if initialized and not na(probabilitySum)
+    maxProbabilitySumError := math.max(maxProbabilitySumError, math.abs(probabilitySum - 1.0))
+
+int dateKey = year * 10000 + month * 100 + dayofmonth
+int refIndex = array.indexof(refDates, dateKey)
+if supported and initialized and barstate.isconfirmed and refIndex >= 0 and dateKey != lastCheckpointKey
+    float expectedClose = array.get(refClose, refIndex)
+    float expectedStd = array.get(refStd, refIndex)
+    float expectedAtr = array.get(refAtr, refIndex)
+    float expectedTrend = array.get(refTrend, refIndex)
+    float expectedPA = array.get(refPA, refIndex)
+    float expectedPB = array.get(refPB, refIndex)
+    float expectedPC = array.get(refPC, refIndex)
+    int expectedDominant = array.get(refDom, refIndex)
+
+    maxCloseRelativeError := math.max(maxCloseRelativeError, math.abs(adjClose - expectedClose) / expectedClose)
+    maxStdReturnError := math.max(maxStdReturnError, math.abs(standardizedReturn - expectedStd))
+    maxAtrPctError := math.max(maxAtrPctError, math.abs(atrPct - expectedAtr))
+    maxTrendError := math.max(maxTrendError, math.abs(trendStrength - expectedTrend))
+    float checkpointPosteriorError = math.max(
+         math.abs(posteriorA - expectedPA),
+         math.max(math.abs(posteriorB - expectedPB), math.abs(posteriorC - expectedPC)))
+    maxPosteriorError := math.max(maxPosteriorError, checkpointPosteriorError)
+    checkpointCount += 1
+    dominantMatchCount += dominantState == expectedDominant ? 1 : 0
+    lastCheckpointKey := dateKey
+
+bool featureParityPassed =
+     checkpointCount == CHECKPOINT_TOTAL and
+     maxCloseRelativeError <= CLOSE_REL_TOL and
+     maxStdReturnError <= STD_RETURN_TOL and
+     maxAtrPctError <= ATR_PCT_TOL and
+     maxTrendError <= TREND_TOL
+bool posteriorParityPassed =
+     featureParityPassed and
+     maxPosteriorError <= POSTERIOR_TOL and
+     maxProbabilitySumError <= PROB_SUM_TOL and
+     dominantMatchCount == CHECKPOINT_TOTAL
+
+string parityVerdict =
+     checkpointCount < CHECKPOINT_TOTAL ? "Need more history" :
+     not featureParityPassed ? "Feed mismatch" :
+     not posteriorParityPassed ? "Inference mismatch" :
+     "Parity passed"
+color parityColor =
+     parityVerdict == "Parity passed" ? color.new(color.green, 65) :
+     parityVerdict == "Need more history" ? color.new(color.orange, 65) :
+     color.new(color.red, 65)
+
 color stateColor = dominantState == 0 ? color.red : dominantState == 1 ? color.orange : color.teal
 bgcolor(showBackground and supported and initialized ? color.new(stateColor, 88) : na)
 
@@ -149,7 +228,7 @@ plot(supported ? posteriorB * 100.0 : na, "State B — advance", color = color.o
 plot(supported ? posteriorC * 100.0 : na, "State C — calm advance", color = color.teal, linewidth = 2)
 hline(50.0, "50%", color = color.new(color.gray, 70))
 
-// Hidden export channels used by the Python parity comparator.
+// Hidden export channels retained for users whose TradingView plan supports CSV export.
 plot(adjClose, "HRM Adjusted Close", display = display.none)
 plot(standardizedReturn, "HRM Standardized Return", display = display.none)
 plot(atrPct, "HRM ATR Percent", display = display.none)
@@ -160,7 +239,7 @@ plot(posteriorC, "HRM Posterior C", display = display.none)
 plot(probabilitySum, "HRM Probability Sum", display = display.none)
 plot(dominantState, "HRM Dominant State Index", display = display.none)
 
-var table diagnostics = table.new(position.top_right, 2, 8, border_width = 1)
+var table diagnostics = table.new(position.top_right, 2, 17, border_width = 1)
 if barstate.islast and showDebugTable
     string status = not supportedSymbol ? "Unsupported symbol" : not supportedTimeframe ? "Use 1D timeframe" : not initialized ? "Need history from 2010-05-26" : "Parity spike active"
     color statusColor = supported and initialized ? color.new(color.green, 70) : color.new(color.red, 65)
@@ -173,11 +252,29 @@ if barstate.islast and showDebugTable
     table.cell(diagnostics, 1, 2, stateText)
     table.cell(diagnostics, 0, 3, "Posterior sum")
     table.cell(diagnostics, 1, 3, str.tostring(probabilitySum, "#.########"))
-    table.cell(diagnostics, 0, 4, "Std return")
-    table.cell(diagnostics, 1, 4, str.tostring(standardizedReturn, "#.########"))
-    table.cell(diagnostics, 0, 5, "ATR %")
-    table.cell(diagnostics, 1, 5, str.tostring(atrPct, "#.########"))
-    table.cell(diagnostics, 0, 6, "Trend / ATR")
-    table.cell(diagnostics, 1, 6, str.tostring(trendStrength, "#.########"))
-    table.cell(diagnostics, 0, 7, "Research only")
-    table.cell(diagnostics, 1, 7, "No cross-asset claim")
+    table.cell(diagnostics, 0, 4, "Checkpoints")
+    table.cell(diagnostics, 1, 4, str.tostring(checkpointCount) + "/" + str.tostring(CHECKPOINT_TOTAL))
+    table.cell(diagnostics, 0, 5, "Parity verdict")
+    table.cell(diagnostics, 1, 5, parityVerdict, bgcolor = parityColor)
+    table.cell(diagnostics, 0, 6, "Max close rel err")
+    table.cell(diagnostics, 1, 6, str.tostring(maxCloseRelativeError, "#.########"))
+    table.cell(diagnostics, 0, 7, "Max std err")
+    table.cell(diagnostics, 1, 7, str.tostring(maxStdReturnError, "#.########"))
+    table.cell(diagnostics, 0, 8, "Max ATR err")
+    table.cell(diagnostics, 1, 8, str.tostring(maxAtrPctError, "#.########"))
+    table.cell(diagnostics, 0, 9, "Max trend err")
+    table.cell(diagnostics, 1, 9, str.tostring(maxTrendError, "#.########"))
+    table.cell(diagnostics, 0, 10, "Max posterior err")
+    table.cell(diagnostics, 1, 10, str.tostring(maxPosteriorError, "#.########"))
+    table.cell(diagnostics, 0, 11, "Max sum err")
+    table.cell(diagnostics, 1, 11, str.tostring(maxProbabilitySumError, "#.########"))
+    table.cell(diagnostics, 0, 12, "Dominant matches")
+    table.cell(diagnostics, 1, 12, str.tostring(dominantMatchCount) + "/" + str.tostring(CHECKPOINT_TOTAL))
+    table.cell(diagnostics, 0, 13, "Std return")
+    table.cell(diagnostics, 1, 13, str.tostring(standardizedReturn, "#.########"))
+    table.cell(diagnostics, 0, 14, "ATR %")
+    table.cell(diagnostics, 1, 14, str.tostring(atrPct, "#.########"))
+    table.cell(diagnostics, 0, 15, "Trend / ATR")
+    table.cell(diagnostics, 1, 15, str.tostring(trendStrength, "#.########"))
+    table.cell(diagnostics, 0, 16, "Research only")
+    table.cell(diagnostics, 1, 16, "No cross-asset claim")
