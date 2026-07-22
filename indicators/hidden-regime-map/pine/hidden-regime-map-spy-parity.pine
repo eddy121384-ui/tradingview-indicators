@@ -176,7 +176,7 @@ if initialized and not na(probabilitySum)
 
 int dateKey = year * 10000 + month * 100 + dayofmonth
 int refIndex = array.indexof(refDates, dateKey)
-if supported and initialized and barstate.isconfirmed and refIndex >= 0 and dateKey != lastCheckpointKey
+if supported and initialized and barstate.isconfirmed and refIndex >= 0 and (na(lastCheckpointKey) or dateKey != lastCheckpointKey)
     float expectedClose = array.get(refClose, refIndex)
     float expectedStd = array.get(refStd, refIndex)
     float expectedAtr = array.get(refAtr, refIndex)
