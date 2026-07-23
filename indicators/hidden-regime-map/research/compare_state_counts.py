@@ -73,6 +73,30 @@ def candidate_state_counts(start: int = 3, stop: int = 8) -> list[int]:
     return list(range(start, stop + 1))
 
 
+def validate_seed_groups(group_seeds: list[int]) -> None:
+    if len(group_seeds) < 2:
+        raise ValueError("at least two independent seed groups are required")
+    if len(set(group_seeds)) != len(group_seeds):
+        raise ValueError("seed groups must be unique")
+
+    attempt_owners: dict[int, int] = {}
+    overlaps: list[tuple[int, int, int]] = []
+    for group_seed in group_seeds:
+        for offset in RESTART_OFFSETS:
+            attempt_seed = group_seed + offset
+            owner = attempt_owners.get(attempt_seed)
+            if owner is not None:
+                overlaps.append((attempt_seed, owner, group_seed))
+            else:
+                attempt_owners[attempt_seed] = group_seed
+    if overlaps:
+        details = ", ".join(
+            f"attempt seed {attempt_seed} belongs to groups {left} and {right}"
+            for attempt_seed, left, right in overlaps
+        )
+        raise ValueError(f"restart-attempt seed sets overlap: {details}")
+
+
 def fit_candidate(matrix: np.ndarray, n_states: int, seed: int) -> GaussianHMM:
     model = GaussianHMM(
         n_components=n_states,
@@ -650,8 +674,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("Issue #26 comparison is restricted to SPY 1D")
     if not 0.50 <= args.train_fraction < 1.0:
         raise ValueError("train_fraction must be in [0.50, 1.0)")
-    if len(set(args.seeds)) != len(args.seeds) or not args.seeds:
-        raise ValueError("seeds must be a non-empty unique list")
+    validate_seed_groups(args.seeds)
     config = train_hmm.FeatureConfig()
     raw = train_hmm.load_ohlc(args)
     features = train_hmm.calculate_features(raw, config)

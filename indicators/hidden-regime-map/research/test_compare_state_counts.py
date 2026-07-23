@@ -36,6 +36,21 @@ class CandidateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "state-count range"):
             comparison.candidate_state_counts(8, 3)
 
+    def test_single_seed_group_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "at least two independent"):
+            comparison.validate_seed_groups([42])
+
+    def test_duplicate_seed_groups_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "must be unique"):
+            comparison.validate_seed_groups([42, 42])
+
+    def test_overlapping_restart_attempt_sets_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "seed sets overlap"):
+            comparison.validate_seed_groups([42, 43])
+
+    def test_default_seed_groups_are_independent(self):
+        comparison.validate_seed_groups([42, 84, 126])
+
     def test_deterministic_seed_repeats_identical_fit(self):
         rng = np.random.default_rng(10)
         matrix = np.vstack(

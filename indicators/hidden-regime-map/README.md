@@ -111,6 +111,10 @@ Each seed group uses the small deterministic restart schedule `seed + [0, 1,
 2]`; the highest-likelihood fully converged finite fit represents the group,
 while every failed and successful attempt remains in the JSON. This gives all
 candidates—including K=7—the same bounded recovery path.
+At least two independent seed groups are required. Group seeds must be unique,
+and their derived restart-attempt seed sets must not overlap; for example,
+`42 43` is invalid because the groups share attempt seeds, while the default
+`42 84 126` groups are independent.
 
 ```bash
 python indicators/hidden-regime-map/research/compare_state_counts.py \
