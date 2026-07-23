@@ -107,6 +107,10 @@ Generated data and model outputs are research artifacts and are not committed by
 for SPY daily data. It keeps the existing three observations, 80/20
 chronological split, training-only scaler, diagonal Gaussian HMM, and causal
 forward filter, while comparing K=3 through K=8 over fixed deterministic seeds.
+Each seed group uses the small deterministic restart schedule `seed + [0, 1,
+2]`; the highest-likelihood fully converged finite fit represents the group,
+while every failed and successful attempt remains in the JSON. This gives all
+candidates—including K=7—the same bounded recovery path.
 
 ```bash
 python indicators/hidden-regime-map/research/compare_state_counts.py \
@@ -131,7 +135,9 @@ and aligned-seed reproducibility checks. Any incomplete K makes the comparison
 inconclusive. Among candidates that pass, AIC, BIC, and OOS likelihood must all
 favor the same K; conflicting evidence is also reported as inconclusive. The
 JSON retains posterior-weighted train/OOS feature means and per-state guardrail
-inputs so the decision remains auditable.
+inputs so the decision remains auditable. It also retains posterior-weighted
+feature variances, variance-aware drift, mean and median durations, complete
+aligned transition matrices, and exposure to the existing SPY event windows.
 
 The deterministic decision explicitly retains K=3, selects K=6, selects another
 K, or remains inconclusive. It does not presume K=6.

@@ -10,6 +10,7 @@ calculated; raw hmmlearn state indices are never compared between fits.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 import sys
@@ -29,10 +30,11 @@ import train_hmm
 
 DEFAULT_STATE_COUNTS = tuple(range(3, 9))
 DEFAULT_SEEDS = (42, 84, 126)
+RESTART_OFFSETS = (0, 1, 2)
 RARE_STATE_THRESHOLD = 0.02
 MAX_LIKELIHOOD_DRIFT = 1.0
 MAX_OCCUPANCY_DRIFT = 0.50
-MAX_FEATURE_MEAN_DRIFT = 1.0
+MAX_FEATURE_DISTRIBUTION_DRIFT = 3.0
 MIN_PAIRWISE_SEPARATION = 1.0
 MIN_OOS_MEAN_DURATION = 1.50
 MAX_OOS_SINGLE_BAR_SHARE = 0.75
@@ -40,6 +42,13 @@ MAX_EMISSION_MEAN_RMSE = 0.50
 MAX_TRANSITION_RMSE = 0.15
 MAX_OOS_OCCUPANCY_RMSE = 0.10
 NEGATIVE_CONVERGENCE_DELTA_TOLERANCE = 1e-6
+
+
+class RestartGroupError(RuntimeError):
+    def __init__(self, group_seed: int, attempts: list[dict[str, Any]]):
+        self.group_seed = group_seed
+        self.attempts = attempts
+        super().__init__(f"all restart attempts failed for group seed {group_seed}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -88,6 +97,42 @@ def fit_candidate(matrix: np.ndarray, n_states: int, seed: int) -> GaussianHMM:
     if not np.isfinite(score):
         raise RuntimeError("non-finite train log likelihood")
     return model
+
+
+def fit_seed_group(
+    matrix: np.ndarray, n_states: int, group_seed: int
+) -> tuple[GaussianHMM, list[dict[str, Any]], int]:
+    """Run the documented restart schedule and retain the best valid attempt."""
+    attempts: list[dict[str, Any]] = []
+    successful: list[tuple[float, int, GaussianHMM]] = []
+    for offset in RESTART_OFFSETS:
+        attempt_seed = group_seed + offset
+        try:
+            model = fit_candidate(matrix, n_states, attempt_seed)
+            score = float(model.score(matrix))
+            attempts.append(
+                {
+                    "attempt_seed": attempt_seed,
+                    "status": "ok",
+                    "train_log_likelihood": score,
+                    "iterations": int(model.monitor_.iter),
+                }
+            )
+            successful.append((score, attempt_seed, model))
+        except Exception as exc:
+            attempts.append(
+                {
+                    "attempt_seed": attempt_seed,
+                    "status": "failed",
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+            )
+    if not successful:
+        raise RestartGroupError(group_seed, attempts)
+    _, selected_seed, selected_model = max(
+        successful, key=lambda item: (item[0], -item[1])
+    )
+    return selected_model, attempts, selected_seed
 
 
 def variances(model: GaussianHMM) -> np.ndarray:
@@ -157,6 +202,74 @@ def state_feature_means(
     return result
 
 
+def state_feature_variances(
+    matrix: np.ndarray, posterior: np.ndarray, means: list[list[float] | None]
+) -> list[list[float] | None]:
+    result: list[list[float] | None] = []
+    for state, mean in enumerate(means):
+        weights = posterior[:, state]
+        if mean is None or float(weights.sum()) <= 0.0:
+            result.append(None)
+            continue
+        difference = matrix - np.asarray(mean)
+        result.append(np.average(difference * difference, axis=0, weights=weights).tolist())
+    return result
+
+
+def feature_distribution_drift(
+    train_mean: list[float], train_variance: list[float],
+    oos_mean: list[float], oos_variance: list[float],
+) -> float:
+    left_variance = np.maximum(np.asarray(train_variance), 1e-12)
+    right_variance = np.maximum(np.asarray(oos_variance), 1e-12)
+    pooled = 0.5 * (left_variance + right_variance)
+    mean_term = np.sum((np.asarray(train_mean) - np.asarray(oos_mean)) ** 2 / pooled)
+    variance_term = np.sum(np.abs(np.log(left_variance / right_variance)))
+    return float(np.sqrt(mean_term + variance_term))
+
+
+def event_window_exposure(
+    dates: np.ndarray, posterior: np.ndarray, events: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    date_values = np.asarray(dates, dtype="datetime64[D]")
+    dominant = posterior.argmax(axis=1)
+    rows: list[dict[str, Any]] = []
+    for event in events:
+        mask = (date_values >= np.datetime64(event["start"])) & (
+            date_values <= np.datetime64(event["end"])
+        )
+        bars = int(mask.sum())
+        requested_start = np.datetime64(event["start"])
+        requested_end = np.datetime64(event["end"])
+        complete = (
+            len(date_values) > 0
+            and date_values.min() <= requested_start
+            and date_values.max() >= requested_end
+        )
+        rows.append(
+            {
+                "name": event["name"],
+                "start": event["start"],
+                "end": event["end"],
+                "context": event["context"],
+                "bars": bars,
+                "coverage_status": (
+                    "complete" if bars and complete else "partial_coverage" if bars else "unavailable"
+                ),
+                "actual_start": str(date_values[mask].min()) if bars else None,
+                "actual_end": str(date_values[mask].max()) if bars else None,
+                "average_posterior": posterior[mask].mean(axis=0).tolist()
+                if bars
+                else [0.0] * posterior.shape[1],
+                "dominant_state_share": [
+                    float(np.mean(dominant[mask] == state)) if bars else 0.0
+                    for state in range(posterior.shape[1])
+                ],
+            }
+        )
+    return rows
+
+
 def single_bar_shares(lengths: list[list[int]]) -> list[float]:
     return [
         float(np.mean(np.asarray(state_lengths) == 1)) if state_lengths else 1.0
@@ -189,6 +302,8 @@ def fit_metrics(
     train_rows: int,
     seed: int,
     observation_matrix: np.ndarray | None = None,
+    dates: np.ndarray | None = None,
+    events: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     train = full_matrix[:train_rows]
     oos = full_matrix[train_rows:]
@@ -215,6 +330,12 @@ def fit_metrics(
     feature_means_oos = state_feature_means(
         observations[train_rows:], posterior[train_rows:]
     )
+    feature_variances_train = state_feature_variances(
+        observations[:train_rows], posterior[:train_rows], feature_means_train
+    )
+    feature_variances_oos = state_feature_variances(
+        observations[train_rows:], posterior[train_rows:], feature_means_oos
+    )
     return {
         "seed": seed,
         "converged": bool(model.monitor_.converged),
@@ -238,17 +359,34 @@ def fit_metrics(
         "mean_state_duration_oos": [
             float(np.mean(item)) if item else 0.0 for item in durations_oos
         ],
+        "median_state_duration_train": [
+            float(np.median(item)) if item else 0.0 for item in durations_train
+        ],
+        "median_state_duration_oos": [
+            float(np.median(item)) if item else 0.0 for item in durations_oos
+        ],
         "single_bar_share_train": single_bar_shares(durations_train),
         "single_bar_share_oos": single_bar_shares(durations_oos),
         "posterior_feature_mean_train": feature_means_train,
         "posterior_feature_mean_oos": feature_means_oos,
-        "feature_mean_drift_l2": [
-            float(np.linalg.norm(np.asarray(train_mean) - np.asarray(oos_mean)))
-            for train_mean, oos_mean in zip(feature_means_train, feature_means_oos)
+        "posterior_feature_variance_train": feature_variances_train,
+        "posterior_feature_variance_oos": feature_variances_oos,
+        "variance_aware_feature_drift": [
+            feature_distribution_drift(train_mean, train_variance, oos_mean, oos_variance)
+            for train_mean, train_variance, oos_mean, oos_variance in zip(
+                feature_means_train,
+                feature_variances_train,
+                feature_means_oos,
+                feature_variances_oos,
+            )
         ],
         "emission_mean": np.asarray(model.means_).tolist(),
         "emission_variance": variances(model).tolist(),
         "self_transition": np.diag(model.transmat_).tolist(),
+        "transition_matrix": np.asarray(model.transmat_).tolist(),
+        "event_window_exposure": event_window_exposure(dates, posterior, events)
+        if dates is not None and events is not None
+        else [],
         "rare_state_count_train": int((occupancy_train < RARE_STATE_THRESHOLD).sum()),
         "rare_state_count_oos": int((occupancy_oos < RARE_STATE_THRESHOLD).sum()),
         "minimum_pairwise_separation": minimum_pairwise_separation(model),
@@ -256,23 +394,32 @@ def fit_metrics(
 
 
 def align_metric_lists(metrics: dict[str, Any], permutation: list[int]) -> dict[str, Any]:
-    result = dict(metrics)
+    result = copy.deepcopy(metrics)
     for key in (
         "occupancy_train",
         "occupancy_oos",
         "mean_state_duration_train",
         "mean_state_duration_oos",
+        "median_state_duration_train",
+        "median_state_duration_oos",
         "single_bar_share_train",
         "single_bar_share_oos",
         "posterior_feature_mean_train",
         "posterior_feature_mean_oos",
-        "feature_mean_drift_l2",
+        "posterior_feature_variance_train",
+        "posterior_feature_variance_oos",
+        "variance_aware_feature_drift",
         "emission_mean",
         "emission_variance",
         "self_transition",
     ):
         values = result[key]
         result[key] = [values[index] for index in permutation]
+    transition = np.asarray(result["transition_matrix"])
+    result["transition_matrix"] = transition[np.ix_(permutation, permutation)].tolist()
+    for event in result["event_window_exposure"]:
+        for key in ("average_posterior", "dominant_state_share"):
+            event[key] = [event[key][index] for index in permutation]
     return result
 
 
@@ -323,10 +470,12 @@ def summarize_candidate(models: list[GaussianHMM], fits: list[dict[str, Any]]) -
             "occupancy_oos",
             "mean_state_duration_train",
             "mean_state_duration_oos",
+            "median_state_duration_train",
+            "median_state_duration_oos",
             "single_bar_share_train",
             "single_bar_share_oos",
             "self_transition",
-            "feature_mean_drift_l2",
+            "variance_aware_feature_drift",
         )
     }
     summary = {
@@ -352,8 +501,10 @@ def evaluate_guardrails(candidate: dict[str, Any]) -> dict[str, Any]:
         <= MAX_LIKELIHOOD_DRIFT,
         "occupancy_drift": aggregate["occupancy_drift_l1"]["mean"]
         <= MAX_OCCUPANCY_DRIFT,
-        "feature_drift": max(state_ranges["feature_mean_drift_l2"]["maximum"])
-        <= MAX_FEATURE_MEAN_DRIFT,
+        "feature_drift": max(
+            state_ranges["variance_aware_feature_drift"]["maximum"]
+        )
+        <= MAX_FEATURE_DISTRIBUTION_DRIFT,
         "no_rare_train_states": aggregate["rare_state_count_train"]["mean"] == 0,
         "no_rare_oos_states": aggregate["rare_state_count_oos"]["mean"] == 0,
         "state_separation": aggregate["minimum_pairwise_separation"]["mean"]
@@ -420,6 +571,21 @@ def choose_outcome(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def map_issue_26_status(decision: dict[str, Any]) -> dict[str, Any]:
+    outcomes = {
+        "retain_k3": "retain_three_state_baseline",
+        "select_k6": "advance_six_state_candidate",
+        "select_other_k": "advance_other_state_count",
+        "inconclusive": "collect_more_evidence",
+    }
+    result = dict(decision)
+    result["machine_status"] = (
+        "selection_complete" if decision["selected_k"] is not None else "inconclusive"
+    )
+    result["issue_26_research_outcome"] = outcomes[decision["outcome"]]
+    return result
+
+
 def strict_json(value: Any) -> Any:
     if isinstance(value, dict): return {key: strict_json(item) for key, item in value.items()}
     if isinstance(value, (list, tuple)): return [strict_json(item) for item in value]
@@ -430,7 +596,7 @@ def strict_json(value: Any) -> Any:
 
 def markdown_report(result: dict[str, Any]) -> str:
     decision = result["decision"]
-    lines = ["# SPY 1D HMM state-count decision", "", f"**Outcome:** `{decision['outcome']}`", f"**Selected K:** {decision['selected_k'] if decision['selected_k'] is not None else 'none'}", "", decision["reason"], "", "| K | status | guardrails | train LL/obs | OOS LL/obs | AIC | BIC | OOS rare | drift L1 | separation |", "|---:|---|---|---:|---:|---:|---:|---:|---:|---:|"]
+    lines = ["# SPY 1D HMM state-count decision", "", f"**Outcome:** `{decision['outcome']}`", f"**Issue #26 research outcome:** `{decision['issue_26_research_outcome']}`", f"**Machine status:** `{decision['machine_status']}`", f"**Selected K:** {decision['selected_k'] if decision['selected_k'] is not None else 'none'}", "", decision["reason"], "", "| K | status | guardrails | train LL/obs | OOS LL/obs | AIC | BIC | OOS rare | drift L1 | separation |", "|---:|---|---|---:|---:|---:|---:|---:|---:|---:|"]
     for row in result["candidates"]:
         if row["status"] != "ok":
             lines.append(f"| {row['k']} | failed | incomplete | — | — | — | — | — | — | — |")
@@ -459,34 +625,59 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
     train_matrix = scaler.fit_transform(features.loc[:train_rows - 1, train_hmm.FEATURE_NAMES])
     full_matrix = scaler.transform(features[train_hmm.FEATURE_NAMES])
     observation_matrix = features[train_hmm.FEATURE_NAMES].to_numpy(dtype=float)
+    dates = features["date"].dt.tz_localize(None).to_numpy(dtype="datetime64[D]")
+    event_path = RESEARCH_DIR / "event-windows.json"
+    all_events = json.loads(event_path.read_text(encoding="utf-8"))
+    events = [event for event in all_events if event.get("symbol") == "SPY"]
     candidates = []
     for k in candidate_state_counts():
         models, fits, failures = [], [], []
         for seed in args.seeds:
+            restart_attempts: list[dict[str, Any]] = []
             try:
-                model = fit_candidate(train_matrix, k, seed)
+                model, restart_attempts, selected_attempt_seed = fit_seed_group(
+                    train_matrix, k, seed
+                )
                 models.append(model)
-                fits.append(
-                    fit_metrics(
+                metrics = fit_metrics(
                         model,
                         full_matrix,
                         train_rows,
                         seed,
                         observation_matrix=observation_matrix,
+                        dates=dates,
+                        events=events,
                     )
+                metrics["group_seed"] = seed
+                metrics["selected_attempt_seed"] = selected_attempt_seed
+                metrics["restart_attempts"] = restart_attempts
+                fits.append(metrics)
+            except RestartGroupError as exc:
+                failures.append(
+                    {
+                        "group_seed": exc.group_seed,
+                        "error": str(exc),
+                        "restart_attempts": exc.attempts,
+                    }
                 )
             except Exception as exc:
-                failures.append({"seed": seed, "error": f"{type(exc).__name__}: {exc}"})
+                failures.append(
+                    {
+                        "group_seed": seed,
+                        "error": f"{type(exc).__name__}: {exc}",
+                        "restart_attempts": restart_attempts,
+                    }
+                )
         if failures:
             candidates.append({"k": k, "status": "failed", "failures": failures})
         else:
             candidates.append({"k": k, "status": "ok", **summarize_candidate(models, fits)})
     result = {
         "schema_version": 1, "scope": {"symbol": "SPY", "timeframe": "1D", "state_counts": list(DEFAULT_STATE_COUNTS), "seeds": args.seeds},
-        "method": {"features": train_hmm.FEATURE_NAMES, "feature_config": asdict(config), "train_fraction": args.train_fraction, "covariance_type": "diag", "inference": "causal_forward_filter", "alignment": "minimum-cost symmetric diagonal-Gaussian emission distance within equal K", "guardrail_thresholds": {"rare_state_occupancy": RARE_STATE_THRESHOLD, "maximum_train_oos_likelihood_drift": MAX_LIKELIHOOD_DRIFT, "maximum_occupancy_drift_l1": MAX_OCCUPANCY_DRIFT, "maximum_feature_mean_drift_l2": MAX_FEATURE_MEAN_DRIFT, "minimum_pairwise_separation": MIN_PAIRWISE_SEPARATION, "minimum_oos_mean_duration": MIN_OOS_MEAN_DURATION, "maximum_oos_single_bar_share": MAX_OOS_SINGLE_BAR_SHARE, "maximum_emission_mean_rmse": MAX_EMISSION_MEAN_RMSE, "maximum_transition_rmse": MAX_TRANSITION_RMSE, "maximum_oos_occupancy_rmse": MAX_OOS_OCCUPANCY_RMSE, "negative_convergence_delta_tolerance": NEGATIVE_CONVERGENCE_DELTA_TOLERANCE}},
+        "method": {"features": train_hmm.FEATURE_NAMES, "feature_config": asdict(config), "train_fraction": args.train_fraction, "covariance_type": "diag", "inference": "causal_forward_filter", "alignment": "minimum-cost symmetric diagonal-Gaussian emission distance within equal K", "restart_offsets": list(RESTART_OFFSETS), "event_windows_file": str(event_path), "guardrail_thresholds": {"rare_state_occupancy": RARE_STATE_THRESHOLD, "maximum_train_oos_likelihood_drift": MAX_LIKELIHOOD_DRIFT, "maximum_occupancy_drift_l1": MAX_OCCUPANCY_DRIFT, "maximum_variance_aware_feature_drift": MAX_FEATURE_DISTRIBUTION_DRIFT, "minimum_pairwise_separation": MIN_PAIRWISE_SEPARATION, "minimum_oos_mean_duration": MIN_OOS_MEAN_DURATION, "maximum_oos_single_bar_share": MAX_OOS_SINGLE_BAR_SHARE, "maximum_emission_mean_rmse": MAX_EMISSION_MEAN_RMSE, "maximum_transition_rmse": MAX_TRANSITION_RMSE, "maximum_oos_occupancy_rmse": MAX_OOS_OCCUPANCY_RMSE, "negative_convergence_delta_tolerance": NEGATIVE_CONVERGENCE_DELTA_TOLERANCE}},
         "sample": {"usable_rows": len(features), "train_rows": train_rows, "oos_rows": len(features) - train_rows}, "candidates": candidates,
     }
-    result["decision"] = choose_outcome(candidates)
+    result["decision"] = map_issue_26_status(choose_outcome(candidates))
     return strict_json(result)
 
 

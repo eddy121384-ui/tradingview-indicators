@@ -73,6 +73,42 @@ class CandidateTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "negative likelihood delta"):
                 comparison.fit_candidate(np.ones((20, 3)), 3, 42)
 
+    def test_restart_group_selects_best_valid_fit_and_preserves_failures(self):
+        class ScoredModel:
+            def __init__(self, score):
+                self._score = score
+                self.monitor_ = type("Monitor", (), {"iter": 5})()
+
+            def score(self, matrix):
+                return self._score
+
+        def attempt(matrix, n_states, seed):
+            if seed == 42:
+                raise RuntimeError("synthetic failure")
+            return ScoredModel({43: -20.0, 44: -10.0}[seed])
+
+        with patch.object(comparison, "fit_candidate", side_effect=attempt):
+            model, attempts, selected_seed = comparison.fit_seed_group(
+                np.ones((20, 3)), 7, 42
+            )
+        self.assertEqual(selected_seed, 44)
+        self.assertEqual(model.score(None), -10.0)
+        self.assertEqual([row["status"] for row in attempts], ["failed", "ok", "ok"])
+        self.assertIn("synthetic failure", attempts[0]["error"])
+
+    def test_restart_group_failure_preserves_every_attempt(self):
+        with patch.object(
+            comparison, "fit_candidate", side_effect=RuntimeError("no convergence")
+        ):
+            with self.assertRaises(comparison.RestartGroupError) as caught:
+                comparison.fit_seed_group(np.ones((20, 3)), 7, 42)
+        self.assertEqual(
+            [row["attempt_seed"] for row in caught.exception.attempts], [42, 43, 44]
+        )
+        self.assertTrue(
+            all(row["status"] == "failed" for row in caught.exception.attempts)
+        )
+
 
 class AlignmentTests(unittest.TestCase):
     def test_permuted_states_align_before_parameter_comparison(self):
@@ -95,6 +131,29 @@ class AlignmentTests(unittest.TestCase):
                 DummyModel([[0], [1]], [[1], [1]]),
                 DummyModel([[0], [1], [2]], [[1], [1], [1]]),
             )
+
+    def test_alignment_reorders_variances_transitions_and_event_exposure(self):
+        metrics = {
+            key: [[20], [30], [10]] if "feature" in key or "emission" in key else [20, 30, 10]
+            for key in (
+                "occupancy_train", "occupancy_oos", "mean_state_duration_train",
+                "mean_state_duration_oos", "median_state_duration_train",
+                "median_state_duration_oos", "single_bar_share_train",
+                "single_bar_share_oos", "posterior_feature_mean_train",
+                "posterior_feature_mean_oos", "posterior_feature_variance_train",
+                "posterior_feature_variance_oos", "variance_aware_feature_drift",
+                "emission_mean", "emission_variance", "self_transition",
+            )
+        }
+        metrics["transition_matrix"] = [[2, 20, 21], [30, 3, 31], [10, 11, 1]]
+        metrics["event_window_exposure"] = [{
+            "average_posterior": [20, 30, 10],
+            "dominant_state_share": [0.2, 0.3, 0.1],
+        }]
+        aligned = comparison.align_metric_lists(metrics, [2, 0, 1])
+        self.assertEqual(aligned["emission_variance"], [[10], [20], [30]])
+        self.assertEqual(aligned["transition_matrix"], [[1, 10, 11], [21, 2, 20], [31, 30, 3]])
+        self.assertEqual(aligned["event_window_exposure"][0]["average_posterior"], [10, 20, 30])
 
 
 class MetricTests(unittest.TestCase):
@@ -125,6 +184,26 @@ class MetricTests(unittest.TestCase):
             [[1.0, 2.0], [3.0, 4.0]],
         )
         self.assertEqual(comparison.single_bar_shares([[1, 2, 1], []]), [2 / 3, 1.0])
+        variances = comparison.state_feature_variances(
+            matrix, posterior, [[1.0, 2.0], [3.0, 4.0]]
+        )
+        self.assertEqual(variances, [[0.0, 0.0], [0.0, 0.0]])
+        self.assertGreater(
+            comparison.feature_distribution_drift(
+                [0.0], [1.0], [0.0], [4.0]
+            ),
+            0.0,
+        )
+
+    def test_event_window_exposure_uses_existing_windows_shape(self):
+        rows = comparison.event_window_exposure(
+            np.asarray(["2020-02-18", "2020-02-20"], dtype="datetime64[D]"),
+            np.asarray([[0.8, 0.2], [0.1, 0.9]]),
+            [{"name": "shock", "start": "2020-02-19", "end": "2020-02-21", "context": "synthetic"}],
+        )
+        self.assertEqual(rows[0]["bars"], 1)
+        self.assertEqual(rows[0]["coverage_status"], "partial_coverage")
+        self.assertEqual(rows[0]["average_posterior"], [0.1, 0.9])
 
 
 class FailureAndDecisionTests(unittest.TestCase):
@@ -150,7 +229,7 @@ class FailureAndDecisionTests(unittest.TestCase):
                     "oos_occupancy_rmse": {"max": 0.05},
                 },
                 "state_ranges": {
-                    "feature_mean_drift_l2": {"maximum": [0.2, 0.2, 0.2]},
+                    "variance_aware_feature_drift": {"maximum": [0.2, 0.2, 0.2]},
                     "mean_state_duration_oos": {"minimum": [2.0, 2.0, 2.0]},
                     "single_bar_share_oos": {"maximum": [0.2, 0.2, 0.2]},
                 },
@@ -224,7 +303,7 @@ class FailureAndDecisionTests(unittest.TestCase):
             "non_negative_convergence_delta": lambda row: row["fits"][0].update(final_likelihood_delta=-1.0),
             "oos_likelihood_drift": lambda row: row["aggregate"]["train_oos_likelihood_drift"].update(mean=2.0),
             "occupancy_drift": lambda row: row["aggregate"]["occupancy_drift_l1"].update(mean=1.0),
-            "feature_drift": lambda row: row["aggregate"]["state_ranges"]["feature_mean_drift_l2"].update(maximum=[2.0]),
+            "feature_drift": lambda row: row["aggregate"]["state_ranges"]["variance_aware_feature_drift"].update(maximum=[4.0]),
             "no_rare_train_states": lambda row: row["aggregate"]["rare_state_count_train"].update(mean=1.0),
             "no_rare_oos_states": lambda row: row["aggregate"]["rare_state_count_oos"].update(mean=1.0),
             "state_separation": lambda row: row["aggregate"]["minimum_pairwise_separation"].update(mean=0.5),
@@ -241,6 +320,13 @@ class FailureAndDecisionTests(unittest.TestCase):
                 result = comparison.evaluate_guardrails(candidate)
                 self.assertFalse(result["passed"])
                 self.assertIn(expected_failure, result["failed"])
+
+    def test_machine_status_maps_to_explicit_issue_outcome(self):
+        mapped = comparison.map_issue_26_status(
+            {"outcome": "inconclusive", "selected_k": None, "reason": "conflict"}
+        )
+        self.assertEqual(mapped["machine_status"], "inconclusive")
+        self.assertEqual(mapped["issue_26_research_outcome"], "collect_more_evidence")
 
 
 if __name__ == "__main__":
