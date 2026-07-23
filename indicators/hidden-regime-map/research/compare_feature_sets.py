@@ -54,9 +54,9 @@ def calculate_path_features(frame: pd.DataFrame, lookback: int = LOOKBACK) -> pd
     )
 
     log_return = np.log(close / close.shift(1))
-    squared_return = log_return.square()
+    squared_return = log_return.pow(2)
     total_variance = squared_return.rolling(lookback, min_periods=lookback).sum()
-    downside_variance = log_return.clip(upper=0.0).square().rolling(
+    downside_variance = log_return.clip(upper=0.0).pow(2).rolling(
         lookback, min_periods=lookback
     ).sum()
     downside_share = downside_variance.div(total_variance.where(total_variance != 0.0)).fillna(
@@ -121,15 +121,22 @@ def diagnostic_summary(result: dict[str, Any]) -> dict[str, Any]:
     leaders = metric_leaders(result)
     reference_k = selected_k if selected_k is not None else leaders["oos_likelihood"]
     row = candidate_for_k(result, reference_k) if reference_k is not None else None
-    failed = sorted(
+    all_candidate_failed = sorted(
         {name for candidate in result["candidates"] if candidate["status"] == "ok" for name in candidate["guardrails"]["failed"]}
         | {f"incomplete_k_{candidate['k']}" for candidate in result["candidates"] if candidate["status"] != "ok"}
     )
     if row is None:
-        return {"reference_k": None, "failed_guardrails": failed, "leaders": leaders, "cross_feature_diagnostics": None}
+        return {
+            "reference_k": None,
+            "failed_guardrails": [],
+            "all_candidate_failed_guardrails": all_candidate_failed,
+            "leaders": leaders,
+            "cross_feature_diagnostics": None,
+        }
     return {
         "reference_k": reference_k,
-        "failed_guardrails": failed,
+        "failed_guardrails": list(row["guardrails"]["failed"]),
+        "all_candidate_failed_guardrails": all_candidate_failed,
         "leaders": leaders,
         "cross_feature_diagnostics": cross_feature_diagnostics(
             row, len(result["method"]["features"])

@@ -42,6 +42,19 @@ class FormulaTests(unittest.TestCase):
         self.assertEqual(result.loc[20, features.EFFICIENCY_RATIO], 0.0)
         self.assertEqual(result.loc[20, features.DOWNSIDE_SHARE], 0.0)
 
+    def test_both_formulas_execute_with_installed_pandas(self):
+        result = features.calculate_path_features(
+            self.frame([100.0 + (index % 3) for index in range(25)])
+        )
+        self.assertIsInstance(result[features.EFFICIENCY_RATIO], pd.Series)
+        self.assertIsInstance(result[features.DOWNSIDE_SHARE], pd.Series)
+        self.assertTrue(
+            np.isfinite(
+                result.loc[20:, [features.EFFICIENCY_RATIO, features.DOWNSIDE_SHARE]]
+                .to_numpy()
+            ).all()
+        )
+
     def test_causal_warm_up_and_no_lookahead(self):
         closes = [100.0 + index for index in range(30)]
         original = features.calculate_path_features(self.frame(closes))
@@ -160,6 +173,36 @@ class VariantDecisionTests(unittest.TestCase):
             fits=[self.fit(2.1, 1.14, 0.38)],
         )
         self.assertFalse(features.materially_clearer(baseline, enriched))
+
+    def test_referenced_guardrails_are_separate_from_other_candidates(self):
+        def candidate(k, failed, aic):
+            return {
+                "k": k,
+                "status": "ok",
+                "guardrails": {"failed": failed},
+                "fits": [self.fit(2.0, 0.6, 0.3)],
+                "aggregate": {
+                    "aic": {"mean": aic},
+                    "bic": {"mean": aic},
+                    "oos_log_likelihood_per_observation": {"mean": -aic},
+                },
+            }
+
+        result = {
+            "decision": {"selected_k": None},
+            "method": {"features": ["a", "b", "c"]},
+            "candidates": [
+                candidate(3, ["failure_from_k3"], 20.0),
+                candidate(4, ["failure_from_k4"], 10.0),
+            ],
+        }
+        summary = features.diagnostic_summary(result)
+        self.assertEqual(summary["reference_k"], 4)
+        self.assertEqual(summary["failed_guardrails"], ["failure_from_k4"])
+        self.assertEqual(
+            summary["all_candidate_failed_guardrails"],
+            ["failure_from_k3", "failure_from_k4"],
+        )
 
 
 if __name__ == "__main__":
