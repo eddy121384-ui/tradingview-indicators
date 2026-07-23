@@ -101,6 +101,63 @@ The repository workflow runs the same training and characterization checks for S
 
 Generated data and model outputs are research artifacts and are not committed by default. A Pine implementation remains blocked until the state-characterization evidence is reviewed and judged sufficiently stable and interpretable.
 
+## State-count comparison
+
+`research/compare_state_counts.py` runs the smallest state-count selection check
+for SPY daily data. It keeps the existing three observations, 80/20
+chronological split, training-only scaler, diagonal Gaussian HMM, and causal
+forward filter, while comparing K=3 through K=8 over fixed deterministic seeds.
+Each seed group uses the small deterministic restart schedule `seed + [0, 1,
+2]`; the highest-likelihood fully converged finite fit represents the group,
+while every failed and successful attempt remains in the JSON. This gives all
+candidates—including K=7—the same bounded recovery path.
+At least two independent seed groups are required. Group seeds must be unique,
+and their derived restart-attempt seed sets must not overlap; for example,
+`42 43` is invalid because the groups share attempt seeds, while the default
+`42 84 126` groups are independent.
+
+```bash
+python indicators/hidden-regime-map/research/compare_state_counts.py \
+  --input path/to/spy.csv \
+  --output-dir path/to/state-count-output \
+  --symbol SPY \
+  --timeframe 1D
+```
+
+The command writes `state-count-comparison.json` with per-fit and aggregate
+metrics, plus a concise `state-count-decision.md`. The evidence includes
+per-observation train/OOS likelihood, AIC, BIC, occupancy, duration,
+self-transition, rare states, train/OOS occupancy drift, pairwise emission
+separation, and reproducibility across seeds. Because HMM state numbers are
+arbitrary, fits of the same K are aligned by their Gaussian emissions before
+state-level reproducibility is measured; raw state indices are never compared.
+
+These diagnostics are selection guardrails, not decorative columns. A candidate
+must pass convergence and likelihood-delta checks, OOS likelihood and feature
+drift limits, occupancy stability, rare-state, duration/noise, state-separation,
+and aligned-seed reproducibility checks. Any incomplete K makes the comparison
+inconclusive. Among candidates that pass, AIC, BIC, and OOS likelihood must all
+favor the same K; conflicting evidence is also reported as inconclusive. Metric
+leaders are determined across every complete K before guardrails are applied,
+so filtering a noisy candidate cannot manufacture agreement among the remaining
+models. A metric leader that fails a guardrail yields an inconclusive result. The
+convergence check rejects an iteration-capped fit whose last positive likelihood
+improvement has not reached the configured tolerance. Likelihood and occupancy
+drift limits apply to the worst deterministic seed fit, not only their mean, so
+stable seeds cannot conceal one unstable fit. Rare-state and separation checks
+likewise use the worst seed. The
+JSON retains posterior-weighted train/OOS feature means and per-state guardrail
+inputs so the decision remains auditable. It also retains posterior-weighted
+feature variances, variance-aware drift, mean and median durations, complete
+aligned transition matrices, and exposure to the existing SPY event windows.
+Event exposure retains coverage status and ratio, actual dates, window return,
+average posterior, and dominant-state share.
+
+The deterministic decision explicitly retains K=3, selects K=6, selects another
+K, or remains inconclusive. It does not presume K=6.
+Downloaded SPY data and generated comparison outputs remain temporary CI/local
+artifacts and must not be committed.
+
 ## Pine parity spike
 
 The first Pine step is intentionally narrow:
