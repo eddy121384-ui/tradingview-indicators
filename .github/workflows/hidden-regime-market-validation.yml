@@ -9,7 +9,7 @@ on:
       - .github/workflows/hidden-regime-market-validation.yml
   push:
     branches:
-      - research/hidden-regime-state-characterization
+      - research/hidden-regime-pine-parity-spike
     paths:
       - indicators/hidden-regime-map/**
       - .github/workflows/hidden-regime-market-validation.yml
@@ -41,8 +41,8 @@ jobs:
       - name: Install research dependencies
         run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
 
-      - name: Run state characterization unit tests
-        run: python -m unittest indicators/hidden-regime-map/research/test_characterize_states.py
+      - name: Run Hidden Regime unit tests
+        run: python -m unittest discover -s indicators/hidden-regime-map/research -p 'test_*.py'
 
       - name: Download adjusted daily OHLC
         run: |

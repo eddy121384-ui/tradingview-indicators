@@ -1,0 +1,139 @@
+{
+  "profile_id": "spy-1d-v0.1",
+  "deployment_status": "pine-parity-spike-only",
+  "model_version": "hidden-regime-map-v0.1-research",
+  "symbol": "SPY",
+  "timeframe": "1D",
+  "price_adjustment": "dividend-adjusted OHLC",
+  "provenance": {
+    "source_workflow": "Hidden Regime Market Validation",
+    "source_run_number": 13,
+    "source_run_id": 29887163654,
+    "source_head_sha": "780b725c998ff7ab0d9f36825b915a163c41cc95",
+    "source_artifact": "hidden-regime-SPY",
+    "artifact_digest": "sha256:e31f259c8181d598c008c0ac594a86a0d25bada48d044b11e67cd594e0e04b23",
+    "training_end": "2023-04-21T00:00:00+00:00",
+    "feature_start": "2010-05-26T00:00:00+00:00",
+    "feature_end": "2026-07-21T00:00:00+00:00",
+    "selected_seed": 45
+  },
+  "feature_names": [
+    "standardized_return",
+    "atr_pct",
+    "trend_strength"
+  ],
+  "feature_config": {
+    "return_vol_lookback": 20,
+    "atr_lookback": 20,
+    "fast_ma": 20,
+    "slow_ma": 100
+  },
+  "scaler": {
+    "mean": [
+      0.07482489133979355,
+      0.012670512182703287,
+      2.450268592092003
+    ],
+    "scale": [
+      1.0454684699762082,
+      0.007191739442742329,
+      2.990554292240692
+    ]
+  },
+  "hmm": {
+    "start_probability": [
+      1.0,
+      1.0331893762513777e-162,
+      0.0
+    ],
+    "transition_matrix": [
+      [
+        0.9788632405266485,
+        0.02113675947335151,
+        2.797020703428349e-109
+      ],
+      [
+        0.009128235455344675,
+        0.9740566697446494,
+        0.016815094800005786
+      ],
+      [
+        6.806142872011186e-131,
+        0.016951746866736256,
+        0.9830482531332637
+      ]
+    ],
+    "emission_means": [
+      [
+        -0.017568103450812604,
+        1.3585523933529304,
+        -1.4422651971708662
+      ],
+      [
+        -0.02167999703048412,
+        -0.002025599737878038,
+        -0.30725602717113204
+      ],
+      [
+        0.030165420804613468,
+        -0.63870286387411,
+        0.9903143586036746
+      ]
+    ],
+    "emission_variances": [
+      [
+        0.8769876121917453,
+        1.8372083218932571,
+        0.09702474904048229
+      ],
+      [
+        0.8933516698059509,
+        0.24772288255634398,
+        0.13135716024287522
+      ],
+      [
+        1.1641408071895616,
+        0.08593171726068849,
+        0.24547316254244986
+      ]
+    ]
+  },
+  "state_descriptions": {
+    "A": {
+      "label": "two-sided stress",
+      "direction": "mixed",
+      "train_direction": "mixed",
+      "oos_direction": "mixed",
+      "volatility": "high",
+      "confidence": "low",
+      "contradictions": [
+        "trend and 20-day forward return point in opposite directions"
+      ]
+    },
+    "B": {
+      "label": "advance",
+      "direction": "positive",
+      "train_direction": "positive",
+      "oos_direction": "positive",
+      "volatility": "normal",
+      "confidence": "high",
+      "contradictions": []
+    },
+    "C": {
+      "label": "calm advance",
+      "direction": "positive",
+      "train_direction": "positive",
+      "oos_direction": "positive",
+      "volatility": "low",
+      "confidence": "high",
+      "contradictions": []
+    }
+  },
+  "constraints": {
+    "supported_symbol": "SPY",
+    "supported_timeframe": "1D",
+    "automatic_retraining": false,
+    "cross_asset_validity_claim": false,
+    "strategy_or_pnl_claim": false
+  }
+}

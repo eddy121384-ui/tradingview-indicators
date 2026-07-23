@@ -1,0 +1,162 @@
+{
+  "fixture_id": "spy-1d-v0.1-parity-checkpoints",
+  "profile_id": "spy-1d-v0.1",
+  "source": {
+    "workflow_run_id": 29887163654,
+    "workflow_run_number": 13,
+    "head_sha": "780b725c998ff7ab0d9f36825b915a163c41cc95",
+    "artifact": "hidden-regime-SPY",
+    "data_contract": "Yahoo Finance auto-adjusted daily OHLC; Pine must request dividend-adjusted standard OHLC and report feed differences"
+  },
+  "notes": [
+    "These rows are a small verification fixture, not a historical dataset.",
+    "Feature parity must be checked before posterior parity.",
+    "Exact posterior tolerance is set only after comparing a TradingView export."
+  ],
+  "checkpoints": [
+    {
+      "date": "2010-05-26",
+      "close": 80.31062316894531,
+      "standardized_return": -0.3313461315398305,
+      "atr_pct": 0.0310441137098758,
+      "trend_strength": -0.0517518463552785,
+      "posterior_A": 1.0,
+      "posterior_B": 1.5031901719885807e-167,
+      "posterior_C": 0.0,
+      "dominant_state": "A",
+      "sample": "train"
+    },
+    {
+      "date": "2010-09-21",
+      "close": 86.2796859741211,
+      "standardized_return": -0.191214122518324,
+      "atr_pct": 0.013545157568383,
+      "trend_strength": 0.1034975358316055,
+      "posterior_A": 0.0828826541978755,
+      "posterior_B": 0.9171150272695082,
+      "posterior_C": 2.318532616102944e-06,
+      "dominant_state": "B",
+      "sample": "train"
+    },
+    {
+      "date": "2010-10-27",
+      "close": 89.61039733886719,
+      "standardized_return": -0.4361790784144477,
+      "atr_pct": 0.0124218656527318,
+      "trend_strength": 4.31767077040259,
+      "posterior_A": 6.409193240860045e-12,
+      "posterior_B": 0.3628817709603676,
+      "posterior_C": 0.6371182290332232,
+      "dominant_state": "C",
+      "sample": "train"
+    },
+    {
+      "date": "2011-08-08",
+      "close": 86.22103881835938,
+      "standardized_return": -3.4996566469161934,
+      "atr_pct": 0.0236726812844855,
+      "trend_strength": -0.7043493347491951,
+      "posterior_A": 0.943805800418862,
+      "posterior_B": 0.0561941995811375,
+      "posterior_C": 1.0151780373001309e-15,
+      "dominant_state": "A",
+      "sample": "train"
+    },
+    {
+      "date": "2017-06-30",
+      "close": 210.1547698974609,
+      "standardized_return": 0.4231206224730521,
+      "atr_pct": 0.0064907879967638,
+      "trend_strength": 3.6832367468963096,
+      "posterior_A": 2.9597449250121533e-14,
+      "posterior_B": 0.0013157048288817,
+      "posterior_C": 0.9986842951710886,
+      "dominant_state": "C",
+      "sample": "train"
+    },
+    {
+      "date": "2018-12-24",
+      "close": 209.6357879638672,
+      "standardized_return": -1.7966564827203642,
+      "atr_pct": 0.0256429495530706,
+      "trend_strength": -2.498369941293379,
+      "posterior_A": 0.999999904113368,
+      "posterior_B": 9.588663180420305e-08,
+      "posterior_C": 2.3111239304547007e-29,
+      "dominant_state": "A",
+      "sample": "train"
+    },
+    {
+      "date": "2020-03-16",
+      "close": 218.6279296875,
+      "standardized_return": -2.410585938212497,
+      "atr_pct": 0.0585115785974455,
+      "trend_strength": -1.0088740827379323,
+      "posterior_A": 1.0,
+      "posterior_B": 1.1356433092134305e-35,
+      "posterior_C": 4.9451609047422823e-147,
+      "dominant_state": "A",
+      "sample": "train"
+    },
+    {
+      "date": "2020-06-08",
+      "close": 296.33544921875,
+      "standardized_return": 0.9542949497796598,
+      "atr_pct": 0.0180940769177217,
+      "trend_strength": 0.9895413230645016,
+      "posterior_A": 0.0003241504055848,
+      "posterior_B": 0.9996758383615804,
+      "posterior_C": 1.1232834843058964e-08,
+      "dominant_state": "B",
+      "sample": "train"
+    },
+    {
+      "date": "2022-06-13",
+      "close": 353.9408569335937,
+      "standardized_return": -2.029504425433917,
+      "atr_pct": 0.0258839951885774,
+      "trend_strength": -2.677162980062966,
+      "posterior_A": 0.9999999526662792,
+      "posterior_B": 4.733372120892187e-08,
+      "posterior_C": 2.607933240858385e-30,
+      "dominant_state": "A",
+      "sample": "train"
+    },
+    {
+      "date": "2023-04-21",
+      "close": 395.6432495117188,
+      "standardized_return": 0.1325146085022864,
+      "atr_pct": 0.0095257354164001,
+      "trend_strength": 2.6504385051145034,
+      "posterior_A": 3.328415765277324e-08,
+      "posterior_B": 0.9927808055708732,
+      "posterior_C": 0.0072191611449692,
+      "dominant_state": "B",
+      "sample": "train"
+    },
+    {
+      "date": "2023-04-24",
+      "close": 396.0559692382813,
+      "standardized_return": 0.1801652956689094,
+      "atr_pct": 0.0090347481882392,
+      "trend_strength": 2.964233498174217,
+      "posterior_A": 9.03514565807144e-09,
+      "posterior_B": 0.9757912908856902,
+      "posterior_C": 0.0242087000791643,
+      "dominant_state": "B",
+      "sample": "out_of_sample"
+    },
+    {
+      "date": "2026-07-21",
+      "close": 748.280029296875,
+      "standardized_return": 1.1288222197278304,
+      "atr_pct": 0.0115451368780292,
+      "trend_strength": 3.772848772761024,
+      "posterior_A": 1.3436473026158562e-10,
+      "posterior_B": 0.6267621946458717,
+      "posterior_C": 0.3732378052197636,
+      "dominant_state": "B",
+      "sample": "out_of_sample"
+    }
+  ]
+}

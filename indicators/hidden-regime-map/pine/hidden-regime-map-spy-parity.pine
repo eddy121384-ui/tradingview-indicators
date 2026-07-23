@@ -1,0 +1,357 @@
+//@version=6
+indicator("Hidden Regime Map — SPY 1D Pine Parity Spike", shorttitle = "HRM SPY Parity", overlay = false, max_bars_back = 5000)
+
+// Research-only profile. This script intentionally supports SPY on the 1D timeframe only.
+const string PROFILE_ID = "spy-1d-v0.1"
+int FEATURE_START = timestamp("GMT+0", 2010, 5, 26, 0, 0)
+int FEATURE_START_NEXT_DAY = timestamp("GMT+0", 2010, 5, 27, 0, 0)
+const float EPSILON = 1e-300
+const float TWO_PI = 6.283185307179586
+const int CHECKPOINT_TOTAL = 12
+
+// Provisional on-chart tolerances used when CSV export is unavailable.
+const float CLOSE_REL_TOL = 0.0005
+const float STD_RETURN_TOL = 0.005
+const float ATR_PCT_TOL = 0.00005
+const float TREND_TOL = 0.01
+const float POSTERIOR_TOL = 0.01
+const float PROB_SUM_TOL = 1e-10
+
+bool showBackground = input.bool(true, "Shade dominant state", group = "Display")
+bool showDebugTable = input.bool(true, "Show parity diagnostics", group = "Display")
+bool showCheckpointEvidence = input.bool(true, "Show checkpoint evidence", group = "Display")
+
+// Explicitly request standard, dividend-adjusted prices so non-standard candles and
+// chart-level adjustment settings do not silently change the model inputs.
+string standardTicker = ticker.standard(syminfo.tickerid)
+string adjustedTicker = ticker.modify(standardTicker, adjustment = adjustment.dividends)
+[adjOpen, adjHigh, adjLow, adjClose] = request.security(
+     adjustedTicker,
+     "1D",
+     [open, high, low, close],
+     gaps = barmerge.gaps_off,
+     lookahead = barmerge.lookahead_off)
+
+bool supportedSymbol = syminfo.ticker == "SPY"
+bool supportedTimeframe = timeframe.isdaily and timeframe.multiplier == 1
+bool supported = supportedSymbol and supportedTimeframe
+
+// Exact research features.
+float logReturn = math.log(adjClose / adjClose[1])
+float logReturnMean = ta.sma(logReturn, 20)
+float logReturnMeanSquare = ta.sma(logReturn * logReturn, 20)
+float returnVariance = math.max(logReturnMeanSquare - logReturnMean * logReturnMean, 0.0)
+float returnVolatility = math.sqrt(returnVariance)
+float standardizedReturn = returnVolatility > 0.0 ? logReturn / returnVolatility : na
+float trueRange = math.max(adjHigh - adjLow, math.max(math.abs(adjHigh - adjClose[1]), math.abs(adjLow - adjClose[1])))
+float atr = ta.sma(trueRange, 20)
+float atrPct = atr > 0.0 ? atr / adjClose : na
+float fastAverage = ta.sma(adjClose, 20)
+float slowAverage = ta.sma(adjClose, 100)
+float trendStrength = atr > 0.0 ? (fastAverage - slowAverage) / atr : na
+bool featuresReady = not na(standardizedReturn) and not na(atrPct) and not na(trendStrength)
+
+// Frozen StandardScaler parameters.
+float x0 = (standardizedReturn - 0.07482489133979355) / 1.0454684699762082
+float x1 = (atrPct - 0.012670512182703287) / 0.007191739442742329
+float x2 = (trendStrength - 2.450268592092003) / 2.990554292240692
+
+f_logsumexp3(float a, float b, float c) =>
+    float maximum = math.max(a, math.max(b, c))
+    maximum + math.log(math.exp(a - maximum) + math.exp(b - maximum) + math.exp(c - maximum))
+
+f_log_emission(
+     float value0,
+     float value1,
+     float value2,
+     float mean0,
+     float mean1,
+     float mean2,
+     float variance0,
+     float variance1,
+     float variance2) =>
+    -0.5 * (
+         math.log(TWO_PI * variance0) + math.pow(value0 - mean0, 2.0) / variance0 +
+         math.log(TWO_PI * variance1) + math.pow(value1 - mean1, 2.0) / variance1 +
+         math.log(TWO_PI * variance2) + math.pow(value2 - mean2, 2.0) / variance2)
+
+float emissionA = f_log_emission(
+     x0, x1, x2,
+     -0.017568103450812604, 1.3585523933529304, -1.4422651971708662,
+     0.8769876121917453, 1.8372083218932571, 0.09702474904048229)
+float emissionB = f_log_emission(
+     x0, x1, x2,
+     -0.02167999703048412, -0.002025599737878038, -0.30725602717113204,
+     0.8933516698059509, 0.24772288255634398, 0.13135716024287522)
+float emissionC = f_log_emission(
+     x0, x1, x2,
+     0.030165420804613468, -0.63870286387411, 0.9903143586036746,
+     1.1641408071895616, 0.08593171726068849, 0.24547316254244986)
+
+// Frozen transition matrix in previous-state → current-state order.
+const float T_AA = 0.9788632405266485
+const float T_AB = 0.02113675947335151
+const float T_AC = 2.797020703428349e-109
+const float T_BA = 0.009128235455344675
+const float T_BB = 0.9740566697446494
+const float T_BC = 0.016815094800005786
+const float T_CA = 6.806142872011186e-131
+const float T_CB = 0.016951746866736256
+const float T_CC = 0.9830482531332637
+
+var float logAlphaA = na
+var float logAlphaB = na
+var float logAlphaC = na
+var float posteriorA = na
+var float posteriorB = na
+var float posteriorC = na
+var bool initialized = false
+
+bool firstEligibleBar = time >= FEATURE_START and time < FEATURE_START_NEXT_DAY
+
+if supported and featuresReady and barstate.isconfirmed
+    if not initialized and firstEligibleBar
+        float rawA = math.log(math.max(1.0, EPSILON)) + emissionA
+        float rawB = math.log(math.max(1.0331893762513777e-162, EPSILON)) + emissionB
+        float rawC = math.log(EPSILON) + emissionC
+        float normalizer = f_logsumexp3(rawA, rawB, rawC)
+        logAlphaA := rawA - normalizer
+        logAlphaB := rawB - normalizer
+        logAlphaC := rawC - normalizer
+        posteriorA := math.exp(logAlphaA)
+        posteriorB := math.exp(logAlphaB)
+        posteriorC := math.exp(logAlphaC)
+        initialized := true
+    else if initialized
+        float priorA = f_logsumexp3(
+             logAlphaA + math.log(math.max(T_AA, EPSILON)),
+             logAlphaB + math.log(math.max(T_BA, EPSILON)),
+             logAlphaC + math.log(math.max(T_CA, EPSILON)))
+        float priorB = f_logsumexp3(
+             logAlphaA + math.log(math.max(T_AB, EPSILON)),
+             logAlphaB + math.log(math.max(T_BB, EPSILON)),
+             logAlphaC + math.log(math.max(T_CB, EPSILON)))
+        float priorC = f_logsumexp3(
+             logAlphaA + math.log(math.max(T_AC, EPSILON)),
+             logAlphaB + math.log(math.max(T_BC, EPSILON)),
+             logAlphaC + math.log(math.max(T_CC, EPSILON)))
+        float rawA = priorA + emissionA
+        float rawB = priorB + emissionB
+        float rawC = priorC + emissionC
+        float normalizer = f_logsumexp3(rawA, rawB, rawC)
+        logAlphaA := rawA - normalizer
+        logAlphaB := rawB - normalizer
+        logAlphaC := rawC - normalizer
+        posteriorA := math.exp(logAlphaA)
+        posteriorB := math.exp(logAlphaB)
+        posteriorC := math.exp(logAlphaC)
+
+float probabilitySum = posteriorA + posteriorB + posteriorC
+int dominantState = na
+if initialized
+    dominantState := posteriorA >= posteriorB and posteriorA >= posteriorC ? 0 : posteriorB >= posteriorC ? 1 : 2
+
+// Python reference checkpoints. These are verification points, not training data.
+var int[] refDates = array.from(20100526, 20100921, 20101027, 20110808, 20170630, 20181224, 20200316, 20200608, 20220613, 20230421, 20230424, 20260721)
+var float[] refClose = array.from(80.31062316894531, 86.2796859741211, 89.61039733886719, 86.22103881835938, 210.1547698974609, 209.6357879638672, 218.6279296875, 296.33544921875, 353.9408569335937, 395.6432495117188, 396.0559692382813, 748.280029296875)
+var float[] refStd = array.from(-0.3313461315398305, -0.191214122518324, -0.4361790784144477, -3.4996566469161934, 0.4231206224730521, -1.7966564827203642, -2.410585938212497, 0.9542949497796598, -2.029504425433917, 0.1325146085022864, 0.1801652956689094, 1.1288222197278304)
+var float[] refAtr = array.from(0.0310441137098758, 0.013545157568383, 0.0124218656527318, 0.0236726812844855, 0.0064907879967638, 0.0256429495530706, 0.0585115785974455, 0.0180940769177217, 0.0258839951885774, 0.0095257354164001, 0.0090347481882392, 0.0115451368780292)
+var float[] refTrend = array.from(-0.0517518463552785, 0.1034975358316055, 4.31767077040259, -0.7043493347491951, 3.6832367468963096, -2.498369941293379, -1.0088740827379323, 0.9895413230645016, -2.677162980062966, 2.6504385051145034, 2.964233498174217, 3.772848772761024)
+var float[] refPA = array.from(1.0, 0.0828826541978755, 6.409193240860045e-12, 0.943805800418862, 2.9597449250121533e-14, 0.999999904113368, 1.0, 0.0003241504055848, 0.9999999526662792, 3.328415765277324e-08, 9.03514565807144e-09, 1.3436473026158562e-10)
+var float[] refPB = array.from(1.5031901719885807e-167, 0.9171150272695082, 0.3628817709603676, 0.0561941995811375, 0.0013157048288817, 9.588663180420305e-08, 1.1356433092134305e-35, 0.9996758383615804, 4.733372120892187e-08, 0.9927808055708732, 0.9757912908856902, 0.6267621946458717)
+var float[] refPC = array.from(0.0, 2.318532616102944e-06, 0.6371182290332232, 1.0151780373001309e-15, 0.9986842951710886, 2.3111239304547007e-29, 4.9451609047422823e-147, 1.1232834843058964e-08, 2.607933240858385e-30, 0.0072191611449692, 0.0242087000791643, 0.3732378052197636)
+var int[] refDom = array.from(0, 1, 2, 0, 2, 0, 0, 1, 0, 1, 1, 1)
+
+var int checkpointCount = 0
+var int dominantMatchCount = 0
+var int lastCheckpointKey = na
+var float maxCloseRelativeError = 0.0
+var float maxStdReturnError = 0.0
+var float maxAtrPctError = 0.0
+var float maxTrendError = 0.0
+var float maxPosteriorError = 0.0
+var float maxProbabilitySumError = 0.0
+var float[] checkpointCloseErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointStdErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointAtrErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointTrendErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointPosteriorErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var float[] checkpointSumErrors = array.new_float(CHECKPOINT_TOTAL, na)
+var int[] checkpointDominantMatches = array.new_int(CHECKPOINT_TOTAL, na)
+
+if initialized and not na(probabilitySum)
+    maxProbabilitySumError := math.max(maxProbabilitySumError, math.abs(probabilitySum - 1.0))
+
+int dateKey = year * 10000 + month * 100 + dayofmonth
+int refIndex = array.indexof(refDates, dateKey)
+if supported and initialized and barstate.isconfirmed and refIndex >= 0 and (na(lastCheckpointKey) or dateKey != lastCheckpointKey)
+    float expectedClose = array.get(refClose, refIndex)
+    float expectedStd = array.get(refStd, refIndex)
+    float expectedAtr = array.get(refAtr, refIndex)
+    float expectedTrend = array.get(refTrend, refIndex)
+    float expectedPA = array.get(refPA, refIndex)
+    float expectedPB = array.get(refPB, refIndex)
+    float expectedPC = array.get(refPC, refIndex)
+    int expectedDominant = array.get(refDom, refIndex)
+
+    float closeRelativeError = math.abs(adjClose - expectedClose) / expectedClose
+    float stdReturnError = math.abs(standardizedReturn - expectedStd)
+    float atrPctError = math.abs(atrPct - expectedAtr)
+    float trendError = math.abs(trendStrength - expectedTrend)
+    float checkpointPosteriorError = math.max(
+         math.abs(posteriorA - expectedPA),
+         math.max(math.abs(posteriorB - expectedPB), math.abs(posteriorC - expectedPC)))
+    float checkpointSumError = math.abs(probabilitySum - 1.0)
+    int dominantMatched = dominantState == expectedDominant ? 1 : 0
+
+    maxCloseRelativeError := math.max(maxCloseRelativeError, closeRelativeError)
+    maxStdReturnError := math.max(maxStdReturnError, stdReturnError)
+    maxAtrPctError := math.max(maxAtrPctError, atrPctError)
+    maxTrendError := math.max(maxTrendError, trendError)
+    maxPosteriorError := math.max(maxPosteriorError, checkpointPosteriorError)
+    array.set(checkpointCloseErrors, refIndex, closeRelativeError)
+    array.set(checkpointStdErrors, refIndex, stdReturnError)
+    array.set(checkpointAtrErrors, refIndex, atrPctError)
+    array.set(checkpointTrendErrors, refIndex, trendError)
+    array.set(checkpointPosteriorErrors, refIndex, checkpointPosteriorError)
+    array.set(checkpointSumErrors, refIndex, checkpointSumError)
+    array.set(checkpointDominantMatches, refIndex, dominantMatched)
+    checkpointCount += 1
+    dominantMatchCount += dominantMatched
+    lastCheckpointKey := dateKey
+
+bool checkpointsComplete = checkpointCount == CHECKPOINT_TOTAL
+bool featureParityPassed =
+     checkpointsComplete and
+     maxCloseRelativeError <= CLOSE_REL_TOL and
+     maxStdReturnError <= STD_RETURN_TOL and
+     maxAtrPctError <= ATR_PCT_TOL and
+     maxTrendError <= TREND_TOL
+bool posteriorAgreementPassed =
+     checkpointsComplete and
+     maxPosteriorError <= POSTERIOR_TOL
+bool probabilitySumPassed =
+     checkpointsComplete and
+     maxProbabilitySumError <= PROB_SUM_TOL
+bool dominantStatePassed =
+     checkpointsComplete and
+     dominantMatchCount == CHECKPOINT_TOTAL
+bool inferenceDiagnosticsPassed = posteriorAgreementPassed and probabilitySumPassed and dominantStatePassed
+
+string parityVerdict =
+     not checkpointsComplete ? "Need more history" :
+     not featureParityPassed and not inferenceDiagnosticsPassed ? "Feed + inference mismatch" :
+     not featureParityPassed ? "Feed mismatch" :
+     not inferenceDiagnosticsPassed ? "Inference mismatch" :
+     "Parity passed"
+color parityColor =
+     parityVerdict == "Parity passed" ? color.new(color.green, 65) :
+     parityVerdict == "Need more history" ? color.new(color.orange, 65) :
+     color.new(color.red, 65)
+
+color stateColor = dominantState == 0 ? color.red : dominantState == 1 ? color.orange : color.teal
+bgcolor(showBackground and supported and initialized ? color.new(stateColor, 88) : na)
+
+plot(supported ? posteriorA * 100.0 : na, "State A — two-sided stress", color = color.red, linewidth = 2)
+plot(supported ? posteriorB * 100.0 : na, "State B — advance", color = color.orange, linewidth = 2)
+plot(supported ? posteriorC * 100.0 : na, "State C — calm advance", color = color.teal, linewidth = 2)
+hline(50.0, "50%", color = color.new(color.gray, 70))
+
+// Hidden export channels retained for users whose TradingView plan supports CSV export.
+plot(adjClose, "HRM Adjusted Close", display = display.none)
+plot(standardizedReturn, "HRM Standardized Return", display = display.none)
+plot(atrPct, "HRM ATR Percent", display = display.none)
+plot(trendStrength, "HRM Trend Strength", display = display.none)
+plot(posteriorA, "HRM Posterior A", display = display.none)
+plot(posteriorB, "HRM Posterior B", display = display.none)
+plot(posteriorC, "HRM Posterior C", display = display.none)
+plot(probabilitySum, "HRM Probability Sum", display = display.none)
+plot(dominantState, "HRM Dominant State Index", display = display.none)
+
+f_fmt8(float value) =>
+    na(value) ? "n/a" : str.tostring(value, "#.########")
+
+f_fmt12(float value) =>
+    na(value) ? "n/a" : str.tostring(value, "0.000000000000")
+
+f_pass_text(bool passed) =>
+    passed ? "PASS" : "FAIL"
+
+f_pass_color(bool passed) =>
+    passed ? color.new(color.green, 65) : color.new(color.red, 65)
+
+var table diagnostics = table.new(position.top_right, 2, 21, border_width = 1)
+if barstate.islast and showDebugTable
+    string status = not supportedSymbol ? "Unsupported symbol" : not supportedTimeframe ? "Use 1D timeframe" : not initialized ? "Need history from 2010-05-26" : "Parity spike active"
+    color statusColor = supported and initialized ? color.new(color.green, 70) : color.new(color.red, 65)
+    string stateText = dominantState == 0 ? "A — two-sided stress" : dominantState == 1 ? "B — advance" : dominantState == 2 ? "C — calm advance" : "n/a"
+    table.cell(diagnostics, 0, 0, "Profile")
+    table.cell(diagnostics, 1, 0, PROFILE_ID)
+    table.cell(diagnostics, 0, 1, "Status")
+    table.cell(diagnostics, 1, 1, status, bgcolor = statusColor)
+    table.cell(diagnostics, 0, 2, "Dominant")
+    table.cell(diagnostics, 1, 2, stateText)
+    table.cell(diagnostics, 0, 3, "Posterior sum")
+    table.cell(diagnostics, 1, 3, f_fmt12(probabilitySum))
+    table.cell(diagnostics, 0, 4, "Checkpoints")
+    table.cell(diagnostics, 1, 4, str.tostring(checkpointCount) + "/" + str.tostring(CHECKPOINT_TOTAL))
+    table.cell(diagnostics, 0, 5, "Overall verdict")
+    table.cell(diagnostics, 1, 5, parityVerdict, bgcolor = parityColor)
+    table.cell(diagnostics, 0, 6, "Feature check")
+    table.cell(diagnostics, 1, 6, f_pass_text(featureParityPassed), bgcolor = f_pass_color(featureParityPassed))
+    table.cell(diagnostics, 0, 7, "Posterior agreement")
+    table.cell(diagnostics, 1, 7, f_pass_text(posteriorAgreementPassed), bgcolor = f_pass_color(posteriorAgreementPassed))
+    table.cell(diagnostics, 0, 8, "Probability-sum check")
+    table.cell(diagnostics, 1, 8, f_pass_text(probabilitySumPassed), bgcolor = f_pass_color(probabilitySumPassed))
+    table.cell(diagnostics, 0, 9, "Dominant check")
+    table.cell(diagnostics, 1, 9, f_pass_text(dominantStatePassed), bgcolor = f_pass_color(dominantStatePassed))
+    table.cell(diagnostics, 0, 10, "Max close rel err")
+    table.cell(diagnostics, 1, 10, f_fmt8(maxCloseRelativeError))
+    table.cell(diagnostics, 0, 11, "Max std err")
+    table.cell(diagnostics, 1, 11, f_fmt8(maxStdReturnError))
+    table.cell(diagnostics, 0, 12, "Max ATR err")
+    table.cell(diagnostics, 1, 12, f_fmt8(maxAtrPctError))
+    table.cell(diagnostics, 0, 13, "Max trend err")
+    table.cell(diagnostics, 1, 13, f_fmt8(maxTrendError))
+    table.cell(diagnostics, 0, 14, "Max posterior err")
+    table.cell(diagnostics, 1, 14, f_fmt8(maxPosteriorError))
+    table.cell(diagnostics, 0, 15, "Max sum err")
+    table.cell(diagnostics, 1, 15, f_fmt12(maxProbabilitySumError))
+    table.cell(diagnostics, 0, 16, "Dominant matches")
+    table.cell(diagnostics, 1, 16, str.tostring(dominantMatchCount) + "/" + str.tostring(CHECKPOINT_TOTAL))
+    table.cell(diagnostics, 0, 17, "Std return")
+    table.cell(diagnostics, 1, 17, f_fmt8(standardizedReturn))
+    table.cell(diagnostics, 0, 18, "ATR %")
+    table.cell(diagnostics, 1, 18, f_fmt8(atrPct))
+    table.cell(diagnostics, 0, 19, "Trend / ATR")
+    table.cell(diagnostics, 1, 19, f_fmt8(trendStrength))
+    table.cell(diagnostics, 0, 20, "Research only")
+    table.cell(diagnostics, 1, 20, "No inference claim across feeds")
+
+var table checkpointEvidence = table.new(position.bottom_right, 8, CHECKPOINT_TOTAL + 1, border_width = 1)
+if barstate.islast and showCheckpointEvidence
+    table.cell(checkpointEvidence, 0, 0, "Date")
+    table.cell(checkpointEvidence, 1, 0, "Close")
+    table.cell(checkpointEvidence, 2, 0, "Std")
+    table.cell(checkpointEvidence, 3, 0, "ATR")
+    table.cell(checkpointEvidence, 4, 0, "Trend")
+    table.cell(checkpointEvidence, 5, 0, "Posterior")
+    table.cell(checkpointEvidence, 6, 0, "Sum")
+    table.cell(checkpointEvidence, 7, 0, "Dom")
+    for checkpointIndex = 0 to CHECKPOINT_TOTAL - 1
+        int evidenceRow = checkpointIndex + 1
+        float closeError = array.get(checkpointCloseErrors, checkpointIndex)
+        float stdError = array.get(checkpointStdErrors, checkpointIndex)
+        float atrError = array.get(checkpointAtrErrors, checkpointIndex)
+        float trendCheckpointError = array.get(checkpointTrendErrors, checkpointIndex)
+        float posteriorError = array.get(checkpointPosteriorErrors, checkpointIndex)
+        float sumError = array.get(checkpointSumErrors, checkpointIndex)
+        int dominantMatch = array.get(checkpointDominantMatches, checkpointIndex)
+        table.cell(checkpointEvidence, 0, evidenceRow, str.tostring(array.get(refDates, checkpointIndex)))
+        table.cell(checkpointEvidence, 1, evidenceRow, f_fmt8(closeError))
+        table.cell(checkpointEvidence, 2, evidenceRow, f_fmt8(stdError))
+        table.cell(checkpointEvidence, 3, evidenceRow, f_fmt8(atrError))
+        table.cell(checkpointEvidence, 4, evidenceRow, f_fmt8(trendCheckpointError))
+        table.cell(checkpointEvidence, 5, evidenceRow, f_fmt8(posteriorError))
+        table.cell(checkpointEvidence, 6, evidenceRow, f_fmt12(sumError))
+        table.cell(checkpointEvidence, 7, evidenceRow, na(dominantMatch) ? "n/a" : dominantMatch == 1 ? "Y" : "N", bgcolor = na(dominantMatch) ? na : f_pass_color(dominantMatch == 1))
