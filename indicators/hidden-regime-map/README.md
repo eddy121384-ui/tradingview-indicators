@@ -137,6 +137,10 @@ favor the same K; conflicting evidence is also reported as inconclusive. Metric
 leaders are determined across every complete K before guardrails are applied,
 so filtering a noisy candidate cannot manufacture agreement among the remaining
 models. A metric leader that fails a guardrail yields an inconclusive result. The
+convergence check rejects an iteration-capped fit whose last positive likelihood
+improvement has not reached the configured tolerance. Likelihood and occupancy
+drift limits apply to the worst deterministic seed fit, not only their mean, so
+stable seeds cannot conceal one unstable fit. The
 JSON retains posterior-weighted train/OOS feature means and per-state guardrail
 inputs so the decision remains auditable. It also retains posterior-weighted
 feature variances, variance-aware drift, mean and median durations, complete

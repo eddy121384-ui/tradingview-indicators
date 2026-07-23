@@ -73,6 +73,28 @@ class CandidateTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "negative likelihood delta"):
                 comparison.fit_candidate(np.ones((20, 3)), 3, 42)
 
+    def test_iteration_capped_positive_delta_must_satisfy_tolerance(self):
+        class IterationCappedModel:
+            def __init__(self, **kwargs):
+                self.n_iter = kwargs["n_iter"]
+                self.tol = kwargs["tol"]
+                self.monitor_ = type(
+                    "Monitor",
+                    (),
+                    {
+                        "converged": True,
+                        "iter": self.n_iter,
+                        "history": [10.0, 10.01],
+                    },
+                )()
+
+            def fit(self, matrix):
+                return self
+
+        with patch.object(comparison, "GaussianHMM", IterationCappedModel):
+            with self.assertRaisesRegex(RuntimeError, "iteration cap"):
+                comparison.fit_candidate(np.ones((20, 3)), 3, 42)
+
     def test_restart_group_selects_best_valid_fit_and_preserves_failures(self):
         class ScoredModel:
             def __init__(self, score):
@@ -209,7 +231,7 @@ class MetricTests(unittest.TestCase):
 class FailureAndDecisionTests(unittest.TestCase):
     @staticmethod
     def guardrail_input():
-        scalar = lambda value: {"mean": value, "std": 0.0}
+        scalar = lambda value: {"mean": value, "std": 0.0, "max": value}
         return {
             "fits": [
                 {
@@ -314,8 +336,8 @@ class FailureAndDecisionTests(unittest.TestCase):
         failures = {
             "all_fits_converged": lambda row: row["fits"][0].update(converged=False),
             "non_negative_convergence_delta": lambda row: row["fits"][0].update(final_likelihood_delta=-1.0),
-            "oos_likelihood_drift": lambda row: row["aggregate"]["train_oos_likelihood_drift"].update(mean=2.0),
-            "occupancy_drift": lambda row: row["aggregate"]["occupancy_drift_l1"].update(mean=1.0),
+            "oos_likelihood_drift": lambda row: row["aggregate"]["train_oos_likelihood_drift"].update(max=2.0),
+            "occupancy_drift": lambda row: row["aggregate"]["occupancy_drift_l1"].update(max=1.0),
             "feature_drift": lambda row: row["aggregate"]["state_ranges"]["variance_aware_feature_drift"].update(maximum=[4.0]),
             "no_rare_train_states": lambda row: row["aggregate"]["rare_state_count_train"].update(mean=1.0),
             "no_rare_oos_states": lambda row: row["aggregate"]["rare_state_count_oos"].update(mean=1.0),
@@ -333,6 +355,17 @@ class FailureAndDecisionTests(unittest.TestCase):
                 result = comparison.evaluate_guardrails(candidate)
                 self.assertFalse(result["passed"])
                 self.assertIn(expected_failure, result["failed"])
+
+    def test_one_unstable_seed_cannot_hide_behind_mean_drift(self):
+        candidate = self.guardrail_input()
+        candidate["aggregate"]["train_oos_likelihood_drift"].update(
+            mean=0.4, max=1.2
+        )
+        candidate["aggregate"]["occupancy_drift_l1"].update(mean=0.2, max=0.7)
+        result = comparison.evaluate_guardrails(candidate)
+        self.assertFalse(result["passed"])
+        self.assertIn("oos_likelihood_drift", result["failed"])
+        self.assertIn("occupancy_drift", result["failed"])
 
     def test_machine_status_maps_to_explicit_issue_outcome(self):
         mapped = comparison.map_issue_26_status(

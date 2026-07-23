@@ -93,6 +93,15 @@ def fit_candidate(matrix: np.ndarray, n_states: int, seed: int) -> GaussianHMM:
             "HMM convergence reported a negative likelihood delta: "
             f"{likelihood_delta:.12g}"
         )
+    if (
+        int(model.monitor_.iter) >= int(model.n_iter)
+        and likelihood_delta > 0.0
+        and likelihood_delta >= float(model.tol)
+    ):
+        raise RuntimeError(
+            "HMM reached the iteration cap before satisfying the likelihood "
+            f"tolerance: delta={likelihood_delta:.12g}, tol={model.tol:.12g}"
+        )
     score = float(model.score(matrix))
     if not np.isfinite(score):
         raise RuntimeError("non-finite train log likelihood")
@@ -453,7 +462,11 @@ def summarize_candidate(models: list[GaussianHMM], fits: list[dict[str, Any]]) -
         "rare_state_count_oos", "minimum_pairwise_separation",
     )
     aggregate = {
-        key: {"mean": float(np.mean([fit[key] for fit in aligned_fits])), "std": float(np.std([fit[key] for fit in aligned_fits]))}
+        key: {
+            "mean": float(np.mean([fit[key] for fit in aligned_fits])),
+            "std": float(np.std([fit[key] for fit in aligned_fits])),
+            "max": float(np.max([fit[key] for fit in aligned_fits])),
+        }
         for key in scalar_keys
     }
     aggregate["reproducibility"] = {
@@ -497,9 +510,9 @@ def evaluate_guardrails(candidate: dict[str, Any]) -> dict[str, Any]:
             fit["final_likelihood_delta"] >= -NEGATIVE_CONVERGENCE_DELTA_TOLERANCE
             for fit in candidate["fits"]
         ),
-        "oos_likelihood_drift": aggregate["train_oos_likelihood_drift"]["mean"]
+        "oos_likelihood_drift": aggregate["train_oos_likelihood_drift"]["max"]
         <= MAX_LIKELIHOOD_DRIFT,
-        "occupancy_drift": aggregate["occupancy_drift_l1"]["mean"]
+        "occupancy_drift": aggregate["occupancy_drift_l1"]["max"]
         <= MAX_OCCUPANCY_DRIFT,
         "feature_drift": max(
             state_ranges["variance_aware_feature_drift"]["maximum"]
