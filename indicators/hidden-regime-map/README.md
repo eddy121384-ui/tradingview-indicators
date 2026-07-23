@@ -140,11 +140,14 @@ models. A metric leader that fails a guardrail yields an inconclusive result. Th
 convergence check rejects an iteration-capped fit whose last positive likelihood
 improvement has not reached the configured tolerance. Likelihood and occupancy
 drift limits apply to the worst deterministic seed fit, not only their mean, so
-stable seeds cannot conceal one unstable fit. The
+stable seeds cannot conceal one unstable fit. Rare-state and separation checks
+likewise use the worst seed. The
 JSON retains posterior-weighted train/OOS feature means and per-state guardrail
 inputs so the decision remains auditable. It also retains posterior-weighted
 feature variances, variance-aware drift, mean and median durations, complete
 aligned transition matrices, and exposure to the existing SPY event windows.
+Event exposure retains coverage status and ratio, actual dates, window return,
+average posterior, and dominant-state share.
 
 The deterministic decision explicitly retains K=3, selects K=6, selects another
 K, or remains inconclusive. It does not presume K=6.

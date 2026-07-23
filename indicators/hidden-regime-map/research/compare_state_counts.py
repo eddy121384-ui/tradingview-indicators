@@ -238,7 +238,10 @@ def feature_distribution_drift(
 
 
 def event_window_exposure(
-    dates: np.ndarray, posterior: np.ndarray, events: list[dict[str, Any]]
+    dates: np.ndarray,
+    posterior: np.ndarray,
+    events: list[dict[str, Any]],
+    closes: np.ndarray | None = None,
 ) -> list[dict[str, Any]]:
     date_values = np.asarray(dates, dtype="datetime64[D]")
     dominant = posterior.argmax(axis=1)
@@ -255,6 +258,10 @@ def event_window_exposure(
             and date_values.min() <= requested_start
             and date_values.max() >= requested_end
         )
+        overlap_start = max(date_values.min(), requested_start) if len(date_values) else requested_start
+        overlap_end = min(date_values.max(), requested_end) if len(date_values) else requested_start
+        event_span = max(float((requested_end - requested_start) / np.timedelta64(1, "D")), 0.0)
+        covered_span = max(float((overlap_end - overlap_start) / np.timedelta64(1, "D")), 0.0)
         rows.append(
             {
                 "name": event["name"],
@@ -265,8 +272,16 @@ def event_window_exposure(
                 "coverage_status": (
                     "complete" if bars and complete else "partial_coverage" if bars else "unavailable"
                 ),
+                "coverage_ratio": (
+                    1.0 if complete or event_span == 0.0 else min(covered_span / event_span, 1.0)
+                ) if bars else 0.0,
                 "actual_start": str(date_values[mask].min()) if bars else None,
                 "actual_end": str(date_values[mask].max()) if bars else None,
+                "window_return": (
+                    float(np.asarray(closes)[mask][-1] / np.asarray(closes)[mask][0] - 1.0)
+                    if bars and closes is not None
+                    else None
+                ),
                 "average_posterior": posterior[mask].mean(axis=0).tolist()
                 if bars
                 else [0.0] * posterior.shape[1],
@@ -313,6 +328,7 @@ def fit_metrics(
     observation_matrix: np.ndarray | None = None,
     dates: np.ndarray | None = None,
     events: list[dict[str, Any]] | None = None,
+    closes: np.ndarray | None = None,
 ) -> dict[str, Any]:
     train = full_matrix[:train_rows]
     oos = full_matrix[train_rows:]
@@ -393,7 +409,9 @@ def fit_metrics(
         "emission_variance": variances(model).tolist(),
         "self_transition": np.diag(model.transmat_).tolist(),
         "transition_matrix": np.asarray(model.transmat_).tolist(),
-        "event_window_exposure": event_window_exposure(dates, posterior, events)
+        "event_window_exposure": event_window_exposure(
+            dates, posterior, events, closes=closes
+        )
         if dates is not None and events is not None
         else [],
         "rare_state_count_train": int((occupancy_train < RARE_STATE_THRESHOLD).sum()),
@@ -465,6 +483,7 @@ def summarize_candidate(models: list[GaussianHMM], fits: list[dict[str, Any]]) -
         key: {
             "mean": float(np.mean([fit[key] for fit in aligned_fits])),
             "std": float(np.std([fit[key] for fit in aligned_fits])),
+            "min": float(np.min([fit[key] for fit in aligned_fits])),
             "max": float(np.max([fit[key] for fit in aligned_fits])),
         }
         for key in scalar_keys
@@ -518,9 +537,9 @@ def evaluate_guardrails(candidate: dict[str, Any]) -> dict[str, Any]:
             state_ranges["variance_aware_feature_drift"]["maximum"]
         )
         <= MAX_FEATURE_DISTRIBUTION_DRIFT,
-        "no_rare_train_states": aggregate["rare_state_count_train"]["mean"] == 0,
-        "no_rare_oos_states": aggregate["rare_state_count_oos"]["mean"] == 0,
-        "state_separation": aggregate["minimum_pairwise_separation"]["mean"]
+        "no_rare_train_states": aggregate["rare_state_count_train"]["max"] == 0,
+        "no_rare_oos_states": aggregate["rare_state_count_oos"]["max"] == 0,
+        "state_separation": aggregate["minimum_pairwise_separation"]["min"]
         >= MIN_PAIRWISE_SEPARATION,
         "oos_duration": min(state_ranges["mean_state_duration_oos"]["minimum"])
         >= MIN_OOS_MEAN_DURATION,
@@ -644,6 +663,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
     full_matrix = scaler.transform(features[train_hmm.FEATURE_NAMES])
     observation_matrix = features[train_hmm.FEATURE_NAMES].to_numpy(dtype=float)
     dates = features["date"].dt.tz_localize(None).to_numpy(dtype="datetime64[D]")
+    closes = features["close"].to_numpy(dtype=float)
     event_path = RESEARCH_DIR / "event-windows.json"
     all_events = json.loads(event_path.read_text(encoding="utf-8"))
     events = [event for event in all_events if event.get("symbol") == "SPY"]
@@ -665,6 +685,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
                         observation_matrix=observation_matrix,
                         dates=dates,
                         events=events,
+                        closes=closes,
                     )
                 metrics["group_seed"] = seed
                 metrics["selected_attempt_seed"] = selected_attempt_seed

@@ -222,16 +222,24 @@ class MetricTests(unittest.TestCase):
             np.asarray(["2020-02-18", "2020-02-20"], dtype="datetime64[D]"),
             np.asarray([[0.8, 0.2], [0.1, 0.9]]),
             [{"name": "shock", "start": "2020-02-19", "end": "2020-02-21", "context": "synthetic"}],
+            closes=np.asarray([100.0, 90.0]),
         )
         self.assertEqual(rows[0]["bars"], 1)
         self.assertEqual(rows[0]["coverage_status"], "partial_coverage")
+        self.assertEqual(rows[0]["coverage_ratio"], 0.5)
+        self.assertEqual(rows[0]["window_return"], 0.0)
         self.assertEqual(rows[0]["average_posterior"], [0.1, 0.9])
 
 
 class FailureAndDecisionTests(unittest.TestCase):
     @staticmethod
     def guardrail_input():
-        scalar = lambda value: {"mean": value, "std": 0.0, "max": value}
+        scalar = lambda value: {
+            "mean": value,
+            "std": 0.0,
+            "min": value,
+            "max": value,
+        }
         return {
             "fits": [
                 {
@@ -339,9 +347,9 @@ class FailureAndDecisionTests(unittest.TestCase):
             "oos_likelihood_drift": lambda row: row["aggregate"]["train_oos_likelihood_drift"].update(max=2.0),
             "occupancy_drift": lambda row: row["aggregate"]["occupancy_drift_l1"].update(max=1.0),
             "feature_drift": lambda row: row["aggregate"]["state_ranges"]["variance_aware_feature_drift"].update(maximum=[4.0]),
-            "no_rare_train_states": lambda row: row["aggregate"]["rare_state_count_train"].update(mean=1.0),
-            "no_rare_oos_states": lambda row: row["aggregate"]["rare_state_count_oos"].update(mean=1.0),
-            "state_separation": lambda row: row["aggregate"]["minimum_pairwise_separation"].update(mean=0.5),
+            "no_rare_train_states": lambda row: row["aggregate"]["rare_state_count_train"].update(max=1.0),
+            "no_rare_oos_states": lambda row: row["aggregate"]["rare_state_count_oos"].update(max=1.0),
+            "state_separation": lambda row: row["aggregate"]["minimum_pairwise_separation"].update(min=0.5),
             "oos_duration": lambda row: row["aggregate"]["state_ranges"]["mean_state_duration_oos"].update(minimum=[1.0]),
             "oos_noise": lambda row: row["aggregate"]["state_ranges"]["single_bar_share_oos"].update(maximum=[1.0]),
             "emission_reproducibility": lambda row: row["aggregate"]["reproducibility"]["emission_mean_rmse"].update(max=1.0),
@@ -366,6 +374,17 @@ class FailureAndDecisionTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn("oos_likelihood_drift", result["failed"])
         self.assertIn("occupancy_drift", result["failed"])
+
+    def test_worst_seed_also_controls_rare_states_and_separation(self):
+        candidate = self.guardrail_input()
+        candidate["aggregate"]["rare_state_count_oos"].update(mean=0.34, max=1.0)
+        candidate["aggregate"]["minimum_pairwise_separation"].update(
+            mean=1.5, min=0.8
+        )
+        result = comparison.evaluate_guardrails(candidate)
+        self.assertFalse(result["passed"])
+        self.assertIn("no_rare_oos_states", result["failed"])
+        self.assertIn("state_separation", result["failed"])
 
     def test_machine_status_maps_to_explicit_issue_outcome(self):
         mapped = comparison.map_issue_26_status(
