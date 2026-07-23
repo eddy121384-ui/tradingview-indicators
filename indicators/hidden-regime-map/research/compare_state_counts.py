@@ -535,17 +535,13 @@ def choose_outcome(candidates: list[dict[str, Any]]) -> dict[str, Any]:
             "selected_k": None,
             "reason": f"Incomplete deterministic fits for K={incomplete}; every K must be complete.",
         }
-    eligible = [row for row in candidates if row["guardrails"]["passed"]]
-    if not eligible:
-        return {
-            "outcome": "inconclusive",
-            "selected_k": None,
-            "reason": "No candidate clears every model-selection guardrail.",
-        }
-    best_aic = min(eligible, key=lambda row: (row["aggregate"]["aic"]["mean"], row["k"]))["k"]
-    best_bic = min(eligible, key=lambda row: (row["aggregate"]["bic"]["mean"], row["k"]))["k"]
+    # Rank the complete comparison set before applying guardrails. Filtering out
+    # unstable candidates first could manufacture agreement among the survivors
+    # while a rejected K still owns one of the primary selection metrics.
+    best_aic = min(candidates, key=lambda row: (row["aggregate"]["aic"]["mean"], row["k"]))["k"]
+    best_bic = min(candidates, key=lambda row: (row["aggregate"]["bic"]["mean"], row["k"]))["k"]
     best_oos = max(
-        eligible,
+        candidates,
         key=lambda row: (row["aggregate"]["oos_log_likelihood_per_observation"]["mean"], -row["k"]),
     )["k"]
     if len({best_aic, best_bic, best_oos}) != 1:
@@ -558,7 +554,16 @@ def choose_outcome(candidates: list[dict[str, Any]]) -> dict[str, Any]:
                 f"and OOS likelihood favors K={best_oos}."
             ),
         }
-    best = next(row for row in eligible if row["k"] == best_aic)
+    best = next(row for row in candidates if row["k"] == best_aic)
+    if not best["guardrails"]["passed"]:
+        return {
+            "outcome": "inconclusive",
+            "selected_k": None,
+            "reason": (
+                f"K={best_aic} leads AIC, BIC, and OOS likelihood but fails "
+                "guardrails: " + ", ".join(best["guardrails"]["failed"])
+            ),
+        }
     k = best["k"]
     outcome = "retain_k3" if k == 3 else "select_k6" if k == 6 else "select_other_k"
     return {

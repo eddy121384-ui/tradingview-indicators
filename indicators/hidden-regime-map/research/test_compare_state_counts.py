@@ -285,6 +285,19 @@ class FailureAndDecisionTests(unittest.TestCase):
         self.assertEqual(decision["outcome"], "inconclusive")
         self.assertIn("guardrail", decision["reason"])
 
+    def test_rejected_metric_leader_is_not_hidden_by_prefiltering(self):
+        rejected = self.candidate(7, 1, 1, -1.0, passed=False)
+        rejected["guardrails"]["failed"] = ["oos_noise"]
+        candidates = [
+            self.candidate(3, 10, 10, -2.0),
+            rejected,
+            self.candidate(8, 20, 20, -3.0),
+        ]
+        decision = comparison.choose_outcome(candidates)
+        self.assertEqual(decision["outcome"], "inconclusive")
+        self.assertIn("K=7", decision["reason"])
+        self.assertIn("oos_noise", decision["reason"])
+
     def test_conflicting_selection_evidence_forces_inconclusive(self):
         candidates = [
             self.candidate(3, 10, 30, -3.0),

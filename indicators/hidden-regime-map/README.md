@@ -133,7 +133,10 @@ must pass convergence and likelihood-delta checks, OOS likelihood and feature
 drift limits, occupancy stability, rare-state, duration/noise, state-separation,
 and aligned-seed reproducibility checks. Any incomplete K makes the comparison
 inconclusive. Among candidates that pass, AIC, BIC, and OOS likelihood must all
-favor the same K; conflicting evidence is also reported as inconclusive. The
+favor the same K; conflicting evidence is also reported as inconclusive. Metric
+leaders are determined across every complete K before guardrails are applied,
+so filtering a noisy candidate cannot manufacture agreement among the remaining
+models. A metric leader that fails a guardrail yields an inconclusive result. The
 JSON retains posterior-weighted train/OOS feature means and per-state guardrail
 inputs so the decision remains auditable. It also retains posterior-weighted
 feature variances, variance-aware drift, mean and median durations, complete
