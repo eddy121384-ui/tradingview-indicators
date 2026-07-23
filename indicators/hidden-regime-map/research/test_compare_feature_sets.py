@@ -61,8 +61,23 @@ class VariantDecisionTests(unittest.TestCase):
         self.assertEqual(features.FEATURE_SETS["baseline_er_downside"][-2:], (features.EFFICIENCY_RATIO, features.DOWNSIDE_SHARE))
 
     @staticmethod
-    def variant(selected_k=None):
-        return {"decision": {"selected_k": selected_k}, "candidates": []}
+    def variant(selected_k=None, dimensions=3, fits=None, k=4):
+        candidates = []
+        if fits is not None:
+            candidates.append({"k": k, "status": "ok", "fits": fits})
+        return {
+            "decision": {"selected_k": selected_k},
+            "method": {"features": [f"feature_{index}" for index in range(dimensions)]},
+            "candidates": candidates,
+        }
+
+    @staticmethod
+    def fit(separation, likelihood_drift, occupancy_drift):
+        return {
+            "minimum_pairwise_separation": separation,
+            "train_oos_likelihood_drift": likelihood_drift,
+            "occupancy_drift_l1": occupancy_drift,
+        }
 
     def test_deterministic_variant_comparison(self):
         variants = {
@@ -82,6 +97,69 @@ class VariantDecisionTests(unittest.TestCase):
         self.assertEqual(decision["outcome"], "keep_productization_paused")
         self.assertIsNone(decision["selected_feature_set"])
         self.assertIsNone(decision["selected_k"])
+
+    def test_dimension_normalization_rejects_raw_separation_inflation(self):
+        baseline = self.variant(
+            dimensions=3,
+            fits=[self.fit(1.8, 0.9, 0.4), self.fit(1.9, 0.8, 0.3)],
+        )
+        enriched = self.variant(
+            selected_k=4,
+            dimensions=4,
+            fits=[self.fit(2.0, 0.7, 0.3), self.fit(2.1, 0.6, 0.2)],
+        )
+        raw = features.cross_feature_diagnostics(enriched["candidates"][0], 4)
+        self.assertEqual(raw["raw_worst_seed"]["minimum_separation"], 2.0)
+        self.assertEqual(raw["normalized_worst_seed"]["minimum_separation_per_sqrt_dimension"], 1.0)
+        self.assertFalse(features.materially_clearer(baseline, enriched))
+
+    def test_hidden_bad_seed_prevents_material_improvement(self):
+        baseline = self.variant(
+            dimensions=3,
+            fits=[self.fit(1.5, 0.9, 0.4)] * 3,
+        )
+        enriched = self.variant(
+            selected_k=4,
+            dimensions=4,
+            fits=[
+                self.fit(2.4, 0.5, 0.2),
+                self.fit(2.4, 0.5, 0.2),
+                self.fit(1.6, 1.4, 0.6),
+            ],
+        )
+        self.assertFalse(features.materially_clearer(baseline, enriched))
+
+    def test_genuine_enriched_feature_improvement_is_selected(self):
+        baseline = self.variant(
+            dimensions=3,
+            fits=[self.fit(1.5, 0.9, 0.4), self.fit(1.6, 0.8, 0.35)],
+        )
+        enriched = self.variant(
+            selected_k=4,
+            dimensions=4,
+            fits=[self.fit(2.2, 0.8, 0.3), self.fit(2.3, 0.7, 0.25)],
+        )
+        variants = {
+            "baseline": baseline,
+            "baseline_er": enriched,
+            "baseline_er_downside": self.variant(dimensions=5),
+        }
+        decision = features.choose_feature_set(variants)
+        self.assertEqual(decision["outcome"], "select_feature_set")
+        self.assertEqual(decision["selected_feature_set"], "baseline_er")
+        self.assertEqual(decision["selected_k"], 4)
+
+    def test_non_material_normalized_improvement_is_rejected(self):
+        baseline = self.variant(
+            dimensions=3,
+            fits=[self.fit(np.sqrt(3), 0.9, 0.4)],
+        )
+        enriched = self.variant(
+            selected_k=4,
+            dimensions=4,
+            fits=[self.fit(2.1, 1.14, 0.38)],
+        )
+        self.assertFalse(features.materially_clearer(baseline, enriched))
 
 
 if __name__ == "__main__":

@@ -177,10 +177,14 @@ python indicators/hidden-regime-map/research/compare_feature_sets.py \
 The command writes one complete `feature-set-comparison.json` and one concise
 `feature-set-decision.md`. Each variant retains every K=3–8 fit, diagnostic,
 guardrail, and internal decision. The final decision prefers the simplest
-stable feature set. A richer set must also improve state separation by at least
-10%, improve at least one OOS consistency diagnostic by at least 10%, and
-worsen neither likelihood nor occupancy drift versus baseline at the same K.
-This materiality rule is new cross-feature decision logic only; it does not
+stable feature set. Cross-feature materiality uses the worst deterministic seed:
+minimum separation normalized by the square root of feature count, maximum
+train/OOS likelihood drift normalized by feature count, and maximum occupancy
+drift (already a dimensionless probability distance). A richer set must improve
+normalized separation by at least 10%, improve at least one OOS consistency
+diagnostic by at least 10%, and worsen neither consistency diagnostic versus
+baseline at the same K. Both raw and normalized diagnostics remain in the JSON
+and Markdown. This rule is new cross-feature decision logic only; it does not
 change the merged state-count guardrails or treat likelihood alone as evidence
 of better regimes. Generated outputs remain temporary research artifacts.
 
