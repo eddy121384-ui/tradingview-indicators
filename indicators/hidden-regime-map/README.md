@@ -101,6 +101,34 @@ The repository workflow runs the same training and characterization checks for S
 
 Generated data and model outputs are research artifacts and are not committed by default. A Pine implementation remains blocked until the state-characterization evidence is reviewed and judged sufficiently stable and interpretable.
 
+## State-count comparison
+
+`research/compare_state_counts.py` runs the smallest state-count selection check
+for SPY daily data. It keeps the existing three observations, 80/20
+chronological split, training-only scaler, diagonal Gaussian HMM, and causal
+forward filter, while comparing K=3 through K=8 over fixed deterministic seeds.
+
+```bash
+python indicators/hidden-regime-map/research/compare_state_counts.py \
+  --input path/to/spy.csv \
+  --output-dir path/to/state-count-output \
+  --symbol SPY \
+  --timeframe 1D
+```
+
+The command writes `state-count-comparison.json` with per-fit and aggregate
+metrics, plus a concise `state-count-decision.md`. The evidence includes
+per-observation train/OOS likelihood, AIC, BIC, occupancy, duration,
+self-transition, rare states, train/OOS occupancy drift, pairwise emission
+separation, and reproducibility across seeds. Because HMM state numbers are
+arbitrary, fits of the same K are aligned by their Gaussian emissions before
+state-level reproducibility is measured; raw state indices are never compared.
+
+The deterministic decision explicitly retains K=3, selects K=6, selects another
+K, or remains inconclusive. It does not presume K=6.
+Downloaded SPY data and generated comparison outputs remain temporary CI/local
+artifacts and must not be committed.
+
 ## Pine parity spike
 
 The first Pine step is intentionally narrow:
