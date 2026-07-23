@@ -158,6 +158,32 @@ K, or remains inconclusive. It does not presume K=6.
 Downloaded SPY data and generated comparison outputs remain temporary CI/local
 artifacts and must not be committed.
 
+## Feature-sufficiency comparison
+
+`research/compare_feature_sets.py` runs the unchanged K=3–8 comparison for
+exactly three ordered observation sets: the baseline, baseline plus a 20-bar
+signed efficiency ratio, and those four features plus a 20-bar downside
+variance share. Both additions are causal; their zero denominators produce
+zero rather than non-finite observations.
+
+```bash
+python indicators/hidden-regime-map/research/compare_feature_sets.py \
+  --input path/to/spy.csv \
+  --output-dir path/to/feature-set-output \
+  --symbol SPY \
+  --timeframe 1D
+```
+
+The command writes one complete `feature-set-comparison.json` and one concise
+`feature-set-decision.md`. Each variant retains every K=3–8 fit, diagnostic,
+guardrail, and internal decision. The final decision prefers the simplest
+stable feature set. A richer set must also improve state separation by at least
+10%, improve at least one OOS consistency diagnostic by at least 10%, and
+worsen neither likelihood nor occupancy drift versus baseline at the same K.
+This materiality rule is new cross-feature decision logic only; it does not
+change the merged state-count guardrails or treat likelihood alone as evidence
+of better regimes. Generated outputs remain temporary research artifacts.
+
 ## Pine parity spike
 
 The first Pine step is intentionally narrow:

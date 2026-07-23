@@ -83,12 +83,12 @@ jobs:
           cat "artifacts/$TICKER/output/characterize.log"
           exit $status
 
-      - name: Compare SPY state counts
-        id: compare_state_counts
+      - name: Compare SPY feature sets and state counts
+        id: compare_feature_sets
         if: matrix.ticker == 'SPY'
         continue-on-error: true
         run: |
-          python indicators/hidden-regime-map/research/compare_state_counts.py \
+          python indicators/hidden-regime-map/research/compare_feature_sets.py \
             --input "artifacts/$TICKER/ohlc.csv" \
             --output-dir "artifacts/$TICKER/state-count-comparison" \
             --symbol SPY \
@@ -116,8 +116,8 @@ jobs:
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
           fi
-          if [ -f "artifacts/$TICKER/state-count-comparison/state-count-decision.md" ]; then
-            cat "artifacts/$TICKER/state-count-comparison/state-count-decision.md" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "artifacts/$TICKER/state-count-comparison/feature-set-decision.md" ]; then
+            cat "artifacts/$TICKER/state-count-comparison/feature-set-decision.md" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - uses: actions/upload-artifact@v4
@@ -129,5 +129,5 @@ jobs:
           if-no-files-found: error
 
       - name: Fail job when research validation failed
-        if: steps.train.outcome == 'failure' || steps.characterize.outcome == 'failure' || steps.compare_state_counts.outcome == 'failure'
+        if: steps.train.outcome == 'failure' || steps.characterize.outcome == 'failure' || steps.compare_feature_sets.outcome == 'failure'
         run: exit 1

@@ -669,22 +669,20 @@ def markdown_report(result: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def compare(args: argparse.Namespace) -> dict[str, Any]:
-    if args.symbol.upper() != "SPY" or args.timeframe.upper() != "1D":
-        raise ValueError("Issue #26 comparison is restricted to SPY 1D")
-    if not 0.50 <= args.train_fraction < 1.0:
-        raise ValueError("train_fraction must be in [0.50, 1.0)")
-    validate_seed_groups(args.seeds)
-    config = train_hmm.FeatureConfig()
-    raw = train_hmm.load_ohlc(args)
-    features = train_hmm.calculate_features(raw, config)
+def compare_features(
+    args: argparse.Namespace,
+    features: Any,
+    feature_names: list[str],
+    config: train_hmm.FeatureConfig,
+) -> dict[str, Any]:
+    """Run the unchanged K=3..8 method for one prepared observation set."""
     train_rows = int(len(features) * args.train_fraction)
     if train_rows < 200 or len(features) - train_rows < 50:
         raise ValueError("chronological split requires at least 200 training and 50 out-of-sample rows")
     scaler = StandardScaler()
-    train_matrix = scaler.fit_transform(features.loc[:train_rows - 1, train_hmm.FEATURE_NAMES])
-    full_matrix = scaler.transform(features[train_hmm.FEATURE_NAMES])
-    observation_matrix = features[train_hmm.FEATURE_NAMES].to_numpy(dtype=float)
+    train_matrix = scaler.fit_transform(features.loc[:train_rows - 1, feature_names])
+    full_matrix = scaler.transform(features[feature_names])
+    observation_matrix = features[feature_names].to_numpy(dtype=float)
     dates = features["date"].dt.tz_localize(None).to_numpy(dtype="datetime64[D]")
     closes = features["close"].to_numpy(dtype=float)
     event_path = RESEARCH_DIR / "event-windows.json"
@@ -701,46 +699,41 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
                 )
                 models.append(model)
                 metrics = fit_metrics(
-                        model,
-                        full_matrix,
-                        train_rows,
-                        seed,
-                        observation_matrix=observation_matrix,
-                        dates=dates,
-                        events=events,
-                        closes=closes,
-                    )
+                    model, full_matrix, train_rows, seed,
+                    observation_matrix=observation_matrix, dates=dates,
+                    events=events, closes=closes,
+                )
                 metrics["group_seed"] = seed
                 metrics["selected_attempt_seed"] = selected_attempt_seed
                 metrics["restart_attempts"] = restart_attempts
                 fits.append(metrics)
             except RestartGroupError as exc:
-                failures.append(
-                    {
-                        "group_seed": exc.group_seed,
-                        "error": str(exc),
-                        "restart_attempts": exc.attempts,
-                    }
-                )
+                failures.append({"group_seed": exc.group_seed, "error": str(exc), "restart_attempts": exc.attempts})
             except Exception as exc:
-                failures.append(
-                    {
-                        "group_seed": seed,
-                        "error": f"{type(exc).__name__}: {exc}",
-                        "restart_attempts": restart_attempts,
-                    }
-                )
+                failures.append({"group_seed": seed, "error": f"{type(exc).__name__}: {exc}", "restart_attempts": restart_attempts})
         if failures:
             candidates.append({"k": k, "status": "failed", "failures": failures})
         else:
             candidates.append({"k": k, "status": "ok", **summarize_candidate(models, fits)})
     result = {
         "schema_version": 1, "scope": {"symbol": "SPY", "timeframe": "1D", "state_counts": list(DEFAULT_STATE_COUNTS), "seeds": args.seeds},
-        "method": {"features": train_hmm.FEATURE_NAMES, "feature_config": asdict(config), "train_fraction": args.train_fraction, "covariance_type": "diag", "inference": "causal_forward_filter", "alignment": "minimum-cost symmetric diagonal-Gaussian emission distance within equal K", "restart_offsets": list(RESTART_OFFSETS), "event_windows_file": str(event_path), "guardrail_thresholds": {"rare_state_occupancy": RARE_STATE_THRESHOLD, "maximum_train_oos_likelihood_drift": MAX_LIKELIHOOD_DRIFT, "maximum_occupancy_drift_l1": MAX_OCCUPANCY_DRIFT, "maximum_variance_aware_feature_drift": MAX_FEATURE_DISTRIBUTION_DRIFT, "minimum_pairwise_separation": MIN_PAIRWISE_SEPARATION, "minimum_oos_mean_duration": MIN_OOS_MEAN_DURATION, "maximum_oos_single_bar_share": MAX_OOS_SINGLE_BAR_SHARE, "maximum_emission_mean_rmse": MAX_EMISSION_MEAN_RMSE, "maximum_transition_rmse": MAX_TRANSITION_RMSE, "maximum_oos_occupancy_rmse": MAX_OOS_OCCUPANCY_RMSE, "negative_convergence_delta_tolerance": NEGATIVE_CONVERGENCE_DELTA_TOLERANCE}},
+        "method": {"features": feature_names, "feature_config": asdict(config), "train_fraction": args.train_fraction, "covariance_type": "diag", "inference": "causal_forward_filter", "alignment": "minimum-cost symmetric diagonal-Gaussian emission distance within equal K", "restart_offsets": list(RESTART_OFFSETS), "event_windows_file": str(event_path), "guardrail_thresholds": {"rare_state_occupancy": RARE_STATE_THRESHOLD, "maximum_train_oos_likelihood_drift": MAX_LIKELIHOOD_DRIFT, "maximum_occupancy_drift_l1": MAX_OCCUPANCY_DRIFT, "maximum_variance_aware_feature_drift": MAX_FEATURE_DISTRIBUTION_DRIFT, "minimum_pairwise_separation": MIN_PAIRWISE_SEPARATION, "minimum_oos_mean_duration": MIN_OOS_MEAN_DURATION, "maximum_oos_single_bar_share": MAX_OOS_SINGLE_BAR_SHARE, "maximum_emission_mean_rmse": MAX_EMISSION_MEAN_RMSE, "maximum_transition_rmse": MAX_TRANSITION_RMSE, "maximum_oos_occupancy_rmse": MAX_OOS_OCCUPANCY_RMSE, "negative_convergence_delta_tolerance": NEGATIVE_CONVERGENCE_DELTA_TOLERANCE}},
         "sample": {"usable_rows": len(features), "train_rows": train_rows, "oos_rows": len(features) - train_rows}, "candidates": candidates,
     }
     result["decision"] = map_issue_26_status(choose_outcome(candidates))
     return strict_json(result)
+
+
+def compare(args: argparse.Namespace) -> dict[str, Any]:
+    if args.symbol.upper() != "SPY" or args.timeframe.upper() != "1D":
+        raise ValueError("Issue #26 comparison is restricted to SPY 1D")
+    if not 0.50 <= args.train_fraction < 1.0:
+        raise ValueError("train_fraction must be in [0.50, 1.0)")
+    validate_seed_groups(args.seeds)
+    config = train_hmm.FeatureConfig()
+    raw = train_hmm.load_ohlc(args)
+    features = train_hmm.calculate_features(raw, config)
+    return compare_features(args, features, list(train_hmm.FEATURE_NAMES), config)
 
 
 def main() -> int:
