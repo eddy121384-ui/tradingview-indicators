@@ -124,6 +124,15 @@ separation, and reproducibility across seeds. Because HMM state numbers are
 arbitrary, fits of the same K are aligned by their Gaussian emissions before
 state-level reproducibility is measured; raw state indices are never compared.
 
+These diagnostics are selection guardrails, not decorative columns. A candidate
+must pass convergence and likelihood-delta checks, OOS likelihood and feature
+drift limits, occupancy stability, rare-state, duration/noise, state-separation,
+and aligned-seed reproducibility checks. Any incomplete K makes the comparison
+inconclusive. Among candidates that pass, AIC, BIC, and OOS likelihood must all
+favor the same K; conflicting evidence is also reported as inconclusive. The
+JSON retains posterior-weighted train/OOS feature means and per-state guardrail
+inputs so the decision remains auditable.
+
 The deterministic decision explicitly retains K=3, selects K=6, selects another
 K, or remains inconclusive. It does not presume K=6.
 Downloaded SPY data and generated comparison outputs remain temporary CI/local

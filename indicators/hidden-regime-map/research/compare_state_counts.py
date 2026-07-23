@@ -30,6 +30,16 @@ import train_hmm
 DEFAULT_STATE_COUNTS = tuple(range(3, 9))
 DEFAULT_SEEDS = (42, 84, 126)
 RARE_STATE_THRESHOLD = 0.02
+MAX_LIKELIHOOD_DRIFT = 1.0
+MAX_OCCUPANCY_DRIFT = 0.50
+MAX_FEATURE_MEAN_DRIFT = 1.0
+MIN_PAIRWISE_SEPARATION = 1.0
+MIN_OOS_MEAN_DURATION = 1.50
+MAX_OOS_SINGLE_BAR_SHARE = 0.75
+MAX_EMISSION_MEAN_RMSE = 0.50
+MAX_TRANSITION_RMSE = 0.15
+MAX_OOS_OCCUPANCY_RMSE = 0.10
+NEGATIVE_CONVERGENCE_DELTA_TOLERANCE = 1e-6
 
 
 def parse_args() -> argparse.Namespace:
@@ -67,6 +77,13 @@ def fit_candidate(matrix: np.ndarray, n_states: int, seed: int) -> GaussianHMM:
     model.fit(matrix)
     if not model.monitor_.converged:
         raise RuntimeError("HMM fit did not converge")
+    history = list(model.monitor_.history)
+    likelihood_delta = history[-1] - history[-2] if len(history) >= 2 else 0.0
+    if likelihood_delta < -NEGATIVE_CONVERGENCE_DELTA_TOLERANCE:
+        raise RuntimeError(
+            "HMM convergence reported a negative likelihood delta: "
+            f"{likelihood_delta:.12g}"
+        )
     score = float(model.score(matrix))
     if not np.isfinite(score):
         raise RuntimeError("non-finite train log likelihood")
@@ -125,6 +142,28 @@ def run_lengths(states: np.ndarray, n_states: int) -> list[list[int]]:
     return result
 
 
+def state_feature_means(
+    matrix: np.ndarray, posterior: np.ndarray
+) -> list[list[float] | None]:
+    result: list[list[float] | None] = []
+    for state in range(posterior.shape[1]):
+        weights = posterior[:, state]
+        total = float(weights.sum())
+        result.append(
+            np.average(matrix, axis=0, weights=weights).tolist()
+            if total > 0.0
+            else None
+        )
+    return result
+
+
+def single_bar_shares(lengths: list[list[int]]) -> list[float]:
+    return [
+        float(np.mean(np.asarray(state_lengths) == 1)) if state_lengths else 1.0
+        for state_lengths in lengths
+    ]
+
+
 def minimum_pairwise_separation(model: GaussianHMM) -> float:
     """Minimum symmetric Mahalanobis separation between emission means."""
     model_variances = variances(model)
@@ -149,24 +188,42 @@ def fit_metrics(
     full_matrix: np.ndarray,
     train_rows: int,
     seed: int,
+    observation_matrix: np.ndarray | None = None,
 ) -> dict[str, Any]:
     train = full_matrix[:train_rows]
     oos = full_matrix[train_rows:]
     train_ll = float(model.score(train))
     # Difference of forward likelihoods conditions OOS on the chronological
     # training history instead of restarting the chain at the split boundary.
-    oos_ll = float(model.score(full_matrix)) - train_ll
+    full_ll = float(model.score(full_matrix))
+    oos_ll = full_ll - train_ll
+    if not np.isfinite([train_ll, full_ll, oos_ll]).all():
+        raise RuntimeError("train or OOS log likelihood is non-finite")
     aic, bic = information_criteria(train_ll, len(train), model.n_components, train.shape[1])
     posterior = train_hmm.forward_filter(model, full_matrix)
+    observations = full_matrix if observation_matrix is None else observation_matrix
+    if observations.shape != full_matrix.shape:
+        raise ValueError("observation matrix must match the scaled feature matrix")
     dominant = posterior.argmax(axis=1)
     durations_train = run_lengths(dominant[:train_rows], model.n_components)
     durations_oos = run_lengths(dominant[train_rows:], model.n_components)
     occupancy_train = np.bincount(dominant[:train_rows], minlength=model.n_components) / train_rows
     occupancy_oos = np.bincount(dominant[train_rows:], minlength=model.n_components) / len(oos)
+    feature_means_train = state_feature_means(
+        observations[:train_rows], posterior[:train_rows]
+    )
+    feature_means_oos = state_feature_means(
+        observations[train_rows:], posterior[train_rows:]
+    )
     return {
         "seed": seed,
         "converged": bool(model.monitor_.converged),
         "iterations": int(model.monitor_.iter),
+        "final_likelihood_delta": (
+            float(model.monitor_.history[-1] - model.monitor_.history[-2])
+            if len(model.monitor_.history) >= 2
+            else 0.0
+        ),
         "train_log_likelihood_per_observation": train_ll / len(train),
         "oos_log_likelihood_per_observation": oos_ll / len(oos),
         "train_oos_likelihood_drift": abs(train_ll / len(train) - oos_ll / len(oos)),
@@ -181,6 +238,16 @@ def fit_metrics(
         "mean_state_duration_oos": [
             float(np.mean(item)) if item else 0.0 for item in durations_oos
         ],
+        "single_bar_share_train": single_bar_shares(durations_train),
+        "single_bar_share_oos": single_bar_shares(durations_oos),
+        "posterior_feature_mean_train": feature_means_train,
+        "posterior_feature_mean_oos": feature_means_oos,
+        "feature_mean_drift_l2": [
+            float(np.linalg.norm(np.asarray(train_mean) - np.asarray(oos_mean)))
+            for train_mean, oos_mean in zip(feature_means_train, feature_means_oos)
+        ],
+        "emission_mean": np.asarray(model.means_).tolist(),
+        "emission_variance": variances(model).tolist(),
         "self_transition": np.diag(model.transmat_).tolist(),
         "rare_state_count_train": int((occupancy_train < RARE_STATE_THRESHOLD).sum()),
         "rare_state_count_oos": int((occupancy_oos < RARE_STATE_THRESHOLD).sum()),
@@ -195,6 +262,13 @@ def align_metric_lists(metrics: dict[str, Any], permutation: list[int]) -> dict[
         "occupancy_oos",
         "mean_state_duration_train",
         "mean_state_duration_oos",
+        "single_bar_share_train",
+        "single_bar_share_oos",
+        "posterior_feature_mean_train",
+        "posterior_feature_mean_oos",
+        "feature_mean_drift_l2",
+        "emission_mean",
+        "emission_variance",
         "self_transition",
     ):
         values = result[key]
@@ -239,20 +313,111 @@ def summarize_candidate(models: list[GaussianHMM], fits: list[dict[str, Any]]) -
         key: {"mean": float(np.mean([row[key] for row in parameter_differences])), "max": float(np.max([row[key] for row in parameter_differences]))}
         for key in parameter_differences[0]
     }
-    return {"reference_seed": fits[reference_index]["seed"], "fits": aligned_fits, "aggregate": aggregate}
+    aggregate["state_ranges"] = {
+        key: {
+            "minimum": np.min(np.asarray([fit[key] for fit in aligned_fits]), axis=0).tolist(),
+            "maximum": np.max(np.asarray([fit[key] for fit in aligned_fits]), axis=0).tolist(),
+        }
+        for key in (
+            "occupancy_train",
+            "occupancy_oos",
+            "mean_state_duration_train",
+            "mean_state_duration_oos",
+            "single_bar_share_train",
+            "single_bar_share_oos",
+            "self_transition",
+            "feature_mean_drift_l2",
+        )
+    }
+    summary = {
+        "reference_seed": fits[reference_index]["seed"],
+        "fits": aligned_fits,
+        "aggregate": aggregate,
+    }
+    summary["guardrails"] = evaluate_guardrails(summary)
+    return summary
+
+
+def evaluate_guardrails(candidate: dict[str, Any]) -> dict[str, Any]:
+    aggregate = candidate["aggregate"]
+    reproducibility = aggregate["reproducibility"]
+    state_ranges = aggregate["state_ranges"]
+    checks = {
+        "all_fits_converged": all(fit["converged"] for fit in candidate["fits"]),
+        "non_negative_convergence_delta": all(
+            fit["final_likelihood_delta"] >= -NEGATIVE_CONVERGENCE_DELTA_TOLERANCE
+            for fit in candidate["fits"]
+        ),
+        "oos_likelihood_drift": aggregate["train_oos_likelihood_drift"]["mean"]
+        <= MAX_LIKELIHOOD_DRIFT,
+        "occupancy_drift": aggregate["occupancy_drift_l1"]["mean"]
+        <= MAX_OCCUPANCY_DRIFT,
+        "feature_drift": max(state_ranges["feature_mean_drift_l2"]["maximum"])
+        <= MAX_FEATURE_MEAN_DRIFT,
+        "no_rare_train_states": aggregate["rare_state_count_train"]["mean"] == 0,
+        "no_rare_oos_states": aggregate["rare_state_count_oos"]["mean"] == 0,
+        "state_separation": aggregate["minimum_pairwise_separation"]["mean"]
+        >= MIN_PAIRWISE_SEPARATION,
+        "oos_duration": min(state_ranges["mean_state_duration_oos"]["minimum"])
+        >= MIN_OOS_MEAN_DURATION,
+        "oos_noise": max(state_ranges["single_bar_share_oos"]["maximum"])
+        <= MAX_OOS_SINGLE_BAR_SHARE,
+        "emission_reproducibility": reproducibility["emission_mean_rmse"]["max"]
+        <= MAX_EMISSION_MEAN_RMSE,
+        "transition_reproducibility": reproducibility["transition_rmse"]["max"]
+        <= MAX_TRANSITION_RMSE,
+        "oos_occupancy_reproducibility": reproducibility["oos_occupancy_rmse"]["max"]
+        <= MAX_OOS_OCCUPANCY_RMSE,
+    }
+    return {
+        "passed": all(checks.values()),
+        "checks": checks,
+        "failed": [name for name, passed in checks.items() if not passed],
+    }
 
 
 def choose_outcome(candidates: list[dict[str, Any]]) -> dict[str, Any]:
-    successful = [row for row in candidates if row["status"] == "ok"]
-    if not successful:
-        return {"outcome": "inconclusive", "selected_k": None, "reason": "No state count completed all deterministic seed fits."}
-    eligible = [row for row in successful if row["aggregate"]["rare_state_count_oos"]["mean"] == 0 and row["aggregate"]["minimum_pairwise_separation"]["mean"] >= 1.0]
+    incomplete = [row["k"] for row in candidates if row["status"] != "ok"]
+    if incomplete:
+        return {
+            "outcome": "inconclusive",
+            "selected_k": None,
+            "reason": f"Incomplete deterministic fits for K={incomplete}; every K must be complete.",
+        }
+    eligible = [row for row in candidates if row["guardrails"]["passed"]]
     if not eligible:
-        return {"outcome": "inconclusive", "selected_k": None, "reason": "No candidate clears both the rare-state and emission-separation checks; more evidence is required."}
-    best = min(eligible, key=lambda row: (row["aggregate"]["bic"]["mean"], row["k"]))
+        return {
+            "outcome": "inconclusive",
+            "selected_k": None,
+            "reason": "No candidate clears every model-selection guardrail.",
+        }
+    best_aic = min(eligible, key=lambda row: (row["aggregate"]["aic"]["mean"], row["k"]))["k"]
+    best_bic = min(eligible, key=lambda row: (row["aggregate"]["bic"]["mean"], row["k"]))["k"]
+    best_oos = max(
+        eligible,
+        key=lambda row: (row["aggregate"]["oos_log_likelihood_per_observation"]["mean"], -row["k"]),
+    )["k"]
+    if len({best_aic, best_bic, best_oos}) != 1:
+        return {
+            "outcome": "inconclusive",
+            "selected_k": None,
+            "reason": (
+                "Selection evidence conflicts: "
+                f"AIC favors K={best_aic}, BIC favors K={best_bic}, "
+                f"and OOS likelihood favors K={best_oos}."
+            ),
+        }
+    best = next(row for row in eligible if row["k"] == best_aic)
     k = best["k"]
     outcome = "retain_k3" if k == 3 else "select_k6" if k == 6 else "select_other_k"
-    return {"outcome": outcome, "selected_k": k, "reason": "Selected the lowest mean train BIC among candidates without rare OOS states or weak pairwise separation."}
+    return {
+        "outcome": outcome,
+        "selected_k": k,
+        "reason": (
+            "AIC, BIC, and OOS likelihood agree after the candidate cleared "
+            "every model-selection guardrail."
+        ),
+    }
 
 
 def strict_json(value: Any) -> Any:
@@ -265,14 +430,15 @@ def strict_json(value: Any) -> Any:
 
 def markdown_report(result: dict[str, Any]) -> str:
     decision = result["decision"]
-    lines = ["# SPY 1D HMM state-count decision", "", f"**Outcome:** `{decision['outcome']}`", f"**Selected K:** {decision['selected_k'] if decision['selected_k'] is not None else 'none'}", "", decision["reason"], "", "| K | status | train LL/obs | OOS LL/obs | AIC | BIC | OOS rare | drift L1 | separation |", "|---:|---|---:|---:|---:|---:|---:|---:|---:|"]
+    lines = ["# SPY 1D HMM state-count decision", "", f"**Outcome:** `{decision['outcome']}`", f"**Selected K:** {decision['selected_k'] if decision['selected_k'] is not None else 'none'}", "", decision["reason"], "", "| K | status | guardrails | train LL/obs | OOS LL/obs | AIC | BIC | OOS rare | drift L1 | separation |", "|---:|---|---|---:|---:|---:|---:|---:|---:|---:|"]
     for row in result["candidates"]:
         if row["status"] != "ok":
-            lines.append(f"| {row['k']} | failed | — | — | — | — | — | — | — |")
+            lines.append(f"| {row['k']} | failed | incomplete | — | — | — | — | — | — | — |")
             continue
         agg = row["aggregate"]
-        lines.append(f"| {row['k']} | ok | {agg['train_log_likelihood_per_observation']['mean']:.4f} | {agg['oos_log_likelihood_per_observation']['mean']:.4f} | {agg['aic']['mean']:.1f} | {agg['bic']['mean']:.1f} | {agg['rare_state_count_oos']['mean']:.2f} | {agg['occupancy_drift_l1']['mean']:.3f} | {agg['minimum_pairwise_separation']['mean']:.3f} |")
-    lines += ["", "State duration, self-transition, occupancy, train/OOS drift, pairwise separation, and aligned-seed reproducibility are retained in `state-count-comparison.json`.", "", "Raw state indices were not compared across fits; each seed was aligned to the lowest-seed fit of the same K by its Gaussian emissions. This report is model-selection evidence, not a performance or trading claim.", ""]
+        failed = ", ".join(row["guardrails"]["failed"]) or "pass"
+        lines.append(f"| {row['k']} | ok | {failed} | {agg['train_log_likelihood_per_observation']['mean']:.4f} | {agg['oos_log_likelihood_per_observation']['mean']:.4f} | {agg['aic']['mean']:.1f} | {agg['bic']['mean']:.1f} | {agg['rare_state_count_oos']['mean']:.2f} | {agg['occupancy_drift_l1']['mean']:.3f} | {agg['minimum_pairwise_separation']['mean']:.3f} |")
+    lines += ["", "The JSON retains convergence deltas, posterior-weighted train/OOS feature means, emissions, occupancy, duration and single-bar noise, self-transition, drift, pairwise separation, every guardrail result, and aligned-seed reproducibility.", "", "Raw state indices were not compared across fits; each seed was aligned to the lowest-seed fit of the same K by its Gaussian emissions. Any incomplete K or disagreement among AIC, BIC, and OOS likelihood forces an inconclusive result.", ""]
     return "\n".join(lines)
 
 
@@ -292,6 +458,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
     scaler = StandardScaler()
     train_matrix = scaler.fit_transform(features.loc[:train_rows - 1, train_hmm.FEATURE_NAMES])
     full_matrix = scaler.transform(features[train_hmm.FEATURE_NAMES])
+    observation_matrix = features[train_hmm.FEATURE_NAMES].to_numpy(dtype=float)
     candidates = []
     for k in candidate_state_counts():
         models, fits, failures = [], [], []
@@ -299,7 +466,15 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
             try:
                 model = fit_candidate(train_matrix, k, seed)
                 models.append(model)
-                fits.append(fit_metrics(model, full_matrix, train_rows, seed))
+                fits.append(
+                    fit_metrics(
+                        model,
+                        full_matrix,
+                        train_rows,
+                        seed,
+                        observation_matrix=observation_matrix,
+                    )
+                )
             except Exception as exc:
                 failures.append({"seed": seed, "error": f"{type(exc).__name__}: {exc}"})
         if failures:
@@ -308,7 +483,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
             candidates.append({"k": k, "status": "ok", **summarize_candidate(models, fits)})
     result = {
         "schema_version": 1, "scope": {"symbol": "SPY", "timeframe": "1D", "state_counts": list(DEFAULT_STATE_COUNTS), "seeds": args.seeds},
-        "method": {"features": train_hmm.FEATURE_NAMES, "feature_config": asdict(config), "train_fraction": args.train_fraction, "covariance_type": "diag", "inference": "causal_forward_filter", "rare_state_threshold": RARE_STATE_THRESHOLD, "alignment": "minimum-cost symmetric diagonal-Gaussian emission distance within equal K"},
+        "method": {"features": train_hmm.FEATURE_NAMES, "feature_config": asdict(config), "train_fraction": args.train_fraction, "covariance_type": "diag", "inference": "causal_forward_filter", "alignment": "minimum-cost symmetric diagonal-Gaussian emission distance within equal K", "guardrail_thresholds": {"rare_state_occupancy": RARE_STATE_THRESHOLD, "maximum_train_oos_likelihood_drift": MAX_LIKELIHOOD_DRIFT, "maximum_occupancy_drift_l1": MAX_OCCUPANCY_DRIFT, "maximum_feature_mean_drift_l2": MAX_FEATURE_MEAN_DRIFT, "minimum_pairwise_separation": MIN_PAIRWISE_SEPARATION, "minimum_oos_mean_duration": MIN_OOS_MEAN_DURATION, "maximum_oos_single_bar_share": MAX_OOS_SINGLE_BAR_SHARE, "maximum_emission_mean_rmse": MAX_EMISSION_MEAN_RMSE, "maximum_transition_rmse": MAX_TRANSITION_RMSE, "maximum_oos_occupancy_rmse": MAX_OOS_OCCUPANCY_RMSE, "negative_convergence_delta_tolerance": NEGATIVE_CONVERGENCE_DELTA_TOLERANCE}},
         "sample": {"usable_rows": len(features), "train_rows": train_rows, "oos_rows": len(features) - train_rows}, "candidates": candidates,
     }
     result["decision"] = choose_outcome(candidates)

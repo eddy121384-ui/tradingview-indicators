@@ -1,3 +1,4 @@
+import copy
 import importlib.util
 import unittest
 from pathlib import Path
@@ -58,6 +59,20 @@ class CandidateTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "did not converge"):
                 comparison.fit_candidate(np.ones((20, 3)), 3, 42)
 
+    def test_negative_likelihood_delta_is_not_accepted_as_convergence(self):
+        class FalseConvergedModel:
+            def __init__(self, **kwargs):
+                self.monitor_ = type(
+                    "Monitor", (), {"converged": True, "history": [10.0, 9.0]}
+                )()
+
+            def fit(self, matrix):
+                return self
+
+        with patch.object(comparison, "GaussianHMM", FalseConvergedModel):
+            with self.assertRaisesRegex(RuntimeError, "negative likelihood delta"):
+                comparison.fit_candidate(np.ones((20, 3)), 3, 42)
+
 
 class AlignmentTests(unittest.TestCase):
     def test_permuted_states_align_before_parameter_comparison(self):
@@ -102,8 +117,59 @@ class MetricTests(unittest.TestCase):
         self.assertEqual(comparison.run_lengths(states[:2], 2), [[2], []])
         self.assertEqual(comparison.run_lengths(states[2:], 2), [[2], []])
 
+    def test_interpretability_helpers_include_noise_and_feature_means(self):
+        matrix = np.asarray([[1.0, 2.0], [3.0, 4.0]])
+        posterior = np.asarray([[1.0, 0.0], [0.0, 1.0]])
+        self.assertEqual(
+            comparison.state_feature_means(matrix, posterior),
+            [[1.0, 2.0], [3.0, 4.0]],
+        )
+        self.assertEqual(comparison.single_bar_shares([[1, 2, 1], []]), [2 / 3, 1.0])
+
 
 class FailureAndDecisionTests(unittest.TestCase):
+    @staticmethod
+    def guardrail_input():
+        scalar = lambda value: {"mean": value, "std": 0.0}
+        return {
+            "fits": [
+                {
+                    "converged": True,
+                    "final_likelihood_delta": 0.01,
+                }
+            ],
+            "aggregate": {
+                "train_oos_likelihood_drift": scalar(0.1),
+                "occupancy_drift_l1": scalar(0.1),
+                "rare_state_count_train": scalar(0.0),
+                "rare_state_count_oos": scalar(0.0),
+                "minimum_pairwise_separation": scalar(2.0),
+                "reproducibility": {
+                    "emission_mean_rmse": {"max": 0.1},
+                    "transition_rmse": {"max": 0.1},
+                    "oos_occupancy_rmse": {"max": 0.05},
+                },
+                "state_ranges": {
+                    "feature_mean_drift_l2": {"maximum": [0.2, 0.2, 0.2]},
+                    "mean_state_duration_oos": {"minimum": [2.0, 2.0, 2.0]},
+                    "single_bar_share_oos": {"maximum": [0.2, 0.2, 0.2]},
+                },
+            },
+        }
+
+    @staticmethod
+    def candidate(k, aic, bic, oos, passed=True):
+        return {
+            "k": k,
+            "status": "ok",
+            "guardrails": {"passed": passed, "checks": {}, "failed": []},
+            "aggregate": {
+                "aic": {"mean": aic},
+                "bic": {"mean": bic},
+                "oos_log_likelihood_per_observation": {"mean": oos},
+            },
+        }
+
     def test_failed_candidates_produce_explicit_inconclusive_outcome(self):
         candidates = [
             {"k": k, "status": "failed", "failures": [{"seed": 42, "error": "fit failed"}]}
@@ -114,23 +180,67 @@ class FailureAndDecisionTests(unittest.TestCase):
         self.assertIsNone(decision["selected_k"])
 
     def test_decision_does_not_hard_code_six_states(self):
-        def candidate(k, bic):
-            return {
-                "k": k,
-                "status": "ok",
-                "aggregate": {
-                    "bic": {"mean": bic},
-                    "rare_state_count_oos": {"mean": 0.0},
-                    "minimum_pairwise_separation": {"mean": 2.0},
-                },
-            }
-
-        decision = comparison.choose_outcome([candidate(3, 100), candidate(6, 90), candidate(5, 80)])
+        decision = comparison.choose_outcome(
+            [
+                self.candidate(3, 100, 100, -3.0),
+                self.candidate(6, 90, 90, -2.0),
+                self.candidate(5, 80, 80, -1.0),
+            ]
+        )
         self.assertEqual(decision, {
             "outcome": "select_other_k",
             "selected_k": 5,
-            "reason": "Selected the lowest mean train BIC among candidates without rare OOS states or weak pairwise separation.",
+            "reason": "AIC, BIC, and OOS likelihood agree after the candidate cleared every model-selection guardrail.",
         })
+
+    def test_any_incomplete_k_forces_inconclusive(self):
+        candidates = [self.candidate(k, k, k, -float(k)) for k in range(3, 8)]
+        candidates.append({"k": 8, "status": "failed", "failures": []})
+        self.assertEqual(
+            comparison.choose_outcome(candidates)["outcome"], "inconclusive"
+        )
+
+    def test_failed_guardrail_forces_inconclusive(self):
+        candidates = [self.candidate(k, k, k, -float(k), passed=False) for k in range(3, 9)]
+        decision = comparison.choose_outcome(candidates)
+        self.assertEqual(decision["outcome"], "inconclusive")
+        self.assertIn("guardrail", decision["reason"])
+
+    def test_conflicting_selection_evidence_forces_inconclusive(self):
+        candidates = [
+            self.candidate(3, 10, 30, -3.0),
+            self.candidate(4, 20, 10, -2.0),
+            self.candidate(5, 30, 20, -1.0),
+        ]
+        decision = comparison.choose_outcome(candidates)
+        self.assertEqual(decision["outcome"], "inconclusive")
+        self.assertIn("conflicts", decision["reason"])
+
+    def test_all_model_selection_guardrails_are_enforced(self):
+        baseline = self.guardrail_input()
+        self.assertTrue(comparison.evaluate_guardrails(baseline)["passed"])
+        failures = {
+            "all_fits_converged": lambda row: row["fits"][0].update(converged=False),
+            "non_negative_convergence_delta": lambda row: row["fits"][0].update(final_likelihood_delta=-1.0),
+            "oos_likelihood_drift": lambda row: row["aggregate"]["train_oos_likelihood_drift"].update(mean=2.0),
+            "occupancy_drift": lambda row: row["aggregate"]["occupancy_drift_l1"].update(mean=1.0),
+            "feature_drift": lambda row: row["aggregate"]["state_ranges"]["feature_mean_drift_l2"].update(maximum=[2.0]),
+            "no_rare_train_states": lambda row: row["aggregate"]["rare_state_count_train"].update(mean=1.0),
+            "no_rare_oos_states": lambda row: row["aggregate"]["rare_state_count_oos"].update(mean=1.0),
+            "state_separation": lambda row: row["aggregate"]["minimum_pairwise_separation"].update(mean=0.5),
+            "oos_duration": lambda row: row["aggregate"]["state_ranges"]["mean_state_duration_oos"].update(minimum=[1.0]),
+            "oos_noise": lambda row: row["aggregate"]["state_ranges"]["single_bar_share_oos"].update(maximum=[1.0]),
+            "emission_reproducibility": lambda row: row["aggregate"]["reproducibility"]["emission_mean_rmse"].update(max=1.0),
+            "transition_reproducibility": lambda row: row["aggregate"]["reproducibility"]["transition_rmse"].update(max=1.0),
+            "oos_occupancy_reproducibility": lambda row: row["aggregate"]["reproducibility"]["oos_occupancy_rmse"].update(max=1.0),
+        }
+        for expected_failure, mutate in failures.items():
+            with self.subTest(guardrail=expected_failure):
+                candidate = copy.deepcopy(baseline)
+                mutate(candidate)
+                result = comparison.evaluate_guardrails(candidate)
+                self.assertFalse(result["passed"])
+                self.assertIn(expected_failure, result["failed"])
 
 
 if __name__ == "__main__":
