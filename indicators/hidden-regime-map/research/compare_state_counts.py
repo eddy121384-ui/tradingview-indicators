@@ -22,6 +22,9 @@ from hmmlearn.hmm import GaussianHMM
 from scipy.optimize import linear_sum_assignment
 from sklearn.preprocessing import StandardScaler
 
+RESEARCH_DIR = Path(__file__).resolve().parent
+if str(RESEARCH_DIR) not in sys.path:
+    sys.path.insert(0, str(RESEARCH_DIR))
 import train_hmm
 
 DEFAULT_STATE_COUNTS = tuple(range(3, 9))
@@ -62,6 +65,8 @@ def fit_candidate(matrix: np.ndarray, n_states: int, seed: int) -> GaussianHMM:
         implementation="log",
     )
     model.fit(matrix)
+    if not model.monitor_.converged:
+        raise RuntimeError("HMM fit did not converge")
     score = float(model.score(matrix))
     if not np.isfinite(score):
         raise RuntimeError("non-finite train log likelihood")
@@ -154,7 +159,8 @@ def fit_metrics(
     aic, bic = information_criteria(train_ll, len(train), model.n_components, train.shape[1])
     posterior = train_hmm.forward_filter(model, full_matrix)
     dominant = posterior.argmax(axis=1)
-    durations = run_lengths(dominant, model.n_components)
+    durations_train = run_lengths(dominant[:train_rows], model.n_components)
+    durations_oos = run_lengths(dominant[train_rows:], model.n_components)
     occupancy_train = np.bincount(dominant[:train_rows], minlength=model.n_components) / train_rows
     occupancy_oos = np.bincount(dominant[train_rows:], minlength=model.n_components) / len(oos)
     return {
@@ -169,7 +175,12 @@ def fit_metrics(
         "occupancy_train": occupancy_train.tolist(),
         "occupancy_oos": occupancy_oos.tolist(),
         "occupancy_drift_l1": float(np.abs(occupancy_train - occupancy_oos).sum()),
-        "mean_state_duration": [float(np.mean(item)) if item else 0.0 for item in durations],
+        "mean_state_duration_train": [
+            float(np.mean(item)) if item else 0.0 for item in durations_train
+        ],
+        "mean_state_duration_oos": [
+            float(np.mean(item)) if item else 0.0 for item in durations_oos
+        ],
         "self_transition": np.diag(model.transmat_).tolist(),
         "rare_state_count_train": int((occupancy_train < RARE_STATE_THRESHOLD).sum()),
         "rare_state_count_oos": int((occupancy_oos < RARE_STATE_THRESHOLD).sum()),
@@ -179,7 +190,13 @@ def fit_metrics(
 
 def align_metric_lists(metrics: dict[str, Any], permutation: list[int]) -> dict[str, Any]:
     result = dict(metrics)
-    for key in ("occupancy_train", "occupancy_oos", "mean_state_duration", "self_transition"):
+    for key in (
+        "occupancy_train",
+        "occupancy_oos",
+        "mean_state_duration_train",
+        "mean_state_duration_oos",
+        "self_transition",
+    ):
         values = result[key]
         result[key] = [values[index] for index in permutation]
     return result
@@ -203,7 +220,8 @@ def summarize_candidate(models: list[GaussianHMM], fits: list[dict[str, Any]]) -
                 "transition_rmse": float(np.sqrt(np.mean((parameters["transition"] - reference_parameters["transition"]) ** 2))),
                 "train_occupancy_rmse": float(np.sqrt(np.mean((np.asarray(aligned["occupancy_train"]) - np.asarray(reference_fit["occupancy_train"])) ** 2))),
                 "oos_occupancy_rmse": float(np.sqrt(np.mean((np.asarray(aligned["occupancy_oos"]) - np.asarray(reference_fit["occupancy_oos"])) ** 2))),
-                "duration_rmse": float(np.sqrt(np.mean((np.asarray(aligned["mean_state_duration"]) - np.asarray(reference_fit["mean_state_duration"])) ** 2))),
+                "train_duration_rmse": float(np.sqrt(np.mean((np.asarray(aligned["mean_state_duration_train"]) - np.asarray(reference_fit["mean_state_duration_train"])) ** 2))),
+                "oos_duration_rmse": float(np.sqrt(np.mean((np.asarray(aligned["mean_state_duration_oos"]) - np.asarray(reference_fit["mean_state_duration_oos"])) ** 2))),
                 "self_transition_rmse": float(np.sqrt(np.mean((np.asarray(aligned["self_transition"]) - np.asarray(reference_fit["self_transition"])) ** 2))),
             }
         )

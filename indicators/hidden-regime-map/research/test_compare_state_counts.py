@@ -1,13 +1,12 @@
 import importlib.util
-import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 
 
 MODULE_PATH = Path(__file__).with_name("compare_state_counts.py")
-sys.path.insert(0, str(MODULE_PATH.parent))
 SPEC = importlib.util.spec_from_file_location("compare_state_counts", MODULE_PATH)
 comparison = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
@@ -47,6 +46,18 @@ class CandidateTests(unittest.TestCase):
         np.testing.assert_allclose(first.transmat_, second.transmat_)
         self.assertEqual(first.score(matrix), second.score(matrix))
 
+    def test_non_converged_fit_is_rejected(self):
+        class NonConvergedModel:
+            def __init__(self, **kwargs):
+                self.monitor_ = type("Monitor", (), {"converged": False})()
+
+            def fit(self, matrix):
+                return self
+
+        with patch.object(comparison, "GaussianHMM", NonConvergedModel):
+            with self.assertRaisesRegex(RuntimeError, "did not converge"):
+                comparison.fit_candidate(np.ones((20, 3)), 3, 42)
+
 
 class AlignmentTests(unittest.TestCase):
     def test_permuted_states_align_before_parameter_comparison(self):
@@ -85,6 +96,11 @@ class MetricTests(unittest.TestCase):
             comparison.run_lengths(np.asarray([0, 0, 1, 1, 1, 0]), 3),
             [[2, 1], [3], []],
         )
+
+    def test_train_and_oos_durations_do_not_cross_split(self):
+        states = np.asarray([0, 0, 0, 0])
+        self.assertEqual(comparison.run_lengths(states[:2], 2), [[2], []])
+        self.assertEqual(comparison.run_lengths(states[2:], 2), [[2], []])
 
 
 class FailureAndDecisionTests(unittest.TestCase):
