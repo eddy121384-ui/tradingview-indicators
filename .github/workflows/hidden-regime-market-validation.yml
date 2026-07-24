@@ -98,6 +98,23 @@ jobs:
           cat "artifacts/$TICKER/state-count-comparison.log"
           exit $status
 
+      - name: Check SPY K8 cutoff stability
+        id: check_k8_cutoffs
+        if: matrix.ticker == 'SPY'
+        continue-on-error: true
+        run: |
+          mkdir -p "artifacts/$TICKER/k8-cutoff-stability"
+          python indicators/hidden-regime-map/research/check_k8_cutoff_stability.py \
+            --input "artifacts/$TICKER/ohlc.csv" \
+            --output-dir "artifacts/$TICKER/k8-cutoff-stability" \
+            --symbol SPY \
+            --timeframe 1D \
+            --cutoffs 5 \
+            > "artifacts/$TICKER/k8-cutoff-stability.log" 2>&1
+          status=$?
+          cat "artifacts/$TICKER/k8-cutoff-stability.log"
+          exit $status
+
       - name: Write workflow summary
         if: always()
         run: |
@@ -119,6 +136,9 @@ jobs:
           if [ -f "artifacts/$TICKER/state-count-comparison/feature-set-decision.md" ]; then
             cat "artifacts/$TICKER/state-count-comparison/feature-set-decision.md" >> "$GITHUB_STEP_SUMMARY"
           fi
+          if [ -f "artifacts/$TICKER/k8-cutoff-stability/k8-cutoff-stability.md" ]; then
+            cat "artifacts/$TICKER/k8-cutoff-stability/k8-cutoff-stability.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -129,5 +149,5 @@ jobs:
           if-no-files-found: error
 
       - name: Fail job when research validation failed
-        if: steps.train.outcome == 'failure' || steps.characterize.outcome == 'failure' || steps.compare_feature_sets.outcome == 'failure'
+        if: steps.train.outcome == 'failure' || steps.characterize.outcome == 'failure' || steps.compare_feature_sets.outcome == 'failure' || steps.check_k8_cutoffs.outcome == 'failure'
         run: exit 1
