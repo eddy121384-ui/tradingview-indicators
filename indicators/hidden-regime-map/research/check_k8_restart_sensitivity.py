@@ -53,6 +53,14 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def validate_seed_group_count(group_seeds: list[int]) -> None:
+    expected = len(compare_state_counts.DEFAULT_SEEDS)
+    if len(group_seeds) != expected:
+        raise ValueError(
+            f"restart-sensitivity diagnostic requires exactly {expected} seed groups"
+        )
+
+
 def validate_restart_offsets(group_seeds: list[int], offsets: list[int]) -> None:
     if len(set(offsets)) != len(offsets):
         raise ValueError("restart offsets must be unique")
@@ -261,6 +269,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("restart-sensitivity diagnostic is restricted to SPY 1D")
     if not 0.50 <= args.train_fraction < 1.0:
         raise ValueError("train_fraction must be in [0.50, 1.0)")
+    validate_seed_group_count(args.seeds)
     compare_state_counts.validate_seed_groups(args.seeds)
     validate_restart_offsets(args.seeds, args.restart_offsets)
 
