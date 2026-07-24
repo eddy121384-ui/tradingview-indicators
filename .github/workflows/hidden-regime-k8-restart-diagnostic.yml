@@ -1,0 +1,63 @@
+name: Hidden Regime K8 Restart Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - indicators/hidden-regime-map/research/check_k8_restart_sensitivity.py
+      - indicators/hidden-regime-map/research/test_check_k8_restart_sensitivity.py
+      - .github/workflows/hidden-regime-k8-restart-diagnostic.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Run focused unit tests
+        run: python -m unittest discover -s indicators/hidden-regime-map/research -p 'test_check_k8_restart_sensitivity.py'
+
+      - name: Download frozen Run 48 SPY artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hidden-regime-SPY
+          path: source-artifact
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: eddy121384-ui/tradingview-indicators
+          run-id: 30067539000
+
+      - name: Run K8 restart-sensitivity diagnostic
+        run: |
+          python indicators/hidden-regime-map/research/check_k8_restart_sensitivity.py \
+            --input source-artifact/ohlc.csv \
+            --output-dir artifacts/k8-restart-sensitivity \
+            --symbol SPY \
+            --timeframe 1D \
+            --cutoff 2026-07-23 \
+            --restart-offsets 0 1 2 3 4 5 6 7 8
+
+      - name: Write workflow summary
+        run: cat artifacts/k8-restart-sensitivity/k8-restart-sensitivity.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hidden-regime-k8-restart-sensitivity
+          path: artifacts/k8-restart-sensitivity
+          retention-days: 14
+          if-no-files-found: error
