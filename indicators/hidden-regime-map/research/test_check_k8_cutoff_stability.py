@@ -1,6 +1,7 @@
 import importlib.util
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import numpy as np
@@ -24,6 +25,59 @@ class CutoffSelectionTests(unittest.TestCase):
             cutoffs.cutoff_positions(4, 5)
 
 
+class ExpandedRestartTests(unittest.TestCase):
+    def test_frozen_schedule_contains_nine_ordered_offsets(self):
+        self.assertEqual(cutoffs.EXPANDED_RESTART_OFFSETS, tuple(range(9)))
+
+    def test_expanded_group_selects_best_fit_and_preserves_all_attempts(self):
+        class ScoredModel:
+            def __init__(self, score):
+                self._score = score
+                self.monitor_ = SimpleNamespace(iter=5)
+
+            def score(self, matrix):
+                return self._score
+
+        def attempt(matrix, n_states, seed):
+            if seed == 42:
+                raise ValueError("synthetic fit failure")
+            return ScoredModel(float(seed))
+
+        with patch.object(
+            cutoffs.compare_state_counts, "fit_candidate", side_effect=attempt
+        ):
+            model, attempts, selected_seed = cutoffs.fit_seed_group_expanded(
+                np.ones((20, 3)), 8, 42
+            )
+
+        self.assertEqual(selected_seed, 50)
+        self.assertEqual(model.score(None), 50.0)
+        self.assertEqual(
+            [row["attempt_seed"] for row in attempts], list(range(42, 51))
+        )
+        self.assertEqual(attempts[0]["status"], "failed")
+        self.assertTrue(all(row["status"] == "ok" for row in attempts[1:]))
+
+    def test_expanded_group_failure_preserves_all_nine_attempts(self):
+        with patch.object(
+            cutoffs.compare_state_counts,
+            "fit_candidate",
+            side_effect=RuntimeError("no convergence"),
+        ):
+            with self.assertRaises(
+                cutoffs.compare_state_counts.RestartGroupError
+            ) as caught:
+                cutoffs.fit_seed_group_expanded(np.ones((20, 3)), 8, 42)
+
+        self.assertEqual(
+            [row["attempt_seed"] for row in caught.exception.attempts],
+            list(range(42, 51)),
+        )
+        self.assertTrue(
+            all(row["status"] == "failed" for row in caught.exception.attempts)
+        )
+
+
 class DecisionTests(unittest.TestCase):
     @staticmethod
     def row(passed=True, status="ok"):
@@ -34,17 +88,21 @@ class DecisionTests(unittest.TestCase):
 
     def test_all_cutoffs_must_pass(self):
         decision = cutoffs.decision_for_rows([self.row(), self.row()])
-        self.assertEqual(decision["outcome"], "candidate_stable_across_cutoffs")
+        self.assertEqual(decision["outcome"], "stable_with_expanded_restarts")
         self.assertEqual(decision["passing_cutoffs"], 2)
 
     def test_any_guardrail_failure_is_cutoff_sensitive(self):
         decision = cutoffs.decision_for_rows([self.row(), self.row(False)])
-        self.assertEqual(decision["outcome"], "cutoff_sensitive")
+        self.assertEqual(
+            decision["outcome"], "cutoff_sensitive_after_expansion"
+        )
         self.assertEqual(decision["passing_cutoffs"], 1)
 
     def test_any_fit_failure_is_cutoff_sensitive(self):
         decision = cutoffs.decision_for_rows([self.row(), {"status": "failed"}])
-        self.assertEqual(decision["outcome"], "cutoff_sensitive")
+        self.assertEqual(
+            decision["outcome"], "cutoff_sensitive_after_expansion"
+        )
         self.assertEqual(decision["passing_cutoffs"], 1)
 
 
@@ -68,8 +126,8 @@ class FitErrorHandlingTests(unittest.TestCase):
         attempts = [{"attempt_seed": 42, "status": "failed"}]
         error = cutoffs.compare_state_counts.RestartGroupError(42, attempts)
         with patch.object(
-            cutoffs.compare_state_counts,
-            "fit_seed_group",
+            cutoffs,
+            "fit_seed_group_expanded",
             side_effect=error,
         ), patch.object(cutoffs.compare_state_counts, "fit_metrics") as fit_metrics:
             model, metrics, failure = cutoffs.fit_seed_metrics(**self.inputs())
@@ -82,8 +140,8 @@ class FitErrorHandlingTests(unittest.TestCase):
 
     def test_unexpected_seed_group_error_propagates(self):
         with patch.object(
-            cutoffs.compare_state_counts,
-            "fit_seed_group",
+            cutoffs,
+            "fit_seed_group_expanded",
             side_effect=ValueError("unexpected seed error"),
         ):
             with self.assertRaisesRegex(ValueError, "unexpected seed error"):
@@ -92,8 +150,8 @@ class FitErrorHandlingTests(unittest.TestCase):
     def test_unexpected_metrics_error_propagates(self):
         model = object()
         with patch.object(
-            cutoffs.compare_state_counts,
-            "fit_seed_group",
+            cutoffs,
+            "fit_seed_group_expanded",
             return_value=(model, [], 43),
         ), patch.object(
             cutoffs.compare_state_counts,
