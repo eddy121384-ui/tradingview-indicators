@@ -11,6 +11,12 @@ SPEC.loader.exec_module(restarts)
 
 
 class RestartScheduleTests(unittest.TestCase):
+    def test_diagnostic_requires_exactly_three_seed_groups(self):
+        restarts.validate_seed_group_count([42, 84, 126])
+        for seeds in ([42, 84], [42, 84, 126, 168]):
+            with self.assertRaisesRegex(ValueError, "exactly 3 seed groups"):
+                restarts.validate_seed_group_count(list(seeds))
+
     def test_expanded_schedule_must_include_existing_offsets(self):
         with self.assertRaisesRegex(ValueError, "include the existing schedule"):
             restarts.validate_restart_offsets([42, 84, 126], [0, 1, 3])
