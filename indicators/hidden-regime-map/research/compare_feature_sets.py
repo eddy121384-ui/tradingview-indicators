@@ -162,7 +162,8 @@ def materially_clearer(baseline: dict[str, Any], variant: dict[str, Any]) -> boo
     right_occ = right_metrics["maximum_occupancy_drift_l1"]
     consistency = (
         (right_ll <= (1.0 - MATERIAL_IMPROVEMENT) * left_ll or right_occ <= (1.0 - MATERIAL_IMPROVEMENT) * left_occ)
-        and right_ll <= left_ll and right_occ <= left_occ
+        and right_ll <= (1.0 + MATERIAL_IMPROVEMENT) * left_ll
+        and right_occ <= (1.0 + MATERIAL_IMPROVEMENT) * left_occ
     )
     return bool(separation and consistency)
 
@@ -174,7 +175,7 @@ def choose_feature_set(variants: dict[str, dict[str, Any]]) -> dict[str, Any]:
     for name in ("baseline_er", "baseline_er_downside"):
         variant = variants[name]
         if variant["decision"]["selected_k"] is not None and materially_clearer(baseline, variant):
-            return {"outcome": "select_feature_set", "selected_feature_set": name, "selected_k": variant["decision"]["selected_k"], "reason": "This is the simplest feature set with a stable internal K decision and at least 10% better worst-seed dimension-normalized separation plus non-worsening worst-seed OOS consistency, including at least one 10% consistency improvement, versus baseline at the same K."}
+            return {"outcome": "select_feature_set", "selected_feature_set": name, "selected_k": variant["decision"]["selected_k"], "reason": "This is the simplest feature set with a stable internal K decision and at least 10% better worst-seed dimension-normalized separation plus at least one 10% OOS-consistency improvement, with neither consistency diagnostic worsening by more than 10%, versus baseline at the same K."}
     return {"outcome": "keep_productization_paused", "selected_feature_set": None, "selected_k": None, "reason": "None of the three feature sets supports both a stable fixed-K decision and materially clearer worst-seed, dimension-normalized state separation/OOS consistency."}
 
 
@@ -202,6 +203,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
         },
         "cross_feature_policy": {
             "material_improvement_fraction": MATERIAL_IMPROVEMENT,
+            "material_worsening_tolerance_fraction": MATERIAL_IMPROVEMENT,
             "likelihood_alone_is_sufficient": False,
             "seed_summary": "worst_seed",
             "separation_normalization": "minimum_pairwise_separation / sqrt(feature_dimensions)",
@@ -235,7 +237,7 @@ def markdown_report(result: dict[str, Any]) -> str:
             separation = likelihood = occupancy = "—"
         reason = variant["decision"]["reason"]
         lines.append(f"| `{name}` | {internal} | {leader_text} | {failed} | {separation} | {likelihood} | {occupancy} | {reason} |")
-    lines += ["", "Cross-feature materiality uses only worst-seed, dimension-normalized separation and likelihood drift plus worst-seed occupancy drift. Raw and normalized values are both shown; seed means cannot establish improvement.", "", "All three variants use the unchanged #26 split, training-only scaler, K=3–8 HMM configuration, seeds/restarts, causal filter, alignment, diagnostics, guardrails, and internal decision logic. The 10% rule applies only to the new cross-feature-set materiality decision; likelihood improvement alone cannot select a richer feature set.", ""]
+    lines += ["", "Cross-feature materiality uses only worst-seed, dimension-normalized separation and likelihood drift plus worst-seed occupancy drift. Raw and normalized values are both shown; seed means cannot establish improvement.", "", "All three variants use the unchanged #26 split, training-only scaler, K=3–8 HMM configuration, seeds/restarts, causal filter, alignment, diagnostics, guardrails, and internal decision logic. The 10% rule applies symmetrically to the cross-feature-set materiality decision: a richer set needs at least 10% better separation, at least one 10% OOS-consistency improvement, and no consistency diagnostic may worsen by more than 10%. Likelihood improvement alone cannot select a richer feature set.", ""]
     return "\n".join(lines)
 
 

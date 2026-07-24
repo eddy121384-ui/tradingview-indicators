@@ -162,6 +162,34 @@ class VariantDecisionTests(unittest.TestCase):
         self.assertEqual(decision["selected_feature_set"], "baseline_er")
         self.assertEqual(decision["selected_k"], 4)
 
+    def test_small_consistency_regression_does_not_block_material_improvement(self):
+        baseline = self.variant(
+            dimensions=3,
+            fits=[self.fit(np.sqrt(3), 0.3, 0.6)],
+            k=8,
+        )
+        enriched = self.variant(
+            selected_k=8,
+            dimensions=5,
+            fits=[self.fit(1.3 * np.sqrt(5), 0.505, 0.3)],
+            k=8,
+        )
+        self.assertTrue(features.materially_clearer(baseline, enriched))
+
+    def test_material_consistency_regression_still_blocks_selection(self):
+        baseline = self.variant(
+            dimensions=3,
+            fits=[self.fit(np.sqrt(3), 0.3, 0.6)],
+            k=8,
+        )
+        enriched = self.variant(
+            selected_k=8,
+            dimensions=5,
+            fits=[self.fit(1.3 * np.sqrt(5), 0.56, 0.3)],
+            k=8,
+        )
+        self.assertFalse(features.materially_clearer(baseline, enriched))
+
     def test_non_material_normalized_improvement_is_rejected(self):
         baseline = self.variant(
             dimensions=3,
