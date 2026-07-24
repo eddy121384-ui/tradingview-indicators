@@ -1,6 +1,10 @@
 import importlib.util
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
+
+import numpy as np
 
 
 MODULE_PATH = Path(__file__).with_name("check_k8_restart_sensitivity.py")
@@ -22,18 +26,84 @@ class RestartScheduleTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "frozen seed groups"):
                 restarts.validate_frozen_seed_groups(seeds)
 
-    def test_expanded_schedule_must_include_existing_offsets(self):
-        with self.assertRaisesRegex(ValueError, "include the existing schedule"):
-            restarts.validate_restart_offsets([42, 84, 126], [0, 1, 3])
-
-    def test_overlapping_attempt_seed_sets_are_rejected(self):
-        with self.assertRaisesRegex(ValueError, "overlap"):
-            restarts.validate_restart_offsets([42, 45], [0, 1, 2, 3])
-
-    def test_default_schedule_is_valid(self):
+    def test_diagnostic_requires_frozen_expanded_restart_schedule(self):
         restarts.validate_restart_offsets(
             [42, 84, 126], list(restarts.DEFAULT_RESTART_OFFSETS)
         )
+        for offsets in (
+            [0, 1, 2],
+            [0, 1, 2, 3, 4, 5, 6, 8, 7],
+            [0, 1, 2, 3, 4, 5, 6, 7],
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        ):
+            with self.assertRaisesRegex(ValueError, "frozen restart offsets"):
+                restarts.validate_restart_offsets([42, 84, 126], list(offsets))
+
+    def test_overlapping_attempt_seed_sets_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "overlap"):
+            restarts.validate_restart_offsets(
+                [42, 45], list(restarts.DEFAULT_RESTART_OFFSETS)
+            )
+
+
+class FitAttemptTests(unittest.TestCase):
+    @staticmethod
+    def call_fit_attempt():
+        matrix = np.zeros((3, 1), dtype=float)
+        return restarts.fit_attempt(
+            matrix,
+            matrix,
+            2,
+            42,
+            0,
+            matrix,
+            np.array(
+                ["2026-07-21", "2026-07-22", "2026-07-23"],
+                dtype="datetime64[D]",
+            ),
+            np.ones(3, dtype=float),
+        )
+
+    def test_non_runtime_fit_failure_is_recorded(self):
+        with patch.object(
+            restarts.compare_state_counts,
+            "fit_candidate",
+            side_effect=ValueError("numerical failure"),
+        ):
+            result = self.call_fit_attempt()
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["error"], "ValueError: numerical failure")
+
+    def test_non_runtime_score_failure_is_recorded(self):
+        model = SimpleNamespace(score=Mock(side_effect=ValueError("score failure")))
+        with patch.object(
+            restarts.compare_state_counts,
+            "fit_candidate",
+            return_value=model,
+        ):
+            result = self.call_fit_attempt()
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["error"], "ValueError: score failure")
+
+    def test_fit_metrics_failure_propagates(self):
+        model = SimpleNamespace(
+            score=Mock(return_value=10.0),
+            monitor_=SimpleNamespace(iter=4),
+        )
+        with (
+            patch.object(
+                restarts.compare_state_counts,
+                "fit_candidate",
+                return_value=model,
+            ),
+            patch.object(
+                restarts.compare_state_counts,
+                "fit_metrics",
+                side_effect=ValueError("malformed metrics"),
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "malformed metrics"):
+                self.call_fit_attempt()
 
 
 class SelectionTests(unittest.TestCase):
