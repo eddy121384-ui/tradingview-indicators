@@ -2,7 +2,7 @@ import importlib.util
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import numpy as np
 
@@ -28,6 +28,18 @@ class CutoffSelectionTests(unittest.TestCase):
 class ExpandedRestartTests(unittest.TestCase):
     def test_frozen_schedule_contains_nine_ordered_offsets(self):
         self.assertEqual(cutoffs.EXPANDED_RESTART_OFFSETS, tuple(range(9)))
+
+    def test_diagnostic_requires_exact_frozen_seed_groups(self):
+        cutoffs.validate_frozen_seed_groups([42, 84, 126])
+        for seeds in (
+            [42, 84],
+            [42, 84, 126, 168],
+            [42, 126, 84],
+            [10, 30, 50],
+            [42, 48],
+        ):
+            with self.assertRaisesRegex(ValueError, "frozen seed groups"):
+                cutoffs.validate_frozen_seed_groups(seeds)
 
     def test_expanded_group_selects_best_fit_and_preserves_all_attempts(self):
         class ScoredModel:
@@ -76,6 +88,66 @@ class ExpandedRestartTests(unittest.TestCase):
         self.assertTrue(
             all(row["status"] == "failed" for row in caught.exception.attempts)
         )
+
+
+class AuditProjectionTests(unittest.TestCase):
+    def test_seed_diagnostics_preserve_every_restart_attempt(self):
+        attempts = [
+            {"attempt_seed": seed, "status": "ok" if seed != 44 else "failed"}
+            for seed in range(42, 51)
+        ]
+        summary = {
+            "fits": [
+                {
+                    "group_seed": 42,
+                    "selected_attempt_seed": 47,
+                    "restart_attempts": attempts,
+                    "occupancy_oos": [0.1, 0.2],
+                    "rare_state_count_oos": 0,
+                    "occupancy_drift_l1": 0.3,
+                    "train_oos_likelihood_drift": 0.1,
+                }
+            ]
+        }
+        diagnostics = cutoffs.seed_diagnostics_for_summary(summary)
+        self.assertEqual(diagnostics[0]["restart_attempts"], attempts)
+        self.assertEqual(diagnostics[0]["selected_attempt_seed"], 47)
+
+    def test_markdown_lists_all_restart_attempts(self):
+        attempts = [
+            {"attempt_seed": seed, "status": "ok" if seed != 44 else "failed"}
+            for seed in range(42, 51)
+        ]
+        result = {
+            "decision": {
+                "outcome": "cutoff_sensitive_after_expansion",
+                "passing_cutoffs": 0,
+                "tested_cutoffs": 1,
+                "reason": "synthetic",
+            },
+            "cutoffs": [
+                {
+                    "cutoff": "2026-07-21",
+                    "status": "ok",
+                    "guardrails": {"failed": ["no_rare_oos_states"]},
+                    "worst_seed": {
+                        "minimum_oos_occupancy": 0.01968,
+                        "maximum_rare_state_count_oos": 1,
+                    },
+                    "seed_diagnostics": [
+                        {
+                            "group_seed": 42,
+                            "selected_attempt_seed": 47,
+                            "restart_attempts": attempts,
+                        }
+                    ],
+                }
+            ],
+        }
+        report = cutoffs.markdown_report(result)
+        self.assertIn("42:ok", report)
+        self.assertIn("44:failed", report)
+        self.assertIn("50:ok", report)
 
 
 class DecisionTests(unittest.TestCase):
