@@ -18,6 +18,7 @@ import train_hmm
 K = 8
 DEFAULT_CUTOFFS = 5
 FEATURE_SET = "baseline_er_downside"
+EXPANDED_RESTART_OFFSETS = tuple(range(9))
 
 
 def parse_args() -> argparse.Namespace:
@@ -58,18 +59,59 @@ def decision_for_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
     )
     return {
         "outcome": (
-            "candidate_stable_across_cutoffs" if stable else "cutoff_sensitive"
+            "stable_with_expanded_restarts"
+            if stable
+            else "cutoff_sensitive_after_expansion"
         ),
         "tested_cutoffs": len(rows),
         "passing_cutoffs": sum(
             row["status"] == "ok" and row["guardrails"]["passed"] for row in rows
         ),
         "reason": (
-            "The five-feature K=8 candidate passed every existing guardrail at every tested cutoff."
+            "The five-feature K=8 candidate passed every existing guardrail at every "
+            "tested cutoff with the fixed nine-attempt restart schedule."
             if stable
-            else "The five-feature K=8 candidate failed at least one existing guardrail or fit at one or more tested cutoffs."
+            else "The five-feature K=8 candidate failed at least one existing guardrail "
+            "or fit at one or more tested cutoffs despite the fixed nine-attempt "
+            "restart schedule."
         ),
     }
+
+
+def fit_seed_group_expanded(
+    matrix: np.ndarray, n_states: int, group_seed: int
+) -> tuple[Any, list[dict[str, Any]], int]:
+    """Run the frozen nine-attempt schedule and retain the best valid attempt."""
+    attempts: list[dict[str, Any]] = []
+    successful: list[tuple[float, int, Any]] = []
+    for offset in EXPANDED_RESTART_OFFSETS:
+        attempt_seed = group_seed + offset
+        try:
+            model = compare_state_counts.fit_candidate(matrix, n_states, attempt_seed)
+            score = float(model.score(matrix))
+            attempts.append(
+                {
+                    "attempt_seed": attempt_seed,
+                    "status": "ok",
+                    "train_log_likelihood": score,
+                    "iterations": int(model.monitor_.iter),
+                }
+            )
+            successful.append((score, attempt_seed, model))
+        except Exception as exc:
+            attempts.append(
+                {
+                    "attempt_seed": attempt_seed,
+                    "status": "failed",
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+            )
+    if not successful:
+        raise compare_state_counts.RestartGroupError(group_seed, attempts)
+    _, selected_seed, selected_model = max(
+        successful, key=lambda item: (item[0], -item[1])
+    )
+    return selected_model, attempts, selected_seed
 
 
 def fit_seed_metrics(
@@ -81,10 +123,10 @@ def fit_seed_metrics(
     dates: np.ndarray,
     closes: np.ndarray,
 ) -> tuple[Any | None, dict[str, Any] | None, dict[str, Any] | None]:
-    """Fit one restart group; only expected restart exhaustion becomes data."""
+    """Fit one expanded restart group; only expected exhaustion becomes data."""
     try:
-        model, restart_attempts, selected_attempt_seed = (
-            compare_state_counts.fit_seed_group(train_matrix, K, seed)
+        model, restart_attempts, selected_attempt_seed = fit_seed_group_expanded(
+            train_matrix, K, seed
         )
     except compare_state_counts.RestartGroupError as exc:
         return (
@@ -237,7 +279,9 @@ def markdown_report(result: dict[str, Any]) -> str:
         )
     lines += [
         "",
-        "This diagnostic tests only the fixed five-feature K=8 candidate across adjacent sample cutoffs. It does not compare K=8 against K=3–7 and does not change any guardrail threshold.",
+        "This diagnostic tests only the fixed five-feature K=8 candidate with the "
+        "frozen nine-attempt restart schedule across adjacent sample cutoffs. It does "
+        "not compare K=8 against K=3–7 and does not change any guardrail threshold.",
         "",
     ]
     return "\n".join(lines)
@@ -257,7 +301,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
     ]
     return compare_state_counts.strict_json(
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "scope": {
                 "symbol": "SPY",
                 "timeframe": "1D",
@@ -268,7 +312,8 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
             },
             "method": {
                 "train_fraction": args.train_fraction,
-                "restart_offsets": list(compare_state_counts.RESTART_OFFSETS),
+                "restart_offsets": list(EXPANDED_RESTART_OFFSETS),
+                "selection": "highest finite converged train log likelihood per seed group",
                 "guardrail_thresholds": {
                     "rare_state_occupancy": compare_state_counts.RARE_STATE_THRESHOLD,
                     "maximum_train_oos_likelihood_drift": compare_state_counts.MAX_LIKELIHOOD_DRIFT,
