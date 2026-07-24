@@ -182,11 +182,12 @@ minimum separation normalized by the square root of feature count, maximum
 train/OOS likelihood drift normalized by feature count, and maximum occupancy
 drift (already a dimensionless probability distance). A richer set must improve
 normalized separation by at least 10%, improve at least one OOS consistency
-diagnostic by at least 10%, and worsen neither consistency diagnostic versus
-baseline at the same K. Both raw and normalized diagnostics remain in the JSON
-and Markdown. This rule is new cross-feature decision logic only; it does not
-change the merged state-count guardrails or treat likelihood alone as evidence
-of better regimes. Generated outputs remain temporary research artifacts.
+diagnostic by at least 10%, and worsen neither consistency diagnostic by more
+than 10% versus baseline at the same K. Both raw and normalized diagnostics
+remain in the JSON and Markdown. This rule is new cross-feature decision logic
+only; it does not change the merged state-count guardrails or treat likelihood
+alone as evidence of better regimes. Generated outputs remain temporary research
+artifacts.
 
 ## Pine parity spike
 
