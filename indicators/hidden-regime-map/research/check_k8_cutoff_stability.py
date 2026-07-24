@@ -34,7 +34,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--symbol", default="SPY")
     parser.add_argument("--timeframe", default="1D")
     parser.add_argument("--train-fraction", type=float, default=0.80)
-    parser.add_argument("--seeds", type=int, nargs="+", default=list(compare_state_counts.DEFAULT_SEEDS))
+    parser.add_argument(
+        "--seeds",
+        type=int,
+        nargs="+",
+        default=list(compare_state_counts.DEFAULT_SEEDS),
+    )
     parser.add_argument("--cutoffs", type=int, default=DEFAULT_CUTOFFS)
     return parser.parse_args()
 
@@ -67,6 +72,47 @@ def decision_for_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def fit_seed_metrics(
+    train_matrix: np.ndarray,
+    full_matrix: np.ndarray,
+    train_rows: int,
+    seed: int,
+    observation_matrix: np.ndarray,
+    dates: np.ndarray,
+    closes: np.ndarray,
+) -> tuple[Any | None, dict[str, Any] | None, dict[str, Any] | None]:
+    """Fit one restart group; only expected restart exhaustion becomes data."""
+    try:
+        model, restart_attempts, selected_attempt_seed = (
+            compare_state_counts.fit_seed_group(train_matrix, K, seed)
+        )
+    except compare_state_counts.RestartGroupError as exc:
+        return (
+            None,
+            None,
+            {
+                "group_seed": exc.group_seed,
+                "error": str(exc),
+                "restart_attempts": exc.attempts,
+            },
+        )
+
+    metrics = compare_state_counts.fit_metrics(
+        model,
+        full_matrix,
+        train_rows,
+        seed,
+        observation_matrix=observation_matrix,
+        dates=dates,
+        events=[],
+        closes=closes,
+    )
+    metrics["group_seed"] = seed
+    metrics["selected_attempt_seed"] = selected_attempt_seed
+    metrics["restart_attempts"] = restart_attempts
+    return model, metrics, None
+
+
 def evaluate_cutoff(
     args: argparse.Namespace,
     raw: Any,
@@ -92,42 +138,21 @@ def evaluate_cutoff(
 
     models, fits, failures = [], [], []
     for seed in args.seeds:
-        restart_attempts: list[dict[str, Any]] = []
-        try:
-            model, restart_attempts, selected_attempt_seed = (
-                compare_state_counts.fit_seed_group(train_matrix, K, seed)
-            )
-            models.append(model)
-            metrics = compare_state_counts.fit_metrics(
-                model,
-                full_matrix,
-                train_rows,
-                seed,
-                observation_matrix=observation_matrix,
-                dates=dates,
-                events=[],
-                closes=closes,
-            )
-            metrics["group_seed"] = seed
-            metrics["selected_attempt_seed"] = selected_attempt_seed
-            metrics["restart_attempts"] = restart_attempts
-            fits.append(metrics)
-        except compare_state_counts.RestartGroupError as exc:
-            failures.append(
-                {
-                    "group_seed": exc.group_seed,
-                    "error": str(exc),
-                    "restart_attempts": exc.attempts,
-                }
-            )
-        except Exception as exc:
-            failures.append(
-                {
-                    "group_seed": seed,
-                    "error": f"{type(exc).__name__}: {exc}",
-                    "restart_attempts": restart_attempts,
-                }
-            )
+        model, metrics, failure = fit_seed_metrics(
+            train_matrix,
+            full_matrix,
+            train_rows,
+            seed,
+            observation_matrix,
+            dates,
+            closes,
+        )
+        if failure is not None:
+            failures.append(failure)
+            continue
+        assert model is not None and metrics is not None
+        models.append(model)
+        fits.append(metrics)
 
     cutoff_date = str(truncated.iloc[-1]["date"].date())
     if failures:
