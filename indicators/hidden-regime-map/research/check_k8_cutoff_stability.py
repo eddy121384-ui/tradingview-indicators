@@ -18,6 +18,7 @@ import train_hmm
 K = 8
 DEFAULT_CUTOFFS = 5
 FEATURE_SET = "baseline_er_downside"
+FROZEN_SEED_GROUPS = tuple(compare_state_counts.DEFAULT_SEEDS)
 EXPANDED_RESTART_OFFSETS = tuple(range(9))
 
 
@@ -43,6 +44,29 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--cutoffs", type=int, default=DEFAULT_CUTOFFS)
     return parser.parse_args()
+
+
+def validate_frozen_seed_groups(group_seeds: list[int]) -> None:
+    expected = list(FROZEN_SEED_GROUPS)
+    if group_seeds != expected:
+        rendered = ", ".join(str(seed) for seed in expected)
+        raise ValueError(
+            "cutoff-stability diagnostic requires frozen seed groups "
+            f"[{rendered}] in order"
+        )
+
+    attempt_owners: dict[int, int] = {}
+    for group_seed in group_seeds:
+        for offset in EXPANDED_RESTART_OFFSETS:
+            attempt_seed = group_seed + offset
+            owner = attempt_owners.get(attempt_seed)
+            if owner is not None:
+                raise ValueError(
+                    "expanded restart-attempt seed sets overlap: "
+                    f"attempt seed {attempt_seed} belongs to groups {owner} "
+                    f"and {group_seed}"
+                )
+            attempt_owners[attempt_seed] = group_seed
 
 
 def cutoff_positions(rows: int, count: int) -> list[int]:
@@ -155,6 +179,22 @@ def fit_seed_metrics(
     return model, metrics, None
 
 
+def seed_diagnostics_for_summary(summary: dict[str, Any]) -> list[dict[str, Any]]:
+    """Project selected-fit diagnostics without discarding restart audit data."""
+    return [
+        {
+            "group_seed": fit["group_seed"],
+            "selected_attempt_seed": fit["selected_attempt_seed"],
+            "restart_attempts": fit["restart_attempts"],
+            "minimum_oos_occupancy": min(fit["occupancy_oos"]),
+            "rare_state_count_oos": fit["rare_state_count_oos"],
+            "occupancy_drift_l1": fit["occupancy_drift_l1"],
+            "train_oos_likelihood_drift": fit["train_oos_likelihood_drift"],
+        }
+        for fit in summary["fits"]
+    ]
+
+
 def evaluate_cutoff(
     args: argparse.Namespace,
     raw: Any,
@@ -210,17 +250,7 @@ def evaluate_cutoff(
         }
 
     summary = compare_state_counts.summarize_candidate(models, fits)
-    seed_diagnostics = [
-        {
-            "group_seed": fit["group_seed"],
-            "selected_attempt_seed": fit["selected_attempt_seed"],
-            "minimum_oos_occupancy": min(fit["occupancy_oos"]),
-            "rare_state_count_oos": fit["rare_state_count_oos"],
-            "occupancy_drift_l1": fit["occupancy_drift_l1"],
-            "train_oos_likelihood_drift": fit["train_oos_likelihood_drift"],
-        }
-        for fit in summary["fits"]
-    ]
+    seed_diagnostics = seed_diagnostics_for_summary(summary)
     return {
         "cutoff": cutoff_date,
         "status": "ok",
@@ -279,6 +309,25 @@ def markdown_report(result: dict[str, Any]) -> str:
         )
     lines += [
         "",
+        "## Restart attempts",
+        "",
+        "| Cutoff | Group | Selected | Attempts |",
+        "|---|---:|---:|---|",
+    ]
+    for row in result["cutoffs"]:
+        if row["status"] != "ok":
+            continue
+        for group in row["seed_diagnostics"]:
+            rendered_attempts = ", ".join(
+                f"{attempt['attempt_seed']}:{attempt['status']}"
+                for attempt in group["restart_attempts"]
+            )
+            lines.append(
+                f"| {row['cutoff']} | {group['group_seed']} | "
+                f"{group['selected_attempt_seed']} | {rendered_attempts} |"
+            )
+    lines += [
+        "",
         "This diagnostic tests only the fixed five-feature K=8 candidate with the "
         "frozen nine-attempt restart schedule across adjacent sample cutoffs. It does "
         "not compare K=8 against K=3–7 and does not change any guardrail threshold.",
@@ -292,7 +341,7 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("cutoff-stability comparison is restricted to SPY 1D")
     if not 0.50 <= args.train_fraction < 1.0:
         raise ValueError("train_fraction must be in [0.50, 1.0)")
-    compare_state_counts.validate_seed_groups(args.seeds)
+    validate_frozen_seed_groups(args.seeds)
     config = train_hmm.FeatureConfig()
     raw = train_hmm.load_ohlc(args)
     rows = [
