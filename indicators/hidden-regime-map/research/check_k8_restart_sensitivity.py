@@ -64,12 +64,13 @@ def validate_frozen_seed_groups(group_seeds: list[int]) -> None:
 
 
 def validate_restart_offsets(group_seeds: list[int], offsets: list[int]) -> None:
-    if len(set(offsets)) != len(offsets):
-        raise ValueError("restart offsets must be unique")
-    if any(offset < 0 for offset in offsets):
-        raise ValueError("restart offsets must be non-negative")
-    if not set(BASELINE_RESTART_OFFSETS).issubset(offsets):
-        raise ValueError("expanded restart offsets must include the existing schedule")
+    expected = list(DEFAULT_RESTART_OFFSETS)
+    if offsets != expected:
+        rendered = ", ".join(str(offset) for offset in expected)
+        raise ValueError(
+            "restart-sensitivity diagnostic requires frozen restart offsets "
+            f"[{rendered}] in order"
+        )
 
     attempt_owners: dict[int, int] = {}
     for group_seed in group_seeds:
@@ -148,7 +149,8 @@ def fit_attempt(
     attempt_seed = group_seed + offset
     try:
         model = compare_state_counts.fit_candidate(train_matrix, K, attempt_seed)
-    except RuntimeError as exc:
+        train_log_likelihood = float(model.score(train_matrix))
+    except Exception as exc:
         return {
             "group_seed": group_seed,
             "offset": offset,
@@ -157,7 +159,6 @@ def fit_attempt(
             "error": f"{type(exc).__name__}: {exc}",
         }
 
-    train_log_likelihood = float(model.score(train_matrix))
     metrics = compare_state_counts.fit_metrics(
         model,
         full_matrix,
