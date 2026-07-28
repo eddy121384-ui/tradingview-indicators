@@ -6,6 +6,15 @@ The long-term objective is to develop a defensible system with positive long-run
 
 The project-level mission, architecture, evidence standards, product outputs, and delivery roadmap are defined in [`PROJECT_CHARTER.md`](PROJECT_CHARTER.md). Version specifications and individual issues remain authoritative for their bounded deliverables.
 
+## Research-core milestone status
+
+Issue #39 records the current research-core assessment:
+
+- [human-readable assessment](research/decisions/issue-39-research-core-assessment.md)
+- [machine-readable status](research/decisions/issue-39-research-core-status.json)
+
+Current status: `complete_with_known_limitations`. The causal and reproducible research foundation is sufficient to begin Issue #40's trading-utility comparison, while cutoff sensitivity, data-feed drift, the lack of a final production profile, and the formal Pine `feed mismatch` remain explicit limitations.
+
 ## Current research boundary
 
 The repository began with an experimental market-regime indicator based on a small Gaussian Hidden Markov Model.
