@@ -129,7 +129,14 @@ python -m unittest discover -s indicators/hidden-regime-map/research -p "test_*.
 
 The current execution runtime could not obtain a repository checkout because outbound `git clone` access was blocked by its proxy. Therefore no local full-suite pass is claimed.
 
-The latest pre-PR repository workflow evidence was Hidden Regime Market Validation Run #65 (`30338071310`), which completed successfully. Both SPY and TLT matrix jobs passed the unit-test, training, characterization, and artifact steps; the SPY job also passed feature/state-count and cutoff diagnostics.
+The Issue #39 Draft PR ran Hidden Regime Market Validation Run #66 (`30343837925`) on head `8e1969dee2cbdb76a06d9e3bceddc26485fc4411` and completed successfully:
+
+- SPY and TLT both passed the `Run Hidden Regime unit tests` step;
+- SPY and TLT both passed download, training, characterization, summary, and artifact upload;
+- SPY also passed the complete feature-set/state-count comparison and five-cutoff K=8 diagnostic;
+- the workflow's final failure gate was skipped because no required research step failed.
+
+The GitHub connector's decoded log view was truncated before the unittest summary line, so the exact test count was not available. No count is inferred or invented; the workflow step conclusions are the durable evidence.
 
 Machine-readable status validation:
 
@@ -137,7 +144,7 @@ Machine-readable status validation:
 python -m json.tool indicators/hidden-regime-map/research/decisions/issue-39-research-core-status.json
 ```
 
-The authored JSON was parsed and serialized successfully before upload. The Issue #39 Draft PR must run the repository workflow successfully before owner acceptance; the exact PR run is recorded in the PR body after execution.
+The authored JSON was parsed and serialized successfully before upload.
 
 ## Final status
 
