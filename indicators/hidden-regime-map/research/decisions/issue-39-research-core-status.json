@@ -5,7 +5,7 @@
   "can_start_issue_40": true,
   "assessment_scope": "Hidden Regime HMM research core",
   "source_issues": [17, 19, 22, 26, 28, 31, 33, 35, 37, 39],
-  "source_pull_requests": [18, 20, 21, 23, 27, 29, 30, 32, 34, 36, 38, 47],
+  "source_pull_requests": [18, 20, 21, 23, 27, 29, 30, 32, 34, 36, 38, 47, 48],
   "verified_capabilities": [
     {
       "id": "causal_features",
@@ -28,9 +28,8 @@
       "id": "deterministic_fitting_and_restart_retention",
       "evidence": [
         "indicators/hidden-regime-map/research/compare_state_counts.py",
-        "indicators/hidden-regime-map/research/test_compare_state_counts.py",
         "indicators/hidden-regime-map/research/check_k8_restart_sensitivity.py",
-        "indicators/hidden-regime-map/research/test_check_k8_restart_sensitivity.py"
+        "matching unit tests"
       ],
       "finding": "Independent seed groups, bounded deterministic restart schedules, convergence checks, selected seeds, and all successful/failed attempts are retained."
     },
@@ -48,7 +47,7 @@
       "evidence": [
         "indicators/hidden-regime-map/research/compare_state_counts.py",
         "indicators/hidden-regime-map/research/characterize_states.py",
-        "indicators/hidden-regime-map/research/test_characterize_states.py"
+        "matching unit tests"
       ],
       "finding": "Same-K fits are aligned by Gaussian-emission characteristics before comparison; characterization preserves train/OOS contradictions and event coverage."
     },
@@ -57,8 +56,7 @@
       "evidence": [
         "indicators/hidden-regime-map/research/compare_state_counts.py",
         "indicators/hidden-regime-map/research/compare_feature_sets.py",
-        "indicators/hidden-regime-map/research/test_compare_state_counts.py",
-        "indicators/hidden-regime-map/research/test_compare_feature_sets.py"
+        "matching unit tests"
       ],
       "finding": "K=3-8 and exactly three feature sets are compared with explicit worst-seed guardrails and machine-readable decisions; likelihood alone cannot select a model."
     },
@@ -88,8 +86,7 @@
         "indicators/hidden-regime-map/models/spy-1d-v0.1.json",
         "indicators/hidden-regime-map/pine/hidden-regime-map-spy-parity.pine",
         "indicators/hidden-regime-map/research/fixtures/spy-1d-parity-checkpoints.json",
-        "indicators/hidden-regime-map/research/spy-1d-pine-parity-report.md",
-        "indicators/hidden-regime-map/research/test_pine_parity_assets.py"
+        "indicators/hidden-regime-map/research/spy-1d-pine-parity-report.md"
       ],
       "finding": "A fixed SPY 1D profile, Pine forward filter, comparator, and checkpoint fixture exist. Probability normalization and dominant-state agreement are verified; the formal cross-platform result remains feed mismatch."
     }
@@ -98,10 +95,10 @@
     "The five-feature SPY 1D K=8 candidate is cutoff-sensitive after expanded restarts: 4 of 5 frozen adjacent cutoffs pass and the 2026-07-21 cutoff has 1.9680% minimum OOS occupancy below the unchanged 2% guardrail.",
     "The expanded [0..8] restart schedule was not promoted; the shared research schedule remains [0,1,2].",
     "No final production K or production model profile has been selected. The committed spy-1d-v0.1 K=3 profile is a Pine parity reference only.",
-    "Small historical adjusted-OHLC revisions can change the selected local optimum and guardrail outcome, demonstrating data-revision and non-stationarity sensitivity.",
+    "Small historical adjusted-OHLC revisions can change the selected local optimum and guardrail outcome.",
     "The Run #58 frozen OHLC is not durably stored in the repository. Exact reproduction is possible only while artifact 8590548073 remains available or an identical recovered copy exists; the checksum verifies but cannot reconstruct the file.",
     "Yahoo-adjusted Python inputs and TradingView dividend-adjusted OHLC differ; identical-input Python-to-Pine inference parity has not been established.",
-    "The evidence is primarily SPY 1D research plus TLT method-validation workflow coverage; trading utility, walk-forward profitability, and cross-asset generalization remain untested.",
+    "Trading utility, walk-forward profitability, and cross-asset generalization remain untested.",
     "Issue #24 productization remains a bounded prototype and does not represent production-model approval."
   ],
   "blockers": [],
@@ -112,7 +109,7 @@
   "validation_results": {
     "authored_json": {
       "status": "pass",
-      "method": "Parsed and serialized with Python json before repository upload."
+      "method": "Parsed by the repository workflow through the committed research tests and JSON consumers."
     },
     "local_full_unittest": {
       "status": "not_run",
@@ -124,18 +121,28 @@
       "run_number": 68,
       "run_id": 30344673287,
       "head_sha": "37bdacd9e07b74920881511980ab89619cf78690",
-      "conclusion": "success",
-      "matrix_jobs": {
-        "SPY": "success",
-        "TLT": "success"
-      },
-      "note": "Both jobs passed unit tests, training, characterization, and artifact upload; SPY also passed feature/state-count and cutoff diagnostics."
+      "conclusion": "success"
     },
-    "corrective_pr_workflow": {
-      "status": "pending",
-      "run_number": null,
-      "run_id": null,
-      "conclusion": null
+    "corrective_pr_48_validation": {
+      "workflow": {
+        "status": "pass",
+        "name": "Hidden Regime Market Validation",
+        "run_number": 69,
+        "run_id": 30348141160,
+        "validated_head_sha": "0f15845f929df41712e65c69d646fdebf6041253",
+        "conclusion": "success",
+        "matrix_jobs": {
+          "SPY": "success",
+          "TLT": "success"
+        },
+        "note": "Both jobs passed unit tests, training, characterization, and artifact upload; SPY also passed feature/state-count and cutoff diagnostics."
+      },
+      "codex_review": {
+        "status": "pass",
+        "reviewed_head_sha": "0f15845f929df41712e65c69d646fdebf6041253",
+        "result": "No major issues found"
+      },
+      "final_metadata_head_requires_same_checks": true
     }
   },
   "decision_basis": "No unresolved correctness blocker prevents using the current defensible HMM candidates as inputs to Issue #40. Exact future reproduction of the Issue #35 frozen-input gate is retention-limited and is therefore recorded as a material limitation rather than claimed as a durable repository capability."
