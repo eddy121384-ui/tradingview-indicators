@@ -122,11 +122,34 @@
       "note": "Both matrix jobs completed the Hidden Regime unit-test step; SPY also completed feature/state-count and cutoff diagnostics."
     },
     "issue_39_pr_workflow": {
-      "status": "pending",
-      "run_number": null,
-      "run_id": null,
-      "conclusion": null,
-      "note": "Must pass before owner acceptance."
+      "status": "pass",
+      "workflow": "Hidden Regime Market Validation",
+      "run_number": 66,
+      "run_id": 30343837925,
+      "head_sha": "8e1969dee2cbdb76a06d9e3bceddc26485fc4411",
+      "conclusion": "success",
+      "matrix_jobs": {
+        "SPY": {
+          "conclusion": "success",
+          "unit_tests": "pass",
+          "download": "pass",
+          "training": "pass",
+          "characterization": "pass",
+          "feature_state_count_comparison": "pass",
+          "cutoff_stability": "pass",
+          "artifact_upload": "pass"
+        },
+        "TLT": {
+          "conclusion": "success",
+          "unit_tests": "pass",
+          "download": "pass",
+          "training": "pass",
+          "characterization": "pass",
+          "artifact_upload": "pass"
+        }
+      },
+      "test_count": null,
+      "test_count_note": "The GitHub connector's decoded log view was truncated before the unittest summary line. The exact count was not available and is not inferred."
     }
   },
   "decision_basis": "No unresolved correctness or reproducibility defect prevents using the current defensible HMM candidates as inputs to Issue #40. Material model-selection, feed, and non-stationarity limitations remain documented and must be carried into the trading-utility experiment."
