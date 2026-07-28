@@ -1,11 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "issue": 39,
   "status": "complete_with_known_limitations",
   "can_start_issue_40": true,
   "assessment_scope": "Hidden Regime HMM research core",
   "source_issues": [17, 19, 22, 26, 28, 31, 33, 35, 37, 39],
-  "source_pull_requests": [18, 20, 21, 23, 27, 29, 30, 32, 34, 36, 38],
+  "source_pull_requests": [18, 20, 21, 23, 27, 29, 30, 32, 34, 36, 38, 47],
   "verified_capabilities": [
     {
       "id": "causal_features",
@@ -18,8 +18,11 @@
     },
     {
       "id": "chronological_split_and_scaling",
-      "evidence": ["indicators/hidden-regime-map/research/train_hmm.py"],
-      "finding": "The train/OOS split is chronological and StandardScaler is fit on training rows only before transforming the full sample."
+      "evidence": [
+        "indicators/hidden-regime-map/research/train_hmm.py",
+        "indicators/hidden-regime-map/research/check_k8_cutoff_stability.py"
+      ],
+      "finding": "Every run uses a chronological split and fits StandardScaler on training rows only. Adjacent-cutoff diagnostics preserve train_fraction=0.80, not one fixed absolute train/OOS boundary; each truncated sample recalculates its boundary."
     },
     {
       "id": "deterministic_fitting_and_restart_retention",
@@ -66,17 +69,18 @@
         "indicators/hidden-regime-map/research/check_k8_restart_sensitivity.py",
         "indicators/hidden-regime-map/research/decisions/issue-35-expanded-restart-cutoff-gate.md"
       ],
-      "finding": "Adjacent-cutoff and expanded-restart diagnostics preserve the fixed features, K, split, seeds, guardrails, and rare-state threshold."
+      "finding": "Adjacent-cutoff and expanded-restart diagnostics preserve the fixed features, K, train_fraction=0.80, seeds, restart schedules, guardrails, and rare-state threshold. The absolute split boundary changes with each truncated sample."
     },
     {
-      "id": "frozen_input_provenance",
+      "id": "frozen_input_audit_trail",
       "evidence": [
         "GitHub Actions Run #58 / run id 30077475634",
         "artifact hidden-regime-SPY / artifact id 8590548073",
+        "artifact expiry 2026-08-07T08:07:36Z",
         "ohlc.csv sha256 016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4",
         "indicators/hidden-regime-map/research/decisions/issue-35-expanded-restart-cutoff-gate.md"
       ],
-      "finding": "The formal restart-promotion decision is tied to a hash-verified frozen OHLC input; a changed live Yahoo download is recorded as source drift rather than substituted."
+      "finding": "The formal restart-promotion decision has a hash-verified historical audit trail. Exact reproduction is possible only while the retained artifact or another identical recovered copy exists; the checksum cannot reconstruct the file after expiry."
     },
     {
       "id": "python_to_pine_contract",
@@ -95,6 +99,7 @@
     "The expanded [0..8] restart schedule was not promoted; the shared research schedule remains [0,1,2].",
     "No final production K or production model profile has been selected. The committed spy-1d-v0.1 K=3 profile is a Pine parity reference only.",
     "Small historical adjusted-OHLC revisions can change the selected local optimum and guardrail outcome, demonstrating data-revision and non-stationarity sensitivity.",
+    "The Run #58 frozen OHLC is not durably stored in the repository. Exact reproduction is possible only while artifact 8590548073 remains available or an identical recovered copy exists; the checksum verifies but cannot reconstruct the file.",
     "Yahoo-adjusted Python inputs and TradingView dividend-adjusted OHLC differ; identical-input Python-to-Pine inference parity has not been established.",
     "The evidence is primarily SPY 1D research plus TLT method-validation workflow coverage; trading utility, walk-forward profitability, and cross-asset generalization remain untested.",
     "Issue #24 productization remains a bounded prototype and does not represent production-model approval."
@@ -113,44 +118,25 @@
       "status": "not_run",
       "reason": "The execution runtime could not obtain a repository checkout because outbound git access was blocked by the runtime proxy. No local-test pass is claimed."
     },
-    "latest_pre_pr_repository_workflow": {
-      "workflow": "Hidden Regime Market Validation",
-      "run_number": 65,
-      "run_id": 30338071310,
-      "conclusion": "success",
-      "matrix_jobs": {"SPY": "success", "TLT": "success"},
-      "note": "Both matrix jobs completed the Hidden Regime unit-test step; SPY also completed feature/state-count and cutoff diagnostics."
-    },
-    "issue_39_pr_workflow": {
+    "pr_47_workflow": {
       "status": "pass",
       "workflow": "Hidden Regime Market Validation",
-      "run_number": 66,
-      "run_id": 30343837925,
-      "head_sha": "8e1969dee2cbdb76a06d9e3bceddc26485fc4411",
+      "run_number": 68,
+      "run_id": 30344673287,
+      "head_sha": "37bdacd9e07b74920881511980ab89619cf78690",
       "conclusion": "success",
       "matrix_jobs": {
-        "SPY": {
-          "conclusion": "success",
-          "unit_tests": "pass",
-          "download": "pass",
-          "training": "pass",
-          "characterization": "pass",
-          "feature_state_count_comparison": "pass",
-          "cutoff_stability": "pass",
-          "artifact_upload": "pass"
-        },
-        "TLT": {
-          "conclusion": "success",
-          "unit_tests": "pass",
-          "download": "pass",
-          "training": "pass",
-          "characterization": "pass",
-          "artifact_upload": "pass"
-        }
+        "SPY": "success",
+        "TLT": "success"
       },
-      "test_count": null,
-      "test_count_note": "The GitHub connector's decoded log view was truncated before the unittest summary line. The exact count was not available and is not inferred."
+      "note": "Both jobs passed unit tests, training, characterization, and artifact upload; SPY also passed feature/state-count and cutoff diagnostics."
+    },
+    "corrective_pr_workflow": {
+      "status": "pending",
+      "run_number": null,
+      "run_id": null,
+      "conclusion": null
     }
   },
-  "decision_basis": "No unresolved correctness or reproducibility defect prevents using the current defensible HMM candidates as inputs to Issue #40. Material model-selection, feed, and non-stationarity limitations remain documented and must be carried into the trading-utility experiment."
+  "decision_basis": "No unresolved correctness blocker prevents using the current defensible HMM candidates as inputs to Issue #40. Exact future reproduction of the Issue #35 frozen-input gate is retention-limited and is therefore recorded as a material limitation rather than claimed as a durable repository capability."
 }
