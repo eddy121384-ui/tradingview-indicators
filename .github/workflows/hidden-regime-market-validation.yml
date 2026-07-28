@@ -44,6 +44,12 @@ jobs:
       - name: Run Hidden Regime unit tests
         run: python -m unittest discover -s indicators/hidden-regime-map/research -p 'test_*.py'
 
+      - name: Validate committed research decision JSON
+        run: >-
+          python -m json.tool
+          indicators/hidden-regime-map/research/decisions/issue-39-research-core-status.json
+          > /dev/null
+
       - name: Download adjusted daily OHLC
         run: |
           python indicators/hidden-regime-map/research/download_yfinance.py \
