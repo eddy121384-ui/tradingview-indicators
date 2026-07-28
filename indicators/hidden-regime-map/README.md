@@ -1,6 +1,14 @@
 # Hidden Regime Map
 
-Hidden Regime Map is an experimental market-regime indicator based on a small Gaussian Hidden Markov Model.
+Hidden Regime is a research-and-product program for learning what Hidden Markov Models can and cannot do in financial markets, then using that knowledge to build a regime-adaptive trading framework.
+
+The long-term objective is to develop a defensible system with positive long-run expectancy and controlled drawdown, validate it across materially different asset classes, and deliver the work as usable TradingView indicators and strategies for real trading and responsible commercialization. It is not a perfect-prediction or guaranteed-profit project.
+
+The project-level mission, architecture, evidence standards, product outputs, and delivery roadmap are defined in [`PROJECT_CHARTER.md`](PROJECT_CHARTER.md). Version specifications and individual issues remain authoritative for their bounded deliverables.
+
+## Current research boundary
+
+The repository began with an experimental market-regime indicator based on a small Gaussian Hidden Markov Model.
 
 The first version asks one narrow question: can three latent states separate persistent upward, downward, and range-like market behavior better than another hand-built threshold stack?
 
