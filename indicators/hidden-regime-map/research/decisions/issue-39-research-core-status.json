@@ -1,103 +1,46 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "issue": 39,
   "status": "complete_with_known_limitations",
   "can_start_issue_40": true,
-  "assessment_scope": "Hidden Regime HMM research core",
   "source_issues": [17, 19, 22, 26, 28, 31, 33, 35, 37, 39],
-  "source_pull_requests": [18, 20, 21, 23, 27, 29, 30, 32, 34, 36, 38],
+  "source_pull_requests": [18, 20, 21, 23, 27, 29, 30, 32, 34, 36, 38, 47, 48],
   "verified_capabilities": [
-    {
-      "id": "causal_features",
-      "evidence": [
-        "indicators/hidden-regime-map/research/train_hmm.py",
-        "indicators/hidden-regime-map/research/compare_feature_sets.py",
-        "indicators/hidden-regime-map/research/test_compare_feature_sets.py"
-      ],
-      "finding": "All observations use current or trailing bars only; rolling warm-up is preserved and zero denominators are handled without introducing future data."
-    },
-    {
-      "id": "chronological_split_and_scaling",
-      "evidence": ["indicators/hidden-regime-map/research/train_hmm.py"],
-      "finding": "The train/OOS split is chronological and StandardScaler is fit on training rows only before transforming the full sample."
-    },
-    {
-      "id": "deterministic_fitting_and_restart_retention",
-      "evidence": [
-        "indicators/hidden-regime-map/research/compare_state_counts.py",
-        "indicators/hidden-regime-map/research/test_compare_state_counts.py",
-        "indicators/hidden-regime-map/research/check_k8_restart_sensitivity.py",
-        "indicators/hidden-regime-map/research/test_check_k8_restart_sensitivity.py"
-      ],
-      "finding": "Independent seed groups, bounded deterministic restart schedules, convergence checks, selected seeds, and all successful/failed attempts are retained."
-    },
-    {
-      "id": "causal_forward_filtering",
-      "evidence": [
-        "indicators/hidden-regime-map/research/train_hmm.py",
-        "indicators/hidden-regime-map/models/spy-1d-v0.1.json",
-        "indicators/hidden-regime-map/research/test_pine_parity_assets.py"
-      ],
-      "finding": "Posteriors are calculated with a normalized log-space forward filter rather than smoothed future-aware state inference."
-    },
-    {
-      "id": "state_alignment_and_characterization",
-      "evidence": [
-        "indicators/hidden-regime-map/research/compare_state_counts.py",
-        "indicators/hidden-regime-map/research/characterize_states.py",
-        "indicators/hidden-regime-map/research/test_characterize_states.py"
-      ],
-      "finding": "Same-K fits are aligned by Gaussian-emission characteristics before comparison; characterization preserves train/OOS contradictions and event coverage."
-    },
-    {
-      "id": "state_count_and_feature_set_decisions",
-      "evidence": [
-        "indicators/hidden-regime-map/research/compare_state_counts.py",
-        "indicators/hidden-regime-map/research/compare_feature_sets.py",
-        "indicators/hidden-regime-map/research/test_compare_state_counts.py",
-        "indicators/hidden-regime-map/research/test_compare_feature_sets.py"
-      ],
-      "finding": "K=3-8 and exactly three feature sets are compared with explicit worst-seed guardrails and machine-readable decisions; likelihood alone cannot select a model."
-    },
-    {
-      "id": "cutoff_and_restart_sensitivity",
-      "evidence": [
-        "indicators/hidden-regime-map/research/check_k8_cutoff_stability.py",
-        "indicators/hidden-regime-map/research/check_k8_restart_sensitivity.py",
-        "indicators/hidden-regime-map/research/decisions/issue-35-expanded-restart-cutoff-gate.md"
-      ],
-      "finding": "Adjacent-cutoff and expanded-restart diagnostics preserve the fixed features, K, split, seeds, guardrails, and rare-state threshold."
-    },
-    {
-      "id": "frozen_input_provenance",
-      "evidence": [
-        "GitHub Actions Run #58 / run id 30077475634",
-        "artifact hidden-regime-SPY / artifact id 8590548073",
-        "ohlc.csv sha256 016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4",
-        "indicators/hidden-regime-map/research/decisions/issue-35-expanded-restart-cutoff-gate.md"
-      ],
-      "finding": "The formal restart-promotion decision is tied to a hash-verified frozen OHLC input; a changed live Yahoo download is recorded as source drift rather than substituted."
-    },
-    {
-      "id": "python_to_pine_contract",
-      "evidence": [
-        "indicators/hidden-regime-map/models/spy-1d-v0.1.json",
-        "indicators/hidden-regime-map/pine/hidden-regime-map-spy-parity.pine",
-        "indicators/hidden-regime-map/research/fixtures/spy-1d-parity-checkpoints.json",
-        "indicators/hidden-regime-map/research/spy-1d-pine-parity-report.md",
-        "indicators/hidden-regime-map/research/test_pine_parity_assets.py"
-      ],
-      "finding": "A fixed SPY 1D profile, Pine forward filter, comparator, and checkpoint fixture exist. Probability normalization and dominant-state agreement are verified; the formal cross-platform result remains feed mismatch."
-    }
+    "Causal observations with explicit warm-up behavior.",
+    "Chronological train/OOS separation with training-only scaling.",
+    "Deterministic seed/restart retention and convergence checks.",
+    "Normalized causal forward filtering.",
+    "Emission-based state alignment and post-fit characterization.",
+    "K=3-8 and three-feature-set comparisons with explicit guardrails.",
+    "Cutoff and restart diagnostics preserving features, K, train_fraction=0.80, seeds, restart schedules, guardrails, and thresholds.",
+    "A hash-verified historical audit trail for the Run #58 decision input.",
+    "A fixed-parameter Python-to-Pine comparison contract."
   ],
+  "split_semantics": {
+    "chronological": true,
+    "train_fraction": 0.8,
+    "fixed_absolute_boundary_across_cutoffs": false,
+    "explanation": "Each cutoff truncates the sample and recalculates the chronological 80/20 boundary."
+  },
+  "frozen_input_provenance": {
+    "workflow_run_number": 58,
+    "workflow_run_id": 30077475634,
+    "artifact_name": "hidden-regime-SPY",
+    "artifact_id": 8590548073,
+    "artifact_expires_at": "2026-08-07T08:07:36Z",
+    "ohlc_sha256": "016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4",
+    "durably_stored_in_repository": false,
+    "reproducibility": "Exact rerun requires the retained artifact or another identical recovered copy. Metadata and checksum remain auditable after expiry but cannot reconstruct the OHLC file."
+  },
   "known_limitations": [
-    "The five-feature SPY 1D K=8 candidate is cutoff-sensitive after expanded restarts: 4 of 5 frozen adjacent cutoffs pass and the 2026-07-21 cutoff has 1.9680% minimum OOS occupancy below the unchanged 2% guardrail.",
-    "The expanded [0..8] restart schedule was not promoted; the shared research schedule remains [0,1,2].",
-    "No final production K or production model profile has been selected. The committed spy-1d-v0.1 K=3 profile is a Pine parity reference only.",
-    "Small historical adjusted-OHLC revisions can change the selected local optimum and guardrail outcome, demonstrating data-revision and non-stationarity sensitivity.",
-    "Yahoo-adjusted Python inputs and TradingView dividend-adjusted OHLC differ; identical-input Python-to-Pine inference parity has not been established.",
-    "The evidence is primarily SPY 1D research plus TLT method-validation workflow coverage; trading utility, walk-forward profitability, and cross-asset generalization remain untested.",
-    "Issue #24 productization remains a bounded prototype and does not represent production-model approval."
+    "The five-feature SPY 1D K=8 candidate remains cutoff-sensitive after expanded restarts: 4 of 5 cutoffs pass and the 2026-07-21 cutoff has 1.9680% minimum OOS occupancy below the unchanged 2% guardrail.",
+    "The expanded [0..8] restart schedule was not promoted; the shared schedule remains [0,1,2].",
+    "No final production K or production profile has been selected.",
+    "Small historical adjusted-OHLC revisions can change the selected local optimum and guardrail outcome.",
+    "The Run #58 OHLC is not durably stored in the repository; exact reproduction is retention-limited.",
+    "Identical-input Python-to-Pine parity has not been established; the formal result remains feed mismatch.",
+    "Trading utility, walk-forward profitability, and cross-asset generalization remain untested.",
+    "Issue #24 remains a bounded prototype rather than production approval."
   ],
   "blockers": [],
   "validation_commands": [
@@ -105,52 +48,27 @@
     "python -m json.tool indicators/hidden-regime-map/research/decisions/issue-39-research-core-status.json"
   ],
   "validation_results": {
-    "authored_json": {
-      "status": "pass",
-      "method": "Parsed and serialized with Python json before repository upload."
+    "json_validation_contract": {
+      "workflow": ".github/workflows/hidden-regime-market-validation.yml",
+      "step": "Validate committed research decision JSON",
+      "command": "python -m json.tool indicators/hidden-regime-map/research/decisions/issue-39-research-core-status.json > /dev/null",
+      "evidence_rule": "A passing workflow run on the PR head is required before merge."
+    },
+    "unit_and_research_validation_contract": {
+      "workflow": "Hidden Regime Market Validation",
+      "matrix": ["SPY", "TLT"],
+      "evidence_rule": "Both matrix jobs and all required research steps must pass on the PR head before merge."
     },
     "local_full_unittest": {
       "status": "not_run",
       "reason": "The execution runtime could not obtain a repository checkout because outbound git access was blocked by the runtime proxy. No local-test pass is claimed."
     },
-    "latest_pre_pr_repository_workflow": {
-      "workflow": "Hidden Regime Market Validation",
-      "run_number": 65,
-      "run_id": 30338071310,
-      "conclusion": "success",
-      "matrix_jobs": {"SPY": "success", "TLT": "success"},
-      "note": "Both matrix jobs completed the Hidden Regime unit-test step; SPY also completed feature/state-count and cutoff diagnostics."
-    },
-    "issue_39_pr_workflow": {
-      "status": "pass",
-      "workflow": "Hidden Regime Market Validation",
-      "run_number": 66,
-      "run_id": 30343837925,
-      "head_sha": "8e1969dee2cbdb76a06d9e3bceddc26485fc4411",
-      "conclusion": "success",
-      "matrix_jobs": {
-        "SPY": {
-          "conclusion": "success",
-          "unit_tests": "pass",
-          "download": "pass",
-          "training": "pass",
-          "characterization": "pass",
-          "feature_state_count_comparison": "pass",
-          "cutoff_stability": "pass",
-          "artifact_upload": "pass"
-        },
-        "TLT": {
-          "conclusion": "success",
-          "unit_tests": "pass",
-          "download": "pass",
-          "training": "pass",
-          "characterization": "pass",
-          "artifact_upload": "pass"
-        }
-      },
-      "test_count": null,
-      "test_count_note": "The GitHub connector's decoded log view was truncated before the unittest summary line. The exact count was not available and is not inferred."
-    }
+    "historical_successful_runs": [
+      {"run_number": 68, "run_id": 30344673287, "head_sha": "37bdacd9e07b74920881511980ab89619cf78690"},
+      {"run_number": 69, "run_id": 30348141160, "head_sha": "0f15845f929df41712e65c69d646fdebf6041253"},
+      {"run_number": 70, "run_id": 30348687933, "head_sha": "795e736af30fca11d388bf374357958613d456ec"}
+    ],
+    "final_pr_head_result": "Recorded in PR #48 after the workflow and Codex review complete; this avoids a self-referential metadata commit loop."
   },
-  "decision_basis": "No unresolved correctness or reproducibility defect prevents using the current defensible HMM candidates as inputs to Issue #40. Material model-selection, feed, and non-stationarity limitations remain documented and must be carried into the trading-utility experiment."
+  "decision_basis": "No unresolved correctness blocker prevents Issue #40. Exact future reproduction of the Issue #35 frozen-input gate is retention-limited and is documented as a material limitation rather than a durable repository capability."
 }

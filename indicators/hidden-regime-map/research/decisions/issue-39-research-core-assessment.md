@@ -6,6 +6,8 @@ The existing Hidden Regime research core is trustworthy enough to begin Issue #4
 
 This decision does **not** select a production state count, approve the K=8 candidate, establish identical-input Python-to-Pine parity, or make any profitability claim. It means the causal feature, fitting, inference, alignment, diagnostics, decision, provenance, and validation machinery is sufficiently explicit and auditable to use the existing candidates as research inputs in the next milestone.
 
+The exact Run #58 frozen-input experiment is reproducible only while its GitHub Actions artifact remains available. After artifact expiry, the committed checksum and metadata preserve an audit trail but cannot reconstruct the original OHLC file. This limitation does not block Issue #40, but it prevents claiming indefinite independent reproduction of the Issue #35 gate.
+
 ## Scope and method
 
 This assessment reviewed the current committed Hidden Regime implementation and the completed contracts in Issues #26, #28, #31, #33, and #35, together with the earlier training, characterization, and Pine-parity work.
@@ -34,15 +36,15 @@ No new K sweep, feature experiment, restart expansion, threshold change, or Pine
 | Research-core requirement | Concrete evidence | Assessment |
 |---|---|---|
 | Causal features and warm-up | `train_hmm.calculate_features()` uses shifted/rolling price history; `compare_feature_sets.calculate_path_features()` uses trailing 20-bar displacement, path length, and downside variance while preserving warm-up NaNs. Formula and zero-denominator tests were added in PR #29. | Verified. No future observation enters a model feature. |
-| Chronological train/OOS split | `train_hmm.py` calculates a fixed chronological split and enforces minimum training/OOS row counts. | Verified. |
+| Chronological train/OOS split | `train_hmm.py` applies a chronological split using the configured train fraction and enforces minimum training/OOS row counts. | Verified. In adjacent-cutoff tests, the preserved item is the 80/20 splitting rule; the absolute boundary changes when each cutoff truncates the sample. |
 | Training-only scaling | `StandardScaler.fit_transform()` is applied only to training rows; the fitted scaler then transforms the full sample. The same contract is reused by the comparison pipeline. | Verified. |
 | Fitting convergence and deterministic restarts | `compare_state_counts.py` fixes independent seed groups, rejects overlapping attempt sets, retains every successful/failed restart, rejects non-finite and insufficiently converged fits, and selects the highest finite train likelihood deterministically. | Verified. |
 | Causal forward filtering and normalization | `train_hmm.forward_filter()` performs log-space alpha recursion and normalizes on every row. The committed profile and parity tests check probability dimensions and row sums. | Verified. |
 | State alignment | `compare_state_counts.state_alignment()` uses an emission-distribution cost and Hungarian assignment before state-level comparisons. Raw HMM state IDs are not compared across fits. | Verified. |
 | State characterization | `characterize_states.py` separates full/train/OOS descriptions, preserves contradictions, and keeps forward returns/event windows post-fit and diagnostic-only. PRs #20 and #21 added explicit coverage and strict JSON behavior. | Verified. |
 | K and feature-set comparison | PR #27 added K=3–8 comparison with worst-seed guardrails. PRs #29 and #30 added exactly three causal feature sets and a symmetric 10% materiality policy. Likelihood alone cannot select a richer model. | Verified. |
-| Cutoff and restart sensitivity | PR #32 added five adjacent cutoff checks. PR #34 diagnosed the original three-restart schedule as insufficient at one cutoff. PR #36 repeated nine restarts over all five frozen cutoffs and preserved all 135 attempts. | Verified; the result is a limitation, not a reporting defect. |
-| Frozen-input provenance and data drift | The Issue #35 durable decision is tied to Run #58 artifact `hidden-regime-SPY` (`8590548073`) and `ohlc.csv` SHA-256 `016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4`. A later live download with tiny historical revisions was rejected as a substitute. | Verified. |
+| Cutoff and restart sensitivity | PR #32 added five adjacent cutoff checks. PR #34 diagnosed the original three-restart schedule as insufficient at one cutoff. PR #36 repeated nine restarts over all five frozen cutoffs and preserved all 135 attempts. | Verified; the result is a limitation, not a reporting defect. The tests preserve features, K, train fraction, seeds, guardrails, and thresholds—not one absolute split date. |
+| Frozen-input provenance and data drift | The Issue #35 durable decision is tied to Run #58 artifact `hidden-regime-SPY` (`8590548073`) and `ohlc.csv` SHA-256 `016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4`. A later live download with tiny historical revisions was rejected as a substitute. | Verified as a historical audit trail. Exact rerun depends on the retained artifact; the checksum alone cannot recreate the file after expiry. |
 | Python-to-Pine fixed-parameter contract | `spy-1d-v0.1.json`, the Pine v6 forward filter, checkpoint fixture, comparator, tests, and parity report form an auditable fixed-profile contract. | Verified with a formal limitation: the manual cross-platform result is `feed mismatch`, not identical-input parity. |
 | Automated validation | `Hidden Regime Market Validation` runs the full unittest discovery in SPY and TLT matrix jobs, then trains, characterizes, and runs SPY feature/K and cutoff diagnostics. | Verified as repository infrastructure. |
 
@@ -60,6 +62,8 @@ The five-feature `baseline_er_downside` candidate materially improved normalized
 
 The five-feature K=8 candidate passed four of five adjacent cutoffs and failed one rare-state guardrail. The machine outcome was `cutoff_sensitive`.
 
+Each cutoff truncates the sample and then reapplies the same 80/20 chronological train fraction. The absolute training endpoint therefore changes between cutoffs.
+
 ### Issue #33 / PR #34 — restart diagnosis
 
 An expanded restart sweep recovered a passing solution at the originally failing cutoff, showing that the original three-attempt schedule was insufficient for that one sample. The shared schedule was not changed from this single diagnostic.
@@ -69,6 +73,8 @@ An expanded restart sweep recovered a passing solution at the originally failing
 The nine-attempt schedule was then tested across the same five cutoffs on the hash-verified Run #58 input. The final result remained `cutoff_sensitive_after_expansion`: four of five cutoffs passed, while 2026-07-21 produced 1.9680% minimum OOS occupancy below the unchanged 2% guardrail.
 
 This is credible negative evidence. It shows that the tooling can reject an attractive candidate without threshold relaxation or live-data cherry-picking.
+
+The frozen input is stored in a GitHub Actions artifact with finite retention. At the time of the corrective review, artifact `8590548073` was still available and scheduled to expire on 2026-08-07. The repository does not contain a durable copy of `ohlc.csv`; after expiry, the result remains auditable through metadata, checksum, code, tests, and the committed decision report, but the exact input cannot be reconstructed from those records alone.
 
 ## Verified capabilities
 
@@ -83,7 +89,7 @@ The research core can now:
 7. characterize states without feeding ex-post returns or events back into the model;
 8. compare K and feature sets with explicit worst-seed guardrails;
 9. diagnose cutoff, restart, rare-state, drift, separation, duration, and reproducibility behavior;
-10. freeze and checksum decision inputs;
+10. record artifact metadata and checksums for frozen decision inputs;
 11. expose a fixed-profile Python/Pine comparison contract;
 12. preserve negative results and unsupported claims.
 
@@ -94,15 +100,18 @@ The research core can now:
 - No final production K or production profile has been selected.
 - `spy-1d-v0.1` is a K=3 Pine parity reference with `deployment_status: pine-parity-spike-only`; it is not the final market taxonomy.
 - Small historical adjusted-OHLC revisions can change the selected local optimum and guardrail result.
+- The Run #58 frozen OHLC is not durably stored in the repository. Exact reproduction is possible only while artifact `8590548073` remains available; after expiry, the checksum verifies a recovered copy but cannot reconstruct one.
 - Yahoo-adjusted Python OHLC and TradingView dividend-adjusted OHLC differ. The formal Pine result remains `feed mismatch`; identical-input inference parity is not established.
 - The current evidence does not prove HMM trading value, walk-forward profitability, controlled drawdown, or cross-asset generalization.
 - Issue #24 remains a bounded indicator prototype rather than production approval.
 
-These limitations affect model selection and product claims, but they do not invalidate the research machinery or prevent Issue #40 from comparing existing defensible candidates against transparent no-HMM baselines.
+These limitations affect model selection, reproducibility claims, and product claims, but they do not invalidate the research machinery or prevent Issue #40 from comparing existing defensible candidates against transparent no-HMM baselines.
 
 ## Unresolved blockers
 
-None were found in the committed evidence for causal features, chronological scaling, fitting, forward filtering, alignment, metrics, provenance, or deterministic decision output.
+No unresolved correctness blocker was found in the committed evidence for causal features, chronological scaling, fitting, forward filtering, alignment, metrics, provenance, or deterministic decision output.
+
+The lack of a durable Run #58 OHLC copy prevents indefinite exact reproduction of the Issue #35 gate. It is recorded as a material limitation rather than a blocker to Issue #40 because the next milestone can define and freeze its own evaluation inputs before testing trading utility.
 
 A final production K/profile is deliberately **not** required before Issue #40. Trading utility is now part of model selection under the project charter; continuing HMM-internal tuning before that comparison would risk optimizing diagnostics without proving usefulness.
 
@@ -114,10 +123,10 @@ Issue #40 should treat current models as research candidates, not approved produ
 
 - a transparent no-HMM baseline;
 - the frozen K=3 reference where applicable;
-- the five-feature K=8 candidate, with its cutoff/restart limitations carried forward;
+- the five-feature K=8 candidate, with its cutoff/restart and input-retention limitations carried forward;
 - a simpler non-HMM regime filter where useful.
 
-The experiment must preserve chronological OOS separation and must not use the final evaluation set to repair the model after results are observed.
+The experiment must preserve chronological OOS separation, durably freeze its decision inputs, and must not use the final evaluation set to repair the model after results are observed.
 
 ## Validation
 
