@@ -1,0 +1,717 @@
+#!/usr/bin/env python3
+"""Evaluate whether causal HMM regime information adds OOS trading value."""
+
+from __future__ import annotations
+
+import argparse
+import gzip
+import hashlib
+import json
+import math
+import sys
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+RESEARCH_DIR = Path(__file__).resolve().parent
+if str(RESEARCH_DIR) not in sys.path:
+    sys.path.insert(0, str(RESEARCH_DIR))
+
+import compare_feature_sets
+import compare_state_counts
+import train_hmm
+
+TRADING_DAYS = 252
+FIT_FRACTION = 0.60
+EXPLORATORY_FRACTION = 0.20
+FINAL_FRACTION = 0.20
+COST_BPS = 5.0
+GROUP_SEEDS = (42, 84, 126)
+BASELINES = ("buy_and_hold", "trend_100", "momentum_63")
+HMM_ROLES = ("favorable_filter", "size_modifier", "defensive_switch")
+SIMPLE_FILTER = "sma200_filter"
+
+SHARPE_IMPROVEMENT = 0.15
+SIMPLE_SHARPE_EDGE = 0.05
+MAX_RETURN_SACRIFICE_TRADING = 0.01
+DRAWDOWN_REDUCTION = 0.20
+SIMPLE_DRAWDOWN_EDGE = 0.05
+CALMAR_IMPROVEMENT = 0.10
+MAX_RETURN_SACRIFICE_RISK = 0.02
+MIN_ACTIVE_DAYS = 100
+MAX_TOP5_POSITIVE_PNL_SHARE = 0.50
+MIN_BASELINES = 2
+
+
+@dataclass(frozen=True)
+class CandidateConfig:
+    name: str
+    k: int
+    feature_names: tuple[str, ...]
+
+
+CANDIDATES = (
+    CandidateConfig("k3_baseline", 3, tuple(train_hmm.FEATURE_NAMES)),
+    CandidateConfig(
+        "k8_baseline_er_downside",
+        8,
+        tuple(compare_feature_sets.FEATURE_SETS["baseline_er_downside"]),
+    ),
+)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Evaluate Issue #40 HMM trading utility")
+    parser.add_argument("--input", type=Path, required=True)
+    parser.add_argument("--sha256-file", type=Path, required=True)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--symbol", default="SPY")
+    parser.add_argument("--timeframe", default="1D")
+    return parser.parse_args()
+
+
+def sha256_decompressed(path: Path) -> str:
+    opener = gzip.open if path.suffix == ".gz" else open
+    digest = hashlib.sha256()
+    with opener(path, "rb") as handle:
+        while chunk := handle.read(1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def expected_sha256(path: Path) -> str:
+    text = path.read_text(encoding="utf-8").strip()
+    if not text:
+        raise ValueError("SHA-256 file is empty")
+    value = text.split()[0].lower()
+    if len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
+        raise ValueError("SHA-256 file does not start with a valid digest")
+    return value
+
+
+def load_frozen_input(args: argparse.Namespace) -> tuple[pd.DataFrame, str]:
+    if args.symbol.upper() != "SPY" or args.timeframe.upper() != "1D":
+        raise ValueError("Issue #40 is restricted to frozen SPY 1D data")
+    expected = expected_sha256(args.sha256_file)
+    actual = sha256_decompressed(args.input)
+    if actual != expected:
+        raise ValueError(f"frozen input SHA-256 mismatch: expected {expected}, got {actual}")
+    loader_args = SimpleNamespace(
+        input=args.input,
+        date_column="Date",
+        open_column="Open",
+        high_column="High",
+        low_column="Low",
+        close_column="Close",
+    )
+    return train_hmm.load_ohlc(loader_args), actual
+
+
+def prepare_features(raw: pd.DataFrame) -> pd.DataFrame:
+    config = train_hmm.FeatureConfig()
+    baseline = train_hmm.calculate_features(raw, config)
+    enriched = compare_feature_sets.add_path_features(baseline, raw)
+    if not np.isfinite(
+        enriched[list(compare_feature_sets.FEATURE_SETS["baseline_er_downside"])].to_numpy()
+    ).all():
+        raise ValueError("prepared Issue #40 features contain non-finite values")
+    return enriched
+
+
+def split_boundaries(rows: int) -> tuple[int, int]:
+    fit_end = int(rows * FIT_FRACTION)
+    exploratory_end = fit_end + int(rows * EXPLORATORY_FRACTION)
+    if rows - exploratory_end < 200 or exploratory_end - fit_end < 200 or fit_end < 500:
+        raise ValueError("Issue #40 requires at least 500 fit rows and 200 rows per OOS period")
+    return fit_end, exploratory_end
+
+
+def aligned_ensemble(
+    features: pd.DataFrame,
+    config: CandidateConfig,
+    fit_end: int,
+) -> dict[str, Any]:
+    scaler = StandardScaler()
+    train_matrix = scaler.fit_transform(features.loc[: fit_end - 1, list(config.feature_names)])
+    full_matrix = scaler.transform(features[list(config.feature_names)])
+
+    models = []
+    restart_records = []
+    for group_seed in GROUP_SEEDS:
+        model, attempts, selected_seed = compare_state_counts.fit_seed_group(
+            train_matrix, config.k, group_seed
+        )
+        models.append(model)
+        restart_records.append(
+            {
+                "group_seed": group_seed,
+                "selected_attempt_seed": selected_seed,
+                "restart_attempts": attempts,
+            }
+        )
+
+    reference = models[0]
+    aligned_posteriors = []
+    aligned_means = []
+    for model in models:
+        permutation = compare_state_counts.state_alignment(reference, model)
+        aligned_posteriors.append(
+            train_hmm.forward_filter(model, full_matrix)[:, permutation]
+        )
+        aligned_means.append(
+            compare_state_counts.aligned_parameters(model, permutation)["means"]
+        )
+
+    posterior = np.mean(np.asarray(aligned_posteriors), axis=0)
+    posterior /= posterior.sum(axis=1, keepdims=True)
+    means = np.mean(np.asarray(aligned_means), axis=0)
+    favorable, defensive, risk_scores = state_buckets(means, config.feature_names)
+
+    return {
+        "posterior": posterior,
+        "favorable_states": favorable,
+        "defensive_states": defensive,
+        "risk_scores": risk_scores,
+        "restart_records": restart_records,
+        "scaler_mean": scaler.mean_.tolist(),
+        "scaler_scale": scaler.scale_.tolist(),
+    }
+
+
+def state_buckets(
+    emission_means: np.ndarray, feature_names: tuple[str, ...]
+) -> tuple[list[int], list[int], list[float]]:
+    if emission_means.shape != (len(emission_means), len(feature_names)):
+        raise ValueError("emission means do not match feature names")
+    weights = {
+        "standardized_return": -1.0,
+        "atr_pct": 1.0,
+        "trend_strength": -1.0,
+        compare_feature_sets.EFFICIENCY_RATIO: -1.0,
+        compare_feature_sets.DOWNSIDE_SHARE: 1.0,
+    }
+    vector = np.asarray([weights[name] for name in feature_names], dtype=float)
+    scores = emission_means @ vector
+    bucket = max(1, int(math.ceil(len(scores) * 0.25)))
+    order = np.argsort(scores)
+    favorable = sorted(int(value) for value in order[:bucket])
+    defensive = sorted(int(value) for value in order[-bucket:])
+    if set(favorable) & set(defensive):
+        raise RuntimeError("favorable and defensive state buckets overlap")
+    return favorable, defensive, scores.astype(float).tolist()
+
+
+def baseline_targets(features: pd.DataFrame) -> dict[str, pd.Series]:
+    close = features["close"].astype(float)
+    trend = close > close.rolling(100, min_periods=100).mean()
+    momentum = close.pct_change(63) > 0.0
+    return {
+        "buy_and_hold": pd.Series(1.0, index=features.index),
+        "trend_100": trend.astype(float),
+        "momentum_63": momentum.astype(float),
+    }
+
+
+def simple_filter_target(base: pd.Series, features: pd.DataFrame) -> pd.Series:
+    close = features["close"].astype(float)
+    risk_on = close > close.rolling(200, min_periods=200).mean()
+    return base * risk_on.astype(float)
+
+
+def hmm_targets(
+    base: pd.Series, posterior: np.ndarray, favorable: list[int], defensive: list[int]
+) -> dict[str, pd.Series]:
+    favorable_probability = pd.Series(
+        posterior[:, favorable].sum(axis=1), index=base.index
+    )
+    defensive_probability = pd.Series(
+        posterior[:, defensive].sum(axis=1), index=base.index
+    )
+    return {
+        "favorable_filter": base * (favorable_probability >= 0.50).astype(float),
+        "size_modifier": base
+        * (0.25 + 0.75 * favorable_probability).clip(lower=0.25, upper=1.0),
+        "defensive_switch": base * (defensive_probability < 0.50).astype(float),
+    }
+
+
+def execute_target(
+    close: pd.Series, target: pd.Series, cost_bps: float = COST_BPS
+) -> pd.DataFrame:
+    if not close.index.equals(target.index):
+        raise ValueError("close and target indices must match")
+    close_return = close.pct_change().fillna(0.0)
+    position = target.shift(1).fillna(0.0).clip(lower=0.0, upper=1.0)
+    turnover = position.diff().abs()
+    turnover.iloc[0] = abs(float(position.iloc[0]))
+    net_return = position * close_return - turnover * (cost_bps / 10000.0)
+    return pd.DataFrame(
+        {
+            "close_return": close_return,
+            "position": position,
+            "turnover": turnover,
+            "net_return": net_return,
+        },
+        index=close.index,
+    )
+
+
+def safe_ratio(numerator: float, denominator: float) -> float | None:
+    if denominator <= 0.0 or not math.isfinite(denominator):
+        return None
+    value = numerator / denominator
+    return float(value) if math.isfinite(value) else None
+
+
+def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
+    returns = frame["net_return"].astype(float)
+    position = frame["position"].astype(float)
+    turnover = frame["turnover"].astype(float)
+    if len(returns) < 2:
+        raise ValueError("performance period must contain at least two rows")
+    wealth = (1.0 + returns).cumprod()
+    if (wealth <= 0.0).any():
+        annualized_return = -1.0
+    else:
+        annualized_return = float(wealth.iloc[-1] ** (TRADING_DAYS / len(returns)) - 1.0)
+    volatility = float(returns.std(ddof=0) * math.sqrt(TRADING_DAYS))
+    mean_return = float(returns.mean())
+    daily_std = float(returns.std(ddof=0))
+    downside = returns.clip(upper=0.0)
+    downside_std = float(downside.std(ddof=0))
+    sharpe = safe_ratio(mean_return * math.sqrt(TRADING_DAYS), daily_std)
+    sortino = safe_ratio(mean_return * math.sqrt(TRADING_DAYS), downside_std)
+    drawdown = wealth / wealth.cummax() - 1.0
+    maximum_drawdown = float(drawdown.min())
+    calmar = safe_ratio(annualized_return, abs(maximum_drawdown))
+    positive = returns[returns > 0.0].sort_values(ascending=False)
+    positive_total = float(positive.sum())
+    top5_share = (
+        float(positive.head(5).sum() / positive_total) if positive_total > 0.0 else 1.0
+    )
+    entries = int(((position > 0.0) & (position.shift(1).fillna(0.0) <= 0.0)).sum())
+    active = returns[position > 0.0]
+    return {
+        "rows": int(len(frame)),
+        "annualized_return": annualized_return,
+        "annualized_volatility": volatility,
+        "sharpe": sharpe,
+        "sortino": sortino,
+        "calmar": calmar,
+        "maximum_drawdown": maximum_drawdown,
+        "active_days": int((position > 0.0).sum()),
+        "average_exposure": float(position.mean()),
+        "round_trip_entries": entries,
+        "turnover": float(turnover.sum()),
+        "daily_win_rate_when_active": float((active > 0.0).mean()) if len(active) else None,
+        "daily_payoff_p05": float(active.quantile(0.05)) if len(active) else None,
+        "daily_payoff_median": float(active.median()) if len(active) else None,
+        "daily_payoff_p95": float(active.quantile(0.95)) if len(active) else None,
+        "top_5_positive_days_share": top5_share,
+        "total_return": float(wealth.iloc[-1] - 1.0),
+    }
+
+
+def period_slices(rows: int, fit_end: int, exploratory_end: int) -> dict[str, slice]:
+    return {
+        "exploratory": slice(fit_end, exploratory_end),
+        "final": slice(exploratory_end, rows),
+    }
+
+
+def metric_value(metrics: dict[str, Any], name: str) -> float:
+    value = metrics.get(name)
+    return float(value) if value is not None else float("-inf")
+
+
+def claim_checks(
+    variant_exploratory: dict[str, Any],
+    variant_final: dict[str, Any],
+    baseline_exploratory: dict[str, Any],
+    baseline_final: dict[str, Any],
+    simple_final: dict[str, Any],
+) -> dict[str, Any]:
+    final_sharpe_delta = metric_value(variant_final, "sharpe") - metric_value(
+        baseline_final, "sharpe"
+    )
+    exploratory_sharpe_delta = metric_value(
+        variant_exploratory, "sharpe"
+    ) - metric_value(baseline_exploratory, "sharpe")
+    final_return_delta = (
+        variant_final["annualized_return"] - baseline_final["annualized_return"]
+    )
+    base_drawdown = abs(float(baseline_final["maximum_drawdown"]))
+    variant_drawdown = abs(float(variant_final["maximum_drawdown"]))
+    simple_drawdown = abs(float(simple_final["maximum_drawdown"]))
+    exploratory_drawdown_improvement = abs(
+        float(baseline_exploratory["maximum_drawdown"])
+    ) - abs(float(variant_exploratory["maximum_drawdown"]))
+    concentration_ok = (
+        variant_final["active_days"] >= MIN_ACTIVE_DAYS
+        and variant_final["top_5_positive_days_share"]
+        <= MAX_TOP5_POSITIVE_PNL_SHARE
+    )
+    trading_checks = {
+        "exploratory_sharpe_improves": exploratory_sharpe_delta > 0.0,
+        "final_sharpe_improves_materially": final_sharpe_delta >= SHARPE_IMPROVEMENT,
+        "final_return_sacrifice_bounded": final_return_delta
+        >= -MAX_RETURN_SACRIFICE_TRADING,
+        "beats_simple_filter_sharpe": metric_value(variant_final, "sharpe")
+        >= metric_value(simple_final, "sharpe") + SIMPLE_SHARPE_EDGE,
+        "activity_and_concentration": concentration_ok,
+    }
+    risk_checks = {
+        "exploratory_drawdown_improves": exploratory_drawdown_improvement > 0.0,
+        "final_drawdown_reduction_material": (
+            variant_drawdown <= (1.0 - DRAWDOWN_REDUCTION) * base_drawdown
+            if base_drawdown > 0.0
+            else False
+        ),
+        "final_calmar_improves": metric_value(variant_final, "calmar")
+        >= metric_value(baseline_final, "calmar") + CALMAR_IMPROVEMENT,
+        "final_return_sacrifice_bounded": final_return_delta >= -MAX_RETURN_SACRIFICE_RISK,
+        "beats_simple_filter_drawdown": (
+            variant_drawdown <= (1.0 - SIMPLE_DRAWDOWN_EDGE) * simple_drawdown
+            if simple_drawdown > 0.0
+            else False
+        ),
+        "activity_and_concentration": concentration_ok,
+    }
+    return {
+        "trading_value": {
+            "passed": all(trading_checks.values()),
+            "checks": trading_checks,
+        },
+        "risk_value": {
+            "passed": all(risk_checks.values()),
+            "checks": risk_checks,
+        },
+        "deltas": {
+            "exploratory_sharpe": exploratory_sharpe_delta,
+            "final_sharpe": final_sharpe_delta,
+            "final_annualized_return": final_return_delta,
+            "exploratory_drawdown_improvement": exploratory_drawdown_improvement,
+            "final_drawdown_improvement": base_drawdown - variant_drawdown,
+        },
+    }
+
+
+def decide_outcome(claims: list[dict[str, Any]]) -> dict[str, Any]:
+    grouped: dict[tuple[str, str], dict[str, list[str]]] = {}
+    for claim in claims:
+        key = (claim["candidate"], claim["role"])
+        bucket = grouped.setdefault(key, {"trading": [], "risk": []})
+        if claim["checks"]["trading_value"]["passed"]:
+            bucket["trading"].append(claim["baseline"])
+        if claim["checks"]["risk_value"]["passed"]:
+            bucket["risk"].append(claim["baseline"])
+    trading_winners = [
+        {
+            "candidate": candidate,
+            "role": role,
+            "baselines": values["trading"],
+        }
+        for (candidate, role), values in grouped.items()
+        if len(values["trading"]) >= MIN_BASELINES
+    ]
+    risk_winners = [
+        {
+            "candidate": candidate,
+            "role": role,
+            "baselines": values["risk"],
+        }
+        for (candidate, role), values in grouped.items()
+        if len(values["risk"]) >= MIN_BASELINES
+    ]
+    if trading_winners:
+        outcome = "adds_oos_trading_value"
+        reason = (
+            "At least one predeclared HMM candidate/role improved exploratory and "
+            "final risk-adjusted performance across two or more baselines and beat "
+            "the simpler SMA200 filter under the trading-value thresholds."
+        )
+    elif risk_winners:
+        outcome = "adds_oos_risk_value_only"
+        reason = (
+            "No HMM role cleared the trading-value gate, but at least one candidate/"
+            "role reduced drawdown across two or more baselines while preserving "
+            "bounded return and beating the simpler SMA200 filter."
+        )
+    else:
+        outcome = "no_incremental_value"
+        reason = (
+            "All predeclared experiments completed, but no single HMM candidate/role "
+            "cleared the trading-value or risk-value gate across two or more baselines."
+        )
+    return {
+        "outcome": outcome,
+        "reason": reason,
+        "trading_winners": trading_winners,
+        "risk_winners": risk_winners,
+        "minimum_supporting_baselines": MIN_BASELINES,
+    }
+
+
+def strict_json(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {str(key): strict_json(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [strict_json(item) for item in value]
+    if isinstance(value, np.ndarray):
+        return strict_json(value.tolist())
+    if isinstance(value, (np.integer,)):
+        return int(value)
+    if isinstance(value, (np.floating, float)):
+        numeric = float(value)
+        return numeric if math.isfinite(numeric) else None
+    if isinstance(value, pd.Timestamp):
+        return value.isoformat()
+    return value
+
+
+def markdown_report(result: dict[str, Any]) -> str:
+    decision = result["decision"]
+    lines = [
+        "# Issue #40 — HMM trading-utility decision",
+        "",
+        f"**Outcome:** `{decision['outcome']}`",
+        "",
+        decision["reason"],
+        "",
+        "## Frozen experiment",
+        "",
+        f"- Input SHA-256: `{result['input']['sha256']}`",
+        f"- Fit / exploratory / final rows: {result['split']['fit_rows']} / "
+        f"{result['split']['exploratory_rows']} / {result['split']['final_rows']}",
+        f"- Cost: {result['experiment']['cost_bps']:.1f} bps per unit turnover",
+        "- Execution: confirmed-bar target, applied one bar later",
+        "",
+        "## Final-period metrics",
+        "",
+        "| Candidate | Baseline | Role | Ann. return | Sharpe | Calmar | Max drawdown | Active days | Top-5 positive-day share |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    final_rows = [row for row in result["metrics"] if row["period"] == "final"]
+    for row in final_rows:
+        metric = row["metrics"]
+        sharpe = f"{metric['sharpe']:.3f}" if metric["sharpe"] is not None else "—"
+        calmar = f"{metric['calmar']:.3f}" if metric["calmar"] is not None else "—"
+        lines.append(
+            f"| `{row['candidate']}` | `{row['baseline']}` | `{row['role']}` | "
+            f"{metric['annualized_return']:.2%} | {sharpe} | {calmar} | "
+            f"{metric['maximum_drawdown']:.2%} | {metric['active_days']} | "
+            f"{metric['top_5_positive_days_share']:.2%} |"
+        )
+    lines += [
+        "",
+        "## Claim checks",
+        "",
+        "| Candidate | Role | Baseline | Trading value | Risk value | Final Sharpe Δ | Final return Δ | Final drawdown improvement |",
+        "|---|---|---|---|---|---:|---:|---:|",
+    ]
+    for claim in result["claims"]:
+        delta = claim["checks"]["deltas"]
+        lines.append(
+            f"| `{claim['candidate']}` | `{claim['role']}` | `{claim['baseline']}` | "
+            f"{claim['checks']['trading_value']['passed']} | "
+            f"{claim['checks']['risk_value']['passed']} | "
+            f"{delta['final_sharpe']:.3f} | "
+            f"{delta['final_annualized_return']:.2%} | "
+            f"{delta['final_drawdown_improvement']:.2%} |"
+        )
+    lines += [
+        "",
+        "The decision is mechanical. Thresholds, roles, baselines, periods, costs, "
+        "candidate models, and concentration guardrails were fixed before the final "
+        "period was evaluated.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def run(args: argparse.Namespace) -> dict[str, Any]:
+    raw, digest = load_frozen_input(args)
+    features = prepare_features(raw)
+    fit_end, exploratory_end = split_boundaries(len(features))
+    periods = period_slices(len(features), fit_end, exploratory_end)
+    baselines = baseline_targets(features)
+    close = features["close"].astype(float)
+
+    metric_rows: list[dict[str, Any]] = []
+    metric_index: dict[tuple[str, str, str, str], dict[str, Any]] = {}
+
+    for baseline_name, base in baselines.items():
+        targets = {
+            "no_hmm": base,
+            SIMPLE_FILTER: simple_filter_target(base, features),
+        }
+        for role, target in targets.items():
+            executed = execute_target(close, target)
+            for period_name, period_slice in periods.items():
+                metrics = performance_metrics(executed.iloc[period_slice])
+                row = {
+                    "candidate": "non_hmm",
+                    "baseline": baseline_name,
+                    "role": role,
+                    "period": period_name,
+                    "metrics": metrics,
+                }
+                metric_rows.append(row)
+                metric_index[("non_hmm", baseline_name, role, period_name)] = metrics
+
+    candidate_details = []
+    for candidate in CANDIDATES:
+        ensemble = aligned_ensemble(features, candidate, fit_end)
+        candidate_details.append(
+            {
+                "name": candidate.name,
+                "k": candidate.k,
+                "feature_names": list(candidate.feature_names),
+                "favorable_states": ensemble["favorable_states"],
+                "defensive_states": ensemble["defensive_states"],
+                "risk_scores": ensemble["risk_scores"],
+                "restart_records": ensemble["restart_records"],
+                "scaler_mean": ensemble["scaler_mean"],
+                "scaler_scale": ensemble["scaler_scale"],
+            }
+        )
+        for baseline_name, base in baselines.items():
+            targets = hmm_targets(
+                base,
+                ensemble["posterior"],
+                ensemble["favorable_states"],
+                ensemble["defensive_states"],
+            )
+            for role, target in targets.items():
+                executed = execute_target(close, target)
+                for period_name, period_slice in periods.items():
+                    metrics = performance_metrics(executed.iloc[period_slice])
+                    row = {
+                        "candidate": candidate.name,
+                        "baseline": baseline_name,
+                        "role": role,
+                        "period": period_name,
+                        "metrics": metrics,
+                    }
+                    metric_rows.append(row)
+                    metric_index[(candidate.name, baseline_name, role, period_name)] = metrics
+
+    claims = []
+    for candidate in CANDIDATES:
+        for role in HMM_ROLES:
+            for baseline_name in BASELINES:
+                checks = claim_checks(
+                    metric_index[(candidate.name, baseline_name, role, "exploratory")],
+                    metric_index[(candidate.name, baseline_name, role, "final")],
+                    metric_index[("non_hmm", baseline_name, "no_hmm", "exploratory")],
+                    metric_index[("non_hmm", baseline_name, "no_hmm", "final")],
+                    metric_index[("non_hmm", baseline_name, SIMPLE_FILTER, "final")],
+                )
+                claims.append(
+                    {
+                        "candidate": candidate.name,
+                        "role": role,
+                        "baseline": baseline_name,
+                        "checks": checks,
+                    }
+                )
+
+    result = {
+        "schema_version": 1,
+        "issue": 40,
+        "input": {
+            "path": str(args.input),
+            "sha256": digest,
+            "source_run_number": 58,
+            "source_run_id": 30077475634,
+            "source_artifact": "hidden-regime-SPY",
+            "source_artifact_id": 8590548073,
+        },
+        "experiment": {
+            "symbol": args.symbol,
+            "timeframe": args.timeframe,
+            "fit_fraction": FIT_FRACTION,
+            "exploratory_fraction": EXPLORATORY_FRACTION,
+            "final_fraction": FINAL_FRACTION,
+            "cost_bps": COST_BPS,
+            "execution_lag_bars": 1,
+            "group_seeds": list(GROUP_SEEDS),
+            "restart_offsets": list(compare_state_counts.RESTART_OFFSETS),
+            "baselines": list(BASELINES),
+            "simple_non_hmm_filter": SIMPLE_FILTER,
+            "hmm_roles": list(HMM_ROLES),
+            "thresholds": {
+                "sharpe_improvement": SHARPE_IMPROVEMENT,
+                "simple_filter_sharpe_edge": SIMPLE_SHARPE_EDGE,
+                "maximum_return_sacrifice_trading": MAX_RETURN_SACRIFICE_TRADING,
+                "drawdown_reduction": DRAWDOWN_REDUCTION,
+                "simple_filter_drawdown_edge": SIMPLE_DRAWDOWN_EDGE,
+                "calmar_improvement": CALMAR_IMPROVEMENT,
+                "maximum_return_sacrifice_risk": MAX_RETURN_SACRIFICE_RISK,
+                "minimum_active_days": MIN_ACTIVE_DAYS,
+                "maximum_top5_positive_pnl_share": MAX_TOP5_POSITIVE_PNL_SHARE,
+                "minimum_supporting_baselines": MIN_BASELINES,
+            },
+        },
+        "split": {
+            "usable_rows": len(features),
+            "fit_rows": fit_end,
+            "exploratory_rows": exploratory_end - fit_end,
+            "final_rows": len(features) - exploratory_end,
+            "feature_start": features["date"].iloc[0],
+            "fit_end": features["date"].iloc[fit_end - 1],
+            "exploratory_start": features["date"].iloc[fit_end],
+            "exploratory_end": features["date"].iloc[exploratory_end - 1],
+            "final_start": features["date"].iloc[exploratory_end],
+            "final_end": features["date"].iloc[-1],
+        },
+        "candidates": candidate_details,
+        "metrics": metric_rows,
+        "claims": claims,
+        "decision": decide_outcome(claims),
+    }
+    return strict_json(result)
+
+
+def main() -> int:
+    args = parse_args()
+    result = run(args)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    json_path = args.output_dir / "issue-40-trading-utility.json"
+    csv_path = args.output_dir / "issue-40-trading-utility-metrics.csv"
+    markdown_path = args.output_dir / "issue-40-trading-utility.md"
+    json_path.write_text(
+        json.dumps(result, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
+    rows = []
+    for row in result["metrics"]:
+        rows.append(
+            {
+                "candidate": row["candidate"],
+                "baseline": row["baseline"],
+                "role": row["role"],
+                "period": row["period"],
+                **row["metrics"],
+            }
+        )
+    pd.DataFrame(rows).to_csv(csv_path, index=False)
+    markdown_path.write_text(markdown_report(result), encoding="utf-8")
+    print(markdown_report(result))
+    print(f"wrote: {json_path}")
+    print(f"wrote: {csv_path}")
+    print(f"wrote: {markdown_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(2)
