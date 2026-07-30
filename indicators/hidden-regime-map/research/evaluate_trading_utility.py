@@ -281,15 +281,15 @@ def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
         active_frame = frame.loc[active].copy()
         active_frame["episode_id"] = episode_id.loc[active].to_numpy()
         for _, episode in active_frame.groupby("episode_id", sort=True):
-    first_location = int(frame.index.get_indexer([episode.index[0]])[0])
-    last_location = int(frame.index.get_indexer([episode.index[-1]])[0])
-    episode_growth = float((1.0 + episode["net_return"]).prod())
-    if last_location < len(frame) - 1 and float(position.iloc[last_location + 1]) <= 0.0:
-        episode_growth *= 1.0 + float(frame["net_return"].iloc[last_location + 1])
-    episode_returns.append(episode_growth - 1.0)
-    episode_days.append(int(len(episode)))
-    if first_location > 0 and last_location < len(frame) - 1:
-        completed_round_trips += 1
+            first_location = int(frame.index.get_indexer([episode.index[0]])[0])
+            last_location = int(frame.index.get_indexer([episode.index[-1]])[0])
+            episode_growth = float((1.0 + episode["net_return"]).prod())
+            if last_location < len(frame) - 1 and float(position.iloc[last_location + 1]) <= 0.0:
+                episode_growth *= 1.0 + float(frame["net_return"].iloc[last_location + 1])
+            episode_returns.append(episode_growth - 1.0)
+            episode_days.append(int(len(episode)))
+            if first_location > 0 and last_location < len(frame) - 1:
+                completed_round_trips += 1
 
     values = pd.Series(episode_returns, dtype=float)
     positive = values[values > 0.0].sort_values(ascending=False)
