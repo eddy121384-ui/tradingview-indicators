@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "issue": 40,
   "status": "complete_negative_result",
   "outcome": "no_incremental_value",
@@ -55,7 +55,7 @@
       "active_days": 646,
       "completed_round_trips": 14,
       "trade_episode_count": 16,
-      "top_3_positive_trades_share": 0.7051379173017527
+      "top_3_positive_trades_share": 0.7061286980145187
     },
     "versus_no_hmm": {
       "annualized_return_delta": -0.06722401361562524,
@@ -65,14 +65,24 @@
   },
   "validation": {
     "workflow": "Hidden Regime Trading Utility",
-    "run_number": 7,
-    "run_id": 30517967469,
-    "validated_head_sha": "02e1484e26bec7a2a7f6d1f70aa2f3c988a159c3",
-    "conclusion": "success",
-    "tests_passed": 94,
-    "artifact_name": "hidden-regime-issue-40-trading-utility",
-    "artifact_id": 8749621581,
-    "artifact_digest": "sha256:c6c87f8875881854759fedab23e3ed828a5789be3c35aa0c6f3c67e9f09eba4c"
+    "acceptance_contract": [
+      "research tests pass",
+      "frozen input checksum passes",
+      "evaluation and strict JSON validation pass",
+      "regenerated outcome, split, closest-case metrics, and exact nine-row key-metric set match committed evidence",
+      "Hidden Regime Market Validation also passes on the final PR head"
+    ],
+    "corrected_evaluation_reference": {
+      "run_number": 21,
+      "run_id": 30520180024,
+      "evaluated_head_sha": "fe3ed42dbf7befbccf8ff389d8b50b48154486fb",
+      "evaluation_steps": "pass",
+      "evidence_check": "failed_as_expected_before_committed_trade_payoff_refresh",
+      "artifact_name": "hidden-regime-issue-40-trading-utility",
+      "artifact_id": 8750426116,
+      "artifact_digest": "sha256:145e486e0487d39e2e7a731b5d39778162fc5f7ecb54948cb98429e92f1617aa"
+    },
+    "final_pr_head_result": "Record the final successful workflow run and Codex review in PR #49 after all committed evidence matches regenerated output."
   },
   "limitations": [
     "SPY 1D only",
