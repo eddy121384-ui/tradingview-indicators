@@ -1,4 +1,4 @@
-name: Apply Issue 40 Final Review Fixes
+name: Apply Issue 40 Code Review Fixes
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ jobs:
         with:
           ref: research/issue-40-trading-utility
 
-      - name: Apply review fixes
+      - name: Apply evaluator and test fixes
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -59,67 +59,13 @@ jobs:
           if tests.count(old) != 1:
               raise SystemExit("expected one trade-payoff test line")
           tests_path.write_text(tests.replace(old, new), encoding="utf-8")
-
-          workflow_path = Path(".github/workflows/hidden-regime-trading-utility.yml")
-          workflow = workflow_path.read_text(encoding="utf-8")
-          anchor = '      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md\n'
-          dependency_lines = (
-              '      - indicators/hidden-regime-map/research/train_hmm.py\n'
-              '      - indicators/hidden-regime-map/research/compare_state_counts.py\n'
-              '      - indicators/hidden-regime-map/research/compare_feature_sets.py\n'
-              '      - indicators/hidden-regime-map/requirements-research.txt\n'
-          )
-          if dependency_lines not in workflow:
-              if workflow.count(anchor) != 1:
-                  raise SystemExit("experiment-spec path anchor not unique")
-              workflow = workflow.replace(anchor, anchor + dependency_lines)
-          workflow_path.write_text(workflow, encoding="utf-8")
-
-          replacement = '''          committed = pd.read_csv(key_path)
-              regenerated = pd.read_csv(generated_csv_path)
-              keys = ["candidate", "baseline", "role", "period"]
-              expected_keys = {
-                  ("non_hmm", "buy_and_hold", "no_hmm", "final"),
-                  ("non_hmm", "buy_and_hold", "sma200_filter", "final"),
-                  ("non_hmm", "trend_100", "no_hmm", "final"),
-                  ("non_hmm", "momentum_63", "no_hmm", "final"),
-                  ("k8_baseline_er_downside", "buy_and_hold", "defensive_switch", "final"),
-                  ("k8_baseline_er_downside", "trend_100", "defensive_switch", "final"),
-                  ("k8_baseline_er_downside", "momentum_63", "defensive_switch", "final"),
-                  ("k3_baseline", "buy_and_hold", "size_modifier", "final"),
-                  ("k8_baseline_er_downside", "trend_100", "size_modifier", "final"),
-              }
-              committed_keys = set(committed[keys].itertuples(index=False, name=None))
-              assert committed_keys == expected_keys
-              regenerated_keys = pd.MultiIndex.from_frame(regenerated[keys])
-              projection = regenerated.loc[regenerated_keys.isin(expected_keys), committed.columns]
-              projection_keys = set(projection[keys].itertuples(index=False, name=None))
-              assert projection_keys == expected_keys
-              committed = committed.sort_values(keys).reset_index(drop=True)
-              projection = projection.sort_values(keys).reset_index(drop=True)
-              numeric = [column for column in committed.columns if column not in keys]
-              for column in numeric:
-                  left = committed[column].to_numpy(dtype=float)
-                  right = projection[column].to_numpy(dtype=float)
-                  assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
-          '''
-          replace_between(
-              ".github/workflows/hidden-regime-trading-utility.yml",
-              '          committed = pd.read_csv(key_path)\n',
-              '              assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column\n',
-              replacement,
-          )
-
-          Path(".github/workflows/issue-40-final-review-fixes.yml").unlink()
           PY
 
-      - name: Commit fixes
+      - name: Commit code fixes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add indicators/hidden-regime-map/research/evaluate_trading_utility.py \
-                  indicators/hidden-regime-map/research/test_evaluate_trading_utility.py \
-                  .github/workflows/hidden-regime-trading-utility.yml \
-                  .github/workflows/issue-40-final-review-fixes.yml
-          git commit -m "Address final Issue 40 review findings"
+                  indicators/hidden-regime-map/research/test_evaluate_trading_utility.py
+          git commit -m "Charge exit costs in Issue 40 trade evidence"
           git push origin HEAD:research/issue-40-trading-utility
