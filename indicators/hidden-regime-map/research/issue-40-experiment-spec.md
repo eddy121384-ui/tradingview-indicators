@@ -84,7 +84,8 @@ For exploratory and final periods, report:
 - maximum drawdown;
 - active days, average exposure, round-trip entries, and turnover;
 - active-day payoff percentiles and win rate;
-- share of positive PnL contributed by the five best days.
+- share of positive PnL contributed by the five best days;
+- contiguous positive-exposure trade-episode count, payoff percentiles, duration, win rate, censoring flags, and positive-trade concentration.
 
 ## Predeclared decision gates
 
@@ -120,3 +121,9 @@ For the same candidate/role/baseline:
 - `inconclusive`: the frozen input, fitting, causal inference, or required evaluation cannot be completed truthfully.
 
 A negative result must be retained. Thresholds and guardrails may not be relaxed to manufacture a positive outcome.
+
+## Evidence-completeness addendum after the first run
+
+Self-QC after the first generated result found that the initial report included entry counts, active-day payoff statistics, and positive-day concentration but did not directly report the issue's requested trade-level payoff distribution. Contiguous positive-exposure episode metrics were therefore added as descriptive evidence.
+
+This addendum does not change the input, candidates, periods, strategy rules, state mapping, costs, thresholds, decision gates, or outcome. Period-boundary episodes are retained and explicitly marked as left- or right-censored so their payoff statistics are not mistaken for fully observed round trips.
