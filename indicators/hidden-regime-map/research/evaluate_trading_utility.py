@@ -264,14 +264,18 @@ def safe_ratio(numerator: float, denominator: float) -> float | None:
     return float(value) if math.isfinite(value) else None
 
 
-def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
+def trade_episode_metrics(
+    frame: pd.DataFrame, previous_position: float = 0.0
+) -> dict[str, Any]:
     """Describe boundary-aware contiguous positive-exposure episodes."""
     position = frame["position"].astype(float)
     active = position > 0.0
-    starts = active & ~active.shift(1, fill_value=False)
+    prior_active = bool(previous_position > 0.0)
+    previous_active = active.shift(1, fill_value=prior_active)
+    starts = active & ~previous_active
     exits = active & ~active.shift(-1, fill_value=False)
     episode_id = starts.cumsum()
-    left_censored = bool(active.iloc[0])
+    left_censored = bool(active.iloc[0] and prior_active)
     right_censored = bool(active.iloc[-1])
 
     episode_returns: list[float] = []
@@ -288,7 +292,9 @@ def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
                 episode_growth *= 1.0 + float(frame["net_return"].iloc[last_location + 1])
             episode_returns.append(episode_growth - 1.0)
             episode_days.append(int(len(episode)))
-            if first_location > 0 and last_location < len(frame) - 1:
+            started_within_period = first_location > 0 or not prior_active
+            exited_within_period = last_location < len(frame) - 1
+            if started_within_period and exited_within_period:
                 completed_round_trips += 1
 
     values = pd.Series(episode_returns, dtype=float)
@@ -299,7 +305,7 @@ def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     )
     return {
         "trade_episode_count": int(len(values)),
-        "new_entries_within_period": int(starts.iloc[1:].sum()) if len(starts) > 1 else 0,
+        "new_entries_within_period": int(starts.sum()),
         "exits_within_period": int(exits.iloc[:-1].sum()) if len(exits) > 1 else 0,
         "completed_round_trips": completed_round_trips,
         "left_censored_trade": left_censored,
@@ -314,7 +320,9 @@ def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
+def performance_metrics(
+    frame: pd.DataFrame, previous_position: float = 0.0
+) -> dict[str, Any]:
     returns = frame["net_return"].astype(float)
     position = frame["position"].astype(float)
     turnover = frame["turnover"].astype(float)
@@ -373,7 +381,7 @@ def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
         "top_5_positive_days_share": top5_share,
         "total_return": float(wealth.iloc[-1] - 1.0),
     }
-    metrics.update(trade_episode_metrics(frame))
+    metrics.update(trade_episode_metrics(frame, previous_position))
     return metrics
 
 
@@ -595,7 +603,14 @@ def _record_metrics(
     periods: dict[str, slice],
 ) -> None:
     for period_name, period_slice in periods.items():
-        metrics = performance_metrics(executed.iloc[period_slice])
+        previous_position = (
+            float(executed["position"].iloc[period_slice.start - 1])
+            if period_slice.start and period_slice.start > 0
+            else 0.0
+        )
+        metrics = performance_metrics(
+            executed.iloc[period_slice], previous_position=previous_position
+        )
         metric_rows.append(
             {
                 "candidate": candidate,

@@ -93,10 +93,10 @@ class TradingUtilityTests(unittest.TestCase):
         )
         metrics = utility.trade_episode_metrics(frame)
         self.assertEqual(metrics["trade_episode_count"], 2)
-        self.assertEqual(metrics["new_entries_within_period"], 1)
+        self.assertEqual(metrics["new_entries_within_period"], 2)
         self.assertEqual(metrics["exits_within_period"], 2)
-        self.assertEqual(metrics["completed_round_trips"], 1)
-        self.assertTrue(metrics["left_censored_trade"])
+        self.assertEqual(metrics["completed_round_trips"], 2)
+        self.assertFalse(metrics["left_censored_trade"])
         self.assertFalse(metrics["right_censored_trade"])
         first_payoff = 1.10 * 0.95 * (1.0 - 0.0005) - 1.0
         second_payoff = 1.02 * 1.03 * (1.0 - 0.0005) - 1.0
@@ -112,7 +112,7 @@ class TradingUtilityTests(unittest.TestCase):
                 "net_return": [0.01, -0.01, 0.02],
             }
         )
-        metrics = utility.trade_episode_metrics(frame)
+        metrics = utility.trade_episode_metrics(frame, previous_position=1.0)
         self.assertEqual(metrics["trade_episode_count"], 1)
         self.assertEqual(metrics["new_entries_within_period"], 0)
         self.assertEqual(metrics["exits_within_period"], 0)
