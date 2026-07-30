@@ -1,0 +1,70 @@
+name: Freeze Issue 40 Run 58 Input
+
+on:
+  push:
+    branches:
+      - research/issue-40-trading-utility
+    paths:
+      - .github/workflows/issue-40-freeze-run58-input.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze-input:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue-40-trading-utility
+
+      - name: Skip when frozen input already exists
+        id: frozen
+        run: |
+          path="indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz"
+          if [ -f "$path" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download Run 58 SPY artifact
+        if: steps.frozen.outputs.exists != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: hidden-regime-SPY
+          path: frozen-run58
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 30077475634
+
+      - name: Verify and compress frozen OHLC
+        if: steps.frozen.outputs.exists != 'true'
+        run: |
+          source_file="$(find frozen-run58 -type f -name ohlc.csv -print -quit)"
+          if [ -z "$source_file" ]; then
+            echo "Run 58 artifact did not contain ohlc.csv" >&2
+            exit 1
+          fi
+          expected="016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4"
+          actual="$(sha256sum "$source_file" | awk '{print $1}')"
+          if [ "$actual" != "$expected" ]; then
+            echo "Run 58 OHLC hash mismatch: $actual" >&2
+            exit 1
+          fi
+          mkdir -p indicators/hidden-regime-map/research/data
+          gzip -9 -c "$source_file" > indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz
+          printf '%s  %s\n' "$expected" "issue-40-spy-1d-run58.csv" \
+            > indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256
+
+      - name: Commit frozen input to research branch
+        if: steps.frozen.outputs.exists != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz \
+                  indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256
+          git commit -m "Freeze Run 58 SPY input for Issue 40"
+          git push origin HEAD:research/issue-40-trading-utility
