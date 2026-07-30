@@ -6,11 +6,6 @@ on:
       - main
     paths:
       - .github/workflows/issue-40-final-review-fixes.yml
-  push:
-    branches:
-      - research/issue-40-trading-utility
-    paths:
-      - .github/workflows/issue-40-final-review-fixes.yml
 
 permissions:
   contents: write
@@ -23,30 +18,23 @@ jobs:
         with:
           ref: research/issue-40-trading-utility
 
-      - name: Apply exact review fixes
+      - name: Apply review fixes
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          def replace_once(path: str, old: str, new: str) -> None:
+          def replace_between(path: str, start_marker: str, end_marker: str, replacement: str) -> None:
               target = Path(path)
               text = target.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"expected one replacement in {path}, found {count}")
-              target.write_text(text.replace(old, new), encoding="utf-8")
+              start = text.index(start_marker)
+              end = text.index(end_marker, start) + len(end_marker)
+              target.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
 
           evaluator = "indicators/hidden-regime-map/research/evaluate_trading_utility.py"
-          replace_once(
+          replace_between(
               evaluator,
-              '''        for _, episode in active_frame.groupby("episode_id", sort=True):
-              episode_returns.append(float((1.0 + episode["net_return"]).prod() - 1.0))
-              episode_days.append(int(len(episode)))
-              first_location = int(frame.index.get_indexer([episode.index[0]])[0])
-              last_location = int(frame.index.get_indexer([episode.index[-1]])[0])
-              if first_location > 0 and last_location < len(frame) - 1:
-                  completed_round_trips += 1
-          ''',
+              '        for _, episode in active_frame.groupby("episode_id", sort=True):\n',
+              '                completed_round_trips += 1\n',
               '''        for _, episode in active_frame.groupby("episode_id", sort=True):
               first_location = int(frame.index.get_indexer([episode.index[0]])[0])
               last_location = int(frame.index.get_indexer([episode.index[-1]])[0])
@@ -60,49 +48,34 @@ jobs:
           ''',
           )
 
-          tests = "indicators/hidden-regime-map/research/test_evaluate_trading_utility.py"
-          replace_once(
-              tests,
-              '''        expected_median = ((1.10 * 0.95 - 1.0) + (1.02 * 1.03 - 1.0)) / 2.0
-          ''',
-              '''        first_payoff = 1.10 * 0.95 * (1.0 - 0.0005) - 1.0
-              second_payoff = 1.02 * 1.03 * (1.0 - 0.0005) - 1.0
-              expected_median = (first_payoff + second_payoff) / 2.0
-          ''',
+          tests_path = Path("indicators/hidden-regime-map/research/test_evaluate_trading_utility.py")
+          tests = tests_path.read_text(encoding="utf-8")
+          old = '        expected_median = ((1.10 * 0.95 - 1.0) + (1.02 * 1.03 - 1.0)) / 2.0\n'
+          new = (
+              '        first_payoff = 1.10 * 0.95 * (1.0 - 0.0005) - 1.0\n'
+              '        second_payoff = 1.02 * 1.03 * (1.0 - 0.0005) - 1.0\n'
+              '        expected_median = (first_payoff + second_payoff) / 2.0\n'
           )
+          if tests.count(old) != 1:
+              raise SystemExit("expected one trade-payoff test line")
+          tests_path.write_text(tests.replace(old, new), encoding="utf-8")
 
-          workflow = ".github/workflows/hidden-regime-trading-utility.yml"
-          replace_once(
-              workflow,
-              '''      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
-          ''',
-              '''      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
-              - indicators/hidden-regime-map/research/train_hmm.py
-              - indicators/hidden-regime-map/research/compare_state_counts.py
-              - indicators/hidden-regime-map/research/compare_feature_sets.py
-              - indicators/hidden-regime-map/requirements-research.txt
-          ''',
+          workflow_path = Path(".github/workflows/hidden-regime-trading-utility.yml")
+          workflow = workflow_path.read_text(encoding="utf-8")
+          anchor = '      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md\n'
+          dependency_lines = (
+              '      - indicators/hidden-regime-map/research/train_hmm.py\n'
+              '      - indicators/hidden-regime-map/research/compare_state_counts.py\n'
+              '      - indicators/hidden-regime-map/research/compare_feature_sets.py\n'
+              '      - indicators/hidden-regime-map/requirements-research.txt\n'
           )
-          replace_once(
-              workflow,
-              '''          committed = pd.read_csv(key_path)
-              regenerated = pd.read_csv(generated_csv_path)
-              keys = ["candidate", "baseline", "role", "period"]
-              numeric = [column for column in committed.columns if column not in keys]
-              merged = committed.merge(
-                  regenerated[keys + numeric],
-                  on=keys,
-                  how="left",
-                  validate="one_to_one",
-                  suffixes=("_committed", "_generated"),
-              )
-              assert len(merged) == len(committed)
-              for column in numeric:
-                  left = merged[f"{column}_committed"].to_numpy(dtype=float)
-                  right = merged[f"{column}_generated"].to_numpy(dtype=float)
-                  assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
-          ''',
-              '''          committed = pd.read_csv(key_path)
+          if dependency_lines not in workflow:
+              if workflow.count(anchor) != 1:
+                  raise SystemExit("experiment-spec path anchor not unique")
+              workflow = workflow.replace(anchor, anchor + dependency_lines)
+          workflow_path.write_text(workflow, encoding="utf-8")
+
+          replacement = '''          committed = pd.read_csv(key_path)
               regenerated = pd.read_csv(generated_csv_path)
               keys = ["candidate", "baseline", "role", "period"]
               expected_keys = {
@@ -129,7 +102,12 @@ jobs:
                   left = committed[column].to_numpy(dtype=float)
                   right = projection[column].to_numpy(dtype=float)
                   assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
-          ''',
+          '''
+          replace_between(
+              ".github/workflows/hidden-regime-trading-utility.yml",
+              '          committed = pd.read_csv(key_path)\n',
+              '              assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column\n',
+              replacement,
           )
 
           Path(".github/workflows/issue-40-final-review-fixes.yml").unlink()
