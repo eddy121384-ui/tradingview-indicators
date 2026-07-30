@@ -113,8 +113,7 @@ def load_frozen_input(args: argparse.Namespace) -> tuple[pd.DataFrame, str]:
 
 
 def prepare_features(raw: pd.DataFrame) -> pd.DataFrame:
-    config = train_hmm.FeatureConfig()
-    baseline = train_hmm.calculate_features(raw, config)
+    baseline = train_hmm.calculate_features(raw, train_hmm.FeatureConfig())
     enriched = compare_feature_sets.add_path_features(baseline, raw)
     columns = list(compare_feature_sets.FEATURE_SETS["baseline_er_downside"])
     if not np.isfinite(enriched[columns].to_numpy()).all():
@@ -194,8 +193,9 @@ def state_buckets(
         compare_feature_sets.EFFICIENCY_RATIO: -1.0,
         compare_feature_sets.DOWNSIDE_SHARE: 1.0,
     }
-    vector = np.asarray([weights[name] for name in feature_names], dtype=float)
-    scores = emission_means @ vector
+    scores = emission_means @ np.asarray(
+        [weights[name] for name in feature_names], dtype=float
+    )
     bucket = max(1, int(math.ceil(len(scores) * 0.25)))
     order = np.argsort(scores)
     favorable = sorted(int(value) for value in order[:bucket])
@@ -216,8 +216,7 @@ def baseline_targets(features: pd.DataFrame) -> dict[str, pd.Series]:
 
 def simple_filter_target(base: pd.Series, features: pd.DataFrame) -> pd.Series:
     close = features["close"].astype(float)
-    risk_on = close > close.rolling(200, min_periods=200).mean()
-    return base * risk_on.astype(float)
+    return base * (close > close.rolling(200, min_periods=200).mean()).astype(float)
 
 
 def hmm_targets(
@@ -266,25 +265,29 @@ def safe_ratio(numerator: float, denominator: float) -> float | None:
 
 
 def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
-    """Describe contiguous positive-exposure episodes within the reported period.
-
-    Period-boundary episodes are retained and explicitly marked as censored. These
-    metrics are descriptive evidence only and do not alter the predeclared gates.
-    """
+    """Describe boundary-aware contiguous positive-exposure episodes."""
     position = frame["position"].astype(float)
     active = position > 0.0
+    starts = active & ~active.shift(1, fill_value=False)
+    exits = active & ~active.shift(-1, fill_value=False)
+    episode_id = starts.cumsum()
     left_censored = bool(active.iloc[0])
     right_censored = bool(active.iloc[-1])
-    starts = active & ~active.shift(1, fill_value=False)
-    episode_id = starts.cumsum()
+
     episode_returns: list[float] = []
     episode_days: list[int] = []
+    completed_round_trips = 0
     if active.any():
         active_frame = frame.loc[active].copy()
         active_frame["episode_id"] = episode_id.loc[active].to_numpy()
         for _, episode in active_frame.groupby("episode_id", sort=True):
             episode_returns.append(float((1.0 + episode["net_return"]).prod() - 1.0))
             episode_days.append(int(len(episode)))
+            first_location = int(frame.index.get_indexer([episode.index[0]])[0])
+            last_location = int(frame.index.get_indexer([episode.index[-1]])[0])
+            if first_location > 0 and last_location < len(frame) - 1:
+                completed_round_trips += 1
+
     values = pd.Series(episode_returns, dtype=float)
     positive = values[values > 0.0].sort_values(ascending=False)
     positive_total = float(positive.sum())
@@ -294,6 +297,8 @@ def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     return {
         "trade_episode_count": int(len(values)),
         "new_entries_within_period": int(starts.iloc[1:].sum()) if len(starts) > 1 else 0,
+        "exits_within_period": int(exits.iloc[:-1].sum()) if len(exits) > 1 else 0,
+        "completed_round_trips": completed_round_trips,
         "left_censored_trade": left_censored,
         "right_censored_trade": right_censored,
         "trade_win_rate": float((values > 0.0).mean()) if len(values) else None,
@@ -312,6 +317,7 @@ def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     turnover = frame["turnover"].astype(float)
     if len(returns) < 2:
         raise ValueError("performance period must contain at least two rows")
+
     wealth = (1.0 + returns).cumprod()
     annualized_return = (
         -1.0
@@ -324,9 +330,14 @@ def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     downside_std = float(returns.clip(upper=0.0).std(ddof=0))
     sharpe = safe_ratio(mean_return * math.sqrt(TRADING_DAYS), daily_std)
     sortino = safe_ratio(mean_return * math.sqrt(TRADING_DAYS), downside_std)
-    drawdown = wealth / wealth.cummax() - 1.0
-    maximum_drawdown = float(drawdown.min())
+
+    opening_seeded_peak = np.maximum.accumulate(
+        np.concatenate(([1.0], wealth.to_numpy(dtype=float)))
+    )[1:]
+    drawdown = wealth.to_numpy(dtype=float) / opening_seeded_peak - 1.0
+    maximum_drawdown = float(np.min(drawdown))
     calmar = safe_ratio(annualized_return, abs(maximum_drawdown))
+
     positive = returns[returns > 0.0].sort_values(ascending=False)
     positive_total = float(positive.sum())
     top5_share = (
@@ -343,9 +354,6 @@ def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
         "maximum_drawdown": maximum_drawdown,
         "active_days": int((position > 0.0).sum()),
         "average_exposure": float(position.mean()),
-        "round_trip_entries": int(
-            ((position > 0.0) & (position.shift(1).fillna(0.0) <= 0.0)).sum()
-        ),
         "turnover": float(turnover.sum()),
         "daily_win_rate_when_active": (
             float((active_returns > 0.0).mean()) if len(active_returns) else None
@@ -499,7 +507,7 @@ def strict_json(value: Any) -> Any:
         return [strict_json(item) for item in value]
     if isinstance(value, np.ndarray):
         return strict_json(value.tolist())
-    if isinstance(value, (np.integer,)):
+    if isinstance(value, np.integer):
         return int(value)
     if isinstance(value, (np.floating, float)):
         numeric = float(value)
@@ -528,11 +536,10 @@ def markdown_report(result: dict[str, Any]) -> str:
         "",
         "## Final-period metrics",
         "",
-        "| Candidate | Baseline | Role | Ann. return | Sharpe | Calmar | Max drawdown | Active days | Trade episodes | Top-3 positive-trade share |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Candidate | Baseline | Role | Ann. return | Sharpe | Calmar | Max drawdown | Active days | Completed round trips | Trade episodes | Top-3 positive-trade share |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
-    final_rows = [row for row in result["metrics"] if row["period"] == "final"]
-    for row in final_rows:
+    for row in (item for item in result["metrics"] if item["period"] == "final"):
         metric = row["metrics"]
         sharpe = f"{metric['sharpe']:.3f}" if metric["sharpe"] is not None else "—"
         calmar = f"{metric['calmar']:.3f}" if metric["calmar"] is not None else "—"
@@ -540,15 +547,15 @@ def markdown_report(result: dict[str, Any]) -> str:
             f"| `{row['candidate']}` | `{row['baseline']}` | `{row['role']}` | "
             f"{metric['annualized_return']:.2%} | {sharpe} | {calmar} | "
             f"{metric['maximum_drawdown']:.2%} | {metric['active_days']} | "
-            f"{metric['trade_episode_count']} | "
+            f"{metric['completed_round_trips']} | {metric['trade_episode_count']} | "
             f"{metric['top_3_positive_trades_share']:.2%} |"
         )
     lines += [
         "",
         "Trade episodes are contiguous positive-exposure intervals. Episodes crossing "
         "a reporting boundary are retained and marked as left/right censored in JSON/CSV. "
-        "These descriptive metrics were added during self-QC and do not change the "
-        "predeclared decision gates.",
+        "Only episodes with both entry and exit inside the period count as completed round trips. "
+        "These descriptive metrics do not change the predeclared decision gates.",
         "",
         "## Claim checks",
         "",
