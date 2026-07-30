@@ -72,6 +72,22 @@ class TradingUtilityTests(unittest.TestCase):
             ((targets["size_modifier"] >= 0.25) & (targets["size_modifier"] <= 1.0)).all()
         )
 
+    def test_trade_episode_metrics_report_payoff_distribution_and_censoring(self) -> None:
+        frame = pd.DataFrame(
+            {
+                "position": [1.0, 1.0, 0.0, 1.0, 1.0, 0.0],
+                "turnover": [0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
+                "net_return": [0.10, -0.05, -0.0005, 0.02, 0.03, -0.0005],
+            }
+        )
+        metrics = utility.trade_episode_metrics(frame)
+        self.assertEqual(metrics["trade_episode_count"], 2)
+        self.assertEqual(metrics["new_entries_within_period"], 1)
+        self.assertTrue(metrics["left_censored_trade"])
+        self.assertFalse(metrics["right_censored_trade"])
+        self.assertAlmostEqual(metrics["trade_payoff_median"], ((1.10 * 0.95 - 1.0) + (1.02 * 1.03 - 1.0)) / 2.0)
+        self.assertAlmostEqual(metrics["top_3_positive_trades_share"], 1.0)
+
     def test_claim_checks_require_simple_filter_edge(self) -> None:
         baseline_exploratory = self.metrics(sharpe=0.5, drawdown=-0.20)
         baseline_final = self.metrics(sharpe=0.5, drawdown=-0.20)
