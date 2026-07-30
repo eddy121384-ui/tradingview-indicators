@@ -8,6 +8,10 @@ on:
       - indicators/hidden-regime-map/research/evaluate_trading_utility.py
       - indicators/hidden-regime-map/research/test_evaluate_trading_utility.py
       - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
+      - indicators/hidden-regime-map/research/train_hmm.py
+      - indicators/hidden-regime-map/research/compare_state_counts.py
+      - indicators/hidden-regime-map/research/compare_feature_sets.py
+      - indicators/hidden-regime-map/requirements-research.txt
       - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz
       - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256
       - indicators/hidden-regime-map/research/decisions/issue-40-trading-utility.md
@@ -114,18 +118,29 @@ jobs:
           committed = pd.read_csv(key_path)
           regenerated = pd.read_csv(generated_csv_path)
           keys = ["candidate", "baseline", "role", "period"]
+          expected_keys = {
+              ("non_hmm", "buy_and_hold", "no_hmm", "final"),
+              ("non_hmm", "buy_and_hold", "sma200_filter", "final"),
+              ("non_hmm", "trend_100", "no_hmm", "final"),
+              ("non_hmm", "momentum_63", "no_hmm", "final"),
+              ("k8_baseline_er_downside", "buy_and_hold", "defensive_switch", "final"),
+              ("k8_baseline_er_downside", "trend_100", "defensive_switch", "final"),
+              ("k8_baseline_er_downside", "momentum_63", "defensive_switch", "final"),
+              ("k3_baseline", "buy_and_hold", "size_modifier", "final"),
+              ("k8_baseline_er_downside", "trend_100", "size_modifier", "final"),
+          }
+          committed_keys = set(committed[keys].itertuples(index=False, name=None))
+          assert committed_keys == expected_keys
+          regenerated_keys = pd.MultiIndex.from_frame(regenerated[keys])
+          projection = regenerated.loc[regenerated_keys.isin(expected_keys), committed.columns]
+          projection_keys = set(projection[keys].itertuples(index=False, name=None))
+          assert projection_keys == expected_keys
+          committed = committed.sort_values(keys).reset_index(drop=True)
+          projection = projection.sort_values(keys).reset_index(drop=True)
           numeric = [column for column in committed.columns if column not in keys]
-          merged = committed.merge(
-              regenerated[keys + numeric],
-              on=keys,
-              how="left",
-              validate="one_to_one",
-              suffixes=("_committed", "_generated"),
-          )
-          assert len(merged) == len(committed)
           for column in numeric:
-              left = merged[f"{column}_committed"].to_numpy(dtype=float)
-              right = merged[f"{column}_generated"].to_numpy(dtype=float)
+              left = committed[column].to_numpy(dtype=float)
+              right = projection[column].to_numpy(dtype=float)
               assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
 
           print("committed Issue #40 decision evidence matches regenerated output")
