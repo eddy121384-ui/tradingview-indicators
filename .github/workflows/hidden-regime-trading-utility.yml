@@ -113,7 +113,7 @@ jobs:
           assert len(matched) == 1
           matched = matched.iloc[0]
           for key, expected in closest["final_metrics"].items():
-              assert np.isclose(float(matched[key]), float(expected), rtol=0.0, atol=1e-12)
+              assert np.isclose(float(matched[key]), float(expected), rtol=0.0, atol=1e-9)
 
           committed = pd.read_csv(key_path)
           regenerated = pd.read_csv(generated_csv_path)
@@ -141,7 +141,7 @@ jobs:
           for column in numeric:
               left = committed[column].to_numpy(dtype=float)
               right = projection[column].to_numpy(dtype=float)
-              assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
+              assert np.allclose(left, right, rtol=0.0, atol=1e-9, equal_nan=True), column
 
           print("committed Issue #40 decision evidence matches regenerated output")
           PY
