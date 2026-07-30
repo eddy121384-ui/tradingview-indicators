@@ -10,6 +10,9 @@ on:
       - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
       - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz
       - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256
+      - indicators/hidden-regime-map/research/decisions/issue-40-trading-utility.md
+      - indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-status.json
+      - indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-key-metrics.csv
       - .github/workflows/hidden-regime-trading-utility.yml
   workflow_dispatch:
 
@@ -53,8 +56,80 @@ jobs:
             --timeframe 1D \
             | tee artifacts/issue-40-run.log
 
-      - name: Validate machine-readable result
-        run: python -m json.tool artifacts/issue-40/issue-40-trading-utility.json > /dev/null
+      - name: Validate machine-readable results
+        run: |
+          python -m json.tool artifacts/issue-40/issue-40-trading-utility.json > /dev/null
+          python -m json.tool indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-status.json > /dev/null
+
+      - name: Verify committed Issue 40 decision evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          import numpy as np
+          import pandas as pd
+
+          generated_path = Path("artifacts/issue-40/issue-40-trading-utility.json")
+          status_path = Path("indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-status.json")
+          key_path = Path("indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-key-metrics.csv")
+          generated_csv_path = Path("artifacts/issue-40/issue-40-trading-utility-metrics.csv")
+
+          generated = json.loads(generated_path.read_text(encoding="utf-8"))
+          status = json.loads(status_path.read_text(encoding="utf-8"))
+
+          assert status["outcome"] == generated["decision"]["outcome"]
+          assert status["outcome"] == "no_incremental_value"
+          assert status["can_start_issue_41"] is False
+          assert status["input_sha256"] == generated["input"]["sha256"]
+          for key in ("usable_rows", "fit_rows", "exploratory_rows", "final_rows"):
+              assert status["split"][key] == generated["split"][key]
+          assert generated["decision"]["trading_winners"] == []
+          assert generated["decision"]["risk_winners"] == []
+
+          closest = status["closest_hmm_result"]
+          generated_rows = pd.DataFrame(
+              [
+                  {
+                      "candidate": row["candidate"],
+                      "baseline": row["baseline"],
+                      "role": row["role"],
+                      "period": row["period"],
+                      **row["metrics"],
+                  }
+                  for row in generated["metrics"]
+              ]
+          )
+          matched = generated_rows[
+              (generated_rows["candidate"] == closest["candidate"])
+              & (generated_rows["baseline"] == closest["baseline"])
+              & (generated_rows["role"] == closest["role"])
+              & (generated_rows["period"] == "final")
+          ]
+          assert len(matched) == 1
+          matched = matched.iloc[0]
+          for key, expected in closest["final_metrics"].items():
+              assert np.isclose(float(matched[key]), float(expected), rtol=0.0, atol=1e-12)
+
+          committed = pd.read_csv(key_path)
+          regenerated = pd.read_csv(generated_csv_path)
+          keys = ["candidate", "baseline", "role", "period"]
+          numeric = [column for column in committed.columns if column not in keys]
+          merged = committed.merge(
+              regenerated[keys + numeric],
+              on=keys,
+              how="left",
+              validate="one_to_one",
+              suffixes=("_committed", "_generated"),
+          )
+          assert len(merged) == len(committed)
+          for column in numeric:
+              left = merged[f"{column}_committed"].to_numpy(dtype=float)
+              right = merged[f"{column}_generated"].to_numpy(dtype=float)
+              assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
+
+          print("committed Issue #40 decision evidence matches regenerated output")
+          PY
 
       - name: Write workflow summary
         if: always()
