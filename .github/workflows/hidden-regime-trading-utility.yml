@@ -1,0 +1,77 @@
+name: Hidden Regime Trading Utility
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - indicators/hidden-regime-map/research/evaluate_trading_utility.py
+      - indicators/hidden-regime-map/research/test_evaluate_trading_utility.py
+      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
+      - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz
+      - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256
+      - .github/workflows/hidden-regime-trading-utility.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate-spy-1d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Run Hidden Regime research tests
+        run: python -m unittest discover -s indicators/hidden-regime-map/research -p 'test_*.py'
+
+      - name: Verify frozen Issue 40 input
+        run: |
+          gzip -dc indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz \
+            | sha256sum -c indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256
+
+      - name: Run predeclared trading-utility evaluation
+        run: |
+          python indicators/hidden-regime-map/research/evaluate_trading_utility.py \
+            --input indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz \
+            --sha256-file indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256 \
+            --output-dir artifacts/issue-40 \
+            --symbol SPY \
+            --timeframe 1D \
+            | tee artifacts/issue-40-run.log
+
+      - name: Validate machine-readable result
+        run: python -m json.tool artifacts/issue-40/issue-40-trading-utility.json > /dev/null
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          if [ -f artifacts/issue-40/issue-40-trading-utility.md ]; then
+            cat artifacts/issue-40/issue-40-trading-utility.md >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f artifacts/issue-40-run.log ]; then
+            {
+              echo "## Issue #40 evaluation failed before producing a report"
+              echo
+              echo '```text'
+              tail -100 artifacts/issue-40-run.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hidden-regime-issue-40-trading-utility
+          path: artifacts
+          retention-days: 90
+          if-no-files-found: error
