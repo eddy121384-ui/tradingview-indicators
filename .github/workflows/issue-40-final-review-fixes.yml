@@ -1,0 +1,143 @@
+name: Apply Issue 40 Final Review Fixes
+
+on:
+  push:
+    branches:
+      - research/issue-40-trading-utility
+    paths:
+      - .github/workflows/issue-40-final-review-fixes.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue-40-trading-utility
+
+      - name: Apply exact review fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"expected one replacement in {path}, found {count}")
+              target.write_text(text.replace(old, new), encoding="utf-8")
+
+          evaluator = "indicators/hidden-regime-map/research/evaluate_trading_utility.py"
+          replace_once(
+              evaluator,
+              '''        for _, episode in active_frame.groupby("episode_id", sort=True):
+              episode_returns.append(float((1.0 + episode["net_return"]).prod() - 1.0))
+              episode_days.append(int(len(episode)))
+              first_location = int(frame.index.get_indexer([episode.index[0]])[0])
+              last_location = int(frame.index.get_indexer([episode.index[-1]])[0])
+              if first_location > 0 and last_location < len(frame) - 1:
+                  completed_round_trips += 1
+          ''',
+              '''        for _, episode in active_frame.groupby("episode_id", sort=True):
+              first_location = int(frame.index.get_indexer([episode.index[0]])[0])
+              last_location = int(frame.index.get_indexer([episode.index[-1]])[0])
+              episode_growth = float((1.0 + episode["net_return"]).prod())
+              if last_location < len(frame) - 1 and float(position.iloc[last_location + 1]) <= 0.0:
+                  episode_growth *= 1.0 + float(frame["net_return"].iloc[last_location + 1])
+              episode_returns.append(episode_growth - 1.0)
+              episode_days.append(int(len(episode)))
+              if first_location > 0 and last_location < len(frame) - 1:
+                  completed_round_trips += 1
+          ''',
+          )
+
+          tests = "indicators/hidden-regime-map/research/test_evaluate_trading_utility.py"
+          replace_once(
+              tests,
+              '''        expected_median = ((1.10 * 0.95 - 1.0) + (1.02 * 1.03 - 1.0)) / 2.0
+          ''',
+              '''        first_payoff = 1.10 * 0.95 * (1.0 - 0.0005) - 1.0
+              second_payoff = 1.02 * 1.03 * (1.0 - 0.0005) - 1.0
+              expected_median = (first_payoff + second_payoff) / 2.0
+          ''',
+          )
+
+          workflow = ".github/workflows/hidden-regime-trading-utility.yml"
+          replace_once(
+              workflow,
+              '''      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
+          ''',
+              '''      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
+              - indicators/hidden-regime-map/research/train_hmm.py
+              - indicators/hidden-regime-map/research/compare_state_counts.py
+              - indicators/hidden-regime-map/research/compare_feature_sets.py
+              - indicators/hidden-regime-map/requirements-research.txt
+          ''',
+          )
+          replace_once(
+              workflow,
+              '''          committed = pd.read_csv(key_path)
+              regenerated = pd.read_csv(generated_csv_path)
+              keys = ["candidate", "baseline", "role", "period"]
+              numeric = [column for column in committed.columns if column not in keys]
+              merged = committed.merge(
+                  regenerated[keys + numeric],
+                  on=keys,
+                  how="left",
+                  validate="one_to_one",
+                  suffixes=("_committed", "_generated"),
+              )
+              assert len(merged) == len(committed)
+              for column in numeric:
+                  left = merged[f"{column}_committed"].to_numpy(dtype=float)
+                  right = merged[f"{column}_generated"].to_numpy(dtype=float)
+                  assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
+          ''',
+              '''          committed = pd.read_csv(key_path)
+              regenerated = pd.read_csv(generated_csv_path)
+              keys = ["candidate", "baseline", "role", "period"]
+              expected_keys = {
+                  ("non_hmm", "buy_and_hold", "no_hmm", "final"),
+                  ("non_hmm", "buy_and_hold", "sma200_filter", "final"),
+                  ("non_hmm", "trend_100", "no_hmm", "final"),
+                  ("non_hmm", "momentum_63", "no_hmm", "final"),
+                  ("k8_baseline_er_downside", "buy_and_hold", "defensive_switch", "final"),
+                  ("k8_baseline_er_downside", "trend_100", "defensive_switch", "final"),
+                  ("k8_baseline_er_downside", "momentum_63", "defensive_switch", "final"),
+                  ("k3_baseline", "buy_and_hold", "size_modifier", "final"),
+                  ("k8_baseline_er_downside", "trend_100", "size_modifier", "final"),
+              }
+              committed_keys = set(committed[keys].itertuples(index=False, name=None))
+              assert committed_keys == expected_keys
+              regenerated_keys = pd.MultiIndex.from_frame(regenerated[keys])
+              projection = regenerated.loc[regenerated_keys.isin(expected_keys), committed.columns]
+              projection_keys = set(projection[keys].itertuples(index=False, name=None))
+              assert projection_keys == expected_keys
+              committed = committed.sort_values(keys).reset_index(drop=True)
+              projection = projection.sort_values(keys).reset_index(drop=True)
+              numeric = [column for column in committed.columns if column not in keys]
+              for column in numeric:
+                  left = committed[column].to_numpy(dtype=float)
+                  right = projection[column].to_numpy(dtype=float)
+                  assert np.allclose(left, right, rtol=0.0, atol=1e-12, equal_nan=True), column
+          ''',
+          )
+
+          Path(".github/workflows/issue-40-final-review-fixes.yml").unlink()
+          PY
+
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/hidden-regime-map/research/evaluate_trading_utility.py \
+                  indicators/hidden-regime-map/research/test_evaluate_trading_utility.py \
+                  .github/workflows/hidden-regime-trading-utility.yml \
+                  .github/workflows/issue-40-final-review-fixes.yml
+          git commit -m "Address final Issue 40 review findings"
+          git push origin HEAD:research/issue-40-trading-utility
