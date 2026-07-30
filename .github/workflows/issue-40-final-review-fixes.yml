@@ -1,12 +1,16 @@
 name: Apply Issue 40 Final Review Fixes
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/issue-40-final-review-fixes.yml
   push:
     branches:
       - research/issue-40-trading-utility
     paths:
       - .github/workflows/issue-40-final-review-fixes.yml
-  workflow_dispatch:
 
 permissions:
   contents: write
