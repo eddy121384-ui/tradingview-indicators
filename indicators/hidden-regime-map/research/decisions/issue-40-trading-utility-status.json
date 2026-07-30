@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "issue": 40,
+  "status": "complete_negative_result",
+  "outcome": "no_incremental_value",
+  "can_start_issue_41": false,
+  "input_sha256": "016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4",
+  "split": {
+    "usable_rows": 4064,
+    "fit_rows": 2438,
+    "exploratory_rows": 812,
+    "final_rows": 814,
+    "feature_start": "2010-05-26T00:00:00+00:00",
+    "fit_end": "2020-01-31T00:00:00+00:00",
+    "exploratory_start": "2020-02-03T00:00:00+00:00",
+    "exploratory_end": "2023-04-24T00:00:00+00:00",
+    "final_start": "2023-04-25T00:00:00+00:00",
+    "final_end": "2026-07-23T00:00:00+00:00"
+  },
+  "experiment": {
+    "cost_bps": 5.0,
+    "execution_lag_bars": 1,
+    "candidates": [
+      "k3_baseline",
+      "k8_baseline_er_downside"
+    ],
+    "baselines": [
+      "buy_and_hold",
+      "trend_100",
+      "momentum_63"
+    ],
+    "hmm_roles": [
+      "favorable_filter",
+      "size_modifier",
+      "defensive_switch"
+    ],
+    "simple_non_hmm_filter": "sma200_filter"
+  },
+  "decision": {
+    "outcome": "no_incremental_value",
+    "reason": "All predeclared experiments completed, but no single HMM candidate/role cleared the trading-value or risk-value gate across two or more baselines.",
+    "trading_winners": [],
+    "risk_winners": [],
+    "minimum_supporting_baselines": 2
+  },
+  "closest_hmm_result": {
+    "candidate": "k8_baseline_er_downside",
+    "role": "defensive_switch",
+    "baseline": "buy_and_hold",
+    "final_metrics": {
+      "annualized_return": 0.1453627210967796,
+      "sharpe": 1.3706873766969236,
+      "calmar": 1.7394597781971814,
+      "maximum_drawdown": -0.08356773920201654,
+      "active_days": 646,
+      "completed_round_trips": 14,
+      "trade_episode_count": 16,
+      "top_3_positive_trades_share": 0.7051379173017527
+    },
+    "versus_no_hmm": {
+      "annualized_return_delta": -0.06722401361562524,
+      "sharpe_delta": 0.016609105370638755,
+      "drawdown_improvement": 0.10398452340420994
+    }
+  },
+  "validation": {
+    "workflow": "Hidden Regime Trading Utility",
+    "run_number": 7,
+    "run_id": 30517967469,
+    "validated_head_sha": "02e1484e26bec7a2a7f6d1f70aa2f3c988a159c3",
+    "conclusion": "success",
+    "tests_passed": 94,
+    "artifact_name": "hidden-regime-issue-40-trading-utility",
+    "artifact_id": 8749621581,
+    "artifact_digest": "sha256:c6c87f8875881854759fedab23e3ed828a5789be3c35aa0c6f3c67e9f09eba4c"
+  },
+  "limitations": [
+    "SPY 1D only",
+    "one frozen sample and one chronological 60/20/20 split",
+    "two HMM candidates and one predeclared state-risk mapping",
+    "three long-only HMM roles",
+    "fixed 5 bps turnover cost",
+    "no formal sampling-confidence intervals"
+  ]
+}
