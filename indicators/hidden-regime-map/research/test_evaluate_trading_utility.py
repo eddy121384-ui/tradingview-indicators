@@ -98,7 +98,9 @@ class TradingUtilityTests(unittest.TestCase):
         self.assertEqual(metrics["completed_round_trips"], 1)
         self.assertTrue(metrics["left_censored_trade"])
         self.assertFalse(metrics["right_censored_trade"])
-        expected_median = ((1.10 * 0.95 - 1.0) + (1.02 * 1.03 - 1.0)) / 2.0
+        first_payoff = 1.10 * 0.95 * (1.0 - 0.0005) - 1.0
+        second_payoff = 1.02 * 1.03 * (1.0 - 0.0005) - 1.0
+        expected_median = (first_payoff + second_payoff) / 2.0
         self.assertAlmostEqual(metrics["trade_payoff_median"], expected_median)
         self.assertAlmostEqual(metrics["top_3_positive_trades_share"], 1.0)
 
