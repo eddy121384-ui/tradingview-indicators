@@ -9,7 +9,7 @@ import hashlib
 import json
 import math
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -116,9 +116,8 @@ def prepare_features(raw: pd.DataFrame) -> pd.DataFrame:
     config = train_hmm.FeatureConfig()
     baseline = train_hmm.calculate_features(raw, config)
     enriched = compare_feature_sets.add_path_features(baseline, raw)
-    if not np.isfinite(
-        enriched[list(compare_feature_sets.FEATURE_SETS["baseline_er_downside"])].to_numpy()
-    ).all():
+    columns = list(compare_feature_sets.FEATURE_SETS["baseline_er_downside"])
+    if not np.isfinite(enriched[columns].to_numpy()).all():
         raise ValueError("prepared Issue #40 features contain non-finite values")
     return enriched
 
@@ -126,7 +125,7 @@ def prepare_features(raw: pd.DataFrame) -> pd.DataFrame:
 def split_boundaries(rows: int) -> tuple[int, int]:
     fit_end = int(rows * FIT_FRACTION)
     exploratory_end = fit_end + int(rows * EXPLORATORY_FRACTION)
-    if rows - exploratory_end < 200 or exploratory_end - fit_end < 200 or fit_end < 500:
+    if fit_end < 500 or exploratory_end - fit_end < 200 or rows - exploratory_end < 200:
         raise ValueError("Issue #40 requires at least 500 fit rows and 200 rows per OOS period")
     return fit_end, exploratory_end
 
@@ -137,8 +136,9 @@ def aligned_ensemble(
     fit_end: int,
 ) -> dict[str, Any]:
     scaler = StandardScaler()
-    train_matrix = scaler.fit_transform(features.loc[: fit_end - 1, list(config.feature_names)])
-    full_matrix = scaler.transform(features[list(config.feature_names)])
+    names = list(config.feature_names)
+    train_matrix = scaler.fit_transform(features.loc[: fit_end - 1, names])
+    full_matrix = scaler.transform(features[names])
 
     models = []
     restart_records = []
@@ -171,7 +171,6 @@ def aligned_ensemble(
     posterior /= posterior.sum(axis=1, keepdims=True)
     means = np.mean(np.asarray(aligned_means), axis=0)
     favorable, defensive, risk_scores = state_buckets(means, config.feature_names)
-
     return {
         "posterior": posterior,
         "favorable_states": favorable,
@@ -186,7 +185,7 @@ def aligned_ensemble(
 def state_buckets(
     emission_means: np.ndarray, feature_names: tuple[str, ...]
 ) -> tuple[list[int], list[int], list[float]]:
-    if emission_means.shape != (len(emission_means), len(feature_names)):
+    if emission_means.ndim != 2 or emission_means.shape[1] != len(feature_names):
         raise ValueError("emission means do not match feature names")
     weights = {
         "standardized_return": -1.0,
@@ -208,12 +207,10 @@ def state_buckets(
 
 def baseline_targets(features: pd.DataFrame) -> dict[str, pd.Series]:
     close = features["close"].astype(float)
-    trend = close > close.rolling(100, min_periods=100).mean()
-    momentum = close.pct_change(63) > 0.0
     return {
         "buy_and_hold": pd.Series(1.0, index=features.index),
-        "trend_100": trend.astype(float),
-        "momentum_63": momentum.astype(float),
+        "trend_100": (close > close.rolling(100, min_periods=100).mean()).astype(float),
+        "momentum_63": (close.pct_change(63) > 0.0).astype(float),
     }
 
 
@@ -268,6 +265,47 @@ def safe_ratio(numerator: float, denominator: float) -> float | None:
     return float(value) if math.isfinite(value) else None
 
 
+def trade_episode_metrics(frame: pd.DataFrame) -> dict[str, Any]:
+    """Describe contiguous positive-exposure episodes within the reported period.
+
+    Period-boundary episodes are retained and explicitly marked as censored. These
+    metrics are descriptive evidence only and do not alter the predeclared gates.
+    """
+    position = frame["position"].astype(float)
+    active = position > 0.0
+    left_censored = bool(active.iloc[0])
+    right_censored = bool(active.iloc[-1])
+    starts = active & ~active.shift(1, fill_value=False)
+    episode_id = starts.cumsum()
+    episode_returns: list[float] = []
+    episode_days: list[int] = []
+    if active.any():
+        active_frame = frame.loc[active].copy()
+        active_frame["episode_id"] = episode_id.loc[active].to_numpy()
+        for _, episode in active_frame.groupby("episode_id", sort=True):
+            episode_returns.append(float((1.0 + episode["net_return"]).prod() - 1.0))
+            episode_days.append(int(len(episode)))
+    values = pd.Series(episode_returns, dtype=float)
+    positive = values[values > 0.0].sort_values(ascending=False)
+    positive_total = float(positive.sum())
+    top3_share = (
+        float(positive.head(3).sum() / positive_total) if positive_total > 0.0 else 1.0
+    )
+    return {
+        "trade_episode_count": int(len(values)),
+        "new_entries_within_period": int(starts.iloc[1:].sum()) if len(starts) > 1 else 0,
+        "left_censored_trade": left_censored,
+        "right_censored_trade": right_censored,
+        "trade_win_rate": float((values > 0.0).mean()) if len(values) else None,
+        "trade_payoff_p05": float(values.quantile(0.05)) if len(values) else None,
+        "trade_payoff_median": float(values.median()) if len(values) else None,
+        "trade_payoff_p95": float(values.quantile(0.95)) if len(values) else None,
+        "mean_trade_days": float(np.mean(episode_days)) if episode_days else None,
+        "median_trade_days": float(np.median(episode_days)) if episode_days else None,
+        "top_3_positive_trades_share": top3_share,
+    }
+
+
 def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     returns = frame["net_return"].astype(float)
     position = frame["position"].astype(float)
@@ -275,15 +313,15 @@ def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     if len(returns) < 2:
         raise ValueError("performance period must contain at least two rows")
     wealth = (1.0 + returns).cumprod()
-    if (wealth <= 0.0).any():
-        annualized_return = -1.0
-    else:
-        annualized_return = float(wealth.iloc[-1] ** (TRADING_DAYS / len(returns)) - 1.0)
+    annualized_return = (
+        -1.0
+        if (wealth <= 0.0).any()
+        else float(wealth.iloc[-1] ** (TRADING_DAYS / len(returns)) - 1.0)
+    )
     volatility = float(returns.std(ddof=0) * math.sqrt(TRADING_DAYS))
     mean_return = float(returns.mean())
     daily_std = float(returns.std(ddof=0))
-    downside = returns.clip(upper=0.0)
-    downside_std = float(downside.std(ddof=0))
+    downside_std = float(returns.clip(upper=0.0).std(ddof=0))
     sharpe = safe_ratio(mean_return * math.sqrt(TRADING_DAYS), daily_std)
     sortino = safe_ratio(mean_return * math.sqrt(TRADING_DAYS), downside_std)
     drawdown = wealth / wealth.cummax() - 1.0
@@ -294,9 +332,8 @@ def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     top5_share = (
         float(positive.head(5).sum() / positive_total) if positive_total > 0.0 else 1.0
     )
-    entries = int(((position > 0.0) & (position.shift(1).fillna(0.0) <= 0.0)).sum())
-    active = returns[position > 0.0]
-    return {
+    active_returns = returns[position > 0.0]
+    metrics = {
         "rows": int(len(frame)),
         "annualized_return": annualized_return,
         "annualized_volatility": volatility,
@@ -306,15 +343,27 @@ def performance_metrics(frame: pd.DataFrame) -> dict[str, Any]:
         "maximum_drawdown": maximum_drawdown,
         "active_days": int((position > 0.0).sum()),
         "average_exposure": float(position.mean()),
-        "round_trip_entries": entries,
+        "round_trip_entries": int(
+            ((position > 0.0) & (position.shift(1).fillna(0.0) <= 0.0)).sum()
+        ),
         "turnover": float(turnover.sum()),
-        "daily_win_rate_when_active": float((active > 0.0).mean()) if len(active) else None,
-        "daily_payoff_p05": float(active.quantile(0.05)) if len(active) else None,
-        "daily_payoff_median": float(active.median()) if len(active) else None,
-        "daily_payoff_p95": float(active.quantile(0.95)) if len(active) else None,
+        "daily_win_rate_when_active": (
+            float((active_returns > 0.0).mean()) if len(active_returns) else None
+        ),
+        "daily_payoff_p05": (
+            float(active_returns.quantile(0.05)) if len(active_returns) else None
+        ),
+        "daily_payoff_median": (
+            float(active_returns.median()) if len(active_returns) else None
+        ),
+        "daily_payoff_p95": (
+            float(active_returns.quantile(0.95)) if len(active_returns) else None
+        ),
         "top_5_positive_days_share": top5_share,
         "total_return": float(wealth.iloc[-1] - 1.0),
     }
+    metrics.update(trade_episode_metrics(frame))
+    return metrics
 
 
 def period_slices(rows: int, fit_end: int, exploratory_end: int) -> dict[str, slice]:
@@ -383,14 +432,8 @@ def claim_checks(
         "activity_and_concentration": concentration_ok,
     }
     return {
-        "trading_value": {
-            "passed": all(trading_checks.values()),
-            "checks": trading_checks,
-        },
-        "risk_value": {
-            "passed": all(risk_checks.values()),
-            "checks": risk_checks,
-        },
+        "trading_value": {"passed": all(trading_checks.values()), "checks": trading_checks},
+        "risk_value": {"passed": all(risk_checks.values()), "checks": risk_checks},
         "deltas": {
             "exploratory_sharpe": exploratory_sharpe_delta,
             "final_sharpe": final_sharpe_delta,
@@ -411,20 +454,12 @@ def decide_outcome(claims: list[dict[str, Any]]) -> dict[str, Any]:
         if claim["checks"]["risk_value"]["passed"]:
             bucket["risk"].append(claim["baseline"])
     trading_winners = [
-        {
-            "candidate": candidate,
-            "role": role,
-            "baselines": values["trading"],
-        }
+        {"candidate": candidate, "role": role, "baselines": values["trading"]}
         for (candidate, role), values in grouped.items()
         if len(values["trading"]) >= MIN_BASELINES
     ]
     risk_winners = [
-        {
-            "candidate": candidate,
-            "role": role,
-            "baselines": values["risk"],
-        }
+        {"candidate": candidate, "role": role, "baselines": values["risk"]}
         for (candidate, role), values in grouped.items()
         if len(values["risk"]) >= MIN_BASELINES
     ]
@@ -493,8 +528,8 @@ def markdown_report(result: dict[str, Any]) -> str:
         "",
         "## Final-period metrics",
         "",
-        "| Candidate | Baseline | Role | Ann. return | Sharpe | Calmar | Max drawdown | Active days | Top-5 positive-day share |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|",
+        "| Candidate | Baseline | Role | Ann. return | Sharpe | Calmar | Max drawdown | Active days | Trade episodes | Top-3 positive-trade share |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     final_rows = [row for row in result["metrics"] if row["period"] == "final"]
     for row in final_rows:
@@ -505,9 +540,15 @@ def markdown_report(result: dict[str, Any]) -> str:
             f"| `{row['candidate']}` | `{row['baseline']}` | `{row['role']}` | "
             f"{metric['annualized_return']:.2%} | {sharpe} | {calmar} | "
             f"{metric['maximum_drawdown']:.2%} | {metric['active_days']} | "
-            f"{metric['top_5_positive_days_share']:.2%} |"
+            f"{metric['trade_episode_count']} | "
+            f"{metric['top_3_positive_trades_share']:.2%} |"
         )
     lines += [
+        "",
+        "Trade episodes are contiguous positive-exposure intervals. Episodes crossing "
+        "a reporting boundary are retained and marked as left/right censored in JSON/CSV. "
+        "These descriptive metrics were added during self-QC and do not change the "
+        "predeclared decision gates.",
         "",
         "## Claim checks",
         "",
@@ -527,11 +568,34 @@ def markdown_report(result: dict[str, Any]) -> str:
     lines += [
         "",
         "The decision is mechanical. Thresholds, roles, baselines, periods, costs, "
-        "candidate models, and concentration guardrails were fixed before the final "
-        "period was evaluated.",
+        "candidate models, and decision concentration guardrails were fixed before "
+        "the final period was evaluated.",
         "",
     ]
     return "\n".join(lines)
+
+
+def _record_metrics(
+    metric_rows: list[dict[str, Any]],
+    metric_index: dict[tuple[str, str, str, str], dict[str, Any]],
+    candidate: str,
+    baseline: str,
+    role: str,
+    executed: pd.DataFrame,
+    periods: dict[str, slice],
+) -> None:
+    for period_name, period_slice in periods.items():
+        metrics = performance_metrics(executed.iloc[period_slice])
+        metric_rows.append(
+            {
+                "candidate": candidate,
+                "baseline": baseline,
+                "role": role,
+                "period": period_name,
+                "metrics": metrics,
+            }
+        )
+        metric_index[(candidate, baseline, role, period_name)] = metrics
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
@@ -544,25 +608,20 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     metric_rows: list[dict[str, Any]] = []
     metric_index: dict[tuple[str, str, str, str], dict[str, Any]] = {}
-
     for baseline_name, base in baselines.items():
-        targets = {
+        for role, target in {
             "no_hmm": base,
             SIMPLE_FILTER: simple_filter_target(base, features),
-        }
-        for role, target in targets.items():
-            executed = execute_target(close, target)
-            for period_name, period_slice in periods.items():
-                metrics = performance_metrics(executed.iloc[period_slice])
-                row = {
-                    "candidate": "non_hmm",
-                    "baseline": baseline_name,
-                    "role": role,
-                    "period": period_name,
-                    "metrics": metrics,
-                }
-                metric_rows.append(row)
-                metric_index[("non_hmm", baseline_name, role, period_name)] = metrics
+        }.items():
+            _record_metrics(
+                metric_rows,
+                metric_index,
+                "non_hmm",
+                baseline_name,
+                role,
+                execute_target(close, target),
+                periods,
+            )
 
     candidate_details = []
     for candidate in CANDIDATES:
@@ -581,48 +640,43 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             }
         )
         for baseline_name, base in baselines.items():
-            targets = hmm_targets(
+            for role, target in hmm_targets(
                 base,
                 ensemble["posterior"],
                 ensemble["favorable_states"],
                 ensemble["defensive_states"],
-            )
-            for role, target in targets.items():
-                executed = execute_target(close, target)
-                for period_name, period_slice in periods.items():
-                    metrics = performance_metrics(executed.iloc[period_slice])
-                    row = {
-                        "candidate": candidate.name,
-                        "baseline": baseline_name,
-                        "role": role,
-                        "period": period_name,
-                        "metrics": metrics,
-                    }
-                    metric_rows.append(row)
-                    metric_index[(candidate.name, baseline_name, role, period_name)] = metrics
+            ).items():
+                _record_metrics(
+                    metric_rows,
+                    metric_index,
+                    candidate.name,
+                    baseline_name,
+                    role,
+                    execute_target(close, target),
+                    periods,
+                )
 
     claims = []
     for candidate in CANDIDATES:
         for role in HMM_ROLES:
             for baseline_name in BASELINES:
-                checks = claim_checks(
-                    metric_index[(candidate.name, baseline_name, role, "exploratory")],
-                    metric_index[(candidate.name, baseline_name, role, "final")],
-                    metric_index[("non_hmm", baseline_name, "no_hmm", "exploratory")],
-                    metric_index[("non_hmm", baseline_name, "no_hmm", "final")],
-                    metric_index[("non_hmm", baseline_name, SIMPLE_FILTER, "final")],
-                )
                 claims.append(
                     {
                         "candidate": candidate.name,
                         "role": role,
                         "baseline": baseline_name,
-                        "checks": checks,
+                        "checks": claim_checks(
+                            metric_index[(candidate.name, baseline_name, role, "exploratory")],
+                            metric_index[(candidate.name, baseline_name, role, "final")],
+                            metric_index[("non_hmm", baseline_name, "no_hmm", "exploratory")],
+                            metric_index[("non_hmm", baseline_name, "no_hmm", "final")],
+                            metric_index[("non_hmm", baseline_name, SIMPLE_FILTER, "final")],
+                        ),
                     }
                 )
 
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "issue": 40,
         "input": {
             "path": str(args.input),
@@ -645,6 +699,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "baselines": list(BASELINES),
             "simple_non_hmm_filter": SIMPLE_FILTER,
             "hmm_roles": list(HMM_ROLES),
+            "descriptive_trade_episode_metrics_added_after_first_run": True,
+            "decision_gates_changed_after_first_run": False,
             "thresholds": {
                 "sharpe_improvement": SHARPE_IMPROVEMENT,
                 "simple_filter_sharpe_edge": SIMPLE_SHARPE_EDGE,
@@ -689,20 +745,20 @@ def main() -> int:
         json.dumps(result, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
         encoding="utf-8",
     )
-    rows = []
-    for row in result["metrics"]:
-        rows.append(
-            {
-                "candidate": row["candidate"],
-                "baseline": row["baseline"],
-                "role": row["role"],
-                "period": row["period"],
-                **row["metrics"],
-            }
-        )
+    rows = [
+        {
+            "candidate": row["candidate"],
+            "baseline": row["baseline"],
+            "role": row["role"],
+            "period": row["period"],
+            **row["metrics"],
+        }
+        for row in result["metrics"]
+    ]
     pd.DataFrame(rows).to_csv(csv_path, index=False)
-    markdown_path.write_text(markdown_report(result), encoding="utf-8")
-    print(markdown_report(result))
+    report = markdown_report(result)
+    markdown_path.write_text(report, encoding="utf-8")
+    print(report)
     print(f"wrote: {json_path}")
     print(f"wrote: {csv_path}")
     print(f"wrote: {markdown_path}")
