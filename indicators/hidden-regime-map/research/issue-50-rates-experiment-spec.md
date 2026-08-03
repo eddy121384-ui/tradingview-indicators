@@ -1,6 +1,6 @@
 # Issue #50 — U.S. rates regime-utility experiment
 
-Status: pre-result specification with a documented protocol omission
+Status: pre-result specification with documented protocol omissions
 
 ## Question
 
@@ -65,21 +65,41 @@ No extra K, features, seeds, or restart schedules may be added after final metri
 
 ## Protocol-omission disclosure
 
-The evaluator committed before the formal final-period run already contained the following implementation rule:
+The evaluator committed before the formal final-period run already contained two outcome-affecting rule sets that the original written specification did not define numerically.
 
-- calculate soft-posterior state occupancy separately in the fit and final OOS periods;
-- classify a candidate as unstable when any state has occupancy below 1% in either period;
-- emit `inconclusive_instability` when every HMM candidate is unstable;
-- do not allow an unstable candidate to enter `trading_winners` or `risk_winners`.
+### State-occupancy rule
 
-The original written specification omitted the 1% threshold, the fit/final periods to which it applied, and its effect on the primary outcome. This section documents the frozen pre-result implementation; it is **not** a retroactive claim that the rule was completely preregistered in writing.
+The frozen evaluator:
 
-Consequently, the durable report must distinguish:
+- calculates soft-posterior state occupancy separately in the fit and final OOS periods;
+- classifies a candidate as unstable when any state has occupancy below 1% in either period;
+- emits `inconclusive_instability` when every HMM candidate is unstable;
+- does not allow an unstable candidate to enter `trading_winners` or `risk_winners`.
 
-- the frozen evaluator's machine outcome, which applies the occupancy rule; and
-- the written promotion-gate result without that omitted rule.
+The original written specification listed occupancy as a metric but omitted the 1% threshold, the tested periods, and its effect on the primary outcome.
 
-No threshold was added or changed after observing the final period, but the documentation omission is a protocol defect and must remain visible in the final interpretation.
+### Exploratory-contradiction rule
+
+For each HMM-versus-baseline pair, the frozen evaluator marks a material exploratory-OOS contradiction when either:
+
+- HMM cash-excess Sharpe is more than 0.10 below the baseline; or
+- HMM annualized return is more than 2 percentage points below the baseline.
+
+A raw final-period trading or risk pass is qualified only when neither contradiction condition is met.
+
+The original written specification said only that promotion must avoid a “material contradiction” and did not define these two thresholds.
+
+### Interpretation consequence
+
+Neither rule was added, relaxed, or tuned after observing the final period; both existed in the frozen evaluator beforehand. Nevertheless, the written protocol was incomplete and cannot independently reproduce the primary classification.
+
+The durable interpretation must therefore distinguish:
+
+1. **Frozen evaluator outcome:** applies both implementation-frozen rule sets.
+2. **Frozen implementation without the occupancy override:** retains the numerical exploratory-contradiction rules but ignores the 1% instability classification.
+3. **Original written-spec outcome:** indeterminate because both “instability” and “material contradiction” lacked complete numerical definitions.
+
+This disclosure is not a retroactive preregistration claim. Future experiments must place every outcome-affecting threshold in both the code and written specification before execution.
 
 ## Fixed state-to-duration mapping
 

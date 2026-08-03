@@ -12,11 +12,15 @@ Primary frozen-evaluator outcome:
 
 `inconclusive_instability`
 
-Written promotion-gate outcome without the omitted occupancy rule:
+Frozen implementation outcome without the occupancy override, but retaining the numerical exploratory-contradiction rules:
 
 `no_incremental_value`
 
-The difference between these labels is a documented protocol defect, not an economic contradiction. Under either interpretation, HMM utility was not established and Issue #41 cannot advance.
+Original written-spec outcome:
+
+`indeterminate_protocol`
+
+The original written specification did not numerically define either state instability or a material exploratory contradiction. Under every reproducible interpretation, HMM utility was not established and Issue #41 cannot advance.
 
 Input:
 
@@ -33,21 +37,32 @@ Split after warm-up:
 
 ## Protocol integrity
 
-The evaluator committed before the formal final-period run contained a 1% soft-posterior occupancy rule:
+The evaluator committed before the formal final-period run contained two outcome-affecting implementation rule sets that were incompletely described in the original written specification.
 
-- evaluate state occupancy in the fit and final OOS periods;
-- mark a candidate unstable if any state occupies less than 1% in either period;
-- emit `inconclusive_instability` when every candidate is unstable;
-- exclude unstable candidates from promotion.
+### Occupancy classification
 
-The original written experiment specification listed state occupancy as a metric but omitted the numerical threshold, the periods to which it applied, and its effect on the primary outcome. The rule was not added or relaxed after observing the final period, but the written preregistration was incomplete.
+The frozen evaluator:
 
-Therefore this report does not describe the 1% rule as fully preregistered. It preserves both facts:
+- evaluates soft-posterior state occupancy in the fit and final OOS periods;
+- marks a candidate unstable if any state occupies less than 1% in either period;
+- emits `inconclusive_instability` when every candidate is unstable;
+- excludes unstable candidates from promotion.
 
-1. the frozen evaluator mechanically returned `inconclusive_instability`;
-2. the written promotion gates alone would return `no_incremental_value` because no candidate cleared two baselines.
+The original written experiment specification listed occupancy as a metric but omitted the numerical threshold, the periods to which it applied, and its effect on the primary outcome.
 
-This protocol defect does not create a positive result under either interpretation.
+### Exploratory contradiction
+
+The frozen evaluator marks an HMM-versus-baseline pair contradictory when exploratory-OOS HMM Sharpe is more than 0.10 below the baseline or HMM annualized return is more than 2 percentage points below the baseline. A raw final-period pass is qualified only when neither condition holds.
+
+The original written specification said only to avoid a “material contradiction” and omitted these numerical thresholds.
+
+Neither rule was introduced after final-period observation, but the written protocol cannot independently reproduce the classification. Therefore this report preserves three distinct interpretations:
+
+1. frozen evaluator: `inconclusive_instability`;
+2. frozen implementation with the occupancy override disabled but exploratory thresholds retained: `no_incremental_value`;
+3. original written specification alone: `indeterminate_protocol`.
+
+None of the three interpretations establishes HMM utility. The omissions are protocol defects and must remain visible.
 
 ## Corrected implementation
 
@@ -117,7 +132,7 @@ Final OOS occupancy:
 
 The fixed mapping assigns state 3 to IEF and state 2 to cash. This is also effectively an intermediate-duration strategy with a small cash overlay.
 
-Both candidates violate the implementation-frozen 1% state-occupancy stability rule. The omission of that rule from the original written specification is disclosed above.
+Both candidates violate the implementation-frozen 1% state-occupancy stability rule. The written protocol also omitted the frozen numerical exploratory-contradiction thresholds; both omissions are disclosed above.
 
 ## Distribution-shift diagnosis
 
@@ -210,6 +225,6 @@ Even a successful walk-forward diagnostic would require either a new market, a f
 
 ## Final status
 
-`complete_inconclusive_static_fit_with_protocol_defect`
+`complete_inconclusive_static_fit_with_protocol_defects`
 
 `can_start_issue_41 = false`
