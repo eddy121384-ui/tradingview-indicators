@@ -1,0 +1,90 @@
+name: Apply Issue 50 Drift Turnover Fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/issue-50-drift-turnover-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue-50-rates-regime-utility
+
+      - name: Apply drift-aware turnover correction
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          evaluator = Path('indicators/hidden-regime-map/research/evaluate_rates_utility.py')
+          text = evaluator.read_text(encoding='utf-8')
+          old = '''    prior = position.shift(1)
+          prior.iloc[0] = [0.0, 0.0, 0.0, 1.0]
+          turnover = 0.5 * (position - prior).abs().sum(axis=1)
+          gross_return = (position * returns).sum(axis=1)
+          '''
+          new = '''    prior_position = position.shift(1)
+          prior_position.iloc[0] = [0.0, 0.0, 0.0, 1.0]
+          prior_returns = returns.shift(1).fillna(0.0)
+          drifted_value = prior_position * (1.0 + prior_returns)
+          drifted_total = drifted_value.sum(axis=1)
+          if (drifted_total <= 0.0).any() or not np.isfinite(drifted_total).all():
+              raise ValueError("drifted pre-trade portfolio value must be finite and positive")
+          pretrade_weight = drifted_value.div(drifted_total, axis=0)
+          turnover = 0.5 * (position - pretrade_weight).abs().sum(axis=1)
+          gross_return = (position * returns).sum(axis=1)
+          '''
+          old = old.replace('          ', '')
+          new = new.replace('          ', '')
+          if text.count(old) != 1:
+              raise SystemExit(f'evaluator replacement count: {text.count(old)}')
+          evaluator.write_text(text.replace(old, new), encoding='utf-8')
+
+          tests = Path('indicators/hidden-regime-map/research/test_evaluate_rates_utility.py')
+          test_text = tests.read_text(encoding='utf-8')
+          anchor = '''    def test_drawdown_includes_first_return(self) -> None:
+          '''.replace('          ', '')
+          addition = '''    def test_constant_target_charges_drift_rebalancing(self) -> None:
+              panel = pd.DataFrame(
+                  {
+                      "SHY_return": [0.0, 0.10, 0.0],
+                      "IEF_return": [0.0, 0.0, 0.0],
+                      "TLT_return": [0.0, 0.0, 0.0],
+                      "CASH_return": [0.0, 0.0, 0.0],
+                  }
+              )
+              target = utility.empty_weights(panel.index)
+              target[list(utility.ETF_ASSETS)] = 1.0 / 3.0
+
+              executed = utility.execute_weights(panel, target, cost_bps=2.0)
+
+              drifted = np.asarray([1.1 / 3.0, 1.0 / 3.0, 1.0 / 3.0])
+              drifted /= drifted.sum()
+              expected_turnover = 0.5 * np.abs(np.asarray([1.0 / 3.0] * 3) - drifted).sum()
+              self.assertAlmostEqual(executed.loc[2, "turnover"], expected_turnover)
+              self.assertGreater(executed.loc[2, "cost"], 0.0)
+
+          '''.replace('          ', '')
+          if test_text.count(anchor) != 1:
+              raise SystemExit(f'test anchor count: {test_text.count(anchor)}')
+          tests.write_text(test_text.replace(anchor, addition + anchor), encoding='utf-8')
+          PY
+          python -m py_compile \
+            indicators/hidden-regime-map/research/evaluate_rates_utility.py \
+            indicators/hidden-regime-map/research/test_evaluate_rates_utility.py
+
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/hidden-regime-map/research/evaluate_rates_utility.py \
+                  indicators/hidden-regime-map/research/test_evaluate_rates_utility.py
+          git commit -m "Charge drift-aware rates turnover"
+          git push origin HEAD:research/issue-50-rates-regime-utility
