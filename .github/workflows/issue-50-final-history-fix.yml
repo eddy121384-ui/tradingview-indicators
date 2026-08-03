@@ -1,0 +1,40 @@
+name: Apply Final Issue 50 History Fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/issue-50-final-history-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue-50-rates-regime-utility
+
+      - name: Remove post-result safeguard from frozen rule list
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('indicators/hidden-regime-map/research/decisions/issue-50-rates-static-fit-diagnosis.md')
+          text = path.read_text(encoding='utf-8')
+          line = '- excludes unstable candidates from promotion.\n'
+          if text.count(line) != 1:
+              raise SystemExit(f'expected one frozen-rule bullet, found {text.count(line)}')
+          path.write_text(text.replace(line, '', 1), encoding='utf-8')
+          PY
+
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/hidden-regime-map/research/decisions/issue-50-rates-static-fit-diagnosis.md
+          git commit -m "Correct Issue 50 frozen rule history"
+          git push origin HEAD:research/issue-50-rates-regime-utility
