@@ -66,6 +66,28 @@ class RatesUtilityTests(unittest.TestCase):
         self.assertAlmostEqual(executed.loc[1, "cost"], 0.0002)
         self.assertAlmostEqual(executed.loc[1, "net_return"], 0.0198)
 
+    def test_constant_target_charges_drift_rebalancing(self) -> None:
+        panel = pd.DataFrame(
+            {
+                "SHY_return": [0.0, 0.10, 0.0],
+                "IEF_return": [0.0, 0.0, 0.0],
+                "TLT_return": [0.0, 0.0, 0.0],
+                "CASH_return": [0.0, 0.0, 0.0],
+            }
+        )
+        target = utility.empty_weights(panel.index)
+        target[list(utility.ETF_ASSETS)] = 1.0 / 3.0
+
+        executed = utility.execute_weights(panel, target, cost_bps=2.0)
+
+        drifted = np.asarray([1.1 / 3.0, 1.0 / 3.0, 1.0 / 3.0])
+        drifted /= drifted.sum()
+        expected_turnover = 0.5 * np.abs(
+            np.asarray([1.0 / 3.0] * 3) - drifted
+        ).sum()
+        self.assertAlmostEqual(executed.loc[2, "turnover"], expected_turnover)
+        self.assertGreater(executed.loc[2, "cost"], 0.0)
+
     def test_drawdown_includes_first_return(self) -> None:
         result = utility.max_drawdown(pd.Series([-0.10, 0.05]))
         self.assertAlmostEqual(result, -0.10)

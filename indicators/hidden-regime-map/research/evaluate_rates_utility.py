@@ -251,9 +251,15 @@ def execute_weights(
     position = target.shift(1)
     position.iloc[0] = [0.0, 0.0, 0.0, 1.0]
     position = position.fillna(0.0)
-    prior = position.shift(1)
-    prior.iloc[0] = [0.0, 0.0, 0.0, 1.0]
-    turnover = 0.5 * (position - prior).abs().sum(axis=1)
+    prior_position = position.shift(1)
+    prior_position.iloc[0] = [0.0, 0.0, 0.0, 1.0]
+    prior_returns = returns.shift(1).fillna(0.0)
+    drifted_value = prior_position * (1.0 + prior_returns)
+    drifted_total = drifted_value.sum(axis=1)
+    if (drifted_total <= 0.0).any() or not np.isfinite(drifted_total).all():
+        raise ValueError("drifted pre-trade portfolio value must be finite and positive")
+    pretrade_weight = drifted_value.div(drifted_total, axis=0)
+    turnover = 0.5 * (position - pretrade_weight).abs().sum(axis=1)
     gross_return = (position * returns).sum(axis=1)
     cost = turnover * (cost_bps / 10000.0)
     net_return = gross_return - cost
