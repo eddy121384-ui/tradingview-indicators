@@ -14,6 +14,7 @@ import yfinance as yf
 
 FRED_SERIES = ("DGS3MO", "DGS2", "DGS5", "DGS10", "DGS30")
 ETF_TICKERS = ("SHY", "IEF", "TLT")
+FRED_DATE_COLUMNS = ("DATE", "observation_date")
 
 
 def parse_args() -> argparse.Namespace:
@@ -32,18 +33,25 @@ def fred_url(series: str, start: str, end: str) -> str:
     )
 
 
+def normalize_fred_frame(frame: pd.DataFrame, series: str) -> pd.DataFrame:
+    date_column = next(
+        (column for column in FRED_DATE_COLUMNS if column in frame.columns), None
+    )
+    if date_column is None or series not in frame.columns:
+        raise ValueError(f"unexpected FRED columns for {series}: {frame.columns.tolist()}")
+
+    normalized = frame[[date_column, series]].rename(columns={date_column: "DATE"}).copy()
+    normalized["DATE"] = pd.to_datetime(normalized["DATE"], errors="raise")
+    normalized[series] = pd.to_numeric(normalized[series], errors="coerce")
+    normalized = normalized.dropna(subset=[series]).drop_duplicates("DATE", keep="last")
+    if normalized.empty:
+        raise ValueError(f"FRED series {series} returned no usable observations")
+    return normalized.set_index("DATE").sort_index()
+
+
 def download_fred(series: str, start: str, end: str) -> pd.DataFrame:
     url = fred_url(series, start, end)
-    frame = pd.read_csv(url)
-    if "DATE" not in frame.columns or series not in frame.columns:
-        raise ValueError(f"unexpected FRED columns for {series}: {frame.columns.tolist()}")
-    frame = frame[["DATE", series]].copy()
-    frame["DATE"] = pd.to_datetime(frame["DATE"], errors="raise")
-    frame[series] = pd.to_numeric(frame[series], errors="coerce")
-    frame = frame.dropna(subset=[series]).drop_duplicates("DATE", keep="last")
-    if frame.empty:
-        raise ValueError(f"FRED series {series} returned no usable observations")
-    return frame.set_index("DATE").sort_index()
+    return normalize_fred_frame(pd.read_csv(url), series)
 
 
 def extract_adjusted_close(raw: pd.DataFrame) -> pd.DataFrame:
@@ -99,7 +107,9 @@ def build_dataset(start: str, end: str) -> tuple[pd.DataFrame, dict[str, object]
     )
     etfs = download_etfs(start, end)
     combined = yields.join(etfs, how="inner").dropna().sort_index()
-    combined = combined.loc[(combined.index >= pd.Timestamp(start)) & (combined.index <= pd.Timestamp(end))]
+    combined = combined.loc[
+        (combined.index >= pd.Timestamp(start)) & (combined.index <= pd.Timestamp(end))
+    ]
     if len(combined) < 3000:
         raise ValueError(f"only {len(combined)} common rates rows; expected at least 3000")
     if not combined.index.is_monotonic_increasing or combined.index.has_duplicates:
@@ -118,6 +128,7 @@ def build_dataset(start: str, end: str) -> tuple[pd.DataFrame, dict[str, object]
         "fred_series": {
             series: fred_url(series, start, end) for series in FRED_SERIES
         },
+        "accepted_fred_date_columns": list(FRED_DATE_COLUMNS),
         "etf_tickers": list(ETF_TICKERS),
         "etf_source": "yfinance auto_adjust=True",
         "join": "inner common observed dates; no yield interpolation",
