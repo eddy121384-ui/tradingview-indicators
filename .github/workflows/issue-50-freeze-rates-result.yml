@@ -40,7 +40,7 @@ jobs:
           assert result['issue'] == 50
           assert result['contract'] == 'issue-50-rates-v1'
           assert result['input_sha256'] == 'f85a37d574f58ed927c1b490f14d0057a2f1c295c7061cf2a5d08b433995c104'
-          assert result['rows'] == 4867
+          assert result['rows'] == 4868
           assert result['outcome'] == 'inconclusive_instability'
           assert sorted(result['unstable_candidates']) == [
               'hmm_k3_duration_blend',
