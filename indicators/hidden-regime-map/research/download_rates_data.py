@@ -42,8 +42,12 @@ def normalize_fred_frame(frame: pd.DataFrame, series: str) -> pd.DataFrame:
 
     normalized = frame[[date_column, series]].rename(columns={date_column: "DATE"}).copy()
     normalized["DATE"] = pd.to_datetime(normalized["DATE"], errors="raise")
+    if normalized["DATE"].duplicated().any():
+        duplicates = normalized.loc[normalized["DATE"].duplicated(keep=False), "DATE"]
+        sample = sorted({value.strftime("%Y-%m-%d") for value in duplicates})[:5]
+        raise ValueError(f"duplicate FRED dates for {series}: {sample}")
     normalized[series] = pd.to_numeric(normalized[series], errors="coerce")
-    normalized = normalized.dropna(subset=[series]).drop_duplicates("DATE", keep="last")
+    normalized = normalized.dropna(subset=[series])
     if normalized.empty:
         raise ValueError(f"FRED series {series} returned no usable observations")
     return normalized.set_index("DATE").sort_index()
@@ -75,6 +79,25 @@ def extract_adjusted_close(raw: pd.DataFrame) -> pd.DataFrame:
     return close[list(ETF_TICKERS)]
 
 
+def normalize_etf_close(close: pd.DataFrame) -> pd.DataFrame:
+    normalized = close.copy()
+    index = pd.to_datetime(normalized.index, errors="raise")
+    if getattr(index, "tz", None) is not None:
+        index = index.tz_localize(None)
+    normalized.index = index.normalize()
+    if normalized.index.duplicated().any():
+        duplicates = normalized.index[normalized.index.duplicated(keep=False)]
+        sample = sorted({value.strftime("%Y-%m-%d") for value in duplicates})[:5]
+        raise ValueError(f"duplicate ETF dates: {sample}")
+    normalized = normalized.apply(pd.to_numeric, errors="coerce")
+    normalized = normalized.dropna().sort_index()
+    if normalized.empty:
+        raise ValueError("ETF adjusted-close download produced no common rows")
+    if (normalized <= 0.0).any().any() or not np.isfinite(normalized.to_numpy()).all():
+        raise ValueError("ETF adjusted closes must be finite and positive")
+    return normalized
+
+
 def download_etfs(start: str, end: str) -> pd.DataFrame:
     end_exclusive = (pd.Timestamp(end) + timedelta(days=1)).strftime("%Y-%m-%d")
     raw = yf.download(
@@ -87,18 +110,7 @@ def download_etfs(start: str, end: str) -> pd.DataFrame:
         threads=False,
         group_by="column",
     )
-    close = extract_adjusted_close(raw)
-    index = pd.to_datetime(close.index, errors="raise")
-    if getattr(index, "tz", None) is not None:
-        index = index.tz_localize(None)
-    close.index = index.normalize()
-    close = close.apply(pd.to_numeric, errors="coerce")
-    close = close.dropna().loc[~close.index.duplicated(keep="last")].sort_index()
-    if close.empty:
-        raise ValueError("ETF adjusted-close download produced no common rows")
-    if (close <= 0.0).any().any() or not np.isfinite(close.to_numpy()).all():
-        raise ValueError("ETF adjusted closes must be finite and positive")
-    return close
+    return normalize_etf_close(extract_adjusted_close(raw))
 
 
 def build_dataset(start: str, end: str) -> tuple[pd.DataFrame, dict[str, object]]:
