@@ -4,13 +4,19 @@ Date: 2026-08-03
 
 ## Decision
 
-The preregistered static-fit U.S. rates experiment is **inconclusive because both HMM candidates lose state diversity out of sample**.
+The pre-result static-fit U.S. rates experiment is **inconclusive because both HMM candidates lose state diversity out of sample**.
 
 This is not evidence that the U.S. rates market lacks regimes. It is evidence that a single HMM fitted through 2018-10-04 and held fixed through 2026 is not a defensible production design for this feature set.
 
-Primary machine outcome:
+Primary frozen-evaluator outcome:
 
 `inconclusive_instability`
+
+Written promotion-gate outcome without the omitted occupancy rule:
+
+`no_incremental_value`
+
+The difference between these labels is a documented protocol defect, not an economic contradiction. Under either interpretation, HMM utility was not established and Issue #41 cannot advance.
 
 Input:
 
@@ -25,6 +31,24 @@ Split after warm-up:
 - exploratory OOS ends 2022-08-29;
 - final OOS runs 2022-08-30 through 2026-07-30.
 
+## Protocol integrity
+
+The evaluator committed before the formal final-period run contained a 1% soft-posterior occupancy rule:
+
+- evaluate state occupancy in the fit and final OOS periods;
+- mark a candidate unstable if any state occupies less than 1% in either period;
+- emit `inconclusive_instability` when every candidate is unstable;
+- exclude unstable candidates from promotion.
+
+The original written experiment specification listed state occupancy as a metric but omitted the numerical threshold, the periods to which it applied, and its effect on the primary outcome. The rule was not added or relaxed after observing the final period, but the written preregistration was incomplete.
+
+Therefore this report does not describe the 1% rule as fully preregistered. It preserves both facts:
+
+1. the frozen evaluator mechanically returned `inconclusive_instability`;
+2. the written promotion gates alone would return `no_incremental_value` because no candidate cleared two baselines.
+
+This protocol defect does not create a positive result under either interpretation.
+
 ## Corrected implementation
 
 Codex review identified that target-weight turnover had initially been measured against the previous target weights rather than the previous holdings after market-price drift.
@@ -36,6 +60,13 @@ The corrected evaluator computes pre-trade weights by drifting the prior holding
 A focused regression confirms that a constant equal-weight target still incurs rebalancing turnover when its assets earn different returns.
 
 Run #18 (`30783310318`) recomputed the complete experiment on the unchanged frozen input after this correction. The mechanical outcome remained `inconclusive_instability`.
+
+Subsequent review also required two durable safeguards:
+
+- an unstable candidate cannot enter `trading_winners` or `risk_winners`, even when another candidate remains stable;
+- CI recursively compares the entire committed status JSON with regenerated output, including metrics, comparisons, gates, restart records, and diagnostics.
+
+These safeguards do not change the current result because both candidates are unstable and neither has two qualified baseline passes.
 
 ## State-collapse evidence
 
@@ -86,7 +117,7 @@ Final OOS occupancy:
 
 The fixed mapping assigns state 3 to IEF and state 2 to cash. This is also effectively an intermediate-duration strategy with a small cash overlay.
 
-Both candidates violate the preregistered 1% state-occupancy stability guardrail.
+Both candidates violate the implementation-frozen 1% state-occupancy stability rule. The omission of that rule from the original written specification is disclosed above.
 
 ## Distribution-shift diagnosis
 
@@ -130,10 +161,10 @@ The HMM candidates did reduce losses and drawdown relative to TLT and the failed
 
 Those facts do not establish incremental value:
 
-- neither candidate beat at least two strong baselines under the frozen gates;
+- neither candidate beat at least two strong baselines under the written promotion gates;
 - inverse-volatility produced higher absolute return, much lower drawdown, and much higher Calmar;
 - all duration strategies had negative cash-excess Sharpe in the high-cash-rate final period;
-- both HMM candidates failed the state-diversity guardrail;
+- both HMM candidates fail the implementation-frozen state-diversity rule;
 - the apparent K=3 low turnover is itself a symptom of state collapse, not proof of efficient regime timing.
 
 ## What Issue #50 establishes
@@ -144,6 +175,7 @@ Issue #50 supports these bounded conclusions:
 2. Static state labels can become economically stale when the yield-level and curve distributions shift.
 3. A rates HMM should be tested with causal rolling or expanding refits, explicit state-identity handling, and fold-by-fold diagnostics.
 4. The current result must not advance Issue #41 or be presented as evidence of trading utility.
+5. The written protocol was incomplete because it omitted the occupancy outcome rule; future experiments must place every classification threshold in both code and specification before evaluation.
 
 Issue #50 does **not** support:
 
@@ -162,7 +194,8 @@ A separate diagnostic should test a preregistered walk-forward design while pres
 - the same deterministic restarts;
 - the same risk-score mapping;
 - one-bar lag and drift-aware turnover costs;
-- fold-level state occupancy and mapping records.
+- fold-level state occupancy and mapping records;
+- every stability threshold written into the specification before execution.
 
 Suggested design:
 
@@ -177,6 +210,6 @@ Even a successful walk-forward diagnostic would require either a new market, a f
 
 ## Final status
 
-`complete_inconclusive_static_fit`
+`complete_inconclusive_static_fit_with_protocol_defect`
 
 `can_start_issue_41 = false`
