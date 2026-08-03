@@ -41,6 +41,28 @@ class RatesDataTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unexpected FRED columns"):
             rates_data.normalize_fred_frame(frame, "DGS5")
 
+    def test_rejects_duplicate_fred_dates(self) -> None:
+        frame = pd.DataFrame(
+            {
+                "observation_date": ["2026-01-02", "2026-01-02"],
+                "DGS2": [4.10, 4.11],
+            }
+        )
+        with self.assertRaisesRegex(ValueError, "duplicate FRED dates"):
+            rates_data.normalize_fred_frame(frame, "DGS2")
+
+    def test_rejects_duplicate_etf_dates(self) -> None:
+        frame = pd.DataFrame(
+            {
+                "SHY": [80.0, 80.1],
+                "IEF": [95.0, 95.1],
+                "TLT": [100.0, 100.2],
+            },
+            index=pd.to_datetime(["2026-01-02", "2026-01-02"]),
+        )
+        with self.assertRaisesRegex(ValueError, "duplicate ETF dates"):
+            rates_data.normalize_etf_close(frame)
+
     def test_committed_manifest_exactly_matches_frozen_csv(self) -> None:
         research_dir = Path(__file__).resolve().parent
         data_dir = research_dir / "data"
