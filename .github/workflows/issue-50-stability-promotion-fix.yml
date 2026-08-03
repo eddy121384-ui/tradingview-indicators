@@ -29,75 +29,90 @@ jobs:
           evaluate_anchor = 'def evaluate(panel: pd.DataFrame, input_sha: str) -> dict[str, Any]:\n'
           if text.count(evaluate_anchor) != 1:
               raise SystemExit(f'evaluate anchor count: {text.count(evaluate_anchor)}')
-          helper = '''def state_occupancy_stable(
-              fit_occupancy: list[float],
-              final_occupancy: list[float],
-              threshold: float = 0.01,
-          ) -> bool:
-              values = np.asarray([*fit_occupancy, *final_occupancy], dtype=float)
-              return bool(
-                  values.size > 0
-                  and np.isfinite(values).all()
-                  and float(values.min()) >= threshold
-              )
-
-
-          '''.replace('          ', '')
+          helper = '\n'.join(
+              [
+                  'def state_occupancy_stable(',
+                  '    fit_occupancy: list[float],',
+                  '    final_occupancy: list[float],',
+                  '    threshold: float = 0.01,',
+                  ') -> bool:',
+                  '    values = np.asarray([*fit_occupancy, *final_occupancy], dtype=float)',
+                  '    return bool(',
+                  '        values.size > 0',
+                  '        and np.isfinite(values).all()',
+                  '        and float(values.min()) >= threshold',
+                  '    )',
+                  '',
+                  '',
+              ]
+          )
           text = text.replace(evaluate_anchor, helper + evaluate_anchor)
 
-          old_stability = '''        final_occ = occupancy(ensemble["posterior"], slices["final_oos"])
-              fit_occ = occupancy(ensemble["posterior"], slice(0, fit_end))
-              if min(final_occ) < 0.01 or min(fit_occ) < 0.01:
-                  unstable_candidates.append(candidate)
-          '''.replace('          ', '')
-          new_stability = '''        final_occ = occupancy(ensemble["posterior"], slices["final_oos"])
-              fit_occ = occupancy(ensemble["posterior"], slice(0, fit_end))
-              candidate_stable = state_occupancy_stable(fit_occ, final_occ)
-              if not candidate_stable:
-                  unstable_candidates.append(candidate)
-          '''.replace('          ', '')
-          if text.count(old_stability) != 1:
-              raise SystemExit(f'stability replacement count: {text.count(old_stability)}')
-          text = text.replace(old_stability, new_stability)
+          stability_start = text.index(
+              '        final_occ = occupancy(ensemble["posterior"], slices["final_oos"])\n'
+          )
+          stability_end_marker = '        candidate_comparisons: dict[str, Any] = {}\n'
+          stability_end = text.index(stability_end_marker, stability_start)
+          stability_replacement = '\n'.join(
+              [
+                  '        final_occ = occupancy(ensemble["posterior"], slices["final_oos"])',
+                  '        fit_occ = occupancy(ensemble["posterior"], slice(0, fit_end))',
+                  '        candidate_stable = state_occupancy_stable(fit_occ, final_occ)',
+                  '        if not candidate_stable:',
+                  '            unstable_candidates.append(candidate)',
+                  '',
+              ]
+          )
+          text = (
+              text[:stability_start]
+              + stability_replacement
+              + text[stability_end:]
+          )
 
-          old_winners = '''        if len(trading_passes) >= 2:
-              trading_winners[candidate] = trading_passes
-          if len(risk_passes) >= 2:
-              risk_winners[candidate] = risk_passes
-          '''.replace('          ', '')
-          new_winners = '''        if candidate_stable and len(trading_passes) >= 2:
-              trading_winners[candidate] = trading_passes
-          if candidate_stable and len(risk_passes) >= 2:
-              risk_winners[candidate] = risk_passes
-          '''.replace('          ', '')
-          if text.count(old_winners) != 1:
-              raise SystemExit(f'winner replacement count: {text.count(old_winners)}')
-          evaluator.write_text(text.replace(old_winners, new_winners), encoding='utf-8')
+          winner_start = text.index('        if len(trading_passes) >= 2:\n')
+          winner_end_marker = '            risk_winners[candidate] = risk_passes\n'
+          winner_end = text.index(winner_end_marker, winner_start) + len(winner_end_marker)
+          winner_replacement = '\n'.join(
+              [
+                  '        if candidate_stable and len(trading_passes) >= 2:',
+                  '            trading_winners[candidate] = trading_passes',
+                  '        if candidate_stable and len(risk_passes) >= 2:',
+                  '            risk_winners[candidate] = risk_passes',
+                  '',
+              ]
+          )
+          evaluator.write_text(
+              text[:winner_start] + winner_replacement + text[winner_end:],
+              encoding='utf-8',
+          )
 
           tests = Path('indicators/hidden-regime-map/research/test_evaluate_rates_utility.py')
           test_text = tests.read_text(encoding='utf-8')
           anchor = '    def test_trading_gate_requires_return_and_sharpe(self) -> None:\n'
           if test_text.count(anchor) != 1:
               raise SystemExit(f'test anchor count: {test_text.count(anchor)}')
-          addition = '''    def test_state_occupancy_stability_threshold(self) -> None:
-              self.assertTrue(
-                  utility.state_occupancy_stable(
-                      [0.01, 0.40, 0.59], [0.20, 0.30, 0.50]
-                  )
-              )
-              self.assertFalse(
-                  utility.state_occupancy_stable(
-                      [0.0099, 0.40, 0.5901], [0.20, 0.30, 0.50]
-                  )
-              )
-              self.assertFalse(
-                  utility.state_occupancy_stable(
-                      [0.10, float("nan"), 0.90], [0.20, 0.30, 0.50]
-                  )
-              )
-
-
-          '''.replace('          ', '')
+          addition = '\n'.join(
+              [
+                  '    def test_state_occupancy_stability_threshold(self) -> None:',
+                  '        self.assertTrue(',
+                  '            utility.state_occupancy_stable(',
+                  '                [0.01, 0.40, 0.59], [0.20, 0.30, 0.50]',
+                  '            )',
+                  '        )',
+                  '        self.assertFalse(',
+                  '            utility.state_occupancy_stable(',
+                  '                [0.0099, 0.40, 0.5901], [0.20, 0.30, 0.50]',
+                  '            )',
+                  '        )',
+                  '        self.assertFalse(',
+                  '            utility.state_occupancy_stable(',
+                  '                [0.10, float("nan"), 0.90], [0.20, 0.30, 0.50]',
+                  '            )',
+                  '        )',
+                  '',
+                  '',
+              ]
+          )
           tests.write_text(test_text.replace(anchor, addition + anchor), encoding='utf-8')
           PY
           python -m py_compile \
