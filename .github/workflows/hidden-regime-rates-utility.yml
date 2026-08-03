@@ -9,6 +9,7 @@ on:
       - indicators/hidden-regime-map/requirements-research.txt
       - indicators/hidden-regime-map/research/download_rates_data.py
       - indicators/hidden-regime-map/research/evaluate_rates_utility.py
+      - indicators/hidden-regime-map/research/test_download_rates_data.py
       - indicators/hidden-regime-map/research/test_evaluate_rates_utility.py
       - indicators/hidden-regime-map/research/train_hmm.py
       - indicators/hidden-regime-map/research/compare_state_counts.py
@@ -47,10 +48,11 @@ jobs:
           python -m py_compile
           "$RESEARCH/download_rates_data.py"
           "$RESEARCH/evaluate_rates_utility.py"
+          "$RESEARCH/test_download_rates_data.py"
           "$RESEARCH/test_evaluate_rates_utility.py"
 
-      - name: Run rates evaluator tests
-        run: python -m unittest discover -s "$RESEARCH" -p 'test_evaluate_rates_utility.py'
+      - name: Run rates research tests
+        run: python -m unittest discover -s "$RESEARCH" -p 'test_*rates*.py'
 
       - name: Acquire candidate frozen input
         if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') == '' }}
@@ -60,7 +62,8 @@ jobs:
             --start 2007-01-01 \
             --end 2026-07-31 \
             --output "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
-            --manifest "$ARTIFACTS/input/issue-50-rates-manifest.json"
+            --manifest "$ARTIFACTS/input/issue-50-rates-manifest.json" \
+            2>&1 | tee "$ARTIFACTS/input/acquisition.log"
           sha256sum "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
             | awk '{print $1 "  issue-50-rates-2007-2026.csv"}' \
             > "$ARTIFACTS/input/issue-50-rates-2007-2026.sha256"
