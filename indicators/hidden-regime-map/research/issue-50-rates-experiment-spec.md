@@ -1,6 +1,6 @@
 # Issue #50 — U.S. rates regime-utility experiment
 
-Status: preregistered before formal evaluation
+Status: pre-result specification with a documented protocol omission
 
 ## Question
 
@@ -43,7 +43,7 @@ After feature warm-up and return alignment:
 - 20% exploratory OOS;
 - 20% untouched final OOS.
 
-The split fractions and all rules below are fixed before final-period evaluation.
+The split fractions and all rules below are fixed before final-period evaluation, subject to the protocol-omission disclosure below.
 
 ## HMM candidates
 
@@ -62,6 +62,24 @@ For each K:
 - no smoothed or future-aware states.
 
 No extra K, features, seeds, or restart schedules may be added after final metrics are observed.
+
+## Protocol-omission disclosure
+
+The evaluator committed before the formal final-period run already contained the following implementation rule:
+
+- calculate soft-posterior state occupancy separately in the fit and final OOS periods;
+- classify a candidate as unstable when any state has occupancy below 1% in either period;
+- emit `inconclusive_instability` when every HMM candidate is unstable;
+- do not allow an unstable candidate to enter `trading_winners` or `risk_winners`.
+
+The original written specification omitted the 1% threshold, the fit/final periods to which it applied, and its effect on the primary outcome. This section documents the frozen pre-result implementation; it is **not** a retroactive claim that the rule was completely preregistered in writing.
+
+Consequently, the durable report must distinguish:
+
+- the frozen evaluator's machine outcome, which applies the occupancy rule; and
+- the written promotion-gate result without that omitted rule.
+
+No threshold was added or changed after observing the final period, but the documentation omission is a protocol defect and must remain visible in the final interpretation.
 
 ## Fixed state-to-duration mapping
 
@@ -85,7 +103,8 @@ Portfolio target weights are the posterior-probability blend of the state one-ho
 - long-only;
 - fully invested across SHY, IEF, TLT, and cash;
 - no leverage or short selling;
-- transaction cost: 2 basis points per unit of absolute portfolio-weight turnover;
+- portfolio turnover is `0.5 × sum(abs(target weight - drifted pre-trade weight))`;
+- transaction cost: 2 basis points per unit of that portfolio-turnover measure;
 - cash earns the prior observed DGS3MO annualized rate divided by 252.
 
 ## Baselines
@@ -131,7 +150,7 @@ It earns a risk-value pass if:
 - annualized return sacrifice is no more than 2 percentage points;
 - the concentration and activity guardrails above pass.
 
-Promotion requires one HMM candidate to pass trading-value or risk-value gates against at least two non-HMM baselines, and to avoid material contradiction in exploratory OOS.
+Promotion requires one stable HMM candidate to pass trading-value or risk-value gates against at least two non-HMM baselines, and to avoid material contradiction in exploratory OOS.
 
 Even a mechanical pass remains provisional until an adjacent-window or walk-forward sensitivity check succeeds.
 
