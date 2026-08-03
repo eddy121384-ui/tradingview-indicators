@@ -36,6 +36,7 @@ jobs:
       ARTIFACTS: artifacts/issue-50-rates
       FROZEN_DATA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
       FROZEN_SHA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+      FROZEN_MANIFEST: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026-manifest.json
 
     steps:
       - uses: actions/checkout@v4
@@ -76,17 +77,21 @@ jobs:
           gzip -n -c "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
             > "$ARTIFACTS/input/issue-50-rates-2007-2026.csv.gz"
 
-      - name: Verify committed frozen input
+      - name: Verify committed frozen input and manifest
         if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') != '' }}
         run: |
           mkdir -p "$ARTIFACTS/result"
           python - <<'PY'
           import gzip
           import hashlib
+          import json
           from pathlib import Path
+
+          import pandas as pd
 
           data = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz')
           sha_file = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256')
+          manifest_file = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026-manifest.json')
           expected = sha_file.read_text(encoding='utf-8').split()[0]
           digest = hashlib.sha256()
           with gzip.open(data, 'rb') as handle:
@@ -95,6 +100,55 @@ jobs:
           actual = digest.hexdigest()
           if actual != expected:
               raise SystemExit(f'frozen rates SHA mismatch: {expected} != {actual}')
+
+          frame = pd.read_csv(data)
+          manifest = json.loads(manifest_file.read_text(encoding='utf-8'))
+          expected_columns = [
+              'Date', 'DGS3MO', 'DGS2', 'DGS5', 'DGS10', 'DGS30',
+              'SHY', 'IEF', 'TLT',
+          ]
+          expected_start = '2007-01-01'
+          expected_end = '2026-07-31'
+          expected_series = ['DGS3MO', 'DGS2', 'DGS5', 'DGS10', 'DGS30']
+          expected_fred = {
+              series: (
+                  'https://fred.stlouisfed.org/graph/fredgraph.csv'
+                  f'?id={series}&cosd={expected_start}&coed={expected_end}'
+              )
+              for series in expected_series
+          }
+          expected_contract = {
+              'accepted_fred_date_columns': ['DATE', 'observation_date'],
+              'columns': expected_columns,
+              'contract': 'issue-50-rates-v1',
+              'end': expected_end,
+              'etf_source': 'yfinance auto_adjust=True',
+              'etf_tickers': ['SHY', 'IEF', 'TLT'],
+              'fred_series': expected_fred,
+              'join': 'inner common observed dates; no yield interpolation',
+              'start': expected_start,
+          }
+          for key, value in expected_contract.items():
+              if manifest.get(key) != value:
+                  raise SystemExit(
+                      f'frozen rates manifest contract mismatch for {key}: '
+                      f'{manifest.get(key)!r} != {value!r}'
+                  )
+          if list(frame.columns) != expected_columns:
+              raise SystemExit('frozen rates CSV column contract mismatch')
+          if manifest.get('rows') != len(frame):
+              raise SystemExit('frozen rates manifest row count mismatch')
+          if frame.empty:
+              raise SystemExit('frozen rates CSV is empty')
+          first_date = str(frame['Date'].iloc[0])
+          last_date = str(frame['Date'].iloc[-1])
+          if manifest.get('first_date') != first_date:
+              raise SystemExit('frozen rates manifest first date mismatch')
+          if manifest.get('last_date') != last_date:
+              raise SystemExit('frozen rates manifest last date mismatch')
+          parsed_dates = pd.to_datetime(frame['Date'], errors='raise')
+          if not parsed_dates.is_monotonic_increasing or parsed_dates.duplicated().any():
+              raise SystemExit('frozen rates CSV dates are not unique and chronological')
           print(actual)
           PY
 
@@ -141,9 +195,17 @@ jobs:
                           left_value, right_value, f'{path}[{index}]'
                       )
                   return
-              if isinstance(left, bool) or left is None or isinstance(left, str):
-                  if left != right:
-                      raise SystemExit(f'{path} mismatch: {left!r} != {right!r}')
+              if isinstance(left, bool):
+                  if not isinstance(right, bool) or left is not right:
+                      raise SystemExit(f'{path} boolean mismatch: {left!r} != {right!r}')
+                  return
+              if left is None:
+                  if right is not None:
+                      raise SystemExit(f'{path} null mismatch: {right!r}')
+                  return
+              if isinstance(left, str):
+                  if not isinstance(right, str) or left != right:
+                      raise SystemExit(f'{path} string mismatch: {left!r} != {right!r}')
                   return
               if (
                   isinstance(left, (int, float))
@@ -162,7 +224,7 @@ jobs:
                           f'{path} numeric mismatch: {left!r} != {right!r}'
                       )
                   return
-              if left != right:
+              if type(left) is not type(right) or left != right:
                   raise SystemExit(f'{path} mismatch: {left!r} != {right!r}')
 
           assert_nested_equal(generated, committed)
