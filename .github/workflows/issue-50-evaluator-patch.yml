@@ -19,25 +19,18 @@ jobs:
         with:
           ref: research/issue-50-rates-regime-utility
 
-      - name: Repair evaluator source
+      - name: Apply portfolio turnover definition
         run: |
           python - <<'PY'
           from pathlib import Path
 
           path = Path('indicators/hidden-regime-map/research/evaluate_rates_utility.py')
           text = path.read_text(encoding='utf-8')
-          replacements = {
-              'turnover = (position - prior).abs().sum(axis=1)': 'turnover = 0.5 * (position - prior).abs().sum(axis=1)',
-              'return "\\\n".join(lines)': 'return chr(10).join(lines)',
-              '+ "\\\n", encoding="utf-8"': '+ chr(10), encoding="utf-8"',
-              'lineterminator="\\\n",': 'lineterminator=chr(10),',
-          }
-          for old, new in replacements.items():
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'replacement count for {old!r}: {count}')
-              text = text.replace(old, new)
-          path.write_text(text, encoding='utf-8')
+          old = 'turnover = (position - prior).abs().sum(axis=1)'
+          new = 'turnover = 0.5 * (position - prior).abs().sum(axis=1)'
+          if text.count(old) != 1:
+              raise SystemExit(f'turnover replacement count: {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
           PY
           python -m py_compile indicators/hidden-regime-map/research/evaluate_rates_utility.py
 
@@ -46,5 +39,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add indicators/hidden-regime-map/research/evaluate_rates_utility.py
-          git commit -m "Repair Issue 50 evaluator source"
+          git commit -m "Define Issue 50 portfolio turnover"
           git push origin HEAD:research/issue-50-rates-regime-utility
