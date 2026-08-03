@@ -1,0 +1,124 @@
+name: Hidden Regime Rates Utility
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/hidden-regime-rates-utility.yml
+      - indicators/hidden-regime-map/requirements-research.txt
+      - indicators/hidden-regime-map/research/download_rates_data.py
+      - indicators/hidden-regime-map/research/evaluate_rates_utility.py
+      - indicators/hidden-regime-map/research/test_evaluate_rates_utility.py
+      - indicators/hidden-regime-map/research/train_hmm.py
+      - indicators/hidden-regime-map/research/compare_state_counts.py
+      - indicators/hidden-regime-map/research/issue-50-rates-experiment-spec.md
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-rates-utility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RESEARCH: indicators/hidden-regime-map/research
+      ARTIFACTS: artifacts/issue-50-rates
+      FROZEN_DATA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
+      FROZEN_SHA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Compile Issue 50 scripts
+        run: >-
+          python -m py_compile
+          "$RESEARCH/download_rates_data.py"
+          "$RESEARCH/evaluate_rates_utility.py"
+          "$RESEARCH/test_evaluate_rates_utility.py"
+
+      - name: Run rates evaluator tests
+        run: python -m unittest discover -s "$RESEARCH" -p 'test_evaluate_rates_utility.py'
+
+      - name: Acquire candidate frozen input
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') == '' }}
+        run: |
+          mkdir -p "$ARTIFACTS/input"
+          python "$RESEARCH/download_rates_data.py" \
+            --start 2007-01-01 \
+            --end 2026-07-31 \
+            --output "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
+            --manifest "$ARTIFACTS/input/issue-50-rates-manifest.json"
+          sha256sum "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
+            | awk '{print $1 "  issue-50-rates-2007-2026.csv"}' \
+            > "$ARTIFACTS/input/issue-50-rates-2007-2026.sha256"
+          gzip -n -c "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
+            > "$ARTIFACTS/input/issue-50-rates-2007-2026.csv.gz"
+
+      - name: Verify committed frozen input
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') != '' }}
+        run: |
+          mkdir -p "$ARTIFACTS/result"
+          python - <<'PY'
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          data = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz')
+          sha_file = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256')
+          expected = sha_file.read_text(encoding='utf-8').split()[0]
+          digest = hashlib.sha256()
+          with gzip.open(data, 'rb') as handle:
+              while chunk := handle.read(1024 * 1024):
+                  digest.update(chunk)
+          actual = digest.hexdigest()
+          if actual != expected:
+              raise SystemExit(f'frozen rates SHA mismatch: {expected} != {actual}')
+          print(actual)
+          PY
+
+      - name: Evaluate frozen rates experiment
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') != '' }}
+        run: |
+          python "$RESEARCH/evaluate_rates_utility.py" \
+            --input "$FROZEN_DATA" \
+            --sha256-file "$FROZEN_SHA" \
+            --output-dir "$ARTIFACTS/result"
+          python -m json.tool "$ARTIFACTS/result/rates-utility-result.json" > /dev/null
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          if [ -f "$ARTIFACTS/result/rates-utility-report.md" ]; then
+            cat "$ARTIFACTS/result/rates-utility-report.md" >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f "$ARTIFACTS/input/issue-50-rates-manifest.json" ]; then
+            {
+              echo '## Issue #50 rates input acquired'
+              echo
+              echo 'Formal evaluation did not run. Commit the candidate CSV.gz and SHA-256 first.'
+              echo
+              echo '```json'
+              cat "$ARTIFACTS/input/issue-50-rates-manifest.json"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue-50-rates-utility
+          path: artifacts/issue-50-rates
+          retention-days: 14
+          if-no-files-found: error
