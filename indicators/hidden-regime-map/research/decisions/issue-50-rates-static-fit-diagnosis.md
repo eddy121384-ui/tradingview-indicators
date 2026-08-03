@@ -46,7 +46,6 @@ The frozen evaluator:
 - evaluates soft-posterior state occupancy in the fit and final OOS periods;
 - marks a candidate unstable if any state occupies less than 1% in either period;
 - emits `inconclusive_instability` when every candidate is unstable;
-- excludes unstable candidates from promotion.
 
 The original written experiment specification listed occupancy as a metric but omitted the numerical threshold, the periods to which it applied, and its effect on the primary outcome.
 
