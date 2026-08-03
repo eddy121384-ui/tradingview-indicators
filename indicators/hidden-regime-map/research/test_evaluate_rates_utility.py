@@ -119,6 +119,23 @@ class RatesUtilityTests(unittest.TestCase):
         expected_cash = raw.loc[source_index - 1, "DGS3MO"] / 100.0 / utility.TRADING_DAYS
         self.assertAlmostEqual(panel.loc[0, "CASH_return"], expected_cash)
 
+    def test_state_occupancy_stability_threshold(self) -> None:
+        self.assertTrue(
+            utility.state_occupancy_stable(
+                [0.01, 0.40, 0.59], [0.20, 0.30, 0.50]
+            )
+        )
+        self.assertFalse(
+            utility.state_occupancy_stable(
+                [0.0099, 0.40, 0.5901], [0.20, 0.30, 0.50]
+            )
+        )
+        self.assertFalse(
+            utility.state_occupancy_stable(
+                [0.10, float("nan"), 0.90], [0.20, 0.30, 0.50]
+            )
+        )
+
     def test_trading_gate_requires_return_and_sharpe(self) -> None:
         baseline = {
             "annualized_return": 0.04,

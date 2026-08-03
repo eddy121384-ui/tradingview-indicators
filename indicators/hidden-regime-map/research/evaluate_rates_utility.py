@@ -424,6 +424,18 @@ def make_report(result: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def state_occupancy_stable(
+    fit_occupancy: list[float],
+    final_occupancy: list[float],
+    threshold: float = 0.01,
+) -> bool:
+    values = np.asarray([*fit_occupancy, *final_occupancy], dtype=float)
+    return bool(
+        values.size > 0
+        and np.isfinite(values).all()
+        and float(values.min()) >= threshold
+    )
+
 def evaluate(panel: pd.DataFrame, input_sha: str) -> dict[str, Any]:
     fit_end, exploratory_end = split_boundaries(len(panel))
     slices = period_slices(fit_end, exploratory_end, len(panel))
@@ -452,7 +464,8 @@ def evaluate(panel: pd.DataFrame, input_sha: str) -> dict[str, Any]:
     for candidate, ensemble in ensembles.items():
         final_occ = occupancy(ensemble["posterior"], slices["final_oos"])
         fit_occ = occupancy(ensemble["posterior"], slice(0, fit_end))
-        if min(final_occ) < 0.01 or min(fit_occ) < 0.01:
+        candidate_stable = state_occupancy_stable(fit_occ, final_occ)
+        if not candidate_stable:
             unstable_candidates.append(candidate)
         candidate_comparisons: dict[str, Any] = {}
         trading_passes = []
@@ -478,9 +491,9 @@ def evaluate(panel: pd.DataFrame, input_sha: str) -> dict[str, Any]:
                 risk_passes.append(baseline)
             candidate_comparisons[baseline] = gate
         comparisons[candidate] = candidate_comparisons
-        if len(trading_passes) >= 2:
+        if candidate_stable and len(trading_passes) >= 2:
             trading_winners[candidate] = trading_passes
-        if len(risk_passes) >= 2:
+        if candidate_stable and len(risk_passes) >= 2:
             risk_winners[candidate] = risk_passes
 
     if len(unstable_candidates) == len(ensembles):
