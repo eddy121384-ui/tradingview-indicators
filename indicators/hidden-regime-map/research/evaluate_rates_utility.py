@@ -253,7 +253,7 @@ def execute_weights(
     position = position.fillna(0.0)
     prior = position.shift(1)
     prior.iloc[0] = [0.0, 0.0, 0.0, 1.0]
-    turnover = (position - prior).abs().sum(axis=1)
+    turnover = 0.5 * (position - prior).abs().sum(axis=1)
     gross_return = (position * returns).sum(axis=1)
     cost = turnover * (cost_bps / 10000.0)
     net_return = gross_return - cost
