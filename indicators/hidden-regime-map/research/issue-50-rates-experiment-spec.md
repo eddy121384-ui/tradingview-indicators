@@ -74,7 +74,6 @@ The frozen evaluator:
 - calculates soft-posterior state occupancy separately in the fit and final OOS periods;
 - classifies a candidate as unstable when any state has occupancy below 1% in either period;
 - emits `inconclusive_instability` when every HMM candidate is unstable;
-- does not allow an unstable candidate to enter `trading_winners` or `risk_winners`.
 
 The original written specification listed occupancy as a metric but omitted the 1% threshold, the tested periods, and its effect on the primary outcome.
 
@@ -89,15 +88,22 @@ A raw final-period trading or risk pass is qualified only when neither contradic
 
 The original written specification said only that promotion must avoid a “material contradiction” and did not define these two thresholds.
 
+### Post-result promotion safeguard
+
+After the first formal result was observed, review identified a general evaluator defect: if only one candidate were unstable, that candidate could still enter `trading_winners` or `risk_winners`. The evaluator was corrected to exclude every unstable candidate from promotion while still allowing a stable peer to be evaluated.
+
+This safeguard was added after result observation. It did not change the current Issue #50 output because both candidates are unstable and both winner dictionaries were already empty. It is not part of the frozen pre-result rule set and must not be described as preregistered.
+
 ### Interpretation consequence
 
 Neither rule was added, relaxed, or tuned after observing the final period; both existed in the frozen evaluator beforehand. Nevertheless, the written protocol was incomplete and cannot independently reproduce the primary classification.
 
 The durable interpretation must therefore distinguish:
 
-1. **Frozen evaluator outcome:** applies both implementation-frozen rule sets.
-2. **Frozen implementation without the occupancy override:** retains the numerical exploratory-contradiction rules but ignores the 1% instability classification.
-3. **Original written-spec outcome:** indeterminate because both “instability” and “material contradiction” lacked complete numerical definitions.
+1. **Frozen pre-result evaluator outcome:** applies the implementation-frozen occupancy classification and exploratory-contradiction rules.
+2. **Current corrected evaluator outcome:** adds the post-result safeguard excluding isolated unstable winners; it produces the same result on this sample.
+3. **Frozen implementation without the occupancy override:** retains the numerical exploratory-contradiction rules but ignores the 1% instability classification.
+4. **Original written-spec outcome:** indeterminate because both “instability” and “material contradiction” lacked complete numerical definitions.
 
 This disclosure is not a retroactive preregistration claim. Future experiments must place every outcome-affecting threshold in both the code and written specification before execution.
 

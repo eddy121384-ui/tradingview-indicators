@@ -56,6 +56,8 @@ The frozen evaluator marks an HMM-versus-baseline pair contradictory when explor
 
 The original written specification said only to avoid a “material contradiction” and omitted these numerical thresholds.
 
+The rule excluding an individually unstable candidate from winner qualification was added later as a post-result safety correction. It does not alter this sample because both candidates are unstable and the winner dictionaries were already empty. It is not included among the frozen pre-result rules.
+
 Neither rule was introduced after final-period observation, but the written protocol cannot independently reproduce the classification. Therefore this report preserves three distinct interpretations:
 
 1. frozen evaluator: `inconclusive_instability`;
@@ -78,7 +80,7 @@ Run #18 (`30783310318`) recomputed the complete experiment on the unchanged froz
 
 Subsequent review also required two durable safeguards:
 
-- an unstable candidate cannot enter `trading_winners` or `risk_winners`, even when another candidate remains stable;
+- a post-result safety correction now prevents an unstable candidate from entering `trading_winners` or `risk_winners`, even when another candidate remains stable; this did not alter the current result;
 - CI recursively compares the entire committed status JSON with regenerated output, including metrics, comparisons, gates, restart records, and diagnostics.
 
 These safeguards do not change the current result because both candidates are unstable and neither has two qualified baseline passes.
@@ -176,7 +178,7 @@ The HMM candidates did reduce losses and drawdown relative to TLT and the failed
 
 Those facts do not establish incremental value:
 
-- neither candidate beat at least two strong baselines under the written promotion gates;
+- under the frozen implementation’s numerical exploratory-contradiction rules, neither candidate retained at least two qualified passes; raw final gates alone gave K=3 three trading passes and two risk passes, and K=4 two of each, so the original written specification remains indeterminate;
 - inverse-volatility produced higher absolute return, much lower drawdown, and much higher Calmar;
 - all duration strategies had negative cash-excess Sharpe in the high-cash-rate final period;
 - both HMM candidates fail the implementation-frozen state-diversity rule;
