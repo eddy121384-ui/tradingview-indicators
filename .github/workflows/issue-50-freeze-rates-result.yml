@@ -1,0 +1,70 @@
+name: Freeze Issue 50 Rates Result
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/issue-50-freeze-rates-result.yml
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue-50-rates-regime-utility
+
+      - name: Download formal result from Run 10
+        uses: actions/download-artifact@v4
+        with:
+          name: issue-50-rates-utility
+          path: result-artifact
+          github-token: ${{ github.token }}
+          repository: eddy121384-ui/tradingview-indicators
+          run-id: 30782811477
+
+      - name: Validate provisional result
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path('result-artifact/result/rates-utility-result.json').read_text(encoding='utf-8')
+          )
+          assert result['issue'] == 50
+          assert result['contract'] == 'issue-50-rates-v1'
+          assert result['input_sha256'] == 'f85a37d574f58ed927c1b490f14d0057a2f1c295c7061cf2a5d08b433995c104'
+          assert result['rows'] == 4867
+          assert result['outcome'] == 'inconclusive_instability'
+          assert sorted(result['unstable_candidates']) == [
+              'hmm_k3_duration_blend',
+              'hmm_k4_duration_blend',
+          ]
+          print(result['outcome'])
+          PY
+
+      - name: Stage provisional evidence
+        run: |
+          mkdir -p indicators/hidden-regime-map/research/decisions
+          cp result-artifact/result/rates-utility-result.json \
+             indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-status.json
+          cp result-artifact/result/rates-utility-key-metrics.csv \
+             indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-key-metrics.csv
+          cp result-artifact/result/rates-utility-report.md \
+             indicators/hidden-regime-map/research/decisions/issue-50-rates-utility.md
+
+      - name: Commit provisional evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-status.json \
+                  indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-key-metrics.csv \
+                  indicators/hidden-regime-map/research/decisions/issue-50-rates-utility.md
+          git commit -m "Record provisional Issue 50 rates result"
+          git push origin HEAD:research/issue-50-rates-regime-utility
