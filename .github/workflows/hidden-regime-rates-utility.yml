@@ -126,34 +126,46 @@ jobs:
               (committed_root / 'issue-50-rates-utility-status.json').read_text(encoding='utf-8')
           )
 
-          exact_fields = [
-              'schema_version',
-              'issue',
-              'contract',
-              'outcome',
-              'input_sha256',
-              'rows',
-              'split',
-              'features',
-              'cost_bps_per_unit_turnover',
-              'trading_winners',
-              'risk_winners',
-              'unstable_candidates',
-          ]
-          for field in exact_fields:
-              if generated[field] != committed[field]:
-                  raise SystemExit(f'committed rates field mismatch: {field}')
+          def assert_nested_equal(left, right, path='root'):
+              if isinstance(left, dict):
+                  if not isinstance(right, dict) or set(left) != set(right):
+                      raise SystemExit(f'{path} key/type mismatch')
+                  for key in left:
+                      assert_nested_equal(left[key], right[key], f'{path}.{key}')
+                  return
+              if isinstance(left, list):
+                  if not isinstance(right, list) or len(left) != len(right):
+                      raise SystemExit(f'{path} list mismatch')
+                  for index, (left_value, right_value) in enumerate(zip(left, right)):
+                      assert_nested_equal(
+                          left_value, right_value, f'{path}[{index}]'
+                      )
+                  return
+              if isinstance(left, bool) or left is None or isinstance(left, str):
+                  if left != right:
+                      raise SystemExit(f'{path} mismatch: {left!r} != {right!r}')
+                  return
+              if (
+                  isinstance(left, (int, float))
+                  and not isinstance(left, bool)
+                  and isinstance(right, (int, float))
+                  and not isinstance(right, bool)
+              ):
+                  if not np.isclose(
+                      float(left),
+                      float(right),
+                      rtol=0.0,
+                      atol=1e-9,
+                      equal_nan=True,
+                  ):
+                      raise SystemExit(
+                          f'{path} numeric mismatch: {left!r} != {right!r}'
+                      )
+                  return
+              if left != right:
+                  raise SystemExit(f'{path} mismatch: {left!r} != {right!r}')
 
-          if set(generated['candidate_diagnostics']) != set(committed['candidate_diagnostics']):
-              raise SystemExit('candidate diagnostic key set mismatch')
-          for candidate in generated['candidate_diagnostics']:
-              left = generated['candidate_diagnostics'][candidate]
-              right = committed['candidate_diagnostics'][candidate]
-              if left['mapping'] != right['mapping']:
-                  raise SystemExit(f'{candidate} mapping mismatch')
-              for key in ['fit_occupancy', 'exploratory_occupancy', 'final_occupancy']:
-                  if not np.allclose(left[key], right[key], rtol=0.0, atol=1e-9):
-                      raise SystemExit(f'{candidate} {key} mismatch')
+          assert_nested_equal(generated, committed)
 
           generated_csv = pd.read_csv(generated_root / 'rates-utility-key-metrics.csv')
           committed_csv = pd.read_csv(
