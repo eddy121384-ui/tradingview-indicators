@@ -16,6 +16,11 @@ on:
       - indicators/hidden-regime-map/research/issue-50-rates-experiment-spec.md
       - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
       - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026-manifest.json
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-status.json
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-key-metrics.csv
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-utility.md
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-static-fit-diagnosis.md
   workflow_dispatch:
 
 permissions:
@@ -27,6 +32,7 @@ jobs:
     timeout-minutes: 45
     env:
       RESEARCH: indicators/hidden-regime-map/research
+      DECISIONS: indicators/hidden-regime-map/research/decisions
       ARTIFACTS: artifacts/issue-50-rates
       FROZEN_DATA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
       FROZEN_SHA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
@@ -100,6 +106,105 @@ jobs:
             --sha256-file "$FROZEN_SHA" \
             --output-dir "$ARTIFACTS/result"
           python -m json.tool "$ARTIFACTS/result/rates-utility-result.json" > /dev/null
+
+      - name: Verify committed rates evidence
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-status.json') != '' }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          import numpy as np
+          import pandas as pd
+
+          generated_root = Path('artifacts/issue-50-rates/result')
+          committed_root = Path('indicators/hidden-regime-map/research/decisions')
+          generated = json.loads(
+              (generated_root / 'rates-utility-result.json').read_text(encoding='utf-8')
+          )
+          committed = json.loads(
+              (committed_root / 'issue-50-rates-utility-status.json').read_text(encoding='utf-8')
+          )
+
+          exact_fields = [
+              'schema_version',
+              'issue',
+              'contract',
+              'outcome',
+              'input_sha256',
+              'rows',
+              'split',
+              'features',
+              'cost_bps_per_unit_turnover',
+              'trading_winners',
+              'risk_winners',
+              'unstable_candidates',
+          ]
+          for field in exact_fields:
+              if generated[field] != committed[field]:
+                  raise SystemExit(f'committed rates field mismatch: {field}')
+
+          if set(generated['candidate_diagnostics']) != set(committed['candidate_diagnostics']):
+              raise SystemExit('candidate diagnostic key set mismatch')
+          for candidate in generated['candidate_diagnostics']:
+              left = generated['candidate_diagnostics'][candidate]
+              right = committed['candidate_diagnostics'][candidate]
+              if left['mapping'] != right['mapping']:
+                  raise SystemExit(f'{candidate} mapping mismatch')
+              for key in ['fit_occupancy', 'exploratory_occupancy', 'final_occupancy']:
+                  if not np.allclose(left[key], right[key], rtol=0.0, atol=1e-9):
+                      raise SystemExit(f'{candidate} {key} mismatch')
+
+          generated_csv = pd.read_csv(generated_root / 'rates-utility-key-metrics.csv')
+          committed_csv = pd.read_csv(
+              committed_root / 'issue-50-rates-utility-key-metrics.csv'
+          )
+          key_columns = ['period', 'variant']
+          expected_periods = {'exploratory_oos', 'final_oos'}
+          expected_variants = {
+              'tlt_buy_hold',
+              'equal_duration',
+              'inverse_vol_63',
+              'trend_duration_200',
+              'vol_target_tlt_20',
+              'hmm_k3_duration_blend',
+              'hmm_k4_duration_blend',
+          }
+          expected_keys = {
+              (period, variant)
+              for period in expected_periods
+              for variant in expected_variants
+          }
+          generated_keys = set(map(tuple, generated_csv[key_columns].to_numpy()))
+          committed_keys = set(map(tuple, committed_csv[key_columns].to_numpy()))
+          if generated_keys != expected_keys or committed_keys != expected_keys:
+              raise SystemExit('rates key-metric row set is incomplete')
+          if list(generated_csv.columns) != list(committed_csv.columns):
+              raise SystemExit('rates key-metric columns differ')
+
+          generated_csv = generated_csv.sort_values(key_columns).reset_index(drop=True)
+          committed_csv = committed_csv.sort_values(key_columns).reset_index(drop=True)
+          for column in generated_csv.columns:
+              if column in key_columns:
+                  if not generated_csv[column].equals(committed_csv[column]):
+                      raise SystemExit(f'rates key column mismatch: {column}')
+              else:
+                  left = generated_csv[column].to_numpy(dtype=float)
+                  right = committed_csv[column].to_numpy(dtype=float)
+                  if not np.allclose(left, right, rtol=0.0, atol=1e-9, equal_nan=True):
+                      diff = float(np.nanmax(np.abs(left - right)))
+                      raise SystemExit(f'rates metric mismatch: {column}; max diff={diff}')
+
+          generated_report = (generated_root / 'rates-utility-report.md').read_text(
+              encoding='utf-8'
+          )
+          committed_report = (
+              committed_root / 'issue-50-rates-utility.md'
+          ).read_text(encoding='utf-8')
+          if generated_report != committed_report:
+              raise SystemExit('committed rates Markdown report is stale')
+          print('committed Issue #50 rates evidence matches regenerated output')
+          PY
 
       - name: Write workflow summary
         if: always()
