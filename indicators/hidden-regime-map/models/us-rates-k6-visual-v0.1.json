@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "profile_id": "us-rates-k6-visual-v0.1",
+  "deployment_status": "visual-inspection-prototype",
+  "model_kind": "descriptive_full_sample_reference",
+  "instrument_family": "U.S. Treasury constant-maturity yield curve",
+  "supported_timeframe": "1D",
+  "chart_reference": "FRED:DGS10",
+  "requested_symbols": {
+    "DGS2": "FRED:DGS2",
+    "DGS5": "FRED:DGS5",
+    "DGS10": "FRED:DGS10",
+    "DGS30": "FRED:DGS30"
+  },
+  "provenance": {
+    "source_issue": 50,
+    "source_pr": 52,
+    "frozen_input": "indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz",
+    "decompressed_sha256": "f85a37d574f58ed927c1b490f14d0057a2f1c295c7061cf2a5d08b433995c104",
+    "raw_first_date": "2007-01-03",
+    "raw_last_date": "2026-07-30",
+    "feature_first_date": "2007-02-01",
+    "feature_last_date": "2026-07-30",
+    "rows": 4868,
+    "fit_scope": "all frozen feature rows through cutoff",
+    "historical_classification": "retrospective_in_sample_description",
+    "forward_use_boundary": "fixed parameters are causal only after the profile cutoff; historical colors are not OOS evidence"
+  },
+  "feature_names": [
+    "curve_level",
+    "slope_2s10s",
+    "slope_5s30s",
+    "level_change_bp",
+    "level_vol_20_bp"
+  ],
+  "feature_contract": {
+    "curve_level": "mean(DGS2, DGS5, DGS10, DGS30), percent",
+    "slope_2s10s": "DGS10 - DGS2, percentage points",
+    "slope_5s30s": "DGS30 - DGS5, percentage points",
+    "level_change_bp": "100 * change(curve_level), basis points",
+    "level_vol_20_bp": "population standard deviation of level_change_bp over 20 observed common dates",
+    "join": "inner common observed dates; no interpolation in the frozen Python profile"
+  },
+  "scaler": {
+    "fit_scope": "full frozen descriptive sample",
+    "mean": [
+      2.595782662284306,
+      1.0424383730484799,
+      1.1896569433032047,
+      -0.005238290879211198,
+      4.6478840450941865
+    ],
+    "scale": [
+      1.1433856929588198,
+      0.9470698396232761,
+      0.7676266563001004,
+      5.199449800698935,
+      2.045441288203148
+    ]
+  },
+  "selection": {
+    "group_seeds": [42, 84, 126],
+    "restart_offsets": [0, 1, 2],
+    "reference_group_seed": 42,
+    "representative_rule": "medoid of the three group-best actual fitted models after state alignment; distance combines emission means, log variances, transition matrix, and start probabilities",
+    "representative_group_seed": 42,
+    "representative_selected_seed": 43,
+    "distance_totals": [
+      1.7595866629302779,
+      1.761550408504183,
+      1.9960030917115463
+    ],
+    "candidates": [
+      {
+        "group_seed": 42,
+        "selected_seed": 43,
+        "train_log_likelihood": -16976.453621051183,
+        "permutation_to_reference": [0, 1, 2, 3, 4, 5],
+        "attempts": [
+          {"attempt_seed": 42, "status": "ok", "train_log_likelihood": -18902.26288112243, "iterations": 102},
+          {"attempt_seed": 43, "status": "ok", "train_log_likelihood": -16976.453621051183, "iterations": 126},
+          {"attempt_seed": 44, "status": "ok", "train_log_likelihood": -17811.91803857815, "iterations": 293}
+        ]
+      },
+      {
+        "group_seed": 84,
+        "selected_seed": 86,
+        "train_log_likelihood": -16174.508491159246,
+        "permutation_to_reference": [2, 1, 0, 4, 3, 5],
+        "attempts": [
+          {"attempt_seed": 84, "status": "ok", "train_log_likelihood": -16673.499470749037, "iterations": 31},
+          {"attempt_seed": 85, "status": "ok", "train_log_likelihood": -16425.304030536954, "iterations": 112},
+          {"attempt_seed": 86, "status": "ok", "train_log_likelihood": -16174.508491159246, "iterations": 22}
+        ]
+      },
+      {
+        "group_seed": 126,
+        "selected_seed": 128,
+        "train_log_likelihood": -16919.22540865923,
+        "permutation_to_reference": [1, 4, 2, 3, 5, 0],
+        "attempts": [
+          {"attempt_seed": 126, "status": "ok", "train_log_likelihood": -17994.764068766177, "iterations": 39},
+          {"attempt_seed": 127, "status": "ok", "train_log_likelihood": -17254.454370259602, "iterations": 87},
+          {"attempt_seed": 128, "status": "ok", "train_log_likelihood": -16919.22540865923, "iterations": 38}
+        ]
+      }
+    ]
+  },
+  "state_ordering": {
+    "rule": "ascending standardized level_change_bp + 0.75 * standardized level_vol_20_bp; ties use curve level, 2s10s, 5s30s, then original aligned index",
+    "representative_to_final_order": [4, 2, 0, 5, 1, 3],
+    "state_names": ["R1", "R2", "R3", "R4", "R5", "R6"],
+    "semantic_labels_frozen": false
+  },
+  "hmm": {
+    "state_count": 6,
+    "covariance_type": "diag",
+    "start_probability": [
+      0.0,
+      0.0,
+      0.0,
+      0.9999999999985822,
+      1.4176806875972673e-12,
+      0.0
+    ],
+    "transition_matrix": [
+      [0.9925332651515267, 0.0, 0.0038012701914909735, 0.003665464656982236, 2.316819101978443e-131, 0.0],
+      [0.0, 0.996188146687162, 0.0012395912210384624, 0.0, 0.0, 0.0025722620917993373],
+      [0.004679993046397664, 2.9491796666664505e-276, 0.9953200069536025, 0.0, 0.0, 0.0],
+      [0.0007830496614798741, 0.0, 0.0, 0.996086453008678, 0.0023482543965003097, 0.0007822429333417971],
+      [3.5867387227621577e-174, 0.0, 0.0, 0.004234924390772112, 0.995765075609228, 1.0159849593781593e-110],
+      [0.0, 0.00353438903225931, 0.0, 0.0, 0.0, 0.9964656109677407]
+    ],
+    "emission_means": [
+      [-1.1229481669741146, -0.20447573288612958, -0.10326131611005883, 0.030110054946753683, -0.9093574711089614],
+      [-0.7379853058638243, 0.9185610704392074, 1.261361066764482, 0.0022976485979175148, -0.5367795414260621],
+      [-0.7399616407189106, 0.3502873020573166, 0.17270046209950965, 0.006812319821983399, -0.38362473822012927],
+      [0.4231142609852116, -0.6919587726061011, -0.7330344130099073, -0.0031402713996273954, -0.17343050924259049],
+      [1.4187727145544886, -1.4741075480123345, -1.40886936517788, 0.02197631734677874, 0.7790882368387548],
+      [0.1696146639846521, 1.2305543773143128, 0.9905673964585344, -0.0394550835827702, 0.9782884148780736]
+    ],
+    "emission_variances": [
+      [0.25528778753960113, 0.05418320366768111, 0.03637894629058946, 0.3048228909848593, 0.08870275154119873],
+      [0.07683823594357757, 0.15898851190530155, 0.08047665703221771, 0.5139227409410834, 0.23381481413025162],
+      [0.06324790777908952, 0.08294053442066672, 0.03913443354816365, 0.6150498354397682, 0.18854090705174145],
+      [0.8997184950914944, 0.04630297978971432, 0.11866195297810452, 0.8334809179399881, 0.599774486153184],
+      [0.20235194889646438, 0.10425230204667682, 0.05049112749849496, 1.6663149416428062, 0.8799355583454319],
+      [0.18636648689729518, 0.3081056414489124, 0.35956574449699413, 1.8771019600396412, 1.1884906786717466]
+    ],
+    "transition_orientation": "previous_state_row_to_current_state_column"
+  },
+  "state_diagnostics": [
+    {
+      "state": "R1", "state_index": 0, "ordering_score": -0.6519080483849673,
+      "occupancy_full_sample": 0.11236647493837305, "mean_duration_bars": 109.4,
+      "median_duration_bars": 107.0, "self_transition_probability": 0.9925332651515267,
+      "posterior_weighted_feature_mean_raw": [1.3166238255181917, 0.849508975045884, 1.1125362858597785, 0.19281876187446167, 2.7771369735241125],
+      "posterior_weighted_feature_mean_scaled": [-1.1187465827527932, -0.20371190162632458, -0.10046636188370738, 0.03809192517389995, -0.914593384987091]
+    },
+    {
+      "state": "R2", "state_index": 1, "ordering_score": -0.40028700747162904,
+      "occupancy_full_sample": 0.16495480690221856, "mean_duration_bars": 200.75,
+      "median_duration_bars": 39.5, "self_transition_probability": 0.996188146687162,
+      "posterior_weighted_feature_mean_raw": [1.7519804483659358, 1.912455701167206, 2.1592556293565757, 0.029289813637561536, 3.5237258746619786],
+      "posterior_weighted_feature_mean_scaled": [-0.7379856325950725, 0.9186411516016604, 1.2631123191145548, 0.006640722738034943, -0.5495920009611925]
+    },
+    {
+      "state": "R3", "state_index": 2, "ordering_score": -0.2809062338431136,
+      "occupancy_full_sample": 0.1343467543138866, "mean_duration_bars": 163.5,
+      "median_duration_bars": 89.5, "self_transition_probability": 0.9953200069536025,
+      "posterior_weighted_feature_mean_raw": [1.753786105083516, 1.3727029949358502, 1.3174852453442167, -0.0014580435035454363, 3.870847068762258],
+      "posterior_weighted_feature_mean_scaled": [-0.7364064133266324, 0.34872256307807503, 0.16652405305612242, 0.0007270475762950063, -0.37988720615614924]
+    },
+    {
+      "state": "R4", "state_index": 3, "ordering_score": -0.13321315333157024,
+      "occupancy_full_sample": 0.2615036976170912, "mean_duration_bars": 212.16666666666666,
+      "median_duration_bars": 109.5, "self_transition_probability": 0.996086453008678,
+      "posterior_weighted_feature_mean_raw": [3.0689926596128525, 0.3887444147541486, 0.6296513388583446, -0.015545437574645278, 4.296488900057126],
+      "posterior_weighted_feature_mean_scaled": [0.4138673417401158, -0.6902278279227607, -0.7295286059294014, -0.0019823533432419336, -0.17179429547242067]
+    },
+    {
+      "state": "R5", "state_index": 4, "ordering_score": 0.6062924949758449,
+      "occupancy_full_sample": 0.14728841413311422, "mean_duration_bars": 239.0,
+      "median_duration_bars": 129.0, "self_transition_probability": 0.995765075609228,
+      "posterior_weighted_feature_mean_raw": [4.221471223734162, -0.347002282438786, 0.11258232091044862, 0.09611165439868984, 6.23553957348411],
+      "posterior_weighted_feature_mean_scaled": [1.4218199260854374, -1.4670941860422408, -1.403123007197497, 0.019492436539011677, 0.7761921779649935]
+    },
+    {
+      "state": "R6", "state_index": 5, "ordering_score": 0.694261227575785,
+      "occupancy_full_sample": 0.17953985209531634, "mean_duration_bars": 218.5,
+      "median_duration_bars": 111.5, "self_transition_probability": 0.9964656109677407,
+      "posterior_weighted_feature_mean_raw": [2.7786837571008367, 2.210982069149644, 1.952643426276824, -0.23212371074084334, 6.645454434467258],
+      "posterior_weighted_feature_mean_scaled": [0.15996447737877964, 1.2338516624771676, 0.9939551691067553, -0.043636428575795305, 0.976596297773901]
+    }
+  ],
+  "instability_diagnostics": {
+    "feature_drift_statistic": "maximum absolute standardized feature value on the current bar",
+    "feature_drift_threshold": 3.0,
+    "feature_drift_threshold_status": "prototype diagnostic; not a universal statistical law",
+    "state_concentration_window_bars": 126,
+    "state_concentration_statistic": "maximum rolling dominant-state share across R1-R6",
+    "state_concentration_threshold": 0.9,
+    "state_concentration_threshold_status": "prototype diagnostic; not a universal statistical law",
+    "latest_max_abs_feature_z": 1.7747443843420372,
+    "latest_rolling_state_concentration": 0.9999999999999996,
+    "max_rolling_state_concentration": 0.9999999999999996
+  },
+  "constraints": {
+    "pine_training": false,
+    "automatic_refit": false,
+    "historical_oos_claim": false,
+    "trading_signal_claim": false,
+    "strategy_or_pnl_claim": false,
+    "semantic_regime_claim": false
+  }
+}
