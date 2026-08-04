@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "issue": 24,
-  "status": "implementation_started_waiting_for_ci_generation",
+  "status": "generated_assets_committed_waiting_for_tradingview_validation",
   "market": "U.S. Treasury constant-maturity yield curve",
   "state_count": 6,
   "profile_kind": "descriptive_full_sample_reference",
@@ -9,17 +9,49 @@
     "pull_request": 52,
     "branch": "research/issue-50-rates-regime-utility"
   },
+  "implementation_pull_request": 54,
   "superseded_pull_request": 53,
+  "validation": {
+    "workflow": "Hidden Regime Rates K6 Visual",
+    "run_id": 30891597699,
+    "run_number": 6,
+    "conclusion": "success",
+    "unit_tests": 6,
+    "generated_profile_matches_committed": true,
+    "generated_checkpoints_match_committed": true,
+    "generated_report_matches_committed": true,
+    "generated_pine_matches_committed": true
+  },
+  "profile_summary": {
+    "profile_id": "us-rates-k6-visual-v0.1",
+    "feature_rows": 4868,
+    "feature_start": "2007-02-01",
+    "feature_end": "2026-07-30",
+    "representative_seed": 43,
+    "full_sample_state_occupancy": [
+      0.11236647493837305,
+      0.16495480690221856,
+      0.1343467543138866,
+      0.2615036976170912,
+      0.14728841413311422,
+      0.17953985209531634
+    ],
+    "latest_max_abs_feature_z": 1.7747443843420372,
+    "latest_126_observation_state_concentration": 0.9999999999999996
+  },
   "completed": [
     "rates visual prototype specification",
     "deterministic K6 profile exporter",
     "deterministic Pine generator",
     "exporter and generator unit tests",
-    "dedicated GitHub Actions workflow"
+    "dedicated GitHub Actions workflow",
+    "frozen K6 model profile",
+    "12-checkpoint Python fixture",
+    "generated Pine v6 visual prototype",
+    "clean regeneration check against committed assets"
   ],
   "pending": [
-    "CI generation of frozen profile and Pine artifact",
-    "commit generated assets",
+    "resolve and land stacked PR dependency 52",
     "TradingView Pine v6 compilation",
     "FRED-to-TradingView checkpoint comparison",
     "Eddy visual review"
