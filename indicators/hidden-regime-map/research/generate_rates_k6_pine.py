@@ -79,7 +79,7 @@ def generate(profile: dict[str, Any]) -> str:
     scaler_scale = array_literal(scaler["scale"])
 
     return f'''//@version=6
-indicator("Hidden Regime Map — U.S. Rates K=6 Visual", shorttitle = "HRM Rates K6", overlay = true, max_bars_back = 10000)
+indicator("Hidden Regime Map — U.S. Rates K=6 Visual", shorttitle = "HRM Rates K6", overlay = true, max_bars_back = 5000)
 
 // Descriptive full-sample reference profile. Historical colors are retrospective
 // classifications, not historical out-of-sample evidence or trading signals.
