@@ -26,8 +26,6 @@ jobs:
 
           generator = Path('indicators/hidden-regime-map/research/generate_rates_k6_pine.py')
           pine = Path('indicators/hidden-regime-map/pine/hidden-regime-map-us-rates-k6-visual.pine')
-          workflow = Path('.github/workflows/hidden-regime-rates-k6-visual.yml')
-
           old = 'max_bars_back = 10000'
           new = 'max_bars_back = 5000'
 
@@ -36,18 +34,6 @@ jobs:
               if text.count(old) != 1:
                   raise SystemExit(f'{path}: expected exactly one invalid max_bars_back value')
               path.write_text(text.replace(old, new), encoding='utf-8')
-
-          text = workflow.read_text(encoding='utf-8')
-          anchor = "          grep -F 'indicator(\"Hidden Regime Map — U.S. Rates K=6 Visual\"' \"$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine\"\n"
-          checks = (
-              anchor
-              + "          grep -F 'max_bars_back = 5000' \"$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine\"\n"
-              + "          if grep -F 'max_bars_back = 10000' \"$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine\"; then exit 1; fi\n"
-          )
-          if 'max_bars_back = 5000' not in text:
-              if text.count(anchor) != 1:
-                  raise SystemExit('generation workflow: indicator grep anchor not found exactly once')
-              workflow.write_text(text.replace(anchor, checks), encoding='utf-8')
           PY
 
       - name: Verify hotfix
@@ -66,7 +52,6 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
             indicators/hidden-regime-map/research/generate_rates_k6_pine.py \
-            indicators/hidden-regime-map/pine/hidden-regime-map-us-rates-k6-visual.pine \
-            .github/workflows/hidden-regime-rates-k6-visual.yml
+            indicators/hidden-regime-map/pine/hidden-regime-map-us-rates-k6-visual.pine
           git commit -m 'fix: respect Pine max_bars_back limit'
           git push origin HEAD:feat/issue-24-rates-k6-visual-prototype
