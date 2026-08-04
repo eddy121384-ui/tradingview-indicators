@@ -1,9 +1,9 @@
 name: Apply Issue 24 Pine max-bars hotfix
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/issue-24-rates-k6-visual-prototype
+      - research/issue-50-rates-regime-utility
     paths:
       - .github/workflows/issue-24-pine-max-bars-hotfix.yml
 
@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   patch-generated-pine:
+    if: github.head_ref == 'feat/issue-24-rates-k6-visual-prototype'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
