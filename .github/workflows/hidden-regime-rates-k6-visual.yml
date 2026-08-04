@@ -86,14 +86,28 @@ jobs:
 
       - name: Verify committed generated assets when present
         run: |
-          if [ -f indicators/hidden-regime-map/models/us-rates-k6-visual-v0.1.json ]; then
-            cmp "$OUTPUT/profile/us-rates-k6-visual-v0.1.json" \
-              indicators/hidden-regime-map/models/us-rates-k6-visual-v0.1.json
-          fi
-          if [ -f indicators/hidden-regime-map/research/fixtures/us-rates-k6-visual-v0.1-checkpoints.json ]; then
-            cmp "$OUTPUT/profile/us-rates-k6-visual-v0.1-checkpoints.json" \
-              indicators/hidden-regime-map/research/fixtures/us-rates-k6-visual-v0.1-checkpoints.json
-          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          pairs = [
+              (
+                  Path('artifacts/rates-k6-visual/profile/us-rates-k6-visual-v0.1.json'),
+                  Path('indicators/hidden-regime-map/models/us-rates-k6-visual-v0.1.json'),
+              ),
+              (
+                  Path('artifacts/rates-k6-visual/profile/us-rates-k6-visual-v0.1-checkpoints.json'),
+                  Path('indicators/hidden-regime-map/research/fixtures/us-rates-k6-visual-v0.1-checkpoints.json'),
+              ),
+          ]
+          for generated, committed in pairs:
+              if committed.exists():
+                  left = json.loads(generated.read_text(encoding='utf-8'))
+                  right = json.loads(committed.read_text(encoding='utf-8'))
+                  if left != right:
+                      raise SystemExit(f'generated JSON differs from committed asset: {committed}')
+                  print(f'generated JSON matches committed asset: {committed}')
+          PY
           if [ -f indicators/hidden-regime-map/research/us-rates-k6-visual-v0.1.md ]; then
             cmp "$OUTPUT/profile/us-rates-k6-visual-v0.1.md" \
               indicators/hidden-regime-map/research/us-rates-k6-visual-v0.1.md
