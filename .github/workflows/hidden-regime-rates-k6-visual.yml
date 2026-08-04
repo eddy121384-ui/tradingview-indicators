@@ -14,6 +14,7 @@ on:
       - indicators/hidden-regime-map/research/export_rates_k6_visual.py
       - indicators/hidden-regime-map/research/generate_rates_k6_pine.py
       - indicators/hidden-regime-map/research/test_export_rates_k6_visual.py
+      - indicators/hidden-regime-map/research/test_generate_rates_k6_pine.py
       - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
       - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
       - indicators/hidden-regime-map/models/us-rates-k6-visual-v0.1.json
@@ -54,9 +55,14 @@ jobs:
           "$RESEARCH/export_rates_k6_visual.py"
           "$RESEARCH/generate_rates_k6_pine.py"
           "$RESEARCH/test_export_rates_k6_visual.py"
+          "$RESEARCH/test_generate_rates_k6_pine.py"
 
       - name: Run K6 visual unit tests
-        run: python -m unittest -v "$RESEARCH/test_export_rates_k6_visual.py"
+        run: |
+          cd "$RESEARCH"
+          python -m unittest -v \
+            test_export_rates_k6_visual.py \
+            test_generate_rates_k6_pine.py
 
       - name: Generate frozen K6 rates profile
         run: |
