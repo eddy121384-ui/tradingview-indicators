@@ -1,0 +1,133 @@
+name: Hidden Regime Rates K6 Visual
+
+on:
+  pull_request:
+    branches:
+      - main
+      - research/issue-50-rates-regime-utility
+    paths:
+      - .github/workflows/hidden-regime-rates-k6-visual.yml
+      - indicators/hidden-regime-map/requirements-research.txt
+      - indicators/hidden-regime-map/research/evaluate_rates_utility.py
+      - indicators/hidden-regime-map/research/compare_state_counts.py
+      - indicators/hidden-regime-map/research/train_hmm.py
+      - indicators/hidden-regime-map/research/export_rates_k6_visual.py
+      - indicators/hidden-regime-map/research/generate_rates_k6_pine.py
+      - indicators/hidden-regime-map/research/test_export_rates_k6_visual.py
+      - indicators/hidden-regime-map/research/test_generate_rates_k6_pine.py
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+      - indicators/hidden-regime-map/models/us-rates-k6-visual-v0.1.json
+      - indicators/hidden-regime-map/research/fixtures/us-rates-k6-visual-v0.1-checkpoints.json
+      - indicators/hidden-regime-map/research/us-rates-k6-visual-v0.1.md
+      - indicators/hidden-regime-map/pine/hidden-regime-map-us-rates-k6-visual.pine
+      - indicators/hidden-regime-map/spec/hidden-regime-map-v0.4-rates-k6-visual.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-rates-k6-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RESEARCH: indicators/hidden-regime-map/research
+      FROZEN_DATA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
+      FROZEN_SHA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+      OUTPUT: artifacts/rates-k6-visual
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Compile K6 visual tools
+        run: >-
+          python -m py_compile
+          "$RESEARCH/export_rates_k6_visual.py"
+          "$RESEARCH/generate_rates_k6_pine.py"
+          "$RESEARCH/test_export_rates_k6_visual.py"
+          "$RESEARCH/test_generate_rates_k6_pine.py"
+
+      - name: Run K6 visual unit tests
+        run: |
+          cd "$RESEARCH"
+          python -m unittest -v \
+            test_export_rates_k6_visual.py \
+            test_generate_rates_k6_pine.py
+
+      - name: Generate frozen K6 rates profile
+        run: |
+          mkdir -p "$OUTPUT/profile" "$OUTPUT/pine"
+          python "$RESEARCH/export_rates_k6_visual.py" \
+            --input "$FROZEN_DATA" \
+            --sha256-file "$FROZEN_SHA" \
+            --output-dir "$OUTPUT/profile"
+          python -m json.tool "$OUTPUT/profile/us-rates-k6-visual-v0.1.json" > /dev/null
+          python -m json.tool "$OUTPUT/profile/us-rates-k6-visual-v0.1-checkpoints.json" > /dev/null
+
+      - name: Generate Pine from frozen profile
+        run: |
+          python "$RESEARCH/generate_rates_k6_pine.py" \
+            --profile "$OUTPUT/profile/us-rates-k6-visual-v0.1.json" \
+            --output "$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine"
+          grep -F 'indicator("Hidden Regime Map — U.S. Rates K=6 Visual"' "$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine"
+          grep -F 'FRED:DGS2' "$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine"
+          grep -F 'HRM Rates Posterior R6' "$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine"
+          grep -F 'Historical colors are retrospective' "$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine"
+
+      - name: Verify committed generated assets when present
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          pairs = [
+              (
+                  Path('artifacts/rates-k6-visual/profile/us-rates-k6-visual-v0.1.json'),
+                  Path('indicators/hidden-regime-map/models/us-rates-k6-visual-v0.1.json'),
+              ),
+              (
+                  Path('artifacts/rates-k6-visual/profile/us-rates-k6-visual-v0.1-checkpoints.json'),
+                  Path('indicators/hidden-regime-map/research/fixtures/us-rates-k6-visual-v0.1-checkpoints.json'),
+              ),
+          ]
+          for generated, committed in pairs:
+              if committed.exists():
+                  left = json.loads(generated.read_text(encoding='utf-8'))
+                  right = json.loads(committed.read_text(encoding='utf-8'))
+                  if left != right:
+                      raise SystemExit(f'generated JSON differs from committed asset: {committed}')
+                  print(f'generated JSON matches committed asset: {committed}')
+          PY
+          if [ -f indicators/hidden-regime-map/research/us-rates-k6-visual-v0.1.md ]; then
+            cmp "$OUTPUT/profile/us-rates-k6-visual-v0.1.md" \
+              indicators/hidden-regime-map/research/us-rates-k6-visual-v0.1.md
+          fi
+          if [ -f indicators/hidden-regime-map/pine/hidden-regime-map-us-rates-k6-visual.pine ]; then
+            cmp "$OUTPUT/pine/hidden-regime-map-us-rates-k6-visual.pine" \
+              indicators/hidden-regime-map/pine/hidden-regime-map-us-rates-k6-visual.pine
+          fi
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          if [ -f "$OUTPUT/profile/us-rates-k6-visual-v0.1.md" ]; then
+            cat "$OUTPUT/profile/us-rates-k6-visual-v0.1.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hidden-regime-us-rates-k6-visual
+          path: artifacts/rates-k6-visual
+          retention-days: 14
+          if-no-files-found: error
