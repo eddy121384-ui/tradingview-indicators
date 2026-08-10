@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Mechanically derive the v0.6 Phase-A research core from frozen v0.5.2.1.
 
-The generator deliberately performs a tiny, auditable transformation instead of
-copying the full mirror and editing it by hand.  The frozen Pine source is not
-touched.  The v0.5 Python mirror is also not modified by this module.
+The generator deliberately performs small, auditable transformations instead of
+copying the full mirror and editing it by hand. The frozen Pine source is not
+touched. The v0.5 Python mirror is also not modified by this module.
 """
 
 from __future__ import annotations
@@ -20,12 +20,35 @@ BASELINE = HERE / "price_only_core.py"
 EXPECTED_BASELINE_GIT_BLOB_SHA = "b7d1c7e02194e46e162c999854aff6907bd5be3d"
 
 IMPORT_ANCHOR = "import pandas as pd\n"
-IMPORT_BLOCK = '''\ntry:\n    from .v06_boundary_scores import soft_no_break_high_score, soft_no_break_low_score\nexcept ImportError:  # direct script execution / generated-module execution\n    from v06_boundary_scores import soft_no_break_high_score, soft_no_break_low_score  # type: ignore\n'''
+IMPORT_BLOCK = '''\ntry:\n    from .v06_boundary_scores import (\n        soft_above_range_score,\n        soft_below_range_score,\n        soft_hold_strength,\n        soft_no_break_high_score,\n        soft_no_break_low_score,\n    )\nexcept ImportError:  # direct script execution / generated-module execution\n    from v06_boundary_scores import (  # type: ignore\n        soft_above_range_score,\n        soft_below_range_score,\n        soft_hold_strength,\n        soft_no_break_high_score,\n        soft_no_break_low_score,\n    )\n'''
 
 OLD_LOW = "    no_break_low_score = np.where(close > prev_abs_low, 100.0, 0.0)"
 OLD_HIGH = "    no_break_high_score = np.where(close < prev_abs_high, 100.0, 0.0)"
 NEW_LOW = "    no_break_low_score = soft_no_break_low_score(close, prev_abs_low, atr_v)"
 NEW_HIGH = "    no_break_high_score = soft_no_break_high_score(close, prev_abs_high, atr_v)"
+
+OLD_RANGE_CONT = '''    range_cont_up = np.where(sustained_above, 100.0, np.where(above_prev_range, 80.0, np.where(recent_break_up, 65.0, np.where(close > range_mid, 35.0, 0.0))))
+    range_cont_dn = np.where(sustained_below, 100.0, np.where(below_prev_range, 80.0, np.where(recent_break_dn, 65.0, np.where(close < range_mid, 35.0, 0.0))))'''
+NEW_RANGE_CONT = '''    above_prev_range_score = soft_above_range_score(close, prev_range_high, atr_v)
+    below_prev_range_score = soft_below_range_score(close, prev_range_low, atr_v)
+    sustained_above_score = soft_hold_strength(above_prev_range_score, cfg.continuation_hold_bars)
+    sustained_below_score = soft_hold_strength(below_prev_range_score, cfg.continuation_hold_bars)
+    range_cont_up_base = np.where(recent_break_up, 65.0, np.where(close > range_mid, 35.0, 0.0))
+    range_cont_dn_base = np.where(recent_break_dn, 65.0, np.where(close < range_mid, 35.0, 0.0))
+    range_cont_up = np.maximum(
+        range_cont_up_base,
+        np.maximum(
+            np.nan_to_num(above_prev_range_score, nan=0.0) * 0.80,
+            np.nan_to_num(sustained_above_score, nan=0.0),
+        ),
+    )
+    range_cont_dn = np.maximum(
+        range_cont_dn_base,
+        np.maximum(
+            np.nan_to_num(below_prev_range_score, nan=0.0) * 0.80,
+            np.nan_to_num(sustained_below_score, nan=0.0),
+        ),
+    )'''
 
 DIAGNOSTIC_ANCHOR = '        "range_score": range_score,\n'
 DIAGNOSTIC_INSERT = (
@@ -35,6 +58,10 @@ DIAGNOSTIC_INSERT = (
     '        "prev_range_low": prev_range_low,\n'
     '        "above_prev_range": above_prev_range.astype(float),\n'
     '        "below_prev_range": below_prev_range.astype(float),\n'
+    '        "above_prev_range_score": above_prev_range_score,\n'
+    '        "below_prev_range_score": below_prev_range_score,\n'
+    '        "sustained_above_score": sustained_above_score,\n'
+    '        "sustained_below_score": sustained_below_score,\n'
     '        "range_break_up": range_break_up.astype(float),\n'
     '        "range_break_dn": range_break_dn.astype(float),\n'
     '        "recent_break_up": recent_break_up.astype(float),\n'
@@ -77,6 +104,7 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
         (IMPORT_ANCHOR, "import anchor"),
         (OLD_LOW, "low hard threshold"),
         (OLD_HIGH, "high hard threshold"),
+        (OLD_RANGE_CONT, "range continuation hard-threshold block"),
         (DIAGNOSTIC_ANCHOR, "diagnostic anchor"),
     ):
         if source.count(needle) != 1:
@@ -85,6 +113,7 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
     source = source.replace(IMPORT_ANCHOR, IMPORT_ANCHOR + IMPORT_BLOCK, 1)
     source = source.replace(OLD_LOW, NEW_LOW, 1)
     source = source.replace(OLD_HIGH, NEW_HIGH, 1)
+    source = source.replace(OLD_RANGE_CONT, NEW_RANGE_CONT, 1)
     source = source.replace(DIAGNOSTIC_ANCHOR, DIAGNOSTIC_ANCHOR + DIAGNOSTIC_INSERT, 1)
 
     banner = (
@@ -92,8 +121,9 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
         "# Mechanical delta from frozen v0.5.2.1 research mirror:\n"
         "#   1) noBreakLowScore: binary 0/100 -> continuous ATR-scaled score\n"
         "#   2) noBreakHighScore: binary 0/100 -> continuous ATR-scaled score\n"
+        "#   3) prior-range continuation: boolean 65/80/100 cliff -> continuous ATR-scaled hold strength\n"
         "# Additional emitted columns are diagnostics only; they do not change calculations.\n"
-        "# No state-count, persistence, witness, or trading-rule changes.\n\n"
+        "# No state-count, formal-state persistence, witness, or trading-rule changes.\n\n"
     )
     return banner + source
 
