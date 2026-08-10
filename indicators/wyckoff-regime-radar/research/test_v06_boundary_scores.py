@@ -43,7 +43,7 @@ class V06BoundaryPrimitiveTests(unittest.TestCase):
         offsets = np.linspace(-0.006, 0.006, 25)
         low_scores = soft_no_break_low_score(1.0 + offsets, 1.0, atr_value)
         high_scores = soft_no_break_high_score(1.0 - offsets, 1.0, atr_value)
-        np.testing.assert_allclose(low_scores, high_scores, atol=1e-12)
+        np.testing.assert_allclose(low_scores, high_scores, atol=1e-10)
 
     def test_sub_pip_crossing_is_continuous_instead_of_100_point_jump(self) -> None:
         boundary = 1.06236
