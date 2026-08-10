@@ -13,6 +13,7 @@ import json
 import lzma
 import socket
 import struct
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -26,16 +27,26 @@ PAIRS = {
 }
 YEARS = (2024,)
 RECORD = struct.Struct(">5If")  # seconds, open, close, low, high, volume
+MAX_ATTEMPTS = 5
 
 
 def url_for(pair: str, year: int) -> str:
     return f"http://datafeed.dukascopy.com/datafeed/{pair}/{year}/BID_candles_day_1.bi5"
 
 
-def fetch(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "Issue55Research/1.0"})
-    with urllib.request.urlopen(request, timeout=10) as response:
-        return response.read()
+def fetch(url: str) -> tuple[bytes, int]:
+    last_exc: Exception | None = None
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        request = urllib.request.Request(url, headers={"User-Agent": "Issue55Research/1.0"})
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                return response.read(), attempt
+        except (urllib.error.URLError, TimeoutError, socket.timeout) as exc:
+            last_exc = exc
+            if attempt < MAX_ATTEMPTS:
+                time.sleep(min(2 ** (attempt - 1), 8))
+    assert last_exc is not None
+    raise last_exc
 
 
 def decode_year(content: bytes, year: int, price_scale: float) -> list[dict]:
@@ -120,6 +131,7 @@ def main() -> None:
         "transport": "HTTP public datafeed",
         "record_format": ">5If: seconds/open/close/low/high/volume",
         "years": list(YEARS),
+        "max_attempts_per_file": MAX_ATTEMPTS,
         "pairs": {},
         "boundary": "Source qualification only; no Wyckoff or OOS outcome is computed.",
     }
@@ -129,11 +141,12 @@ def main() -> None:
         for year in YEARS:
             url = url_for(pair, year)
             try:
-                content = fetch(url)
+                content, attempts = fetch(url)
                 rows = decode_year(content, year, scale)
                 result = audit_rows(rows, year)
                 result["url"] = url
                 result["compressed_bytes"] = len(content)
+                result["fetch_attempts"] = attempts
                 pair_report[str(year)] = result
             except (urllib.error.URLError, lzma.LZMAError, ValueError, TimeoutError, socket.timeout) as exc:
                 pair_report[str(year)] = {"url": url, "error": f"{type(exc).__name__}: {exc}"}
