@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "issue": 55,
+  "source": {
+    "platform": "TradingView",
+    "symbol": "OANDA:EURUSD",
+    "timeframe": "1D",
+    "capture_time_local": "2026-08-10T11:49:00+08:00",
+    "capture_method": "manual screenshot of Issue #55 checkpoint table"
+  },
+  "stage_id_map": {
+    "1": "accumulation",
+    "2": "markup",
+    "3": "reaccumulation",
+    "4": "distribution",
+    "5": "markdown",
+    "6": "redistribution"
+  },
+  "rows": [
+    {
+      "target_date": "2019-08-01",
+      "close": 1.11084,
+      "prob_acc": 0.0,
+      "prob_markup": 0.0,
+      "prob_reacc": 0.0,
+      "prob_dist": 0.0,
+      "prob_markdown": 99.9,
+      "prob_redist": 0.0,
+      "top_gap": 99.9,
+      "evidence_strength": 95.2,
+      "candidate_display_id": 5,
+      "formal_id": 5
+    },
+    {
+      "target_date": "2020-03-20",
+      "status": "missing_exact_date_capture",
+      "note": "The first checkpoint harness used exact year/month/day matching and did not capture this OANDA daily bar. The harness is being changed to capture the first daily bar whose close time reaches the target date."
+    },
+    {
+      "target_date": "2021-06-01",
+      "close": 1.22104,
+      "prob_acc": 1.0,
+      "prob_markup": 98.9,
+      "prob_reacc": 0.1,
+      "prob_dist": 0.0,
+      "prob_markdown": 0.0,
+      "prob_redist": 0.0,
+      "top_gap": 97.9,
+      "evidence_strength": 92.2,
+      "candidate_display_id": 2,
+      "formal_id": 2
+    },
+    {
+      "target_date": "2022-09-28",
+      "close": 0.9814,
+      "prob_acc": 0.0,
+      "prob_markup": 0.0,
+      "prob_reacc": 0.0,
+      "prob_dist": 0.0,
+      "prob_markdown": 100.0,
+      "prob_redist": 0.0,
+      "top_gap": 100.0,
+      "evidence_strength": 95.6,
+      "candidate_display_id": 5,
+      "formal_id": 5
+    },
+    {
+      "target_date": "2024-04-16",
+      "close": 1.06728,
+      "prob_acc": 0.0,
+      "prob_markup": 0.0,
+      "prob_reacc": 0.0,
+      "prob_dist": 20.5,
+      "prob_markdown": 79.5,
+      "prob_redist": 0.0,
+      "top_gap": 59.0,
+      "evidence_strength": 94.7,
+      "candidate_display_id": 5,
+      "formal_id": 5
+    },
+    {
+      "target_date": "2026-07-30",
+      "close": 1.15306,
+      "prob_acc": 99.2,
+      "prob_markup": 0.8,
+      "prob_reacc": 0.0,
+      "prob_dist": 0.0,
+      "prob_markdown": 0.0,
+      "prob_redist": 0.0,
+      "top_gap": 98.5,
+      "evidence_strength": 95.6,
+      "candidate_display_id": 1,
+      "formal_id": 5
+    }
+  ],
+  "interpretation_boundary": "These are TradingView reference outputs for Pine/Python parity only. They are not economic validation results."
+}
