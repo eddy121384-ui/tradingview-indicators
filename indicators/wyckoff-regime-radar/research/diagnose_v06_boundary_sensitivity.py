@@ -33,6 +33,32 @@ PROBABILITY_COLUMNS = (
     "prob_markdown",
     "prob_redist",
 )
+BREAKOUT_DIAGNOSTIC_FIELDS = (
+    "above_prev_range",
+    "range_break_up",
+    "recent_break_up",
+    "range_cont_up",
+    "breakout_score",
+    "breakout_gate",
+    "range_cont_up_gate",
+    "markup_continuation_score",
+    "breakout_markup_gate",
+    "markup_cont_gate",
+    "markup_gate",
+)
+BREAKDOWN_DIAGNOSTIC_FIELDS = (
+    "below_prev_range",
+    "range_break_dn",
+    "recent_break_dn",
+    "range_cont_dn",
+    "explicit_breakdown_score",
+    "explicit_breakdown_gate",
+    "range_cont_dn_gate",
+    "markdown_continuation_score",
+    "breakdown_markdown_gate",
+    "markdown_cont_gate",
+    "markdown_gate",
+)
 
 
 def _load_pair(pair: str) -> pd.DataFrame:
@@ -99,6 +125,17 @@ def _dist_markdown_jump(left: pd.Series, right: pd.Series) -> float:
     return float(sum(values))
 
 
+def _diagnostic_pair(row_below: pd.Series, row_above: pd.Series, fields: tuple[str, ...]) -> dict[str, list[float | None]]:
+    result: dict[str, list[float | None]] = {}
+    for field in fields:
+        values: list[float | None] = []
+        for row in (row_below, row_above):
+            value = float(row[field])
+            values.append(value if np.isfinite(value) else None)
+        result[field] = values
+    return result
+
+
 def _case(
     pair: str,
     side: str,
@@ -129,10 +166,12 @@ def _case(
         soft_primitive_jump = abs(
             float(v06_above["no_break_low_score"]) - float(v06_below["no_break_low_score"])
         )
+        path_diagnostics = _diagnostic_pair(v06_below, v06_above, BREAKDOWN_DIAGNOSTIC_FIELDS)
     else:
         soft_primitive_jump = abs(
             float(v06_above["no_break_high_score"]) - float(v06_below["no_break_high_score"])
         )
+        path_diagnostics = _diagnostic_pair(v06_below, v06_above, BREAKOUT_DIAGNOSTIC_FIELDS)
 
     date_value = frame.loc[index, "date"] if "date" in frame.columns else index
     return {
@@ -158,6 +197,7 @@ def _case(
         "v05_candidate_above": int(v05_above["candidate_display_id"]),
         "v06_candidate_below": int(v06_below["candidate_display_id"]),
         "v06_candidate_above": int(v06_above["candidate_display_id"]),
+        "v06_path_diagnostics": path_diagnostics,
     }
 
 
