@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import lzma
+import socket
 import struct
 import urllib.error
 import urllib.request
@@ -28,7 +29,7 @@ RECORD = struct.Struct(">5If")  # seconds, open, close, low, high, volume
 
 
 def url_for(pair: str, year: int) -> str:
-    return f"https://datafeed.dukascopy.com/datafeed/{pair}/{year}/BID_candles_day_1.bi5"
+    return f"http://datafeed.dukascopy.com/datafeed/{pair}/{year}/BID_candles_day_1.bi5"
 
 
 def fetch(url: str) -> bytes:
@@ -88,6 +89,7 @@ def main() -> None:
     report = {
         "status": "dukascopy_daily_feed_probe",
         "price_basis": "BID",
+        "transport": "HTTP public datafeed",
         "record_format": ">5If: seconds/open/close/low/high/volume",
         "years": list(YEARS),
         "pairs": {},
@@ -105,7 +107,7 @@ def main() -> None:
                 result["url"] = url
                 result["compressed_bytes"] = len(content)
                 pair_report[str(year)] = result
-            except (urllib.error.URLError, lzma.LZMAError, ValueError) as exc:
+            except (urllib.error.URLError, lzma.LZMAError, ValueError, TimeoutError, socket.timeout) as exc:
                 pair_report[str(year)] = {"url": url, "error": f"{type(exc).__name__}: {exc}"}
                 failures.append(f"{pair}/{year}: {exc}")
         report["pairs"][pair] = pair_report
