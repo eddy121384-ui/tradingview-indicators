@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Probe Dukascopy yearly BID daily-candle files for Issue #55.
 
-This is a source-qualification probe only. It downloads a small fixed set of
-yearly files from Dukascopy's public datafeed, decodes the documented 24-byte
-OHLC records, and checks chronology plus OHLC envelope integrity. No Wyckoff
-calculation or utility statistic is run.
+This is a source-qualification probe only. It downloads one representative
+recent full year for each target FX pair from Dukascopy's public datafeed,
+decodes the 24-byte OHLC records, and checks chronology plus OHLC envelope
+integrity. No Wyckoff calculation or utility statistic is run.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ PAIRS = {
     "GBPUSD": 0.00001,
     "AUDUSD": 0.00001,
 }
-YEARS = (2006, 2010, 2020, 2024, 2026)
+YEARS = (2024,)
 RECORD = struct.Struct(">5If")  # seconds, open, close, low, high, volume
 
 
@@ -33,7 +33,7 @@ def url_for(pair: str, year: int) -> str:
 
 def fetch(url: str) -> bytes:
     request = urllib.request.Request(url, headers={"User-Agent": "Issue55Research/1.0"})
-    with urllib.request.urlopen(request, timeout=30) as response:
+    with urllib.request.urlopen(request, timeout=10) as response:
         return response.read()
 
 
@@ -89,6 +89,7 @@ def main() -> None:
         "status": "dukascopy_daily_feed_probe",
         "price_basis": "BID",
         "record_format": ">5If: seconds/open/close/low/high/volume",
+        "years": list(YEARS),
         "pairs": {},
         "boundary": "Source qualification only; no Wyckoff or OOS outcome is computed.",
     }
