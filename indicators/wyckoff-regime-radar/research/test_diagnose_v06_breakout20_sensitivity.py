@@ -29,7 +29,17 @@ class V06Breakout20SensitivityTests(unittest.TestCase):
             }
             for row in report["cases"]
         ]
+        worst = report["worst_toggled_case"]
+        self.assertIsNotNone(worst)
+        worst_view = {
+            "pair": worst["pair"],
+            "side": worst["side"],
+            "distance50_atr": worst["distance_20_to_50_atr"],
+            "v06_l1": worst["v06_probability_l1_jump"],
+            "v06_path": worst["v06_path"],
+        }
         print("V06_BREAKOUT20_CASES=" + json.dumps(compact, sort_keys=True))
+        print("V06_BREAKOUT20_WORST=" + json.dumps(worst_view, sort_keys=True))
         print("V06_BREAKOUT20_SUMMARY=" + json.dumps(report["summary"], sort_keys=True))
 
 
