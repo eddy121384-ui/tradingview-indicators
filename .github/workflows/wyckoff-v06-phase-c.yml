@@ -1,6 +1,7 @@
 name: Wyckoff v0.6 Phase C State Cardinality
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - feat/issue-57-wyckoff-v0.6-robustness
@@ -8,16 +9,11 @@ on:
       - "indicators/wyckoff-regime-radar/research/diagnose_v06_state_cardinality.py"
       - "indicators/wyckoff-regime-radar/research/test_diagnose_v06_state_cardinality.py"
       - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_c_report.py"
+      - "indicators/wyckoff-regime-radar/research/v06_state_mapping.py"
+      - "indicators/wyckoff-regime-radar/research/test_v06_state_mapping.py"
       - "indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py"
       - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-c-state-cardinality.*"
-      - ".github/workflows/wyckoff-v06-phase-c.yml"
-  pull_request:
-    paths:
-      - "indicators/wyckoff-regime-radar/research/diagnose_v06_state_cardinality.py"
-      - "indicators/wyckoff-regime-radar/research/test_diagnose_v06_state_cardinality.py"
-      - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_c_report.py"
-      - "indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py"
-      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-c-state-cardinality.*"
+      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-c-decision.md"
       - ".github/workflows/wyckoff-v06-phase-c.yml"
 
 permissions:
@@ -38,10 +34,15 @@ jobs:
           python -m py_compile \
             indicators/wyckoff-regime-radar/research/diagnose_v06_state_cardinality.py \
             indicators/wyckoff-regime-radar/research/test_diagnose_v06_state_cardinality.py \
-            indicators/wyckoff-regime-radar/research/generate_issue57_phase_c_report.py
-      - name: Run Phase C mapping tests
+            indicators/wyckoff-regime-radar/research/generate_issue57_phase_c_report.py \
+            indicators/wyckoff-regime-radar/research/v06_state_mapping.py \
+            indicators/wyckoff-regime-radar/research/test_v06_state_mapping.py
+      - name: Run Phase C tests
         working-directory: indicators/wyckoff-regime-radar/research
-        run: python -m unittest -v test_diagnose_v06_state_cardinality
+        run: |
+          python -m unittest -v \
+            test_diagnose_v06_state_cardinality \
+            test_v06_state_mapping
       - name: Generate deterministic Phase C report
         run: |
           mkdir -p indicators/wyckoff-regime-radar/research/reports
