@@ -32,6 +32,7 @@ jobs:
             indicators/wyckoff-regime-radar/research/price_only_core.py \
             indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py \
             indicators/wyckoff-regime-radar/research/compare_tradingview_parity.py \
+            indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
             indicators/wyckoff-regime-radar/research/test_compare_tradingview_parity.py
@@ -49,6 +50,12 @@ jobs:
           cmp \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
             /tmp/wyckoff-issue-55-price-only-parity.pine
+      - name: Provisional EURUSD cross-feed parity diagnostic
+        continue-on-error: true
+        run: |
+          python indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
+            --output /tmp/issue-55-cross-feed-parity.json
+          cat /tmp/issue-55-cross-feed-parity.json
       - name: Commit generated parity harness on branch push
         if: github.event_name == 'push'
         run: |
