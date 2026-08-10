@@ -88,6 +88,13 @@ def normalize_download(frame: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def _row_text(row: pd.Series) -> str:
+    return (
+        f"date={row['date']} open={float(row['open']):.10f} high={float(row['high']):.10f} "
+        f"low={float(row['low']):.10f} close={float(row['close']):.10f}"
+    )
+
+
 def validate_ohlc(frame: pd.DataFrame) -> None:
     if frame.empty:
         raise ValueError("normalized OHLC is empty")
@@ -96,11 +103,20 @@ def validate_ohlc(frame: pd.DataFrame) -> None:
     if not frame["date"].is_monotonic_increasing:
         raise ValueError("dates are not strictly sorted")
     if (frame[["open", "high", "low", "close"]] <= 0).any().any():
-        raise ValueError("non-positive FX price in normalized OHLC")
-    if (frame["high"] < frame[["open", "close", "low"]].max(axis=1)).any():
-        raise ValueError("OHLC integrity failure: high below another price")
-    if (frame["low"] > frame[["open", "close", "high"]].min(axis=1)).any():
-        raise ValueError("OHLC integrity failure: low above another price")
+        bad = (frame[["open", "high", "low", "close"]] <= 0).any(axis=1)
+        raise ValueError(f"non-positive FX price: {_row_text(frame.loc[bad].iloc[0])}")
+
+    high_bad = frame["high"] < frame[["open", "close", "low"]].max(axis=1)
+    if high_bad.any():
+        raise ValueError(
+            f"OHLC integrity failure: high below another price: {_row_text(frame.loc[high_bad].iloc[0])}"
+        )
+
+    low_bad = frame["low"] > frame[["open", "close", "high"]].min(axis=1)
+    if low_bad.any():
+        raise ValueError(
+            f"OHLC integrity failure: low above another price: {_row_text(frame.loc[low_bad].iloc[0])}"
+        )
 
 
 def serialize_ohlc(frame: pd.DataFrame) -> bytes:
@@ -166,7 +182,10 @@ def freeze(output_dir: Path, manifest_path: Path) -> dict:
 
     pairs: dict[str, dict] = {}
     for pair, ticker in PAIR_TICKERS.items():
-        frame = download_pair(ticker)
+        try:
+            frame = download_pair(ticker)
+        except ValueError as exc:
+            raise ValueError(f"{pair} ({ticker}) failed canonical-data validation: {exc}") from exc
         filename = f"issue-55-{pair.lower()}-yahoo-1d-through-2026-08-07.csv"
         path = output_dir / filename
         content = serialize_ohlc(frame)
