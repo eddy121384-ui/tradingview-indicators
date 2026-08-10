@@ -1,0 +1,35 @@
+name: Wyckoff FX Core Validation
+
+on:
+  push:
+    branches:
+      - research/issue-55-wyckoff-fx-core-validation
+    paths:
+      - "indicators/wyckoff-regime-radar/research/**"
+      - ".github/workflows/wyckoff-fx-core-validation.yml"
+  pull_request:
+    paths:
+      - "indicators/wyckoff-regime-radar/research/**"
+      - ".github/workflows/wyckoff-fx-core-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  price-only-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/wyckoff-regime-radar/research/requirements.txt
+      - name: Compile research modules
+        run: |
+          python -m py_compile \
+            indicators/wyckoff-regime-radar/research/pine_math.py \
+            indicators/wyckoff-regime-radar/research/price_only_core.py \
+            indicators/wyckoff-regime-radar/research/test_price_only_core.py
+      - name: Run price-only mirror tests
+        run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
