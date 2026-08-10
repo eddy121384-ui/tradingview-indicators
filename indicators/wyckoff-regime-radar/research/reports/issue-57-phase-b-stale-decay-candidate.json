@@ -163,14 +163,14 @@
       "bars": 2400,
       "candidate_adoption": {
         "adopted_delay_bars": {
-          "count": 47,
+          "count": 43,
           "max": 2,
           "median": 2.0,
           "p90": 2.0
         },
-        "adopted_runs": 47,
-        "adoption_rate": 0.5595238095238095,
-        "switch_demand_candidate_runs": 84,
+        "adopted_runs": 43,
+        "adoption_rate": 0.5443037974683544,
+        "switch_demand_candidate_runs": 79,
         "unadopted_examples": [
           {
             "end": 1102,
@@ -222,41 +222,41 @@
           }
         ],
         "unadopted_run_length_bars": {
-          "count": 37,
+          "count": 36,
           "max": 2,
           "median": 1.0,
           "p90": 2.0
         },
-        "unadopted_runs": 37
+        "unadopted_runs": 36
       },
       "candidate_formal_disagreement_run_bars": {
-        "count": 79,
+        "count": 74,
         "max": 4,
         "median": 2.0,
         "p90": 2.0
       },
-      "candidate_formal_disagreement_share_all_bars": 0.05416666666666667,
-      "candidate_formal_disagreement_share_candidate_bars": 0.125,
+      "candidate_formal_disagreement_share_all_bars": 0.05125,
+      "candidate_formal_disagreement_share_candidate_bars": 0.11826923076923077,
       "candidate_switches": 249,
       "clear_to_zero_reasons": {
-        "chaos": 0,
-        "coexist": 2,
+        "chaos": 1,
+        "coexist": 0,
         "other": 0,
-        "weak_challenger": 20
+        "weak_challenger": 11
       },
       "engine": "phase_b_candidate",
       "formal_carry_run_bars": {
-        "count": 95,
+        "count": 98,
         "max": 7,
         "median": 2.0,
-        "p90": 4.0
+        "p90": 5.0
       },
-      "formal_carry_without_strong_candidate_share": 0.08291666666666667,
+      "formal_carry_without_strong_candidate_share": 0.10625,
       "formal_dwell_bars_all_states": {
-        "count": 56,
+        "count": 50,
         "max": 79,
-        "median": 15.0,
-        "p90": 46.0
+        "median": 21.5,
+        "p90": 53.300000000000004
       },
       "formal_dwell_bars_by_stage": {
         "1_Accumulation": {
@@ -269,7 +269,7 @@
           "count": 10,
           "max": 79,
           "median": 33.5,
-          "p90": 67.3
+          "p90": 70.89999999999999
         },
         "3_Re-accumulation": {
           "count": 0,
@@ -280,14 +280,14 @@
         "4_Distribution": {
           "count": 8,
           "max": 56,
-          "median": 13.5,
+          "median": 15.0,
           "p90": 42.0
         },
         "5_Markdown": {
-          "count": 26,
-          "max": 36,
-          "median": 12.5,
-          "p90": 29.0
+          "count": 20,
+          "max": 60,
+          "median": 22.0,
+          "p90": 44.400000000000006
         },
         "6_Re-distribution": {
           "count": 0,
@@ -296,22 +296,22 @@
           "p90": null
         }
       },
-      "formal_switches": 78,
+      "formal_switches": 62,
       "formal_zero_run_bars": {
-        "count": 23,
+        "count": 13,
         "max": 1052,
-        "median": 6.0,
-        "p90": 15.600000000000001
+        "median": 4.0,
+        "p90": 17.800000000000004
       },
-      "formal_zero_share": 0.4995833333333333,
-      "one_bar_flip_per_formal_switch": 0.02564102564102564,
-      "one_bar_formal_flips": 2,
+      "formal_zero_share": 0.4691666666666667,
+      "one_bar_flip_per_formal_switch": 0.016129032258064516,
+      "one_bar_formal_flips": 1,
       "pair": "EURUSD",
       "strong_candidate_share": 0.43333333333333335,
       "transition_types": {
-        "direct_nonzero_to_nonzero": 33,
-        "into_zero": 22,
-        "out_of_zero": 23
+        "direct_nonzero_to_nonzero": 37,
+        "into_zero": 12,
+        "out_of_zero": 13
       },
       "weak_only_candidate_share": 0.11125,
       "weak_only_run_bars": {
@@ -481,14 +481,14 @@
       "bars": 2400,
       "candidate_adoption": {
         "adopted_delay_bars": {
-          "count": 56,
+          "count": 54,
           "max": 2,
           "median": 2.0,
           "p90": 2.0
         },
-        "adopted_runs": 56,
-        "adoption_rate": 0.5045045045045045,
-        "switch_demand_candidate_runs": 111,
+        "adopted_runs": 54,
+        "adoption_rate": 0.5046728971962616,
+        "switch_demand_candidate_runs": 107,
         "unadopted_examples": [
           {
             "end": 1069,
@@ -507,12 +507,6 @@
             "length": 2,
             "stage": 4,
             "start": 1139
-          },
-          {
-            "end": 1165,
-            "length": 2,
-            "stage": 1,
-            "start": 1164
           },
           {
             "end": 1177,
@@ -537,57 +531,63 @@
             "length": 2,
             "stage": 2,
             "start": 1245
+          },
+          {
+            "end": 1263,
+            "length": 1,
+            "stage": 1,
+            "start": 1263
           }
         ],
         "unadopted_run_length_bars": {
-          "count": 55,
+          "count": 53,
           "max": 2,
           "median": 1.0,
           "p90": 2.0
         },
-        "unadopted_runs": 55
+        "unadopted_runs": 53
       },
       "candidate_formal_disagreement_run_bars": {
-        "count": 105,
+        "count": 102,
         "max": 6,
         "median": 2.0,
         "p90": 2.0
       },
-      "candidate_formal_disagreement_share_all_bars": 0.07416666666666667,
-      "candidate_formal_disagreement_share_candidate_bars": 0.173828125,
+      "candidate_formal_disagreement_share_all_bars": 0.07166666666666667,
+      "candidate_formal_disagreement_share_candidate_bars": 0.16796875,
       "candidate_switches": 261,
       "clear_to_zero_reasons": {
-        "chaos": 1,
+        "chaos": 0,
         "coexist": 1,
         "other": 0,
-        "weak_challenger": 20
+        "weak_challenger": 12
       },
       "engine": "phase_b_candidate",
       "formal_carry_run_bars": {
-        "count": 81,
+        "count": 88,
         "max": 12,
         "median": 2.0,
-        "p90": 3.0
+        "p90": 5.0
       },
-      "formal_carry_without_strong_candidate_share": 0.06791666666666667,
+      "formal_carry_without_strong_candidate_share": 0.09708333333333333,
       "formal_dwell_bars_all_states": {
-        "count": 70,
+        "count": 67,
         "max": 82,
-        "median": 11.0,
-        "p90": 38.2
+        "median": 14.0,
+        "p90": 38.8
       },
       "formal_dwell_bars_by_stage": {
         "1_Accumulation": {
           "count": 18,
           "max": 82,
-          "median": 13.0,
+          "median": 15.0,
           "p90": 34.5
         },
         "2_Markup": {
-          "count": 23,
+          "count": 21,
           "max": 60,
-          "median": 9.0,
-          "p90": 38.2
+          "median": 16.0,
+          "p90": 40.0
         },
         "3_Re-accumulation": {
           "count": 0,
@@ -602,10 +602,10 @@
           "p90": 19.60000000000001
         },
         "5_Markdown": {
-          "count": 20,
-          "max": 45,
-          "median": 13.5,
-          "p90": 28.800000000000026
+          "count": 19,
+          "max": 48,
+          "median": 14.0,
+          "p90": 38.39999999999999
         },
         "6_Re-distribution": {
           "count": 0,
@@ -614,22 +614,22 @@
           "p90": null
         }
       },
-      "formal_switches": 92,
+      "formal_switches": 80,
       "formal_zero_run_bars": {
-        "count": 23,
+        "count": 14,
         "max": 1052,
-        "median": 10.0,
-        "p90": 20.8
+        "median": 9.5,
+        "p90": 18.0
       },
-      "formal_zero_share": 0.53,
-      "one_bar_flip_per_formal_switch": 0.010869565217391304,
-      "one_bar_formal_flips": 1,
+      "formal_zero_share": 0.49041666666666667,
+      "one_bar_flip_per_formal_switch": 0.025,
+      "one_bar_formal_flips": 2,
       "pair": "USDJPY",
       "strong_candidate_share": 0.4266666666666667,
       "transition_types": {
-        "direct_nonzero_to_nonzero": 47,
-        "into_zero": 22,
-        "out_of_zero": 23
+        "direct_nonzero_to_nonzero": 53,
+        "into_zero": 13,
+        "out_of_zero": 14
       },
       "weak_only_candidate_share": 0.11208333333333333,
       "weak_only_run_bars": {
@@ -799,14 +799,14 @@
       "bars": 2400,
       "candidate_adoption": {
         "adopted_delay_bars": {
-          "count": 55,
+          "count": 54,
           "max": 2,
           "median": 2.0,
           "p90": 2.0
         },
-        "adopted_runs": 55,
-        "adoption_rate": 0.47413793103448276,
-        "switch_demand_candidate_runs": 116,
+        "adopted_runs": 54,
+        "adoption_rate": 0.4778761061946903,
+        "switch_demand_candidate_runs": 113,
         "unadopted_examples": [
           {
             "end": 1069,
@@ -858,41 +858,41 @@
           }
         ],
         "unadopted_run_length_bars": {
-          "count": 61,
+          "count": 59,
           "max": 2,
           "median": 1.0,
           "p90": 2.0
         },
-        "unadopted_runs": 61
+        "unadopted_runs": 59
       },
       "candidate_formal_disagreement_run_bars": {
-        "count": 110,
+        "count": 108,
         "max": 3,
         "median": 2.0,
         "p90": 2.0
       },
-      "candidate_formal_disagreement_share_all_bars": 0.0725,
-      "candidate_formal_disagreement_share_candidate_bars": 0.1627689429373246,
+      "candidate_formal_disagreement_share_all_bars": 0.07083333333333333,
+      "candidate_formal_disagreement_share_candidate_bars": 0.15902712815715622,
       "candidate_switches": 278,
       "clear_to_zero_reasons": {
         "chaos": 1,
-        "coexist": 3,
+        "coexist": 2,
         "other": 0,
-        "weak_challenger": 18
+        "weak_challenger": 10
       },
       "engine": "phase_b_candidate",
       "formal_carry_run_bars": {
-        "count": 87,
+        "count": 95,
         "max": 16,
         "median": 2.0,
-        "p90": 3.0
+        "p90": 5.0
       },
-      "formal_carry_without_strong_candidate_share": 0.06916666666666667,
+      "formal_carry_without_strong_candidate_share": 0.10166666666666667,
       "formal_dwell_bars_all_states": {
-        "count": 69,
-        "max": 58,
-        "median": 13.0,
-        "p90": 35.60000000000001
+        "count": 67,
+        "max": 59,
+        "median": 14.0,
+        "p90": 39.4
       },
       "formal_dwell_bars_by_stage": {
         "1_Accumulation": {
@@ -903,15 +903,15 @@
         },
         "2_Markup": {
           "count": 20,
-          "max": 58,
+          "max": 59,
           "median": 19.5,
-          "p90": 49.60000000000001
+          "p90": 55.300000000000004
         },
         "3_Re-accumulation": {
           "count": 2,
-          "max": 5,
-          "median": 4.0,
-          "p90": 4.8
+          "max": 6,
+          "median": 5.5,
+          "p90": 5.9
         },
         "4_Distribution": {
           "count": 10,
@@ -920,10 +920,10 @@
           "p90": 36.099999999999994
         },
         "5_Markdown": {
-          "count": 21,
-          "max": 38,
-          "median": 15.0,
-          "p90": 30.0
+          "count": 19,
+          "max": 41,
+          "median": 22.0,
+          "p90": 38.4
         },
         "6_Re-distribution": {
           "count": 0,
@@ -932,22 +932,22 @@
           "p90": null
         }
       },
-      "formal_switches": 91,
+      "formal_switches": 80,
       "formal_zero_run_bars": {
-        "count": 23,
+        "count": 14,
         "max": 1052,
-        "median": 7.0,
-        "p90": 12.600000000000001
+        "median": 4.5,
+        "p90": 9.400000000000002
       },
-      "formal_zero_share": 0.5075,
+      "formal_zero_share": 0.46416666666666667,
       "one_bar_flip_per_formal_switch": 0.0,
       "one_bar_formal_flips": 0,
       "pair": "GBPUSD",
       "strong_candidate_share": 0.4454166666666667,
       "transition_types": {
-        "direct_nonzero_to_nonzero": 46,
-        "into_zero": 22,
-        "out_of_zero": 23
+        "direct_nonzero_to_nonzero": 53,
+        "into_zero": 13,
+        "out_of_zero": 14
       },
       "weak_only_candidate_share": 0.08916666666666667,
       "weak_only_run_bars": {
@@ -1117,21 +1117,15 @@
       "bars": 2400,
       "candidate_adoption": {
         "adopted_delay_bars": {
-          "count": 52,
+          "count": 51,
           "max": 2,
           "median": 2.0,
           "p90": 2.0
         },
-        "adopted_runs": 52,
-        "adoption_rate": 0.5652173913043478,
-        "switch_demand_candidate_runs": 92,
+        "adopted_runs": 51,
+        "adoption_rate": 0.5795454545454546,
+        "switch_demand_candidate_runs": 88,
         "unadopted_examples": [
-          {
-            "end": 1104,
-            "length": 1,
-            "stage": 2,
-            "start": 1104
-          },
           {
             "end": 1107,
             "length": 2,
@@ -1173,44 +1167,50 @@
             "length": 2,
             "stage": 4,
             "start": 1131
+          },
+          {
+            "end": 1157,
+            "length": 1,
+            "stage": 4,
+            "start": 1157
           }
         ],
         "unadopted_run_length_bars": {
-          "count": 40,
+          "count": 37,
           "max": 2,
           "median": 1.0,
           "p90": 2.0
         },
-        "unadopted_runs": 40
+        "unadopted_runs": 37
       },
       "candidate_formal_disagreement_run_bars": {
-        "count": 86,
+        "count": 82,
         "max": 6,
         "median": 2.0,
         "p90": 2.0
       },
-      "candidate_formal_disagreement_share_all_bars": 0.06291666666666666,
-      "candidate_formal_disagreement_share_candidate_bars": 0.14046511627906977,
+      "candidate_formal_disagreement_share_all_bars": 0.06041666666666667,
+      "candidate_formal_disagreement_share_candidate_bars": 0.13488372093023257,
       "candidate_switches": 235,
       "clear_to_zero_reasons": {
-        "chaos": 2,
-        "coexist": 2,
+        "chaos": 1,
+        "coexist": 0,
         "other": 0,
-        "weak_challenger": 14
+        "weak_challenger": 8
       },
       "engine": "phase_b_candidate",
       "formal_carry_run_bars": {
-        "count": 80,
+        "count": 86,
         "max": 9,
         "median": 2.0,
-        "p90": 3.0
+        "p90": 5.0
       },
-      "formal_carry_without_strong_candidate_share": 0.06125,
+      "formal_carry_without_strong_candidate_share": 0.08541666666666667,
       "formal_dwell_bars_all_states": {
-        "count": 65,
+        "count": 62,
         "max": 83,
-        "median": 13.0,
-        "p90": 38.00000000000001
+        "median": 15.0,
+        "p90": 45.8
       },
       "formal_dwell_bars_by_stage": {
         "1_Accumulation": {
@@ -1220,10 +1220,10 @@
           "p90": 26.199999999999996
         },
         "2_Markup": {
-          "count": 13,
+          "count": 12,
           "max": 83,
-          "median": 27.0,
-          "p90": 49.8
+          "median": 35.5,
+          "p90": 59.900000000000006
         },
         "3_Re-accumulation": {
           "count": 1,
@@ -1238,10 +1238,10 @@
           "p90": 23.0
         },
         "5_Markdown": {
-          "count": 25,
-          "max": 53,
-          "median": 13.0,
-          "p90": 31.6
+          "count": 23,
+          "max": 65,
+          "median": 22.0,
+          "p90": 35.0
         },
         "6_Re-distribution": {
           "count": 0,
@@ -1250,22 +1250,22 @@
           "p90": null
         }
       },
-      "formal_switches": 83,
+      "formal_switches": 71,
       "formal_zero_run_bars": {
-        "count": 19,
+        "count": 10,
         "max": 1052,
-        "median": 9.0,
-        "p90": 21.0
+        "median": 8.0,
+        "p90": 121.39999999999964
       },
-      "formal_zero_share": 0.5070833333333333,
+      "formal_zero_share": 0.47291666666666665,
       "one_bar_flip_per_formal_switch": 0.0,
       "one_bar_formal_flips": 0,
       "pair": "AUDUSD",
       "strong_candidate_share": 0.4479166666666667,
       "transition_types": {
-        "direct_nonzero_to_nonzero": 46,
-        "into_zero": 18,
-        "out_of_zero": 19
+        "direct_nonzero_to_nonzero": 52,
+        "into_zero": 9,
+        "out_of_zero": 10
       },
       "weak_only_candidate_share": 0.09041666666666667,
       "weak_only_run_bars": {
@@ -1298,24 +1298,24 @@
     },
     "phase_b_candidate": {
       "clear_to_zero_reasons": {
-        "chaos": 4,
-        "coexist": 8,
+        "chaos": 3,
+        "coexist": 3,
         "other": 0,
-        "weak_challenger": 72
+        "weak_challenger": 41
       },
       "median_pair_adopted_switch_delay_bars": 2.0,
-      "median_pair_candidate_adoption_rate": 0.532014157014157,
+      "median_pair_candidate_adoption_rate": 0.5244883473323081,
       "median_pair_disagreement_run_p90_bars": 2.0,
-      "median_pair_disagreement_share_candidate_bars": 0.15161702960819717,
-      "median_pair_formal_carry_run_p90_bars": 3.0,
-      "median_pair_formal_carry_share": 0.06854166666666667,
-      "median_pair_formal_dwell_median_bars": 13.0,
-      "median_pair_formal_zero_share": 0.5072916666666667,
-      "median_pair_zero_run_median_bars": 8.0,
-      "median_pair_zero_run_p90_bars": 18.200000000000003,
-      "total_direct_nonzero_switches": 172,
-      "total_formal_switches": 344,
-      "total_into_zero_transitions": 84,
+      "median_pair_disagreement_share_candidate_bars": 0.1469554245436944,
+      "median_pair_formal_carry_run_p90_bars": 5.0,
+      "median_pair_formal_carry_share": 0.09937499999999999,
+      "median_pair_formal_dwell_median_bars": 14.5,
+      "median_pair_formal_zero_share": 0.4710416666666667,
+      "median_pair_zero_run_median_bars": 6.25,
+      "median_pair_zero_run_p90_bars": 17.900000000000002,
+      "total_direct_nonzero_switches": 195,
+      "total_formal_switches": 293,
+      "total_into_zero_transitions": 47,
       "total_one_bar_formal_flips": 3
     }
   }
