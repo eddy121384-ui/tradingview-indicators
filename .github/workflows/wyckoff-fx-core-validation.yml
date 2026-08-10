@@ -35,14 +35,20 @@ jobs:
             indicators/wyckoff-regime-radar/research/compare_tradingview_parity.py \
             indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
             indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
+            indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
             indicators/wyckoff-regime-radar/research/freeze_fx_canonical_data.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
             indicators/wyckoff-regime-radar/research/test_generate_2024_deep_diagnostic_pine.py \
             indicators/wyckoff-regime-radar/research/test_compare_tradingview_parity.py \
+            indicators/wyckoff-regime-radar/research/test_audit_fx_source_quality.py \
             indicators/wyckoff-regime-radar/research/test_freeze_fx_canonical_data.py
       - name: Run price-only mirror tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
+      - name: Audit Yahoo FX source quality
+        run: |
+          python indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
+            --output /tmp/issue-55-yahoo-fx-quality-audit.json
       - name: Freeze or verify canonical FX daily inputs
         run: |
           MANIFEST=indicators/wyckoff-regime-radar/research/data/issue-55-fx-canonical-manifest.json
