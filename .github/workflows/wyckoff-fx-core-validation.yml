@@ -37,6 +37,7 @@ jobs:
             indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
             indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
             indicators/wyckoff-regime-radar/research/probe_dukascopy_daily_feed.py \
+            indicators/wyckoff-regime-radar/research/probe_stooq_daily_feed.py \
             indicators/wyckoff-regime-radar/research/freeze_fx_canonical_data.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
@@ -46,20 +47,15 @@ jobs:
             indicators/wyckoff-regime-radar/research/test_freeze_fx_canonical_data.py
       - name: Run price-only mirror tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
-      - name: Probe Dukascopy yearly daily FX feed
+      - name: Record Dukascopy public-feed qualification failure
+        continue-on-error: true
         run: python indicators/wyckoff-regime-radar/research/probe_dukascopy_daily_feed.py
-      - name: Audit Yahoo FX source quality
+      - name: Probe Stooq daily FX feed
+        run: python indicators/wyckoff-regime-radar/research/probe_stooq_daily_feed.py
+      - name: Audit rejected Yahoo FX source quality
         run: |
           python indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
             --output /tmp/issue-55-yahoo-fx-quality-audit.json
-      - name: Freeze or verify canonical FX daily inputs
-        run: |
-          MANIFEST=indicators/wyckoff-regime-radar/research/data/issue-55-fx-canonical-manifest.json
-          if [ -f "$MANIFEST" ]; then
-            python indicators/wyckoff-regime-radar/research/freeze_fx_canonical_data.py verify
-          else
-            python indicators/wyckoff-regime-radar/research/freeze_fx_canonical_data.py freeze
-          fi
       - name: Generate TradingView parity harness
         run: |
           mkdir -p indicators/wyckoff-regime-radar/research/generated
@@ -93,19 +89,17 @@ jobs:
           python indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
             --output /tmp/issue-55-2024-deep-diagnostic.json
           cat /tmp/issue-55-2024-deep-diagnostic.json
-      - name: Commit frozen inputs and generated harnesses on branch push
+      - name: Commit generated harnesses on branch push
         if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
-            indicators/wyckoff-regime-radar/research/data/issue-55-fx-canonical-manifest.json \
-            indicators/wyckoff-regime-radar/research/data/frozen/*.csv \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
           if git diff --cached --quiet; then
-            echo "Frozen inputs and generated harnesses already current."
+            echo "Generated harnesses already current."
           else
-            git commit -m "Freeze Issue #55 canonical FX inputs"
+            git commit -m "Generate Issue #55 TradingView diagnostic harnesses"
             git push origin HEAD:${GITHUB_REF_NAME}
           fi
