@@ -3,8 +3,8 @@
 
 This is a source-qualification probe only. It downloads one representative
 recent full year for each target FX pair from Dukascopy's public datafeed,
-decodes the 24-byte OHLC records, and checks chronology plus OHLC envelope
-integrity. No Wyckoff calculation or utility statistic is run.
+decodes the 24-byte OHLC records, and checks chronology, OHLC envelope integrity,
+and daily-bar calendar semantics. No Wyckoff calculation or utility statistic is run.
 """
 
 from __future__ import annotations
@@ -50,6 +50,8 @@ def decode_year(content: bytes, year: int, price_scale: float) -> list[dict]:
         rows.append(
             {
                 "date": when.date().isoformat(),
+                "weekday": when.weekday(),
+                "weekday_name": when.strftime("%A"),
                 "timestamp": when.isoformat(),
                 "open": open_i * price_scale,
                 "high": high_i * price_scale,
@@ -70,16 +72,42 @@ def audit_rows(rows: list[dict], expected_year: int) -> dict:
     if any(int(date[:4]) != expected_year for date in dates):
         raise ValueError(f"decoded record falls outside expected year {expected_year}")
     violations = []
+    flat_rows = []
+    zero_volume = []
+    weekend_rows = []
+    weekend_nonflat = []
+    weekday_rows = []
     for row in rows:
         required_high = max(row["open"], row["low"], row["close"])
         required_low = min(row["open"], row["high"], row["close"])
         if row["high"] < required_high or row["low"] > required_low:
             violations.append(row)
+        is_flat = row["open"] == row["high"] == row["low"] == row["close"]
+        if is_flat:
+            flat_rows.append(row)
+        if row["volume"] == 0.0:
+            zero_volume.append(row)
+        if row["weekday"] >= 5:
+            weekend_rows.append(row)
+            if not is_flat or row["volume"] != 0.0:
+                weekend_nonflat.append(row)
+        else:
+            weekday_rows.append(row)
+
+    sample_dates = {"2024-01-05", "2024-01-06", "2024-01-07", "2024-01-08"}
+    sample_week = [row for row in rows if row["date"] in sample_dates]
     return {
         "rows": len(rows),
+        "weekday_rows": len(weekday_rows),
+        "weekend_rows": len(weekend_rows),
+        "weekend_nonflat_or_nonzero_volume_rows": len(weekend_nonflat),
+        "flat_rows": len(flat_rows),
+        "zero_volume_rows": len(zero_volume),
         "first_date": dates[0],
         "last_date": dates[-1],
         "ohlc_envelope_violations": len(violations),
+        "sample_week_2024_01_05_to_08": sample_week,
+        "first_weekend_rows": weekend_rows[:4],
         "first_row": rows[0],
         "last_row": rows[-1],
     }
