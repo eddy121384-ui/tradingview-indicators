@@ -1,0 +1,3097 @@
+{
+  "carry_rows": [
+    {
+      "bars": 1348,
+      "categories": {
+        "chaos": {
+          "bars": 5,
+          "run_length_bars": {
+            "count": 3,
+            "max": 2,
+            "median": 2.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.00370919881305638,
+          "share_of_carry_bars": 0.016233766233766232
+        },
+        "coexist_no_display": {
+          "bars": 36,
+          "run_length_bars": {
+            "count": 30,
+            "max": 3,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.026706231454005934,
+          "share_of_carry_bars": 0.11688311688311688
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 150,
+          "run_length_bars": {
+            "count": 40,
+            "max": 13,
+            "median": 2.5,
+            "p90": 7.500000000000007
+          },
+          "share_of_all_bars": 0.11127596439169139,
+          "share_of_carry_bars": 0.487012987012987
+        },
+        "weak_same_state": {
+          "bars": 117,
+          "run_length_bars": {
+            "count": 50,
+            "max": 7,
+            "median": 1.0,
+            "p90": 5.0
+          },
+          "share_of_all_bars": 0.08679525222551929,
+          "share_of_carry_bars": 0.37987012987012986
+        }
+      },
+      "formal_carry_bars": 308,
+      "formal_carry_share": 0.228486646884273,
+      "pair": "EURUSD",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 42,
+          "formal_adoption_count": 17,
+          "formal_adoption_rate": 0.40476190476190477,
+          "formal_adoption_rate_length_ge_2": 0.4444444444444444,
+          "runs_length_ge_2": 27,
+          "strong_candidate_emergence_count": 27,
+          "strong_candidate_emergence_rate": 0.6428571428571429
+        },
+        "5": {
+          "eligible_runs": 42,
+          "formal_adoption_count": 12,
+          "formal_adoption_rate": 0.2857142857142857,
+          "formal_adoption_rate_length_ge_2": 0.2962962962962963,
+          "runs_length_ge_2": 27,
+          "strong_candidate_emergence_count": 20,
+          "strong_candidate_emergence_rate": 0.47619047619047616
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 42,
+        "max": 13,
+        "median": 2.5,
+        "p90": 6.899999999999999
+      }
+    },
+    {
+      "bars": 1348,
+      "categories": {
+        "chaos": {
+          "bars": 3,
+          "run_length_bars": {
+            "count": 2,
+            "max": 2,
+            "median": 1.5,
+            "p90": 1.9
+          },
+          "share_of_all_bars": 0.002225519287833828,
+          "share_of_carry_bars": 0.009316770186335404
+        },
+        "coexist_no_display": {
+          "bars": 51,
+          "run_length_bars": {
+            "count": 40,
+            "max": 2,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.037833827893175076,
+          "share_of_carry_bars": 0.15838509316770186
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 209,
+          "run_length_bars": {
+            "count": 63,
+            "max": 14,
+            "median": 2.0,
+            "p90": 8.0
+          },
+          "share_of_all_bars": 0.15504451038575667,
+          "share_of_carry_bars": 0.6490683229813664
+        },
+        "weak_same_state": {
+          "bars": 59,
+          "run_length_bars": {
+            "count": 21,
+            "max": 12,
+            "median": 1.0,
+            "p90": 5.0
+          },
+          "share_of_all_bars": 0.04376854599406528,
+          "share_of_carry_bars": 0.18322981366459629
+        }
+      },
+      "formal_carry_bars": 322,
+      "formal_carry_share": 0.23887240356083086,
+      "pair": "USDJPY",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 65,
+          "formal_adoption_count": 21,
+          "formal_adoption_rate": 0.3230769230769231,
+          "formal_adoption_rate_length_ge_2": 0.2972972972972973,
+          "runs_length_ge_2": 37,
+          "strong_candidate_emergence_count": 45,
+          "strong_candidate_emergence_rate": 0.6923076923076923
+        },
+        "5": {
+          "eligible_runs": 65,
+          "formal_adoption_count": 13,
+          "formal_adoption_rate": 0.2,
+          "formal_adoption_rate_length_ge_2": 0.21621621621621623,
+          "runs_length_ge_2": 37,
+          "strong_candidate_emergence_count": 34,
+          "strong_candidate_emergence_rate": 0.5230769230769231
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 65,
+        "max": 14,
+        "median": 2.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "categories": {
+        "chaos": {
+          "bars": 5,
+          "run_length_bars": {
+            "count": 3,
+            "max": 2,
+            "median": 2.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.00370919881305638,
+          "share_of_carry_bars": 0.018796992481203006
+        },
+        "coexist_no_display": {
+          "bars": 51,
+          "run_length_bars": {
+            "count": 38,
+            "max": 6,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.037833827893175076,
+          "share_of_carry_bars": 0.19172932330827067
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 148,
+          "run_length_bars": {
+            "count": 56,
+            "max": 9,
+            "median": 2.0,
+            "p90": 5.5
+          },
+          "share_of_all_bars": 0.10979228486646884,
+          "share_of_carry_bars": 0.556390977443609
+        },
+        "weak_same_state": {
+          "bars": 62,
+          "run_length_bars": {
+            "count": 27,
+            "max": 8,
+            "median": 2.0,
+            "p90": 4.0
+          },
+          "share_of_all_bars": 0.04599406528189911,
+          "share_of_carry_bars": 0.23308270676691728
+        }
+      },
+      "formal_carry_bars": 266,
+      "formal_carry_share": 0.19732937685459942,
+      "pair": "GBPUSD",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 58,
+          "formal_adoption_count": 22,
+          "formal_adoption_rate": 0.3793103448275862,
+          "formal_adoption_rate_length_ge_2": 0.375,
+          "runs_length_ge_2": 32,
+          "strong_candidate_emergence_count": 37,
+          "strong_candidate_emergence_rate": 0.6379310344827587
+        },
+        "5": {
+          "eligible_runs": 58,
+          "formal_adoption_count": 17,
+          "formal_adoption_rate": 0.29310344827586204,
+          "formal_adoption_rate_length_ge_2": 0.25,
+          "runs_length_ge_2": 32,
+          "strong_candidate_emergence_count": 35,
+          "strong_candidate_emergence_rate": 0.603448275862069
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 58,
+        "max": 9,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 1348,
+      "categories": {
+        "chaos": {
+          "bars": 10,
+          "run_length_bars": {
+            "count": 7,
+            "max": 2,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.00741839762611276,
+          "share_of_carry_bars": 0.03937007874015748
+        },
+        "coexist_no_display": {
+          "bars": 35,
+          "run_length_bars": {
+            "count": 30,
+            "max": 3,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.02596439169139466,
+          "share_of_carry_bars": 0.1377952755905512
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 145,
+          "run_length_bars": {
+            "count": 39,
+            "max": 23,
+            "median": 2.0,
+            "p90": 9.200000000000003
+          },
+          "share_of_all_bars": 0.10756676557863501,
+          "share_of_carry_bars": 0.5708661417322834
+        },
+        "weak_same_state": {
+          "bars": 64,
+          "run_length_bars": {
+            "count": 28,
+            "max": 8,
+            "median": 1.0,
+            "p90": 4.600000000000001
+          },
+          "share_of_all_bars": 0.04747774480712166,
+          "share_of_carry_bars": 0.25196850393700787
+        }
+      },
+      "formal_carry_bars": 254,
+      "formal_carry_share": 0.1884272997032641,
+      "pair": "AUDUSD",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 40,
+          "formal_adoption_count": 15,
+          "formal_adoption_rate": 0.375,
+          "formal_adoption_rate_length_ge_2": 0.38095238095238093,
+          "runs_length_ge_2": 21,
+          "strong_candidate_emergence_count": 26,
+          "strong_candidate_emergence_rate": 0.65
+        },
+        "5": {
+          "eligible_runs": 40,
+          "formal_adoption_count": 12,
+          "formal_adoption_rate": 0.3,
+          "formal_adoption_rate_length_ge_2": 0.3333333333333333,
+          "runs_length_ge_2": 21,
+          "strong_candidate_emergence_count": 23,
+          "strong_candidate_emergence_rate": 0.575
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 40,
+        "max": 23,
+        "median": 2.0,
+        "p90": 8.100000000000001
+      }
+    }
+  ],
+  "confirm_bars": 3,
+  "decision_boundary": "Use this warm-up-excluded report, not the superseded raw-history neutral statistics, to choose the Phase-B stale-decay horizon. Choice must be based on stale carry versus Neutral/switch churn, not PnL.",
+  "issue": 57,
+  "live_windows": [
+    {
+      "live_bars": 1348,
+      "live_end_date": "2022-03-04",
+      "live_start_date": "2016-12-23",
+      "live_start_index": 1052,
+      "pair": "EURUSD"
+    },
+    {
+      "live_bars": 1348,
+      "live_end_date": "2022-03-04",
+      "live_start_date": "2016-12-23",
+      "live_start_index": 1052,
+      "pair": "USDJPY"
+    },
+    {
+      "live_bars": 1348,
+      "live_end_date": "2022-03-04",
+      "live_start_date": "2016-12-23",
+      "live_start_index": 1052,
+      "pair": "GBPUSD"
+    },
+    {
+      "live_bars": 1348,
+      "live_end_date": "2022-03-04",
+      "live_start_date": "2016-12-23",
+      "live_start_index": 1052,
+      "pair": "AUDUSD"
+    }
+  ],
+  "multipliers": [
+    1,
+    2,
+    3
+  ],
+  "persistence_rows": [
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 40,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 40,
+        "adoption_rate": 0.5263157894736842,
+        "switch_demand_candidate_runs": 76,
+        "unadopted_examples": [
+          {
+            "end": 50,
+            "length": 1,
+            "stage": 1,
+            "start": 50
+          },
+          {
+            "end": 56,
+            "length": 2,
+            "stage": 1,
+            "start": 55
+          },
+          {
+            "end": 80,
+            "length": 1,
+            "stage": 5,
+            "start": 80
+          },
+          {
+            "end": 121,
+            "length": 1,
+            "stage": 1,
+            "start": 121
+          },
+          {
+            "end": 123,
+            "length": 2,
+            "stage": 4,
+            "start": 122
+          },
+          {
+            "end": 241,
+            "length": 1,
+            "stage": 2,
+            "start": 241
+          },
+          {
+            "end": 245,
+            "length": 2,
+            "stage": 3,
+            "start": 244
+          },
+          {
+            "end": 249,
+            "length": 1,
+            "stage": 2,
+            "start": 249
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 36,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 36
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 71,
+        "max": 4,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.08827893175074183,
+      "candidate_formal_disagreement_share_candidate_bars": 0.11442307692307692,
+      "candidate_switches": 248,
+      "engine": "phase_a",
+      "formal_carry_run_bars": {
+        "count": 101,
+        "max": 20,
+        "median": 2.0,
+        "p90": 6.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.228486646884273,
+      "formal_dwell_bars_all_states": {
+        "count": 45,
+        "max": 81,
+        "median": 24.0,
+        "p90": 66.60000000000001
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 12,
+          "max": 69,
+          "median": 20.5,
+          "p90": 34.0
+        },
+        "2_Markup": {
+          "count": 10,
+          "max": 79,
+          "median": 34.5,
+          "p90": 70.89999999999999
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 8,
+          "max": 56,
+          "median": 17.0,
+          "p90": 42.0
+        },
+        "5_Markdown": {
+          "count": 15,
+          "max": 81,
+          "median": 28.0,
+          "p90": 73.19999999999999
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 44,
+      "formal_zero_run_bars": {
+        "count": 0,
+        "max": null,
+        "median": null,
+        "p90": null
+      },
+      "formal_zero_share": 0.0,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "EURUSD",
+      "strong_candidate_share": 0.771513353115727,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 44,
+        "into_zero": 0,
+        "out_of_zero": 0
+      },
+      "weak_only_candidate_share": 0.1980712166172107,
+      "weak_only_run_bars": {
+        "count": 90,
+        "max": 13,
+        "median": 2.0,
+        "p90": 6.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 47,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 47,
+        "adoption_rate": 0.5595238095238095,
+        "switch_demand_candidate_runs": 84,
+        "unadopted_examples": [
+          {
+            "end": 50,
+            "length": 1,
+            "stage": 1,
+            "start": 50
+          },
+          {
+            "end": 56,
+            "length": 2,
+            "stage": 1,
+            "start": 55
+          },
+          {
+            "end": 80,
+            "length": 1,
+            "stage": 5,
+            "start": 80
+          },
+          {
+            "end": 121,
+            "length": 1,
+            "stage": 1,
+            "start": 121
+          },
+          {
+            "end": 123,
+            "length": 2,
+            "stage": 4,
+            "start": 122
+          },
+          {
+            "end": 241,
+            "length": 1,
+            "stage": 2,
+            "start": 241
+          },
+          {
+            "end": 245,
+            "length": 2,
+            "stage": 3,
+            "start": 244
+          },
+          {
+            "end": 249,
+            "length": 1,
+            "stage": 2,
+            "start": 249
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 37,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 37
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 79,
+        "max": 4,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.09643916913946587,
+      "candidate_formal_disagreement_share_candidate_bars": 0.125,
+      "candidate_switches": 248,
+      "clear_to_zero_reasons": {
+        "chaos": 0,
+        "coexist": 2,
+        "other": 0,
+        "weak_challenger": 20
+      },
+      "engine": "stale_decay_1x",
+      "formal_carry_run_bars": {
+        "count": 95,
+        "max": 7,
+        "median": 2.0,
+        "p90": 4.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.1476261127596439,
+      "formal_dwell_bars_all_states": {
+        "count": 56,
+        "max": 79,
+        "median": 15.0,
+        "p90": 46.0
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 12,
+          "max": 69,
+          "median": 20.5,
+          "p90": 34.0
+        },
+        "2_Markup": {
+          "count": 10,
+          "max": 79,
+          "median": 33.5,
+          "p90": 67.3
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 8,
+          "max": 56,
+          "median": 13.5,
+          "p90": 42.0
+        },
+        "5_Markdown": {
+          "count": 26,
+          "max": 36,
+          "median": 12.5,
+          "p90": 29.0
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 77,
+      "formal_zero_run_bars": {
+        "count": 22,
+        "max": 22,
+        "median": 6.0,
+        "p90": 13.900000000000002
+      },
+      "formal_zero_share": 0.10905044510385757,
+      "multiplier": 1,
+      "one_bar_flip_per_formal_switch": 0.025974025974025976,
+      "one_bar_formal_flips": 2,
+      "pair": "EURUSD",
+      "strong_candidate_share": 0.771513353115727,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 33,
+        "into_zero": 22,
+        "out_of_zero": 22
+      },
+      "weak_only_candidate_share": 0.1980712166172107,
+      "weak_only_run_bars": {
+        "count": 90,
+        "max": 13,
+        "median": 2.0,
+        "p90": 6.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 43,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 43,
+        "adoption_rate": 0.5443037974683544,
+        "switch_demand_candidate_runs": 79,
+        "unadopted_examples": [
+          {
+            "end": 50,
+            "length": 1,
+            "stage": 1,
+            "start": 50
+          },
+          {
+            "end": 56,
+            "length": 2,
+            "stage": 1,
+            "start": 55
+          },
+          {
+            "end": 80,
+            "length": 1,
+            "stage": 5,
+            "start": 80
+          },
+          {
+            "end": 121,
+            "length": 1,
+            "stage": 1,
+            "start": 121
+          },
+          {
+            "end": 123,
+            "length": 2,
+            "stage": 4,
+            "start": 122
+          },
+          {
+            "end": 241,
+            "length": 1,
+            "stage": 2,
+            "start": 241
+          },
+          {
+            "end": 245,
+            "length": 2,
+            "stage": 3,
+            "start": 244
+          },
+          {
+            "end": 249,
+            "length": 1,
+            "stage": 2,
+            "start": 249
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 36,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 36
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 74,
+        "max": 4,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.09124629080118694,
+      "candidate_formal_disagreement_share_candidate_bars": 0.11826923076923077,
+      "candidate_switches": 248,
+      "clear_to_zero_reasons": {
+        "chaos": 1,
+        "coexist": 0,
+        "other": 0,
+        "weak_challenger": 11
+      },
+      "engine": "stale_decay_2x",
+      "formal_carry_run_bars": {
+        "count": 98,
+        "max": 7,
+        "median": 2.0,
+        "p90": 5.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.18916913946587538,
+      "formal_dwell_bars_all_states": {
+        "count": 50,
+        "max": 79,
+        "median": 21.5,
+        "p90": 53.300000000000004
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 12,
+          "max": 69,
+          "median": 20.5,
+          "p90": 34.0
+        },
+        "2_Markup": {
+          "count": 10,
+          "max": 79,
+          "median": 33.5,
+          "p90": 70.89999999999999
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 8,
+          "max": 56,
+          "median": 15.0,
+          "p90": 42.0
+        },
+        "5_Markdown": {
+          "count": 20,
+          "max": 60,
+          "median": 22.0,
+          "p90": 44.400000000000006
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 61,
+      "formal_zero_run_bars": {
+        "count": 12,
+        "max": 19,
+        "median": 3.5,
+        "p90": 12.8
+      },
+      "formal_zero_share": 0.05489614243323442,
+      "multiplier": 2,
+      "one_bar_flip_per_formal_switch": 0.01639344262295082,
+      "one_bar_formal_flips": 1,
+      "pair": "EURUSD",
+      "strong_candidate_share": 0.771513353115727,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 37,
+        "into_zero": 12,
+        "out_of_zero": 12
+      },
+      "weak_only_candidate_share": 0.1980712166172107,
+      "weak_only_run_bars": {
+        "count": 90,
+        "max": 13,
+        "median": 2.0,
+        "p90": 6.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 40,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 40,
+        "adoption_rate": 0.5263157894736842,
+        "switch_demand_candidate_runs": 76,
+        "unadopted_examples": [
+          {
+            "end": 50,
+            "length": 1,
+            "stage": 1,
+            "start": 50
+          },
+          {
+            "end": 56,
+            "length": 2,
+            "stage": 1,
+            "start": 55
+          },
+          {
+            "end": 80,
+            "length": 1,
+            "stage": 5,
+            "start": 80
+          },
+          {
+            "end": 121,
+            "length": 1,
+            "stage": 1,
+            "start": 121
+          },
+          {
+            "end": 123,
+            "length": 2,
+            "stage": 4,
+            "start": 122
+          },
+          {
+            "end": 241,
+            "length": 1,
+            "stage": 2,
+            "start": 241
+          },
+          {
+            "end": 245,
+            "length": 2,
+            "stage": 3,
+            "start": 244
+          },
+          {
+            "end": 249,
+            "length": 1,
+            "stage": 2,
+            "start": 249
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 36,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 36
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 71,
+        "max": 4,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.08827893175074183,
+      "candidate_formal_disagreement_share_candidate_bars": 0.11442307692307692,
+      "candidate_switches": 248,
+      "clear_to_zero_reasons": {
+        "chaos": 0,
+        "coexist": 0,
+        "other": 0,
+        "weak_challenger": 4
+      },
+      "engine": "stale_decay_3x",
+      "formal_carry_run_bars": {
+        "count": 98,
+        "max": 8,
+        "median": 2.0,
+        "p90": 6.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.2062314540059347,
+      "formal_dwell_bars_all_states": {
+        "count": 46,
+        "max": 79,
+        "median": 24.5,
+        "p90": 59.5
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 12,
+          "max": 69,
+          "median": 20.5,
+          "p90": 34.0
+        },
+        "2_Markup": {
+          "count": 10,
+          "max": 79,
+          "median": 34.5,
+          "p90": 70.89999999999999
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 8,
+          "max": 56,
+          "median": 17.0,
+          "p90": 42.0
+        },
+        "5_Markdown": {
+          "count": 16,
+          "max": 72,
+          "median": 29.0,
+          "p90": 58.5
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 49,
+      "formal_zero_run_bars": {
+        "count": 4,
+        "max": 16,
+        "median": 9.0,
+        "p90": 14.200000000000001
+      },
+      "formal_zero_share": 0.028931750741839762,
+      "multiplier": 3,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "EURUSD",
+      "strong_candidate_share": 0.771513353115727,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 41,
+        "into_zero": 4,
+        "out_of_zero": 4
+      },
+      "weak_only_candidate_share": 0.1980712166172107,
+      "weak_only_run_bars": {
+        "count": 90,
+        "max": 13,
+        "median": 2.0,
+        "p90": 6.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 52,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 52,
+        "adoption_rate": 0.49523809523809526,
+        "switch_demand_candidate_runs": 105,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 5,
+            "start": 17
+          },
+          {
+            "end": 57,
+            "length": 1,
+            "stage": 2,
+            "start": 57
+          },
+          {
+            "end": 88,
+            "length": 2,
+            "stage": 4,
+            "start": 87
+          },
+          {
+            "end": 125,
+            "length": 2,
+            "stage": 1,
+            "start": 124
+          },
+          {
+            "end": 149,
+            "length": 2,
+            "stage": 1,
+            "start": 148
+          },
+          {
+            "end": 152,
+            "length": 1,
+            "stage": 1,
+            "start": 152
+          },
+          {
+            "end": 194,
+            "length": 2,
+            "stage": 2,
+            "start": 193
+          },
+          {
+            "end": 211,
+            "length": 1,
+            "stage": 1,
+            "start": 211
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 53,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 53
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 100,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.12537091988130564,
+      "candidate_formal_disagreement_share_candidate_bars": 0.1650390625,
+      "candidate_switches": 260,
+      "engine": "phase_a",
+      "formal_carry_run_bars": {
+        "count": 95,
+        "max": 16,
+        "median": 2.0,
+        "p90": 8.600000000000009
+      },
+      "formal_carry_without_strong_candidate_share": 0.23887240356083086,
+      "formal_dwell_bars_all_states": {
+        "count": 62,
+        "max": 94,
+        "median": 13.5,
+        "p90": 54.49999999999999
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 18,
+          "max": 82,
+          "median": 15.0,
+          "p90": 34.5
+        },
+        "2_Markup": {
+          "count": 21,
+          "max": 94,
+          "median": 15.0,
+          "p90": 40.0
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 9,
+          "max": 50,
+          "median": 4.0,
+          "p90": 19.60000000000001
+        },
+        "5_Markdown": {
+          "count": 14,
+          "max": 78,
+          "median": 30.5,
+          "p90": 63.2
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 62,
+      "formal_zero_run_bars": {
+        "count": 1,
+        "max": 4,
+        "median": 4.0,
+        "p90": 4.0
+      },
+      "formal_zero_share": 0.002967359050445104,
+      "one_bar_flip_per_formal_switch": 0.016129032258064516,
+      "one_bar_formal_flips": 1,
+      "pair": "USDJPY",
+      "strong_candidate_share": 0.7596439169139466,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 60,
+        "into_zero": 1,
+        "out_of_zero": 1
+      },
+      "weak_only_candidate_share": 0.19955489614243324,
+      "weak_only_run_bars": {
+        "count": 82,
+        "max": 15,
+        "median": 2.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 56,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 56,
+        "adoption_rate": 0.5045045045045045,
+        "switch_demand_candidate_runs": 111,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 5,
+            "start": 17
+          },
+          {
+            "end": 57,
+            "length": 1,
+            "stage": 2,
+            "start": 57
+          },
+          {
+            "end": 88,
+            "length": 2,
+            "stage": 4,
+            "start": 87
+          },
+          {
+            "end": 113,
+            "length": 2,
+            "stage": 1,
+            "start": 112
+          },
+          {
+            "end": 125,
+            "length": 2,
+            "stage": 1,
+            "start": 124
+          },
+          {
+            "end": 149,
+            "length": 2,
+            "stage": 1,
+            "start": 148
+          },
+          {
+            "end": 152,
+            "length": 1,
+            "stage": 1,
+            "start": 152
+          },
+          {
+            "end": 194,
+            "length": 2,
+            "stage": 2,
+            "start": 193
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 55,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 55
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 105,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.13204747774480713,
+      "candidate_formal_disagreement_share_candidate_bars": 0.173828125,
+      "candidate_switches": 260,
+      "clear_to_zero_reasons": {
+        "chaos": 1,
+        "coexist": 1,
+        "other": 0,
+        "weak_challenger": 20
+      },
+      "engine": "stale_decay_1x",
+      "formal_carry_run_bars": {
+        "count": 81,
+        "max": 12,
+        "median": 2.0,
+        "p90": 3.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.12091988130563798,
+      "formal_dwell_bars_all_states": {
+        "count": 70,
+        "max": 82,
+        "median": 11.0,
+        "p90": 38.2
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 18,
+          "max": 82,
+          "median": 13.0,
+          "p90": 34.5
+        },
+        "2_Markup": {
+          "count": 23,
+          "max": 60,
+          "median": 9.0,
+          "p90": 38.2
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 9,
+          "max": 50,
+          "median": 4.0,
+          "p90": 19.60000000000001
+        },
+        "5_Markdown": {
+          "count": 20,
+          "max": 45,
+          "median": 13.5,
+          "p90": 28.800000000000026
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 91,
+      "formal_zero_run_bars": {
+        "count": 22,
+        "max": 26,
+        "median": 8.5,
+        "p90": 19.60000000000001
+      },
+      "formal_zero_share": 0.1632047477744807,
+      "multiplier": 1,
+      "one_bar_flip_per_formal_switch": 0.01098901098901099,
+      "one_bar_formal_flips": 1,
+      "pair": "USDJPY",
+      "strong_candidate_share": 0.7596439169139466,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 47,
+        "into_zero": 22,
+        "out_of_zero": 22
+      },
+      "weak_only_candidate_share": 0.19955489614243324,
+      "weak_only_run_bars": {
+        "count": 82,
+        "max": 15,
+        "median": 2.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 54,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 54,
+        "adoption_rate": 0.5046728971962616,
+        "switch_demand_candidate_runs": 107,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 5,
+            "start": 17
+          },
+          {
+            "end": 57,
+            "length": 1,
+            "stage": 2,
+            "start": 57
+          },
+          {
+            "end": 88,
+            "length": 2,
+            "stage": 4,
+            "start": 87
+          },
+          {
+            "end": 125,
+            "length": 2,
+            "stage": 1,
+            "start": 124
+          },
+          {
+            "end": 149,
+            "length": 2,
+            "stage": 1,
+            "start": 148
+          },
+          {
+            "end": 152,
+            "length": 1,
+            "stage": 1,
+            "start": 152
+          },
+          {
+            "end": 194,
+            "length": 2,
+            "stage": 2,
+            "start": 193
+          },
+          {
+            "end": 211,
+            "length": 1,
+            "stage": 1,
+            "start": 211
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 53,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 53
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 102,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.12759643916913946,
+      "candidate_formal_disagreement_share_candidate_bars": 0.16796875,
+      "candidate_switches": 260,
+      "clear_to_zero_reasons": {
+        "chaos": 0,
+        "coexist": 1,
+        "other": 0,
+        "weak_challenger": 12
+      },
+      "engine": "stale_decay_2x",
+      "formal_carry_run_bars": {
+        "count": 88,
+        "max": 12,
+        "median": 2.0,
+        "p90": 5.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.1728486646884273,
+      "formal_dwell_bars_all_states": {
+        "count": 67,
+        "max": 82,
+        "median": 14.0,
+        "p90": 38.8
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 18,
+          "max": 82,
+          "median": 15.0,
+          "p90": 34.5
+        },
+        "2_Markup": {
+          "count": 21,
+          "max": 60,
+          "median": 16.0,
+          "p90": 40.0
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 9,
+          "max": 50,
+          "median": 4.0,
+          "p90": 19.60000000000001
+        },
+        "5_Markdown": {
+          "count": 19,
+          "max": 48,
+          "median": 14.0,
+          "p90": 38.39999999999999
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 79,
+      "formal_zero_run_bars": {
+        "count": 13,
+        "max": 18,
+        "median": 8.0,
+        "p90": 17.8
+      },
+      "formal_zero_share": 0.09272997032640949,
+      "multiplier": 2,
+      "one_bar_flip_per_formal_switch": 0.02531645569620253,
+      "one_bar_formal_flips": 2,
+      "pair": "USDJPY",
+      "strong_candidate_share": 0.7596439169139466,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 53,
+        "into_zero": 13,
+        "out_of_zero": 13
+      },
+      "weak_only_candidate_share": 0.19955489614243324,
+      "weak_only_run_bars": {
+        "count": 82,
+        "max": 15,
+        "median": 2.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 51,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 51,
+        "adoption_rate": 0.49038461538461536,
+        "switch_demand_candidate_runs": 104,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 5,
+            "start": 17
+          },
+          {
+            "end": 57,
+            "length": 1,
+            "stage": 2,
+            "start": 57
+          },
+          {
+            "end": 88,
+            "length": 2,
+            "stage": 4,
+            "start": 87
+          },
+          {
+            "end": 125,
+            "length": 2,
+            "stage": 1,
+            "start": 124
+          },
+          {
+            "end": 149,
+            "length": 2,
+            "stage": 1,
+            "start": 148
+          },
+          {
+            "end": 152,
+            "length": 1,
+            "stage": 1,
+            "start": 152
+          },
+          {
+            "end": 194,
+            "length": 2,
+            "stage": 2,
+            "start": 193
+          },
+          {
+            "end": 211,
+            "length": 1,
+            "stage": 1,
+            "start": 211
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 53,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 53
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 99,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.12462908011869436,
+      "candidate_formal_disagreement_share_candidate_bars": 0.1640625,
+      "candidate_switches": 260,
+      "clear_to_zero_reasons": {
+        "chaos": 0,
+        "coexist": 0,
+        "other": 0,
+        "weak_challenger": 6
+      },
+      "engine": "stale_decay_3x",
+      "formal_carry_run_bars": {
+        "count": 95,
+        "max": 13,
+        "median": 2.0,
+        "p90": 7.6000000000000085
+      },
+      "formal_carry_without_strong_candidate_share": 0.21142433234421365,
+      "formal_dwell_bars_all_states": {
+        "count": 63,
+        "max": 94,
+        "median": 15.0,
+        "p90": 48.00000000000004
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 18,
+          "max": 82,
+          "median": 15.0,
+          "p90": 34.5
+        },
+        "2_Markup": {
+          "count": 20,
+          "max": 94,
+          "median": 17.5,
+          "p90": 41.60000000000002
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 9,
+          "max": 50,
+          "median": 4.0,
+          "p90": 19.60000000000001
+        },
+        "5_Markdown": {
+          "count": 16,
+          "max": 65,
+          "median": 23.5,
+          "p90": 53.0
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 68,
+      "formal_zero_run_bars": {
+        "count": 6,
+        "max": 15,
+        "median": 8.5,
+        "p90": 12.5
+      },
+      "formal_zero_share": 0.03857566765578635,
+      "multiplier": 3,
+      "one_bar_flip_per_formal_switch": 0.014705882352941176,
+      "one_bar_formal_flips": 1,
+      "pair": "USDJPY",
+      "strong_candidate_share": 0.7596439169139466,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 56,
+        "into_zero": 6,
+        "out_of_zero": 6
+      },
+      "weak_only_candidate_share": 0.19955489614243324,
+      "weak_only_run_bars": {
+        "count": 82,
+        "max": 15,
+        "median": 2.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 49,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 49,
+        "adoption_rate": 0.4537037037037037,
+        "switch_demand_candidate_runs": 108,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 1,
+            "start": 17
+          },
+          {
+            "end": 31,
+            "length": 2,
+            "stage": 2,
+            "start": 30
+          },
+          {
+            "end": 49,
+            "length": 2,
+            "stage": 5,
+            "start": 48
+          },
+          {
+            "end": 60,
+            "length": 1,
+            "stage": 1,
+            "start": 60
+          },
+          {
+            "end": 82,
+            "length": 1,
+            "stage": 1,
+            "start": 82
+          },
+          {
+            "end": 140,
+            "length": 1,
+            "stage": 3,
+            "start": 140
+          },
+          {
+            "end": 143,
+            "length": 1,
+            "stage": 4,
+            "start": 143
+          },
+          {
+            "end": 162,
+            "length": 1,
+            "stage": 4,
+            "start": 162
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 59,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 59
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 104,
+        "max": 3,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.11943620178041543,
+      "candidate_formal_disagreement_share_candidate_bars": 0.15060804490177737,
+      "candidate_switches": 277,
+      "engine": "phase_a",
+      "formal_carry_run_bars": {
+        "count": 98,
+        "max": 16,
+        "median": 2.0,
+        "p90": 6.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.19732937685459942,
+      "formal_dwell_bars_all_states": {
+        "count": 61,
+        "max": 99,
+        "median": 14.0,
+        "p90": 46.0
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 16,
+          "max": 32,
+          "median": 10.5,
+          "p90": 25.0
+        },
+        "2_Markup": {
+          "count": 19,
+          "max": 72,
+          "median": 20.0,
+          "p90": 55.8
+        },
+        "3_Re-accumulation": {
+          "count": 2,
+          "max": 11,
+          "median": 8.0,
+          "p90": 10.4
+        },
+        "4_Distribution": {
+          "count": 10,
+          "max": 46,
+          "median": 9.5,
+          "p90": 36.099999999999994
+        },
+        "5_Markdown": {
+          "count": 14,
+          "max": 99,
+          "median": 21.0,
+          "p90": 79.90000000000005
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 61,
+      "formal_zero_run_bars": {
+        "count": 1,
+        "max": 16,
+        "median": 16.0,
+        "p90": 16.0
+      },
+      "formal_zero_share": 0.011869436201780416,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "GBPUSD",
+      "strong_candidate_share": 0.793026706231454,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 59,
+        "into_zero": 1,
+        "out_of_zero": 1
+      },
+      "weak_only_candidate_share": 0.15875370919881307,
+      "weak_only_run_bars": {
+        "count": 81,
+        "max": 16,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 55,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 55,
+        "adoption_rate": 0.47413793103448276,
+        "switch_demand_candidate_runs": 116,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 1,
+            "start": 17
+          },
+          {
+            "end": 31,
+            "length": 2,
+            "stage": 2,
+            "start": 30
+          },
+          {
+            "end": 49,
+            "length": 2,
+            "stage": 5,
+            "start": 48
+          },
+          {
+            "end": 60,
+            "length": 1,
+            "stage": 1,
+            "start": 60
+          },
+          {
+            "end": 82,
+            "length": 1,
+            "stage": 1,
+            "start": 82
+          },
+          {
+            "end": 140,
+            "length": 1,
+            "stage": 3,
+            "start": 140
+          },
+          {
+            "end": 143,
+            "length": 1,
+            "stage": 4,
+            "start": 143
+          },
+          {
+            "end": 162,
+            "length": 1,
+            "stage": 4,
+            "start": 162
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 61,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 61
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 110,
+        "max": 3,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.129080118694362,
+      "candidate_formal_disagreement_share_candidate_bars": 0.1627689429373246,
+      "candidate_switches": 277,
+      "clear_to_zero_reasons": {
+        "chaos": 1,
+        "coexist": 3,
+        "other": 0,
+        "weak_challenger": 18
+      },
+      "engine": "stale_decay_1x",
+      "formal_carry_run_bars": {
+        "count": 87,
+        "max": 16,
+        "median": 2.0,
+        "p90": 3.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.12314540059347182,
+      "formal_dwell_bars_all_states": {
+        "count": 69,
+        "max": 58,
+        "median": 13.0,
+        "p90": 35.60000000000001
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 16,
+          "max": 32,
+          "median": 10.0,
+          "p90": 25.0
+        },
+        "2_Markup": {
+          "count": 20,
+          "max": 58,
+          "median": 19.5,
+          "p90": 49.60000000000001
+        },
+        "3_Re-accumulation": {
+          "count": 2,
+          "max": 5,
+          "median": 4.0,
+          "p90": 4.8
+        },
+        "4_Distribution": {
+          "count": 10,
+          "max": 46,
+          "median": 9.5,
+          "p90": 36.099999999999994
+        },
+        "5_Markdown": {
+          "count": 21,
+          "max": 38,
+          "median": 15.0,
+          "p90": 30.0
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 90,
+      "formal_zero_run_bars": {
+        "count": 22,
+        "max": 16,
+        "median": 7.0,
+        "p90": 10.900000000000002
+      },
+      "formal_zero_share": 0.12314540059347182,
+      "multiplier": 1,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "GBPUSD",
+      "strong_candidate_share": 0.793026706231454,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 46,
+        "into_zero": 22,
+        "out_of_zero": 22
+      },
+      "weak_only_candidate_share": 0.15875370919881307,
+      "weak_only_run_bars": {
+        "count": 81,
+        "max": 16,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 54,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 54,
+        "adoption_rate": 0.4778761061946903,
+        "switch_demand_candidate_runs": 113,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 1,
+            "start": 17
+          },
+          {
+            "end": 31,
+            "length": 2,
+            "stage": 2,
+            "start": 30
+          },
+          {
+            "end": 49,
+            "length": 2,
+            "stage": 5,
+            "start": 48
+          },
+          {
+            "end": 60,
+            "length": 1,
+            "stage": 1,
+            "start": 60
+          },
+          {
+            "end": 82,
+            "length": 1,
+            "stage": 1,
+            "start": 82
+          },
+          {
+            "end": 140,
+            "length": 1,
+            "stage": 3,
+            "start": 140
+          },
+          {
+            "end": 143,
+            "length": 1,
+            "stage": 4,
+            "start": 143
+          },
+          {
+            "end": 162,
+            "length": 1,
+            "stage": 4,
+            "start": 162
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 59,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 59
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 108,
+        "max": 3,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.1261127596439169,
+      "candidate_formal_disagreement_share_candidate_bars": 0.15902712815715622,
+      "candidate_switches": 277,
+      "clear_to_zero_reasons": {
+        "chaos": 1,
+        "coexist": 2,
+        "other": 0,
+        "weak_challenger": 10
+      },
+      "engine": "stale_decay_2x",
+      "formal_carry_run_bars": {
+        "count": 95,
+        "max": 16,
+        "median": 2.0,
+        "p90": 5.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.18100890207715134,
+      "formal_dwell_bars_all_states": {
+        "count": 67,
+        "max": 59,
+        "median": 14.0,
+        "p90": 39.4
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 16,
+          "max": 32,
+          "median": 10.0,
+          "p90": 25.0
+        },
+        "2_Markup": {
+          "count": 20,
+          "max": 59,
+          "median": 19.5,
+          "p90": 55.300000000000004
+        },
+        "3_Re-accumulation": {
+          "count": 2,
+          "max": 6,
+          "median": 5.5,
+          "p90": 5.9
+        },
+        "4_Distribution": {
+          "count": 10,
+          "max": 46,
+          "median": 9.5,
+          "p90": 36.099999999999994
+        },
+        "5_Markdown": {
+          "count": 19,
+          "max": 41,
+          "median": 22.0,
+          "p90": 38.4
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 79,
+      "formal_zero_run_bars": {
+        "count": 13,
+        "max": 10,
+        "median": 4.0,
+        "p90": 7.800000000000001
+      },
+      "formal_zero_share": 0.04599406528189911,
+      "multiplier": 2,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "GBPUSD",
+      "strong_candidate_share": 0.793026706231454,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 53,
+        "into_zero": 13,
+        "out_of_zero": 13
+      },
+      "weak_only_candidate_share": 0.15875370919881307,
+      "weak_only_run_bars": {
+        "count": 81,
+        "max": 16,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 49,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 49,
+        "adoption_rate": 0.4537037037037037,
+        "switch_demand_candidate_runs": 108,
+        "unadopted_examples": [
+          {
+            "end": 17,
+            "length": 1,
+            "stage": 1,
+            "start": 17
+          },
+          {
+            "end": 31,
+            "length": 2,
+            "stage": 2,
+            "start": 30
+          },
+          {
+            "end": 49,
+            "length": 2,
+            "stage": 5,
+            "start": 48
+          },
+          {
+            "end": 60,
+            "length": 1,
+            "stage": 1,
+            "start": 60
+          },
+          {
+            "end": 82,
+            "length": 1,
+            "stage": 1,
+            "start": 82
+          },
+          {
+            "end": 140,
+            "length": 1,
+            "stage": 3,
+            "start": 140
+          },
+          {
+            "end": 143,
+            "length": 1,
+            "stage": 4,
+            "start": 143
+          },
+          {
+            "end": 162,
+            "length": 1,
+            "stage": 4,
+            "start": 162
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 59,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 59
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 104,
+        "max": 3,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.11943620178041543,
+      "candidate_formal_disagreement_share_candidate_bars": 0.15060804490177737,
+      "candidate_switches": 277,
+      "clear_to_zero_reasons": {
+        "chaos": 0,
+        "coexist": 0,
+        "other": 0,
+        "weak_challenger": 2
+      },
+      "engine": "stale_decay_3x",
+      "formal_carry_run_bars": {
+        "count": 98,
+        "max": 16,
+        "median": 2.0,
+        "p90": 6.299999999999997
+      },
+      "formal_carry_without_strong_candidate_share": 0.20400593471810088,
+      "formal_dwell_bars_all_states": {
+        "count": 61,
+        "max": 94,
+        "median": 14.0,
+        "p90": 46.0
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 16,
+          "max": 32,
+          "median": 10.5,
+          "p90": 25.0
+        },
+        "2_Markup": {
+          "count": 19,
+          "max": 72,
+          "median": 20.0,
+          "p90": 55.8
+        },
+        "3_Re-accumulation": {
+          "count": 2,
+          "max": 11,
+          "median": 8.0,
+          "p90": 10.4
+        },
+        "4_Distribution": {
+          "count": 10,
+          "max": 46,
+          "median": 9.5,
+          "p90": 36.099999999999994
+        },
+        "5_Markdown": {
+          "count": 14,
+          "max": 94,
+          "median": 24.0,
+          "p90": 79.90000000000005
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 62,
+      "formal_zero_run_bars": {
+        "count": 2,
+        "max": 5,
+        "median": 4.5,
+        "p90": 4.9
+      },
+      "formal_zero_share": 0.0066765578635014835,
+      "multiplier": 3,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "GBPUSD",
+      "strong_candidate_share": 0.793026706231454,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 58,
+        "into_zero": 2,
+        "out_of_zero": 2
+      },
+      "weak_only_candidate_share": 0.15875370919881307,
+      "weak_only_run_bars": {
+        "count": 81,
+        "max": 16,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 48,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 48,
+        "adoption_rate": 0.5581395348837209,
+        "switch_demand_candidate_runs": 86,
+        "unadopted_examples": [
+          {
+            "end": 55,
+            "length": 2,
+            "stage": 5,
+            "start": 54
+          },
+          {
+            "end": 61,
+            "length": 1,
+            "stage": 1,
+            "start": 61
+          },
+          {
+            "end": 63,
+            "length": 1,
+            "stage": 1,
+            "start": 63
+          },
+          {
+            "end": 66,
+            "length": 1,
+            "stage": 1,
+            "start": 66
+          },
+          {
+            "end": 70,
+            "length": 1,
+            "stage": 1,
+            "start": 70
+          },
+          {
+            "end": 74,
+            "length": 2,
+            "stage": 4,
+            "start": 73
+          },
+          {
+            "end": 80,
+            "length": 2,
+            "stage": 4,
+            "start": 79
+          },
+          {
+            "end": 105,
+            "length": 1,
+            "stage": 4,
+            "start": 105
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 38,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 38
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 80,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.10534124629080119,
+      "candidate_formal_disagreement_share_candidate_bars": 0.13209302325581396,
+      "candidate_switches": 234,
+      "engine": "phase_a",
+      "formal_carry_run_bars": {
+        "count": 85,
+        "max": 23,
+        "median": 2.0,
+        "p90": 7.6000000000000085
+      },
+      "formal_carry_without_strong_candidate_share": 0.1884272997032641,
+      "formal_dwell_bars_all_states": {
+        "count": 57,
+        "max": 101,
+        "median": 16.0,
+        "p90": 51.599999999999994
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 15,
+          "max": 33,
+          "median": 11.0,
+          "p90": 26.199999999999996
+        },
+        "2_Markup": {
+          "count": 12,
+          "max": 83,
+          "median": 35.5,
+          "p90": 59.900000000000006
+        },
+        "3_Re-accumulation": {
+          "count": 1,
+          "max": 5,
+          "median": 5.0,
+          "p90": 5.0
+        },
+        "4_Distribution": {
+          "count": 11,
+          "max": 27,
+          "median": 10.0,
+          "p90": 23.0
+        },
+        "5_Markdown": {
+          "count": 18,
+          "max": 101,
+          "median": 23.5,
+          "p90": 56.900000000000006
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 59,
+      "formal_zero_run_bars": {
+        "count": 3,
+        "max": 11,
+        "median": 11.0,
+        "p90": 11.0
+      },
+      "formal_zero_share": 0.02225519287833828,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "AUDUSD",
+      "strong_candidate_share": 0.7974777448071216,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 53,
+        "into_zero": 3,
+        "out_of_zero": 3
+      },
+      "weak_only_candidate_share": 0.1609792284866469,
+      "weak_only_run_bars": {
+        "count": 69,
+        "max": 23,
+        "median": 1.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 52,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 52,
+        "adoption_rate": 0.5652173913043478,
+        "switch_demand_candidate_runs": 92,
+        "unadopted_examples": [
+          {
+            "end": 52,
+            "length": 1,
+            "stage": 2,
+            "start": 52
+          },
+          {
+            "end": 55,
+            "length": 2,
+            "stage": 5,
+            "start": 54
+          },
+          {
+            "end": 61,
+            "length": 1,
+            "stage": 1,
+            "start": 61
+          },
+          {
+            "end": 63,
+            "length": 1,
+            "stage": 1,
+            "start": 63
+          },
+          {
+            "end": 66,
+            "length": 1,
+            "stage": 1,
+            "start": 66
+          },
+          {
+            "end": 70,
+            "length": 1,
+            "stage": 1,
+            "start": 70
+          },
+          {
+            "end": 74,
+            "length": 2,
+            "stage": 4,
+            "start": 73
+          },
+          {
+            "end": 80,
+            "length": 2,
+            "stage": 4,
+            "start": 79
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 40,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 40
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 86,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.11201780415430267,
+      "candidate_formal_disagreement_share_candidate_bars": 0.14046511627906977,
+      "candidate_switches": 234,
+      "clear_to_zero_reasons": {
+        "chaos": 2,
+        "coexist": 2,
+        "other": 0,
+        "weak_challenger": 14
+      },
+      "engine": "stale_decay_1x",
+      "formal_carry_run_bars": {
+        "count": 80,
+        "max": 9,
+        "median": 2.0,
+        "p90": 3.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.10905044510385757,
+      "formal_dwell_bars_all_states": {
+        "count": 65,
+        "max": 83,
+        "median": 13.0,
+        "p90": 38.00000000000001
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 15,
+          "max": 33,
+          "median": 11.0,
+          "p90": 26.199999999999996
+        },
+        "2_Markup": {
+          "count": 13,
+          "max": 83,
+          "median": 27.0,
+          "p90": 49.8
+        },
+        "3_Re-accumulation": {
+          "count": 1,
+          "max": 5,
+          "median": 5.0,
+          "p90": 5.0
+        },
+        "4_Distribution": {
+          "count": 11,
+          "max": 27,
+          "median": 10.0,
+          "p90": 23.0
+        },
+        "5_Markdown": {
+          "count": 25,
+          "max": 53,
+          "median": 13.0,
+          "p90": 31.6
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 82,
+      "formal_zero_run_bars": {
+        "count": 18,
+        "max": 21,
+        "median": 8.5,
+        "p90": 16.800000000000004
+      },
+      "formal_zero_share": 0.12240356083086053,
+      "multiplier": 1,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "AUDUSD",
+      "strong_candidate_share": 0.7974777448071216,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 46,
+        "into_zero": 18,
+        "out_of_zero": 18
+      },
+      "weak_only_candidate_share": 0.1609792284866469,
+      "weak_only_run_bars": {
+        "count": 69,
+        "max": 23,
+        "median": 1.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 51,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 51,
+        "adoption_rate": 0.5795454545454546,
+        "switch_demand_candidate_runs": 88,
+        "unadopted_examples": [
+          {
+            "end": 55,
+            "length": 2,
+            "stage": 5,
+            "start": 54
+          },
+          {
+            "end": 61,
+            "length": 1,
+            "stage": 1,
+            "start": 61
+          },
+          {
+            "end": 63,
+            "length": 1,
+            "stage": 1,
+            "start": 63
+          },
+          {
+            "end": 66,
+            "length": 1,
+            "stage": 1,
+            "start": 66
+          },
+          {
+            "end": 70,
+            "length": 1,
+            "stage": 1,
+            "start": 70
+          },
+          {
+            "end": 74,
+            "length": 2,
+            "stage": 4,
+            "start": 73
+          },
+          {
+            "end": 80,
+            "length": 2,
+            "stage": 4,
+            "start": 79
+          },
+          {
+            "end": 105,
+            "length": 1,
+            "stage": 4,
+            "start": 105
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 37,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 37
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 82,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.10756676557863501,
+      "candidate_formal_disagreement_share_candidate_bars": 0.13488372093023257,
+      "candidate_switches": 234,
+      "clear_to_zero_reasons": {
+        "chaos": 1,
+        "coexist": 0,
+        "other": 0,
+        "weak_challenger": 8
+      },
+      "engine": "stale_decay_2x",
+      "formal_carry_run_bars": {
+        "count": 86,
+        "max": 9,
+        "median": 2.0,
+        "p90": 5.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.15207715133531158,
+      "formal_dwell_bars_all_states": {
+        "count": 62,
+        "max": 83,
+        "median": 15.0,
+        "p90": 45.8
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 15,
+          "max": 33,
+          "median": 11.0,
+          "p90": 26.199999999999996
+        },
+        "2_Markup": {
+          "count": 12,
+          "max": 83,
+          "median": 35.5,
+          "p90": 59.900000000000006
+        },
+        "3_Re-accumulation": {
+          "count": 1,
+          "max": 5,
+          "median": 5.0,
+          "p90": 5.0
+        },
+        "4_Distribution": {
+          "count": 11,
+          "max": 27,
+          "median": 10.0,
+          "p90": 23.0
+        },
+        "5_Markdown": {
+          "count": 23,
+          "max": 65,
+          "median": 22.0,
+          "p90": 35.0
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 70,
+      "formal_zero_run_bars": {
+        "count": 9,
+        "max": 18,
+        "median": 7.0,
+        "p90": 18.0
+      },
+      "formal_zero_share": 0.06157270029673591,
+      "multiplier": 2,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "AUDUSD",
+      "strong_candidate_share": 0.7974777448071216,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 52,
+        "into_zero": 9,
+        "out_of_zero": 9
+      },
+      "weak_only_candidate_share": 0.1609792284866469,
+      "weak_only_run_bars": {
+        "count": 69,
+        "max": 23,
+        "median": 1.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 1348,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 49,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 49,
+        "adoption_rate": 0.5697674418604651,
+        "switch_demand_candidate_runs": 86,
+        "unadopted_examples": [
+          {
+            "end": 55,
+            "length": 2,
+            "stage": 5,
+            "start": 54
+          },
+          {
+            "end": 61,
+            "length": 1,
+            "stage": 1,
+            "start": 61
+          },
+          {
+            "end": 63,
+            "length": 1,
+            "stage": 1,
+            "start": 63
+          },
+          {
+            "end": 66,
+            "length": 1,
+            "stage": 1,
+            "start": 66
+          },
+          {
+            "end": 70,
+            "length": 1,
+            "stage": 1,
+            "start": 70
+          },
+          {
+            "end": 74,
+            "length": 2,
+            "stage": 4,
+            "start": 73
+          },
+          {
+            "end": 80,
+            "length": 2,
+            "stage": 4,
+            "start": 79
+          },
+          {
+            "end": 105,
+            "length": 1,
+            "stage": 4,
+            "start": 105
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 37,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 37
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 80,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.10534124629080119,
+      "candidate_formal_disagreement_share_candidate_bars": 0.13209302325581396,
+      "candidate_switches": 234,
+      "clear_to_zero_reasons": {
+        "chaos": 0,
+        "coexist": 0,
+        "other": 0,
+        "weak_challenger": 5
+      },
+      "engine": "stale_decay_3x",
+      "formal_carry_run_bars": {
+        "count": 89,
+        "max": 9,
+        "median": 2.0,
+        "p90": 7.200000000000003
+      },
+      "formal_carry_without_strong_candidate_share": 0.1824925816023739,
+      "formal_dwell_bars_all_states": {
+        "count": 60,
+        "max": 83,
+        "median": 16.0,
+        "p90": 49.1
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 15,
+          "max": 33,
+          "median": 11.0,
+          "p90": 26.199999999999996
+        },
+        "2_Markup": {
+          "count": 12,
+          "max": 83,
+          "median": 35.5,
+          "p90": 59.900000000000006
+        },
+        "3_Re-accumulation": {
+          "count": 1,
+          "max": 5,
+          "median": 5.0,
+          "p90": 5.0
+        },
+        "4_Distribution": {
+          "count": 11,
+          "max": 27,
+          "median": 10.0,
+          "p90": 23.0
+        },
+        "5_Markdown": {
+          "count": 21,
+          "max": 65,
+          "median": 24.0,
+          "p90": 56.0
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 64,
+      "formal_zero_run_bars": {
+        "count": 5,
+        "max": 15,
+        "median": 6.0,
+        "p90": 11.4
+      },
+      "formal_zero_share": 0.02373887240356083,
+      "multiplier": 3,
+      "one_bar_flip_per_formal_switch": 0.015625,
+      "one_bar_formal_flips": 1,
+      "pair": "AUDUSD",
+      "strong_candidate_share": 0.7974777448071216,
+      "transition_types": {
+        "direct_nonzero_to_nonzero": 54,
+        "into_zero": 5,
+        "out_of_zero": 5
+      },
+      "weak_only_candidate_share": 0.1609792284866469,
+      "weak_only_run_bars": {
+        "count": 69,
+        "max": 23,
+        "median": 1.0,
+        "p90": 8.0
+      }
+    }
+  ],
+  "phase": "B-live-window",
+  "phase_a_carry_decomposition": {
+    "categories": {
+      "chaos": {
+        "bars": 23,
+        "share_of_all_live_bars": 0.004265578635014837,
+        "share_of_live_carry_bars": 0.02
+      },
+      "coexist_no_display": {
+        "bars": 173,
+        "share_of_all_live_bars": 0.03208456973293768,
+        "share_of_live_carry_bars": 0.15043478260869564
+      },
+      "neutral_no_candidate": {
+        "bars": 0,
+        "share_of_all_live_bars": 0.0,
+        "share_of_live_carry_bars": 0.0
+      },
+      "weak_challenger": {
+        "bars": 652,
+        "share_of_all_live_bars": 0.12091988130563798,
+        "share_of_live_carry_bars": 0.5669565217391305
+      },
+      "weak_same_state": {
+        "bars": 302,
+        "share_of_all_live_bars": 0.05600890207715133,
+        "share_of_live_carry_bars": 0.26260869565217393
+      }
+    },
+    "formal_carry_bars": 1150,
+    "formal_carry_share": 0.21327893175074183,
+    "live_bars": 5392,
+    "weak_challenger_followthrough": {
+      "10": {
+        "eligible_runs": 205,
+        "formal_adoption_rate": 0.36585365853658536,
+        "strong_candidate_emergence_rate": 0.6585365853658537
+      },
+      "5": {
+        "eligible_runs": 205,
+        "formal_adoption_rate": 0.2634146341463415,
+        "strong_candidate_emergence_rate": 0.5463414634146342
+      }
+    }
+  },
+  "scope": "Burned Issue #55 FX history only, trimmed to first top_value > 0 per pair. Engineering persistence comparison only; no PnL or independent OOS claim.",
+  "status": "live_window_engineering_sweep_complete_pending_phase_b_choice",
+  "summary": {
+    "phase_a": {
+      "median_pair_carry_run_p90_bars": 6.800000000000004,
+      "median_pair_disagreement_run_p90_bars": 2.0,
+      "median_pair_disagreement_share_candidate_bars": 0.14135053407879566,
+      "median_pair_formal_carry_share": 0.2129080118694362,
+      "median_pair_formal_dwell_median_bars": 15.0,
+      "median_pair_formal_zero_share": 0.00741839762611276,
+      "median_pair_zero_run_median_bars": 11.0,
+      "median_pair_zero_run_p90_bars": 11.0,
+      "total_formal_switches": 226,
+      "total_into_zero_transitions": 5,
+      "total_one_bar_formal_flips": 1
+    },
+    "stale_decay_1x": {
+      "additional_formal_switches": 114,
+      "additional_into_zero_transitions": 79,
+      "carry_reduction_relative": 0.42682926829268286,
+      "formal_zero_increase_percentage_points": 11.535608308605342,
+      "median_pair_carry_run_p90_bars": 3.0,
+      "median_pair_disagreement_run_p90_bars": 2.0,
+      "median_pair_disagreement_share_candidate_bars": 0.15161702960819717,
+      "median_pair_formal_carry_share": 0.1220326409495549,
+      "median_pair_formal_dwell_median_bars": 13.0,
+      "median_pair_formal_zero_share": 0.12277448071216618,
+      "median_pair_zero_run_median_bars": 7.75,
+      "median_pair_zero_run_p90_bars": 15.350000000000003,
+      "total_formal_switches": 340,
+      "total_into_zero_transitions": 84,
+      "total_one_bar_formal_flips": 3
+    },
+    "stale_decay_2x": {
+      "additional_formal_switches": 63,
+      "additional_into_zero_transitions": 42,
+      "carry_reduction_relative": 0.16898954703832744,
+      "formal_zero_increase_percentage_points": 5.0816023738872405,
+      "median_pair_carry_run_p90_bars": 5.0,
+      "median_pair_disagreement_run_p90_bars": 2.0,
+      "median_pair_disagreement_share_candidate_bars": 0.1469554245436944,
+      "median_pair_formal_carry_share": 0.17692878338278933,
+      "median_pair_formal_dwell_median_bars": 14.5,
+      "median_pair_formal_zero_share": 0.05823442136498516,
+      "median_pair_zero_run_median_bars": 5.5,
+      "median_pair_zero_run_p90_bars": 15.3,
+      "total_formal_switches": 289,
+      "total_into_zero_transitions": 47,
+      "total_one_bar_formal_flips": 3
+    },
+    "stale_decay_3x": {
+      "additional_formal_switches": 17,
+      "additional_into_zero_transitions": 12,
+      "carry_reduction_relative": 0.03658536585365856,
+      "formal_zero_increase_percentage_points": 1.891691394658754,
+      "median_pair_carry_run_p90_bars": 6.75,
+      "median_pair_disagreement_run_p90_bars": 2.0,
+      "median_pair_disagreement_share_candidate_bars": 0.14135053407879566,
+      "median_pair_formal_carry_share": 0.2051186943620178,
+      "median_pair_formal_dwell_median_bars": 15.5,
+      "median_pair_formal_zero_share": 0.026335311572700297,
+      "median_pair_zero_run_median_bars": 7.25,
+      "median_pair_zero_run_p90_bars": 11.95,
+      "total_formal_switches": 243,
+      "total_into_zero_transitions": 17,
+      "total_one_bar_formal_flips": 2
+    }
+  },
+  "supersedes_for_phase_b_choice": [
+    "issue-57-phase-b-persistence-audit.md neutral statistics",
+    "issue-57-phase-b-decay-horizon-sweep.md neutral statistics"
+  ]
+}
