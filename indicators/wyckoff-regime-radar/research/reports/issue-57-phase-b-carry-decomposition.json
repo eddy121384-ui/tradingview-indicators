@@ -1,0 +1,413 @@
+{
+  "aggregate": {
+    "bars": 9600,
+    "categories": {
+      "chaos": {
+        "bars": 23,
+        "share_of_all_bars": 0.002395833333333333,
+        "share_of_carry_bars": 0.02
+      },
+      "coexist_no_display": {
+        "bars": 173,
+        "share_of_all_bars": 0.018020833333333333,
+        "share_of_carry_bars": 0.15043478260869564
+      },
+      "neutral_no_candidate": {
+        "bars": 0,
+        "share_of_all_bars": 0.0,
+        "share_of_carry_bars": 0.0
+      },
+      "weak_challenger": {
+        "bars": 652,
+        "share_of_all_bars": 0.06791666666666667,
+        "share_of_carry_bars": 0.5669565217391305
+      },
+      "weak_same_state": {
+        "bars": 302,
+        "share_of_all_bars": 0.03145833333333333,
+        "share_of_carry_bars": 0.26260869565217393
+      }
+    },
+    "formal_carry_bars": 1150,
+    "formal_carry_share": 0.11979166666666667,
+    "weak_challenger_followthrough": {
+      "10": {
+        "eligible_runs": 205,
+        "formal_adoption_rate": 0.36585365853658536,
+        "formal_adoption_rate_length_ge_2": 0.36752136752136755,
+        "runs_length_ge_2": 117,
+        "strong_candidate_emergence_rate": 0.6585365853658537
+      },
+      "5": {
+        "eligible_runs": 205,
+        "formal_adoption_rate": 0.2634146341463415,
+        "formal_adoption_rate_length_ge_2": 0.26495726495726496,
+        "runs_length_ge_2": 117,
+        "strong_candidate_emergence_rate": 0.5463414634146342
+      }
+    }
+  },
+  "decision_boundary": "Use this decomposition to decide whether Phase B should change confirmation delay, weak-challenger handling, or stale-state decay. Do not select a rule from trading PnL.",
+  "issue": 57,
+  "phase": "B-carry-decomposition",
+  "rows": [
+    {
+      "bars": 2400,
+      "categories": {
+        "chaos": {
+          "bars": 5,
+          "run_length_bars": {
+            "count": 3,
+            "max": 2,
+            "median": 2.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.0020833333333333333,
+          "share_of_carry_bars": 0.016233766233766232
+        },
+        "coexist_no_display": {
+          "bars": 36,
+          "run_length_bars": {
+            "count": 30,
+            "max": 3,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.015,
+          "share_of_carry_bars": 0.11688311688311688
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 150,
+          "run_length_bars": {
+            "count": 40,
+            "max": 13,
+            "median": 2.5,
+            "p90": 7.500000000000007
+          },
+          "share_of_all_bars": 0.0625,
+          "share_of_carry_bars": 0.487012987012987
+        },
+        "weak_same_state": {
+          "bars": 117,
+          "run_length_bars": {
+            "count": 50,
+            "max": 7,
+            "median": 1.0,
+            "p90": 5.0
+          },
+          "share_of_all_bars": 0.04875,
+          "share_of_carry_bars": 0.37987012987012986
+        }
+      },
+      "formal_carry_bars": 308,
+      "formal_carry_share": 0.12833333333333333,
+      "pair": "EURUSD",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 42,
+          "formal_adoption_count": 17,
+          "formal_adoption_rate": 0.40476190476190477,
+          "formal_adoption_rate_length_ge_2": 0.4444444444444444,
+          "runs_length_ge_2": 27,
+          "strong_candidate_emergence_count": 27,
+          "strong_candidate_emergence_rate": 0.6428571428571429
+        },
+        "5": {
+          "eligible_runs": 42,
+          "formal_adoption_count": 12,
+          "formal_adoption_rate": 0.2857142857142857,
+          "formal_adoption_rate_length_ge_2": 0.2962962962962963,
+          "runs_length_ge_2": 27,
+          "strong_candidate_emergence_count": 20,
+          "strong_candidate_emergence_rate": 0.47619047619047616
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 42,
+        "max": 13,
+        "median": 2.5,
+        "p90": 6.899999999999999
+      }
+    },
+    {
+      "bars": 2400,
+      "categories": {
+        "chaos": {
+          "bars": 3,
+          "run_length_bars": {
+            "count": 2,
+            "max": 2,
+            "median": 1.5,
+            "p90": 1.9
+          },
+          "share_of_all_bars": 0.00125,
+          "share_of_carry_bars": 0.009316770186335404
+        },
+        "coexist_no_display": {
+          "bars": 51,
+          "run_length_bars": {
+            "count": 40,
+            "max": 2,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.02125,
+          "share_of_carry_bars": 0.15838509316770186
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 209,
+          "run_length_bars": {
+            "count": 63,
+            "max": 14,
+            "median": 2.0,
+            "p90": 8.0
+          },
+          "share_of_all_bars": 0.08708333333333333,
+          "share_of_carry_bars": 0.6490683229813664
+        },
+        "weak_same_state": {
+          "bars": 59,
+          "run_length_bars": {
+            "count": 21,
+            "max": 12,
+            "median": 1.0,
+            "p90": 5.0
+          },
+          "share_of_all_bars": 0.024583333333333332,
+          "share_of_carry_bars": 0.18322981366459629
+        }
+      },
+      "formal_carry_bars": 322,
+      "formal_carry_share": 0.13416666666666666,
+      "pair": "USDJPY",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 65,
+          "formal_adoption_count": 21,
+          "formal_adoption_rate": 0.3230769230769231,
+          "formal_adoption_rate_length_ge_2": 0.2972972972972973,
+          "runs_length_ge_2": 37,
+          "strong_candidate_emergence_count": 45,
+          "strong_candidate_emergence_rate": 0.6923076923076923
+        },
+        "5": {
+          "eligible_runs": 65,
+          "formal_adoption_count": 13,
+          "formal_adoption_rate": 0.2,
+          "formal_adoption_rate_length_ge_2": 0.21621621621621623,
+          "runs_length_ge_2": 37,
+          "strong_candidate_emergence_count": 34,
+          "strong_candidate_emergence_rate": 0.5230769230769231
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 65,
+        "max": 14,
+        "median": 2.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 2400,
+      "categories": {
+        "chaos": {
+          "bars": 5,
+          "run_length_bars": {
+            "count": 3,
+            "max": 2,
+            "median": 2.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.0020833333333333333,
+          "share_of_carry_bars": 0.018796992481203006
+        },
+        "coexist_no_display": {
+          "bars": 51,
+          "run_length_bars": {
+            "count": 38,
+            "max": 6,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.02125,
+          "share_of_carry_bars": 0.19172932330827067
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 148,
+          "run_length_bars": {
+            "count": 56,
+            "max": 9,
+            "median": 2.0,
+            "p90": 5.5
+          },
+          "share_of_all_bars": 0.06166666666666667,
+          "share_of_carry_bars": 0.556390977443609
+        },
+        "weak_same_state": {
+          "bars": 62,
+          "run_length_bars": {
+            "count": 27,
+            "max": 8,
+            "median": 2.0,
+            "p90": 4.0
+          },
+          "share_of_all_bars": 0.025833333333333333,
+          "share_of_carry_bars": 0.23308270676691728
+        }
+      },
+      "formal_carry_bars": 266,
+      "formal_carry_share": 0.11083333333333334,
+      "pair": "GBPUSD",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 58,
+          "formal_adoption_count": 22,
+          "formal_adoption_rate": 0.3793103448275862,
+          "formal_adoption_rate_length_ge_2": 0.375,
+          "runs_length_ge_2": 32,
+          "strong_candidate_emergence_count": 37,
+          "strong_candidate_emergence_rate": 0.6379310344827587
+        },
+        "5": {
+          "eligible_runs": 58,
+          "formal_adoption_count": 17,
+          "formal_adoption_rate": 0.29310344827586204,
+          "formal_adoption_rate_length_ge_2": 0.25,
+          "runs_length_ge_2": 32,
+          "strong_candidate_emergence_count": 35,
+          "strong_candidate_emergence_rate": 0.603448275862069
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 58,
+        "max": 9,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 2400,
+      "categories": {
+        "chaos": {
+          "bars": 10,
+          "run_length_bars": {
+            "count": 7,
+            "max": 2,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.004166666666666667,
+          "share_of_carry_bars": 0.03937007874015748
+        },
+        "coexist_no_display": {
+          "bars": 35,
+          "run_length_bars": {
+            "count": 30,
+            "max": 3,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "share_of_all_bars": 0.014583333333333334,
+          "share_of_carry_bars": 0.1377952755905512
+        },
+        "neutral_no_candidate": {
+          "bars": 0,
+          "run_length_bars": {
+            "count": 0,
+            "max": null,
+            "median": null,
+            "p90": null
+          },
+          "share_of_all_bars": 0.0,
+          "share_of_carry_bars": 0.0
+        },
+        "weak_challenger": {
+          "bars": 145,
+          "run_length_bars": {
+            "count": 39,
+            "max": 23,
+            "median": 2.0,
+            "p90": 9.200000000000003
+          },
+          "share_of_all_bars": 0.06041666666666667,
+          "share_of_carry_bars": 0.5708661417322834
+        },
+        "weak_same_state": {
+          "bars": 64,
+          "run_length_bars": {
+            "count": 28,
+            "max": 8,
+            "median": 1.0,
+            "p90": 4.600000000000001
+          },
+          "share_of_all_bars": 0.02666666666666667,
+          "share_of_carry_bars": 0.25196850393700787
+        }
+      },
+      "formal_carry_bars": 254,
+      "formal_carry_share": 0.10583333333333333,
+      "pair": "AUDUSD",
+      "weak_challenger_followthrough": {
+        "10": {
+          "eligible_runs": 40,
+          "formal_adoption_count": 15,
+          "formal_adoption_rate": 0.375,
+          "formal_adoption_rate_length_ge_2": 0.38095238095238093,
+          "runs_length_ge_2": 21,
+          "strong_candidate_emergence_count": 26,
+          "strong_candidate_emergence_rate": 0.65
+        },
+        "5": {
+          "eligible_runs": 40,
+          "formal_adoption_count": 12,
+          "formal_adoption_rate": 0.3,
+          "formal_adoption_rate_length_ge_2": 0.3333333333333333,
+          "runs_length_ge_2": 21,
+          "strong_candidate_emergence_count": 23,
+          "strong_candidate_emergence_rate": 0.575
+        }
+      },
+      "weak_challenger_runs": {
+        "count": 40,
+        "max": 23,
+        "median": 2.0,
+        "p90": 8.100000000000001
+      }
+    }
+  ],
+  "scope": "Already-observed Issue #55 FX history only; internal state-machine diagnosis; no PnL.",
+  "status": "carry_decomposition_complete_pending_phase_b_decision"
+}
