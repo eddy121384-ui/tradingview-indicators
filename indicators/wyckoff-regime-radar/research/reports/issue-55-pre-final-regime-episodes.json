@@ -360,7 +360,7 @@
                   "forward_return_mean": -0.0025364741285210713,
                   "mfe_mean": 0.004605178453975345,
                   "mae_mean": -0.008574713637530262,
-                  "realized_vol_mean": 0.0613382413112467
+                  "realized_vol_mean": 0.06133824131124669
                 },
                 "10": {
                   "episode_entry_count": 5,
@@ -396,14 +396,14 @@
                   "forward_return_mean": -0.006264961600412899,
                   "mfe_mean": 0.023075348621975467,
                   "mae_mean": -0.016169652312429394,
-                  "realized_vol_mean": 0.16255364298472272
+                  "realized_vol_mean": 0.1625536429847227
                 },
                 "10": {
                   "episode_entry_count": 1,
                   "forward_return_mean": -0.05145455678066402,
                   "mfe_mean": 0.023075348621975467,
                   "mae_mean": -0.051881713253419504,
-                  "realized_vol_mean": 0.1747759076182002
+                  "realized_vol_mean": 0.17477590761820017
                 },
                 "20": {
                   "episode_entry_count": 1,
@@ -723,7 +723,7 @@
                   "forward_return_mean": -0.020786833177701247,
                   "mfe_mean": 0.013109424521966995,
                   "mae_mean": -0.03985514578269529,
-                  "realized_vol_mean": 0.07930568908805043
+                  "realized_vol_mean": 0.07930568908805041
                 }
               }
             },
@@ -824,7 +824,7 @@
                   "forward_return_mean": 0.010534270197380569,
                   "mfe_mean": 0.023604011665221376,
                   "mae_mean": -0.012156149184738193,
-                  "realized_vol_mean": 0.07576433560034124
+                  "realized_vol_mean": 0.07576433560034122
                 },
                 "60": {
                   "episode_entry_count": 6,
@@ -980,7 +980,7 @@
                   "forward_return_mean": 0.00024716543221592335,
                   "mfe_mean": 0.01128552174536665,
                   "mae_mean": -0.01313211115963929,
-                  "realized_vol_mean": 0.05598009677494689
+                  "realized_vol_mean": 0.055980096774946884
                 },
                 "60": {
                   "episode_entry_count": 8,
@@ -1009,7 +1009,7 @@
                   "forward_return_mean": -0.0075571549327764775,
                   "mfe_mean": 0.006741945380642256,
                   "mae_mean": -0.017482599791720864,
-                  "realized_vol_mean": 0.07118145171282005
+                  "realized_vol_mean": 0.07118145171282003
                 },
                 "20": {
                   "episode_entry_count": 9,
@@ -1074,7 +1074,7 @@
                   "forward_return_mean": 0.011847719239665655,
                   "mfe_mean": 0.014726570338359557,
                   "mae_mean": -0.0030569844307676564,
-                  "realized_vol_mean": 0.05854376591203089
+                  "realized_vol_mean": 0.05854376591203088
                 },
                 "10": {
                   "episode_entry_count": 4,
@@ -1971,7 +1971,7 @@
                   "forward_return_mean": 0.058485903329524636,
                   "mfe_mean": 0.07154624930247389,
                   "mae_mean": -0.0007307416363299124,
-                  "realized_vol_mean": 0.07607854731943874
+                  "realized_vol_mean": 0.07607854731943872
                 }
               }
             },
@@ -2335,7 +2335,7 @@
                   "forward_return_mean": -0.00389605957787918,
                   "mfe_mean": 0.01151894159021554,
                   "mae_mean": -0.025139020089091524,
-                  "realized_vol_mean": 0.07381946521512382
+                  "realized_vol_mean": 0.07381946521512381
                 },
                 "60": {
                   "episode_entry_count": 7,

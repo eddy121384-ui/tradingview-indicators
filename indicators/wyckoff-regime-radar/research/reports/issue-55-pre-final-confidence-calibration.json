@@ -1,0 +1,2524 @@
+{
+  "schema_version": 1,
+  "issue": 55,
+  "status": "pre_final_directional_confidence_calibration",
+  "directional_stages": {
+    "2": "Markup (+return desired)",
+    "5": "Markdown (-return desired)"
+  },
+  "confidence_fields": [
+    "evidence_strength",
+    "top_gap"
+  ],
+  "development_bin_rule": "per pair + formal stage, q33/q67 learned on Development only",
+  "minimum_development_stage_bars": 60,
+  "minimum_exploratory_bin_bars": 10,
+  "final_oos_status": "SEALED_NOT_COMPUTED",
+  "pairs": {
+    "EURUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "development": {
+        "start_date": "2012-12-04",
+        "end_date": "2018-06-21"
+      },
+      "exploratory_oos": {
+        "start_date": "2018-06-22",
+        "end_date": "2020-04-29"
+      },
+      "stages": {
+        "2": {
+          "direction_multiplier": 1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 179,
+              "development_cutpoints": {
+                "q33": 89.9935818278768,
+                "q67": 95.45417207220162
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 3,
+                    "high": 5
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.011584273655441013,
+                    "medium": -0.040916899372650195,
+                    "high": -0.02034428411885423
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.011584273655441013,
+                    "medium": -0.040916899372650195,
+                    "high": -0.02034428411885423
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 3,
+                    "high": 5
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.0036405018242599008,
+                    "medium": -0.006914378686842341,
+                    "high": -0.0490457466987422
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0036405018242599008,
+                    "medium": -0.006914378686842341,
+                    "high": -0.0490457466987422
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 3,
+                    "high": 5
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.001383113897760524,
+                    "medium": -0.020071845290262142,
+                    "high": -0.040751319580848364
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.001383113897760524,
+                    "medium": -0.020071845290262142,
+                    "high": -0.040751319580848364
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 0,
+                    "medium": 0,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": null,
+                    "medium": null,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": null,
+                    "medium": null,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 179,
+              "development_cutpoints": {
+                "q33": 75.92051807680619,
+                "q67": 99.33476635078831
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 0,
+                    "high": 8
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.011584273655441013,
+                    "medium": null,
+                    "high": -0.028059014839027716
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.011584273655441013,
+                    "medium": null,
+                    "high": -0.028059014839027716
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 0,
+                    "high": 8
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.0036405018242599008,
+                    "medium": null,
+                    "high": -0.03324648369427975
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0036405018242599008,
+                    "medium": null,
+                    "high": -0.03324648369427975
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 0,
+                    "high": 8
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.001383113897760524,
+                    "medium": null,
+                    "high": -0.03299651672187853
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.001383113897760524,
+                    "medium": null,
+                    "high": -0.03299651672187853
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 0,
+                    "medium": 0,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": null,
+                    "medium": null,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": null,
+                    "medium": null,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                }
+              }
+            }
+          }
+        },
+        "5": {
+          "direction_multiplier": -1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 67,
+              "development_cutpoints": {
+                "q33": 93.1072347298022,
+                "q67": 95.08142681394709
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 109,
+                    "medium": 109,
+                    "high": 64
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0018577487787291098,
+                    "medium": -0.0006315270990047445,
+                    "high": 0.0072301569021693286
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0018577487787291098,
+                    "medium": 0.0006315270990047445,
+                    "high": -0.0072301569021693286
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.009087905680898439,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 104,
+                    "medium": 109,
+                    "high": 64
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0022656966615914576,
+                    "medium": -0.0009759619180136103,
+                    "high": 0.007934225523784331
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0022656966615914576,
+                    "medium": 0.0009759619180136103,
+                    "high": -0.007934225523784331
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.01019992218537579,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 100,
+                    "medium": 105,
+                    "high": 62
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0006018595647651892,
+                    "medium": -0.0005141135324462841,
+                    "high": 0.004684786413805288
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0006018595647651892,
+                    "medium": 0.0005141135324462841,
+                    "high": -0.004684786413805288
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.005286645978570477,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 93,
+                    "medium": 103,
+                    "high": 41
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0028178801417430037,
+                    "medium": -0.0031314723255596684,
+                    "high": -0.0007777044599542194
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0028178801417430037,
+                    "medium": 0.0031314723255596684,
+                    "high": 0.0007777044599542194
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0020401756817887843,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 67,
+              "development_cutpoints": {
+                "q33": 92.16619953848584,
+                "q67": 100.0
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 128,
+                    "medium": 154,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.001801023858847767,
+                    "medium": 0.002739805357132215,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.001801023858847767,
+                    "medium": -0.002739805357132215,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 126,
+                    "medium": 151,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.002657619555690837,
+                    "medium": 0.0033154847395380637,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.002657619555690837,
+                    "medium": -0.0033154847395380637,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 123,
+                    "medium": 144,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.001426593390327123,
+                    "medium": 0.002442776856130453,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.001426593390327123,
+                    "medium": -0.002442776856130453,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 117,
+                    "medium": 120,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.00286611974495472,
+                    "medium": -0.002342953128443049,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.00286611974495472,
+                    "medium": 0.002342953128443049,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "USDJPY": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "development": {
+        "start_date": "2012-12-04",
+        "end_date": "2018-06-21"
+      },
+      "exploratory_oos": {
+        "start_date": "2018-06-22",
+        "end_date": "2020-04-29"
+      },
+      "stages": {
+        "2": {
+          "direction_multiplier": 1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 91,
+              "development_cutpoints": {
+                "q33": 80.97214153423388,
+                "q67": 94.06556870860928
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 31,
+                    "medium": 60,
+                    "high": 42
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0035490332595469044,
+                    "medium": -0.0012759961750698824,
+                    "high": -0.01074798353137004
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0035490332595469044,
+                    "medium": -0.0012759961750698824,
+                    "high": -0.01074798353137004
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.007198950271823136,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 31,
+                    "medium": 60,
+                    "high": 42
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0028988367540393107,
+                    "medium": -0.0005162920920110004,
+                    "high": -0.017249880599955265
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0028988367540393107,
+                    "medium": -0.0005162920920110004,
+                    "high": -0.017249880599955265
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.014351043845915954,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 25,
+                    "medium": 58,
+                    "high": 42
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.009819218892375794,
+                    "medium": -0.003035300215879245,
+                    "high": -0.010902726155668127
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.009819218892375794,
+                    "medium": -0.003035300215879245,
+                    "high": -0.010902726155668127
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0010835072632923333,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 18,
+                    "medium": 54,
+                    "high": 32
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.022060122032880318,
+                    "medium": -0.01393545629732101,
+                    "high": -0.005368893308541015
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.022060122032880318,
+                    "medium": -0.01393545629732101,
+                    "high": -0.005368893308541015
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.016691228724339303,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": true
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 91,
+              "development_cutpoints": {
+                "q33": 29.41644233348749,
+                "q67": 90.5997844211884
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 32,
+                    "medium": 60,
+                    "high": 41
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.004557226278421707,
+                    "medium": -0.0035632207924859937,
+                    "high": -0.006789527351439865
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.004557226278421707,
+                    "medium": -0.0035632207924859937,
+                    "high": -0.006789527351439865
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0022323010730181583,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 32,
+                    "medium": 60,
+                    "high": 41
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.00404497424332291,
+                    "medium": -0.0024270304663393306,
+                    "high": -0.013909157227495287
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.00404497424332291,
+                    "medium": -0.0024270304663393306,
+                    "high": -0.013909157227495287
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.009864182984172376,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 29,
+                    "medium": 59,
+                    "high": 37
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.015301890678048248,
+                    "medium": -0.004224920249679909,
+                    "high": -0.005038304296592935
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.015301890678048248,
+                    "medium": -0.004224920249679909,
+                    "high": -0.005038304296592935
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.010263586381455313,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 20,
+                    "medium": 55,
+                    "high": 29
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.01139004610796292,
+                    "medium": -0.0144629686834897,
+                    "high": -0.010280593888596583
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.01139004610796292,
+                    "medium": -0.0144629686834897,
+                    "high": -0.010280593888596583
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.001109452219366338,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            }
+          }
+        },
+        "5": {
+          "direction_multiplier": -1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 139,
+              "development_cutpoints": {
+                "q33": 87.55953081784958,
+                "q67": 94.45129133099653
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 31,
+                    "medium": 28,
+                    "high": 79
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.0004720115851808928,
+                    "medium": 0.0023612719672691162,
+                    "high": 0.0028550762774239256
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0004720115851808928,
+                    "medium": -0.0023612719672691162,
+                    "high": -0.0028550762774239256
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0023830646922430327,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 26,
+                    "medium": 28,
+                    "high": 79
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.005245735281075132,
+                    "medium": -0.003430086981578131,
+                    "high": 0.005275926680232917
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.005245735281075132,
+                    "medium": 0.003430086981578131,
+                    "high": -0.005275926680232917
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -3.0191399157784675e-05,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 26,
+                    "medium": 28,
+                    "high": 79
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.0008920119265200832,
+                    "medium": -0.0018857864720536227,
+                    "high": 0.004720766279187294
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0008920119265200832,
+                    "medium": 0.0018857864720536227,
+                    "high": -0.004720766279187294
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.003828754352667211,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 25,
+                    "medium": 27,
+                    "high": 68
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.007309200943060383,
+                    "medium": 0.003021421431774517,
+                    "high": 0.003189946380457648
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.007309200943060383,
+                    "medium": -0.003021421431774517,
+                    "high": -0.003189946380457648
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.004119254562602735,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 139,
+              "development_cutpoints": {
+                "q33": 82.02182592678564,
+                "q67": 97.94937863520052
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 28,
+                    "medium": 18,
+                    "high": 92
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.0021958839450093226,
+                    "medium": -0.003143410265266865,
+                    "high": 0.003276039504947561
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0021958839450093226,
+                    "medium": 0.003143410265266865,
+                    "high": -0.003276039504947561
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0010801555599382383,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 28,
+                    "medium": 17,
+                    "high": 88
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.005520167863720171,
+                    "medium": -0.003072302045232057,
+                    "high": 0.004031924138033482
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.005520167863720171,
+                    "medium": 0.003072302045232057,
+                    "high": -0.004031924138033482
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.001488243725686689,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 28,
+                    "medium": 17,
+                    "high": 88
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.008622542659318456,
+                    "medium": -0.0034955758765053313,
+                    "high": 0.0018332320496305778
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.008622542659318456,
+                    "medium": 0.0034955758765053313,
+                    "high": -0.0018332320496305778
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.006789310609687878,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 27,
+                    "medium": 17,
+                    "high": 76
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.011791851092116466,
+                    "medium": 0.001225897521696825,
+                    "high": 0.0018684805098625132
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.011791851092116466,
+                    "medium": -0.001225897521696825,
+                    "high": -0.0018684805098625132
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.009923370582253952,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "GBPUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "development": {
+        "start_date": "2012-12-04",
+        "end_date": "2018-06-21"
+      },
+      "exploratory_oos": {
+        "start_date": "2018-06-22",
+        "end_date": "2020-04-29"
+      },
+      "stages": {
+        "2": {
+          "direction_multiplier": 1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 211,
+              "development_cutpoints": {
+                "q33": 83.15253728609721,
+                "q67": 94.10462191256518
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 21,
+                    "medium": 48,
+                    "high": 40
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0015626086570770564,
+                    "medium": 0.00017422503213264848,
+                    "high": -0.005700279879855788
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0015626086570770564,
+                    "medium": 0.00017422503213264848,
+                    "high": -0.005700279879855788
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.004137671222778732,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 21,
+                    "medium": 48,
+                    "high": 40
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0013985529200986533,
+                    "medium": -0.0007649066824248924,
+                    "high": -0.007356995182633788
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0013985529200986533,
+                    "medium": -0.0007649066824248924,
+                    "high": -0.007356995182633788
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.005958442262535135,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 21,
+                    "medium": 48,
+                    "high": 40
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.009652114922276477,
+                    "medium": -0.0015035805211243286,
+                    "high": -0.0044288710948874625
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.009652114922276477,
+                    "medium": -0.0015035805211243286,
+                    "high": -0.0044288710948874625
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.01408098601716394,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 21,
+                    "medium": 48,
+                    "high": 40
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.026424704453870938,
+                    "medium": -0.029422553962925497,
+                    "high": -0.025123142106331764
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.026424704453870938,
+                    "medium": -0.029422553962925497,
+                    "high": -0.025123142106331764
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.0013015623475391737,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 211,
+              "development_cutpoints": {
+                "q33": 54.05790939018169,
+                "q67": 98.00182104574125
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 38,
+                    "medium": 34,
+                    "high": 37
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0014516380191159522,
+                    "medium": -0.0017149914609380155,
+                    "high": -0.003756519487896861
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0014516380191159522,
+                    "medium": -0.0017149914609380155,
+                    "high": -0.003756519487896861
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.002304881468780909,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 38,
+                    "medium": 34,
+                    "high": 37
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.004541695748648039,
+                    "medium": -0.00249314540882039,
+                    "high": -0.002784150190143226
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.004541695748648039,
+                    "medium": -0.00249314540882039,
+                    "high": -0.002784150190143226
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.0017575455585048128,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 38,
+                    "medium": 34,
+                    "high": 37
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.001574669618580873,
+                    "medium": -0.0025118490820879545,
+                    "high": -0.0005693749231552153
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.001574669618580873,
+                    "medium": -0.0025118490820879545,
+                    "high": -0.0005693749231552153
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0021440445417360886,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 38,
+                    "medium": 34,
+                    "high": 37
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.03265749848982467,
+                    "medium": -0.03508536540711895,
+                    "high": -0.014547018960800072
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.03265749848982467,
+                    "medium": -0.03508536540711895,
+                    "high": -0.014547018960800072
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.018110479529024594,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            }
+          }
+        },
+        "5": {
+          "direction_multiplier": -1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 71,
+              "development_cutpoints": {
+                "q33": 93.59000208807433,
+                "q67": 94.2882518580309
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 100,
+                    "medium": 21,
+                    "high": 101
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0013720723773763366,
+                    "medium": -0.0008154443199742836,
+                    "high": 0.0026805267781739002
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0013720723773763366,
+                    "medium": 0.0008154443199742836,
+                    "high": -0.0026805267781739002
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.004052599155550236,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 100,
+                    "medium": 21,
+                    "high": 101
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0009680442382699684,
+                    "medium": -0.005437922757447483,
+                    "high": 0.0038183403695166004
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0009680442382699684,
+                    "medium": 0.005437922757447483,
+                    "high": -0.0038183403695166004
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.004786384607786569,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 95,
+                    "medium": 21,
+                    "high": 101
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.005246701328556653,
+                    "medium": -0.011143502317759528,
+                    "high": 0.00605551671714851
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.005246701328556653,
+                    "medium": 0.011143502317759528,
+                    "high": -0.00605551671714851
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.011302218045705163,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 95,
+                    "medium": 21,
+                    "high": 87
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.0002208383307951963,
+                    "medium": -0.004507070187653252,
+                    "high": 0.013321923119974089
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0002208383307951963,
+                    "medium": 0.004507070187653252,
+                    "high": -0.013321923119974089
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.013101084789178893,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 71,
+              "development_cutpoints": {
+                "q33": 94.88162754503196,
+                "q67": 99.99650016500283
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 108,
+                    "medium": 50,
+                    "high": 64
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0031836594677175202,
+                    "medium": 0.001927998869041705,
+                    "high": 0.005684951799998082
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0031836594677175202,
+                    "medium": -0.001927998869041705,
+                    "high": -0.005684951799998082
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.008868611267715602,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 108,
+                    "medium": 50,
+                    "high": 64
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.005842286887511746,
+                    "medium": -0.002335431237004286,
+                    "high": 0.014412345645144774
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.005842286887511746,
+                    "medium": 0.002335431237004286,
+                    "high": -0.014412345645144774
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.02025463253265652,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 105,
+                    "medium": 50,
+                    "high": 62
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.012021747717353115,
+                    "medium": 0.0012841434290782328,
+                    "high": 0.01737473149055376
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.012021747717353115,
+                    "medium": -0.0012841434290782328,
+                    "high": -0.01737473149055376
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.029396479207906875,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 105,
+                    "medium": 50,
+                    "high": 48
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.007049210296413381,
+                    "medium": 0.003583119799496064,
+                    "high": 0.03429894937648277
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.007049210296413381,
+                    "medium": -0.003583119799496064,
+                    "high": -0.03429894937648277
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.04134815967289615,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AUDUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "development": {
+        "start_date": "2012-12-04",
+        "end_date": "2018-06-21"
+      },
+      "exploratory_oos": {
+        "start_date": "2018-06-22",
+        "end_date": "2020-04-29"
+      },
+      "stages": {
+        "2": {
+          "direction_multiplier": 1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 172,
+              "development_cutpoints": {
+                "q33": 93.1133619515748,
+                "q67": 94.58133470651072
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 0,
+                    "high": 1
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.005863151909955011,
+                    "medium": null,
+                    "high": 0.00458635450336331
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.005863151909955011,
+                    "medium": null,
+                    "high": 0.00458635450336331
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 0,
+                    "high": 1
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.010084418723701694,
+                    "medium": null,
+                    "high": -0.0035380449025944616
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.010084418723701694,
+                    "medium": null,
+                    "high": -0.0035380449025944616
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 0,
+                    "high": 1
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.03644842743260257,
+                    "medium": null,
+                    "high": -0.018942372091668824
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.03644842743260257,
+                    "medium": null,
+                    "high": -0.018942372091668824
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 2,
+                    "medium": 0,
+                    "high": 1
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.11168716710037302,
+                    "medium": null,
+                    "high": -0.10729157566756942
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.11168716710037302,
+                    "medium": null,
+                    "high": -0.10729157566756942
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 172,
+              "development_cutpoints": {
+                "q33": 64.25019517155422,
+                "q67": 97.93081236792855
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 3,
+                    "medium": 0,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0023799831055155707,
+                    "medium": null,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.0023799831055155707,
+                    "medium": null,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 3,
+                    "medium": 0,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.00790229411666595,
+                    "medium": null,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.00790229411666595,
+                    "medium": null,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 3,
+                    "medium": 0,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.03061307565229132,
+                    "medium": null,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.03061307565229132,
+                    "medium": null,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 3,
+                    "medium": 0,
+                    "high": 0
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.11022196995610516,
+                    "medium": null,
+                    "high": null
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.11022196995610516,
+                    "medium": null,
+                    "high": null
+                  },
+                  "high_low_comparable": false,
+                  "all_bins_comparable": false,
+                  "high_minus_low_stage_aligned_return": null,
+                  "high_better_than_low": null,
+                  "monotonic_low_medium_high": null
+                }
+              }
+            }
+          }
+        },
+        "5": {
+          "direction_multiplier": -1.0,
+          "confidence_fields": {
+            "evidence_strength": {
+              "development_state_bar_count": 139,
+              "development_cutpoints": {
+                "q33": 92.33313684294222,
+                "q67": 94.36237600284734
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 116,
+                    "medium": 41,
+                    "high": 165
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0020030235345468994,
+                    "medium": -0.0025059013413351308,
+                    "high": 0.00036879535763169417
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0020030235345468994,
+                    "medium": 0.0025059013413351308,
+                    "high": -0.00036879535763169417
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0023718188921785935,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 116,
+                    "medium": 41,
+                    "high": 165
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.0019958174050914187,
+                    "medium": -0.006013921927175254,
+                    "high": 0.00043661326485125895
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.0019958174050914187,
+                    "medium": 0.006013921927175254,
+                    "high": -0.00043661326485125895
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.002432430669942678,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 112,
+                    "medium": 41,
+                    "high": 163
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.003162423013311061,
+                    "medium": -0.003952343605225726,
+                    "high": -0.0030941691205646485
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.003162423013311061,
+                    "medium": 0.003952343605225726,
+                    "high": 0.0030941691205646485
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -6.825389274641271e-05,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 112,
+                    "medium": 39,
+                    "high": 125
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.015463124036046149,
+                    "medium": -0.007490537679649772,
+                    "high": -0.006288190250750487
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.015463124036046149,
+                    "medium": 0.007490537679649772,
+                    "high": 0.006288190250750487
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.009174933785295662,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            },
+            "top_gap": {
+              "development_state_bar_count": 139,
+              "development_cutpoints": {
+                "q33": 73.22158200730794,
+                "q67": 93.6963089876223
+              },
+              "horizons": {
+                "5": {
+                  "bin_counts": {
+                    "low": 68,
+                    "medium": 48,
+                    "high": 206
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.00026942896901679784,
+                    "medium": -0.0021296119209633646,
+                    "high": -0.0009239866440769511
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.00026942896901679784,
+                    "medium": 0.0021296119209633646,
+                    "high": 0.0009239866440769511
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.001193415613093749,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                },
+                "10": {
+                  "bin_counts": {
+                    "low": 68,
+                    "medium": 48,
+                    "high": 206
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 1.6423805054492727e-05,
+                    "medium": -0.0008306526425214516,
+                    "high": -0.0017829607825582917
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -1.6423805054492727e-05,
+                    "medium": 0.0008306526425214516,
+                    "high": 0.0017829607825582917
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.0017993845876127844,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": true
+                },
+                "20": {
+                  "bin_counts": {
+                    "low": 65,
+                    "medium": 48,
+                    "high": 203
+                  },
+                  "raw_forward_return_mean": {
+                    "low": 0.000178411702107974,
+                    "medium": -0.011373829039029129,
+                    "high": -0.002395270929658874
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": -0.000178411702107974,
+                    "medium": 0.011373829039029129,
+                    "high": 0.002395270929658874
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": 0.002573682631766848,
+                  "high_better_than_low": true,
+                  "monotonic_low_medium_high": false
+                },
+                "60": {
+                  "bin_counts": {
+                    "low": 65,
+                    "medium": 44,
+                    "high": 167
+                  },
+                  "raw_forward_return_mean": {
+                    "low": -0.010041691701680431,
+                    "medium": -0.015036804451370617,
+                    "high": -0.0089562592001065
+                  },
+                  "stage_aligned_return_mean": {
+                    "low": 0.010041691701680431,
+                    "medium": 0.015036804451370617,
+                    "high": 0.0089562592001065
+                  },
+                  "high_low_comparable": true,
+                  "all_bins_comparable": true,
+                  "high_minus_low_stage_aligned_return": -0.0010854325015739307,
+                  "high_better_than_low": false,
+                  "monotonic_low_medium_high": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "confidence_fields": {
+      "evidence_strength": {
+        "high_low_comparable_cases": 24,
+        "high_better_than_low_cases": 3,
+        "high_better_than_low_rate": 0.125,
+        "all_bins_comparable_cases": 24,
+        "monotonic_cases": 1,
+        "monotonic_rate": 0.041666666666666664,
+        "rows": [
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 2,
+              "medium": 3,
+              "high": 5
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 2,
+              "medium": 3,
+              "high": 5
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 2,
+              "medium": 3,
+              "high": 5
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 0,
+              "medium": 0,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 109,
+              "medium": 109,
+              "high": 64
+            },
+            "high_minus_low_stage_aligned_return": -0.009087905680898439,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 104,
+              "medium": 109,
+              "high": 64
+            },
+            "high_minus_low_stage_aligned_return": -0.01019992218537579,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 100,
+              "medium": 105,
+              "high": 62
+            },
+            "high_minus_low_stage_aligned_return": -0.005286645978570477,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 93,
+              "medium": 103,
+              "high": 41
+            },
+            "high_minus_low_stage_aligned_return": -0.0020401756817887843,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 31,
+              "medium": 60,
+              "high": 42
+            },
+            "high_minus_low_stage_aligned_return": -0.007198950271823136,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 31,
+              "medium": 60,
+              "high": 42
+            },
+            "high_minus_low_stage_aligned_return": -0.014351043845915954,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 25,
+              "medium": 58,
+              "high": 42
+            },
+            "high_minus_low_stage_aligned_return": -0.0010835072632923333,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 18,
+              "medium": 54,
+              "high": 32
+            },
+            "high_minus_low_stage_aligned_return": 0.016691228724339303,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": true
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 31,
+              "medium": 28,
+              "high": 79
+            },
+            "high_minus_low_stage_aligned_return": -0.0023830646922430327,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 26,
+              "medium": 28,
+              "high": 79
+            },
+            "high_minus_low_stage_aligned_return": -3.0191399157784675e-05,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 26,
+              "medium": 28,
+              "high": 79
+            },
+            "high_minus_low_stage_aligned_return": -0.003828754352667211,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 25,
+              "medium": 27,
+              "high": 68
+            },
+            "high_minus_low_stage_aligned_return": 0.004119254562602735,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 21,
+              "medium": 48,
+              "high": 40
+            },
+            "high_minus_low_stage_aligned_return": -0.004137671222778732,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 21,
+              "medium": 48,
+              "high": 40
+            },
+            "high_minus_low_stage_aligned_return": -0.005958442262535135,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 21,
+              "medium": 48,
+              "high": 40
+            },
+            "high_minus_low_stage_aligned_return": -0.01408098601716394,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 21,
+              "medium": 48,
+              "high": 40
+            },
+            "high_minus_low_stage_aligned_return": 0.0013015623475391737,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 100,
+              "medium": 21,
+              "high": 101
+            },
+            "high_minus_low_stage_aligned_return": -0.004052599155550236,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 100,
+              "medium": 21,
+              "high": 101
+            },
+            "high_minus_low_stage_aligned_return": -0.004786384607786569,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 95,
+              "medium": 21,
+              "high": 101
+            },
+            "high_minus_low_stage_aligned_return": -0.011302218045705163,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 95,
+              "medium": 21,
+              "high": 87
+            },
+            "high_minus_low_stage_aligned_return": -0.013101084789178893,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 2,
+              "medium": 0,
+              "high": 1
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 2,
+              "medium": 0,
+              "high": 1
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 2,
+              "medium": 0,
+              "high": 1
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 2,
+              "medium": 0,
+              "high": 1
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 116,
+              "medium": 41,
+              "high": 165
+            },
+            "high_minus_low_stage_aligned_return": -0.0023718188921785935,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 116,
+              "medium": 41,
+              "high": 165
+            },
+            "high_minus_low_stage_aligned_return": -0.002432430669942678,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 112,
+              "medium": 41,
+              "high": 163
+            },
+            "high_minus_low_stage_aligned_return": -6.825389274641271e-05,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 112,
+              "medium": 39,
+              "high": 125
+            },
+            "high_minus_low_stage_aligned_return": -0.009174933785295662,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          }
+        ]
+      },
+      "top_gap": {
+        "high_low_comparable_cases": 20,
+        "high_better_than_low_cases": 10,
+        "high_better_than_low_rate": 0.5,
+        "all_bins_comparable_cases": 20,
+        "monotonic_cases": 1,
+        "monotonic_rate": 0.05,
+        "rows": [
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 2,
+              "medium": 0,
+              "high": 8
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 2,
+              "medium": 0,
+              "high": 8
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 2,
+              "medium": 0,
+              "high": 8
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 0,
+              "medium": 0,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 128,
+              "medium": 154,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 126,
+              "medium": 151,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 123,
+              "medium": 144,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "EURUSD",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 117,
+              "medium": 120,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 32,
+              "medium": 60,
+              "high": 41
+            },
+            "high_minus_low_stage_aligned_return": -0.0022323010730181583,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 32,
+              "medium": 60,
+              "high": 41
+            },
+            "high_minus_low_stage_aligned_return": -0.009864182984172376,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 29,
+              "medium": 59,
+              "high": 37
+            },
+            "high_minus_low_stage_aligned_return": 0.010263586381455313,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 20,
+              "medium": 55,
+              "high": 29
+            },
+            "high_minus_low_stage_aligned_return": 0.001109452219366338,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 28,
+              "medium": 18,
+              "high": 92
+            },
+            "high_minus_low_stage_aligned_return": -0.0010801555599382383,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 28,
+              "medium": 17,
+              "high": 88
+            },
+            "high_minus_low_stage_aligned_return": 0.001488243725686689,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 28,
+              "medium": 17,
+              "high": 88
+            },
+            "high_minus_low_stage_aligned_return": 0.006789310609687878,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "USDJPY",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 27,
+              "medium": 17,
+              "high": 76
+            },
+            "high_minus_low_stage_aligned_return": 0.009923370582253952,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 38,
+              "medium": 34,
+              "high": 37
+            },
+            "high_minus_low_stage_aligned_return": -0.002304881468780909,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 38,
+              "medium": 34,
+              "high": 37
+            },
+            "high_minus_low_stage_aligned_return": 0.0017575455585048128,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 38,
+              "medium": 34,
+              "high": 37
+            },
+            "high_minus_low_stage_aligned_return": -0.0021440445417360886,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 38,
+              "medium": 34,
+              "high": 37
+            },
+            "high_minus_low_stage_aligned_return": 0.018110479529024594,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 108,
+              "medium": 50,
+              "high": 64
+            },
+            "high_minus_low_stage_aligned_return": -0.008868611267715602,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 108,
+              "medium": 50,
+              "high": 64
+            },
+            "high_minus_low_stage_aligned_return": -0.02025463253265652,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 105,
+              "medium": 50,
+              "high": 62
+            },
+            "high_minus_low_stage_aligned_return": -0.029396479207906875,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "GBPUSD",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 105,
+              "medium": 50,
+              "high": 48
+            },
+            "high_minus_low_stage_aligned_return": -0.04134815967289615,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 3,
+              "medium": 0,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 3,
+              "medium": 0,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 3,
+              "medium": 0,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 2,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 3,
+              "medium": 0,
+              "high": 0
+            },
+            "high_minus_low_stage_aligned_return": null,
+            "high_better_than_low": null,
+            "monotonic_low_medium_high": null
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 5,
+            "bin_counts": {
+              "low": 68,
+              "medium": 48,
+              "high": 206
+            },
+            "high_minus_low_stage_aligned_return": 0.001193415613093749,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 10,
+            "bin_counts": {
+              "low": 68,
+              "medium": 48,
+              "high": 206
+            },
+            "high_minus_low_stage_aligned_return": 0.0017993845876127844,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": true
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 20,
+            "bin_counts": {
+              "low": 65,
+              "medium": 48,
+              "high": 203
+            },
+            "high_minus_low_stage_aligned_return": 0.002573682631766848,
+            "high_better_than_low": true,
+            "monotonic_low_medium_high": false
+          },
+          {
+            "pair": "AUDUSD",
+            "stage": 5,
+            "horizon": 60,
+            "bin_counts": {
+              "low": 65,
+              "medium": 44,
+              "high": 167
+            },
+            "high_minus_low_stage_aligned_return": -0.0010854325015739307,
+            "high_better_than_low": false,
+            "monotonic_low_medium_high": false
+          }
+        ]
+      }
+    }
+  },
+  "boundary": "Exploratory-OOS calibration uses Development-derived confidence cut points. No final-OOS model output or final-OOS price path is computed. This calibration gate covers only the unambiguous directional Markup/Markdown states and is not a trading backtest."
+}
