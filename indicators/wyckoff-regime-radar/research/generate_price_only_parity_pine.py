@@ -8,8 +8,10 @@ original visual/table/alert layer, and exposes only the fields required for the
 Issue #55 Pine/Python parity gate.
 
 Because some TradingView plans do not support chart-data export, the generated
-harness also renders a compact fixed-date checkpoint table. A single screenshot
-is enough to capture the parity values needed for manual comparison.
+harness also renders a compact checkpoint table. A single screenshot is enough
+to capture the parity values needed for manual comparison. Checkpoints are
+captured on the first daily bar whose close time reaches each target date so FX
+session cutovers do not create false missing rows.
 """
 
 from __future__ import annotations
@@ -40,13 +42,14 @@ plot(float(formalId), "PARITY formal_id", display=display.data_window)
 
 CHECKPOINT_TABLE = r'''
 // === Issue #55 screenshot parity checkpoints ===
-// This table is intentionally visual: it replaces CSV export for plans that do
-// not expose Export chart data. Values are captured when each fixed daily bar is
-// encountered and displayed together on the last bar.
+// Visual replacement for CSV export. Capture the first daily bar whose close
+// time reaches the target date; this is robust to FX session cutover labels.
 var int[] cpYear = array.from(2019, 2020, 2021, 2022, 2024, 2026)
 var int[] cpMonth = array.from(8, 3, 6, 9, 4, 7)
 var int[] cpDay = array.from(1, 20, 1, 28, 16, 30)
-var string[] cpDate = array.from("2019-08-01", "2020-03-20", "2021-06-01", "2022-09-28", "2024-04-16", "2026-07-30")
+var string[] cpTargetDate = array.from("2019-08-01", "2020-03-20", "2021-06-01", "2022-09-28", "2024-04-16", "2026-07-30")
+var bool[] cpCaptured = array.new_bool(6, false)
+var string[] cpBarDate = array.new_string(6, "—")
 
 var float[] cpClose = array.new_float(6, na)
 var float[] cpAcc = array.new_float(6, na)
@@ -61,7 +64,11 @@ var float[] cpCandidate = array.new_float(6, na)
 var float[] cpFormal = array.new_float(6, na)
 
 for i = 0 to 5
-    if year == array.get(cpYear, i) and month == array.get(cpMonth, i) and dayofmonth == array.get(cpDay, i)
+    targetTs = timestamp(syminfo.timezone, array.get(cpYear, i), array.get(cpMonth, i), array.get(cpDay, i), 0, 0)
+    shouldCapture = not array.get(cpCaptured, i) and time_close >= targetTs
+    if shouldCapture
+        array.set(cpCaptured, i, true)
+        array.set(cpBarDate, i, str.format_time(time_close, "yyyy-MM-dd", syminfo.timezone))
         array.set(cpClose, i, close)
         array.set(cpAcc, i, probAcc)
         array.set(cpMarkup, i, probMarkup)
@@ -78,34 +85,36 @@ f_cp1(x) => na(x) ? "—" : str.tostring(x, "#.0")
 f_cp5(x) => na(x) ? "—" : str.tostring(x, "#.#####")
 f_cpid(x) => na(x) ? "—" : str.tostring(math.round(x))
 
-var table cpTable = table.new(position.top_right, 12, 7, border_width=1)
+var table cpTable = table.new(position.top_right, 13, 7, border_width=1)
 if barstate.islast
-    table.cell(cpTable, 0, 0, "Date", text_size=size.tiny)
-    table.cell(cpTable, 1, 0, "Close", text_size=size.tiny)
-    table.cell(cpTable, 2, 0, "Acc", text_size=size.tiny)
-    table.cell(cpTable, 3, 0, "Mk", text_size=size.tiny)
-    table.cell(cpTable, 4, 0, "ReAcc", text_size=size.tiny)
-    table.cell(cpTable, 5, 0, "Dist", text_size=size.tiny)
-    table.cell(cpTable, 6, 0, "Md", text_size=size.tiny)
-    table.cell(cpTable, 7, 0, "ReDist", text_size=size.tiny)
-    table.cell(cpTable, 8, 0, "Gap", text_size=size.tiny)
-    table.cell(cpTable, 9, 0, "Evid", text_size=size.tiny)
-    table.cell(cpTable, 10, 0, "Cand", text_size=size.tiny)
-    table.cell(cpTable, 11, 0, "Formal", text_size=size.tiny)
+    table.cell(cpTable, 0, 0, "Target", text_size=size.tiny)
+    table.cell(cpTable, 1, 0, "Bar", text_size=size.tiny)
+    table.cell(cpTable, 2, 0, "Close", text_size=size.tiny)
+    table.cell(cpTable, 3, 0, "Acc", text_size=size.tiny)
+    table.cell(cpTable, 4, 0, "Mk", text_size=size.tiny)
+    table.cell(cpTable, 5, 0, "ReAcc", text_size=size.tiny)
+    table.cell(cpTable, 6, 0, "Dist", text_size=size.tiny)
+    table.cell(cpTable, 7, 0, "Md", text_size=size.tiny)
+    table.cell(cpTable, 8, 0, "ReDist", text_size=size.tiny)
+    table.cell(cpTable, 9, 0, "Gap", text_size=size.tiny)
+    table.cell(cpTable, 10, 0, "Evid", text_size=size.tiny)
+    table.cell(cpTable, 11, 0, "Cand", text_size=size.tiny)
+    table.cell(cpTable, 12, 0, "Formal", text_size=size.tiny)
     for i = 0 to 5
         row = i + 1
-        table.cell(cpTable, 0, row, array.get(cpDate, i), text_size=size.tiny)
-        table.cell(cpTable, 1, row, f_cp5(array.get(cpClose, i)), text_size=size.tiny)
-        table.cell(cpTable, 2, row, f_cp1(array.get(cpAcc, i)), text_size=size.tiny)
-        table.cell(cpTable, 3, row, f_cp1(array.get(cpMarkup, i)), text_size=size.tiny)
-        table.cell(cpTable, 4, row, f_cp1(array.get(cpReacc, i)), text_size=size.tiny)
-        table.cell(cpTable, 5, row, f_cp1(array.get(cpDist, i)), text_size=size.tiny)
-        table.cell(cpTable, 6, row, f_cp1(array.get(cpMarkdown, i)), text_size=size.tiny)
-        table.cell(cpTable, 7, row, f_cp1(array.get(cpRedist, i)), text_size=size.tiny)
-        table.cell(cpTable, 8, row, f_cp1(array.get(cpGap, i)), text_size=size.tiny)
-        table.cell(cpTable, 9, row, f_cp1(array.get(cpEvidence, i)), text_size=size.tiny)
-        table.cell(cpTable, 10, row, f_cpid(array.get(cpCandidate, i)), text_size=size.tiny)
-        table.cell(cpTable, 11, row, f_cpid(array.get(cpFormal, i)), text_size=size.tiny)
+        table.cell(cpTable, 0, row, array.get(cpTargetDate, i), text_size=size.tiny)
+        table.cell(cpTable, 1, row, array.get(cpBarDate, i), text_size=size.tiny)
+        table.cell(cpTable, 2, row, f_cp5(array.get(cpClose, i)), text_size=size.tiny)
+        table.cell(cpTable, 3, row, f_cp1(array.get(cpAcc, i)), text_size=size.tiny)
+        table.cell(cpTable, 4, row, f_cp1(array.get(cpMarkup, i)), text_size=size.tiny)
+        table.cell(cpTable, 5, row, f_cp1(array.get(cpReacc, i)), text_size=size.tiny)
+        table.cell(cpTable, 6, row, f_cp1(array.get(cpDist, i)), text_size=size.tiny)
+        table.cell(cpTable, 7, row, f_cp1(array.get(cpMarkdown, i)), text_size=size.tiny)
+        table.cell(cpTable, 8, row, f_cp1(array.get(cpRedist, i)), text_size=size.tiny)
+        table.cell(cpTable, 9, row, f_cp1(array.get(cpGap, i)), text_size=size.tiny)
+        table.cell(cpTable, 10, row, f_cp1(array.get(cpEvidence, i)), text_size=size.tiny)
+        table.cell(cpTable, 11, row, f_cpid(array.get(cpCandidate, i)), text_size=size.tiny)
+        table.cell(cpTable, 12, row, f_cpid(array.get(cpFormal, i)), text_size=size.tiny)
 '''.strip()
 
 
