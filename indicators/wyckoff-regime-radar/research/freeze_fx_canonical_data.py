@@ -9,7 +9,8 @@ Yahoo) is a separate audit and must not silently redefine the primary input.
 This script has two modes:
 
 * ``freeze``: download the fixed historical window once, normalize to OHLC,
-  write deterministic CSV files, and write a manifest with SHA-256 checksums and
+  apply only a minimal auditable OHLC-envelope repair when necessary, write
+  deterministic CSV files, and write a manifest with SHA-256 checksums and
   preregistered 60/20/20 chronological split boundaries.
 * ``verify``: never contact the provider; verify that the committed files still
   match their recorded checksums and split metadata.
@@ -36,6 +37,7 @@ SOURCE_START = "2000-01-01"
 SNAPSHOT_LAST_COMPLETE_BAR = "2026-08-07"
 DOWNLOAD_END_EXCLUSIVE = "2026-08-08"
 FREEZE_DECISION_DATE = "2026-08-10"
+MAX_ENVELOPE_REPAIR_RELATIVE = 0.0002  # 2 bps of close; larger anomalies fail closed.
 
 PAIR_TICKERS: Mapping[str, str] = {
     "EURUSD": "EURUSD=X",
@@ -53,6 +55,68 @@ class SplitBoundary:
     start_date: str
     end_date: str
     rows: int
+
+
+def _row_text(row: pd.Series) -> str:
+    return (
+        f"date={row['date']} open={float(row['open']):.10f} high={float(row['high']):.10f} "
+        f"low={float(row['low']):.10f} close={float(row['close']):.10f}"
+    )
+
+
+def repair_ohlc_envelope(frame: pd.DataFrame) -> list[dict]:
+    """Minimally expand high/low so they contain O/C/L/H; reject larger anomalies.
+
+    Open and close are never altered. Every repair is returned for manifest audit.
+    """
+    repairs: list[dict] = []
+    for idx in frame.index:
+        row = frame.loc[idx]
+        close = float(row["close"])
+        if close <= 0:
+            continue
+
+        original_high = float(row["high"])
+        required_high = max(float(row["open"]), original_high, float(row["low"]), close)
+        if original_high < required_high:
+            relative = (required_high - original_high) / close
+            if relative > MAX_ENVELOPE_REPAIR_RELATIVE:
+                raise ValueError(
+                    "OHLC envelope anomaly exceeds 2 bps repair limit: "
+                    f"field=high relative={relative:.8f} {_row_text(row)}"
+                )
+            frame.at[idx, "high"] = required_high
+            repairs.append(
+                {
+                    "date": str(row["date"]),
+                    "field": "high",
+                    "original": original_high,
+                    "repaired": required_high,
+                    "relative_to_close": relative,
+                }
+            )
+
+        row = frame.loc[idx]
+        original_low = float(row["low"])
+        required_low = min(float(row["open"]), float(row["high"]), original_low, float(row["close"]))
+        if original_low > required_low:
+            relative = (original_low - required_low) / float(row["close"])
+            if relative > MAX_ENVELOPE_REPAIR_RELATIVE:
+                raise ValueError(
+                    "OHLC envelope anomaly exceeds 2 bps repair limit: "
+                    f"field=low relative={relative:.8f} {_row_text(row)}"
+                )
+            frame.at[idx, "low"] = required_low
+            repairs.append(
+                {
+                    "date": str(row["date"]),
+                    "field": "low",
+                    "original": original_low,
+                    "repaired": required_low,
+                    "relative_to_close": relative,
+                }
+            )
+    return repairs
 
 
 def normalize_download(frame: pd.DataFrame) -> pd.DataFrame:
@@ -84,15 +148,10 @@ def normalize_download(frame: pd.DataFrame) -> pd.DataFrame:
     out = out.dropna(subset=["date", *required])
     out = out[out["date"] <= pd.Timestamp(SNAPSHOT_LAST_COMPLETE_BAR).date()]
     out = out.sort_values("date").drop_duplicates(subset=["date"], keep="last").reset_index(drop=True)
+    repairs = repair_ohlc_envelope(out)
+    out.attrs["quality_repairs"] = repairs
     validate_ohlc(out)
     return out
-
-
-def _row_text(row: pd.Series) -> str:
-    return (
-        f"date={row['date']} open={float(row['open']):.10f} high={float(row['high']):.10f} "
-        f"low={float(row['low']):.10f} close={float(row['close']):.10f}"
-    )
 
 
 def validate_ohlc(frame: pd.DataFrame) -> None:
@@ -191,6 +250,7 @@ def freeze(output_dir: Path, manifest_path: Path) -> dict:
         content = serialize_ohlc(frame)
         path.write_bytes(content)
         splits = chronological_splits(frame)
+        repairs = list(frame.attrs.get("quality_repairs", []))
         pairs[pair] = {
             "ticker": ticker,
             "file": str(path.relative_to(manifest_path.parent)),
@@ -198,6 +258,8 @@ def freeze(output_dir: Path, manifest_path: Path) -> dict:
             "rows": len(frame),
             "start_date": str(frame.iloc[0]["date"]),
             "end_date": str(frame.iloc[-1]["date"]),
+            "quality_repair_count": len(repairs),
+            "quality_repairs": repairs,
             "splits": {split.name: split.__dict__ for split in splits},
         }
 
@@ -216,6 +278,12 @@ def freeze(output_dir: Path, manifest_path: Path) -> dict:
             "sort_ascending": True,
             "deduplicate_date_keep": "last",
             "csv_float_format": "%.10f",
+            "ohlc_envelope_repair": (
+                "Open/close are never changed. If provider high/low fails to contain the other OHLC values, "
+                "expand only high/low to the minimum valid envelope when required adjustment <= 2 bps of close; "
+                "otherwise fail closed. Every repair is recorded per pair."
+            ),
+            "max_envelope_repair_relative": MAX_ENVELOPE_REPAIR_RELATIVE,
         },
         "split_rule": "per-pair chronological row split: 60% development / 20% exploratory OOS / 20% final OOS using floor(0.60*n) and floor(0.80*n) boundaries",
         "final_oos_status": "SEALED_DO_NOT_EVALUATE",
@@ -289,6 +357,7 @@ def main() -> None:
                 "start_date": meta["start_date"],
                 "end_date": meta["end_date"],
                 "sha256": meta["sha256"],
+                "quality_repair_count": meta.get("quality_repair_count", 0),
                 "final_oos_start": meta["splits"]["final_oos"]["start_date"],
             }
             for pair, meta in manifest["pairs"].items()
