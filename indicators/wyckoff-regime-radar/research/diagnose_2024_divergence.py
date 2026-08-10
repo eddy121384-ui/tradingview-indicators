@@ -2,9 +2,9 @@
 """Trace the Python/Yahoo decision chain for the 2024-04-16 Issue #55 divergence.
 
 This is diagnostic only. It intentionally does not alter model parameters or
-claim parity. The output lines up with the focused TradingView/OANDA deep table
-and also inspects the binary previous-low test that feeds downside exhaustion,
-support holding, continuation, and the final Markdown gate.
+claim parity. The output lines up with the focused TradingView/OANDA deep table,
+inspects the binary previous-low test, and sweeps only the target bar close to
+measure how discontinuously that threshold changes the frozen classification.
 """
 
 from __future__ import annotations
@@ -47,6 +47,7 @@ DISPLAY_FIELDS = [
     "markdown_eff",
     "prob_markdown",
 ]
+SENSITIVITY_PIP_DELTAS = [-8.0, -6.0, -4.0, -3.0, -2.5, -2.2, -2.15, -2.14, -2.1, -2.0, -1.0, 0.0, 1.0, 2.0]
 
 
 def _number(value, *, percent_gate: bool = False):
@@ -56,6 +57,41 @@ def _number(value, *, percent_gate: bool = False):
     if percent_gate:
         value *= 100.0
     return value
+
+
+def _close_sensitivity_sweep(ohlc: pd.DataFrame, idx: int, cfg: PriceOnlyConfig, prev_abs_low: float | None) -> list[dict]:
+    prefix = ohlc.iloc[: idx + 1].copy().reset_index(drop=True)
+    base_close = float(prefix.loc[len(prefix) - 1, "close"])
+    low = float(prefix.loc[len(prefix) - 1, "low"])
+    high = float(prefix.loc[len(prefix) - 1, "high"])
+    rows: list[dict] = []
+    for delta_pips in SENSITIVITY_PIP_DELTAS:
+        variant_close = base_close + delta_pips / 10_000.0
+        if variant_close < low or variant_close > high:
+            rows.append({"delta_pips": delta_pips, "status": "outside_original_high_low"})
+            continue
+        variant = prefix.copy()
+        variant.loc[len(variant) - 1, "close"] = variant_close
+        variant_result = compute_price_only(variant, cfg).iloc[-1]
+        no_break = None if prev_abs_low is None else (100.0 if variant_close > prev_abs_low else 0.0)
+        rows.append(
+            {
+                "delta_pips": delta_pips,
+                "close": variant_close,
+                "close_minus_prev_50bar_low_pips": None if prev_abs_low is None else (variant_close - prev_abs_low) * 10_000.0,
+                "no_break_low_score": no_break,
+                "downside_exhaustion": _number(variant_result["downside_exhaustion"]),
+                "support_holding": _number(variant_result["support_holding"]),
+                "markdown_continuation_score": _number(variant_result["markdown_continuation_score"]),
+                "dist_gate_pct": _number(variant_result["dist_gate"], percent_gate=True),
+                "markdown_gate_pct": _number(variant_result["markdown_gate"], percent_gate=True),
+                "prob_dist": _number(variant_result["prob_dist"]),
+                "prob_markdown": _number(variant_result["prob_markdown"]),
+                "candidate": int(variant_result["candidate_display_id"]),
+                "formal": int(variant_result["formal_id"]),
+            }
+        )
+    return rows
 
 
 def build_report(ticker: str, reference_path: Path, deep_reference_path: Path) -> dict:
@@ -156,10 +192,8 @@ def build_report(ticker: str, reference_path: Path, deep_reference_path: Path) -
             }
         )
 
-    binary_split_confirmed = bool(
-        tv_no_break_low_forced_zero
-        and no_break_low_score == 100.0
-    )
+    binary_split_confirmed = bool(tv_no_break_low_forced_zero and no_break_low_score == 100.0)
+    sensitivity = _close_sensitivity_sweep(ohlc, idx, cfg, prev_abs_low)
 
     return {
         "status": "diagnostic_cross_feed_only",
@@ -182,8 +216,9 @@ def build_report(ticker: str, reference_path: Path, deep_reference_path: Path) -
         "python_yahoo_intermediate_values": values,
         "binary_previous_low_threshold_trace": threshold_trace,
         "binary_no_break_low_split_confirmed": binary_split_confirmed,
+        "single_bar_close_sensitivity_sweep": sensitivity,
         "neighbor_window": neighbors,
-        "boundary": "This isolates a cross-feed threshold mechanism; it does not prove full Pine/Python parity. No parameter changes are allowed from this diagnostic.",
+        "boundary": "This isolates cross-feed threshold sensitivity; it does not prove full Pine/Python parity. The sensitivity sweep changes only the target Yahoo close for diagnosis and is not parameter tuning.",
     }
 
 
