@@ -1,0 +1,1203 @@
+{
+  "decision_boundary": "This audit does not choose new confirmBars, fast-switch thresholds, or any PnL-optimal rule. It only identifies where the current formal-state machine is stale, noisy, or appropriately persistent.",
+  "definitions": {
+    "adoption_delay": "bars from switch-demand run start until formal_id first adopts that candidate within the same run",
+    "candidate_formal_disagreement": "strong candidate exists and differs from formal_id",
+    "formal_carry": "formal_id remains nonzero while no strong candidate exists",
+    "one_bar_flip": "formal path A -> B -> A over three consecutive bars",
+    "strong_candidate": "internal candidate_id != 0; weak display-only candidates are excluded",
+    "switch_demand_run": "a contiguous nonzero strong-candidate run whose stage differs from formal_id at run start"
+  },
+  "issue": 57,
+  "phase": "B-audit",
+  "rows": [
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 38,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 38,
+        "adoption_rate": 0.48717948717948717,
+        "switch_demand_candidate_runs": 78,
+        "unadopted_examples": [
+          {
+            "end": 1089,
+            "length": 1,
+            "stage": 5,
+            "start": 1089
+          },
+          {
+            "end": 1094,
+            "length": 1,
+            "stage": 5,
+            "start": 1094
+          },
+          {
+            "end": 1102,
+            "length": 1,
+            "stage": 1,
+            "start": 1102
+          },
+          {
+            "end": 1108,
+            "length": 2,
+            "stage": 1,
+            "start": 1107
+          },
+          {
+            "end": 1132,
+            "length": 1,
+            "stage": 5,
+            "start": 1132
+          },
+          {
+            "end": 1173,
+            "length": 1,
+            "stage": 1,
+            "start": 1173
+          },
+          {
+            "end": 1175,
+            "length": 2,
+            "stage": 4,
+            "start": 1174
+          },
+          {
+            "end": 1177,
+            "length": 1,
+            "stage": 4,
+            "start": 1177
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 40,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 40
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 73,
+        "max": 4,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.049166666666666664,
+      "candidate_formal_disagreement_share_candidate_bars": 0.1120607787274454,
+      "candidate_switches": 255,
+      "engine": "v0.5.2.1",
+      "formal_carry_run_bars": {
+        "count": 102,
+        "max": 20,
+        "median": 2.0,
+        "p90": 6.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.12291666666666666,
+      "formal_dwell_bars_all_states": {
+        "count": 43,
+        "max": 97,
+        "median": 25.0,
+        "p90": 67.80000000000003
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 12,
+          "max": 69,
+          "median": 20.5,
+          "p90": 34.0
+        },
+        "2_Markup": {
+          "count": 9,
+          "max": 97,
+          "median": 46.0,
+          "p90": 83.4
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 7,
+          "max": 56,
+          "median": 19.0,
+          "p90": 44.00000000000001
+        },
+        "5_Markdown": {
+          "count": 15,
+          "max": 81,
+          "median": 28.0,
+          "p90": 73.8
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 43,
+      "formal_zero_share": 0.43833333333333335,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "EURUSD",
+      "strong_candidate_share": 0.43875,
+      "weak_only_candidate_share": 0.10583333333333333,
+      "weak_only_run_bars": {
+        "count": 90,
+        "max": 13,
+        "median": 2.0,
+        "p90": 6.0
+      }
+    },
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 40,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 40,
+        "adoption_rate": 0.5263157894736842,
+        "switch_demand_candidate_runs": 76,
+        "unadopted_examples": [
+          {
+            "end": 1102,
+            "length": 1,
+            "stage": 1,
+            "start": 1102
+          },
+          {
+            "end": 1108,
+            "length": 2,
+            "stage": 1,
+            "start": 1107
+          },
+          {
+            "end": 1132,
+            "length": 1,
+            "stage": 5,
+            "start": 1132
+          },
+          {
+            "end": 1173,
+            "length": 1,
+            "stage": 1,
+            "start": 1173
+          },
+          {
+            "end": 1175,
+            "length": 2,
+            "stage": 4,
+            "start": 1174
+          },
+          {
+            "end": 1293,
+            "length": 1,
+            "stage": 2,
+            "start": 1293
+          },
+          {
+            "end": 1297,
+            "length": 2,
+            "stage": 3,
+            "start": 1296
+          },
+          {
+            "end": 1301,
+            "length": 1,
+            "stage": 2,
+            "start": 1301
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 36,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 36
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 71,
+        "max": 4,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.04958333333333333,
+      "candidate_formal_disagreement_share_candidate_bars": 0.11442307692307692,
+      "candidate_switches": 249,
+      "engine": "v0.6-phase-a",
+      "formal_carry_run_bars": {
+        "count": 101,
+        "max": 20,
+        "median": 2.0,
+        "p90": 6.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.12833333333333333,
+      "formal_dwell_bars_all_states": {
+        "count": 45,
+        "max": 81,
+        "median": 24.0,
+        "p90": 66.60000000000001
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 12,
+          "max": 69,
+          "median": 20.5,
+          "p90": 34.0
+        },
+        "2_Markup": {
+          "count": 10,
+          "max": 79,
+          "median": 34.5,
+          "p90": 70.89999999999999
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 8,
+          "max": 56,
+          "median": 17.0,
+          "p90": 42.0
+        },
+        "5_Markdown": {
+          "count": 15,
+          "max": 81,
+          "median": 28.0,
+          "p90": 73.19999999999999
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 45,
+      "formal_zero_share": 0.43833333333333335,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "EURUSD",
+      "strong_candidate_share": 0.43333333333333335,
+      "weak_only_candidate_share": 0.11125,
+      "weak_only_run_bars": {
+        "count": 90,
+        "max": 13,
+        "median": 2.0,
+        "p90": 6.0
+      }
+    },
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 56,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 56,
+        "adoption_rate": 0.5137614678899083,
+        "switch_demand_candidate_runs": 109,
+        "unadopted_examples": [
+          {
+            "end": 1069,
+            "length": 1,
+            "stage": 5,
+            "start": 1069
+          },
+          {
+            "end": 1109,
+            "length": 1,
+            "stage": 2,
+            "start": 1109
+          },
+          {
+            "end": 1140,
+            "length": 2,
+            "stage": 4,
+            "start": 1139
+          },
+          {
+            "end": 1177,
+            "length": 2,
+            "stage": 1,
+            "start": 1176
+          },
+          {
+            "end": 1201,
+            "length": 2,
+            "stage": 1,
+            "start": 1200
+          },
+          {
+            "end": 1204,
+            "length": 1,
+            "stage": 1,
+            "start": 1204
+          },
+          {
+            "end": 1246,
+            "length": 2,
+            "stage": 2,
+            "start": 1245
+          },
+          {
+            "end": 1263,
+            "length": 1,
+            "stage": 1,
+            "start": 1263
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 53,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 53
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 104,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.07291666666666667,
+      "candidate_formal_disagreement_share_candidate_bars": 0.17023346303501946,
+      "candidate_switches": 273,
+      "engine": "v0.5.2.1",
+      "formal_carry_run_bars": {
+        "count": 99,
+        "max": 16,
+        "median": 2.0,
+        "p90": 7.200000000000003
+      },
+      "formal_carry_without_strong_candidate_share": 0.1325,
+      "formal_dwell_bars_all_states": {
+        "count": 65,
+        "max": 94,
+        "median": 12.0,
+        "p90": 53.00000000000001
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 19,
+          "max": 82,
+          "median": 11.0,
+          "p90": 33.8
+        },
+        "2_Markup": {
+          "count": 23,
+          "max": 94,
+          "median": 14.0,
+          "p90": 38.2
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 9,
+          "max": 50,
+          "median": 4.0,
+          "p90": 19.60000000000001
+        },
+        "5_Markdown": {
+          "count": 14,
+          "max": 81,
+          "median": 30.5,
+          "p90": 63.2
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 66,
+      "formal_zero_share": 0.44,
+      "one_bar_flip_per_formal_switch": 0.015151515151515152,
+      "one_bar_formal_flips": 1,
+      "pair": "USDJPY",
+      "strong_candidate_share": 0.42833333333333334,
+      "weak_only_candidate_share": 0.10833333333333334,
+      "weak_only_run_bars": {
+        "count": 82,
+        "max": 15,
+        "median": 2.0,
+        "p90": 7.0
+      }
+    },
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 52,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 52,
+        "adoption_rate": 0.49523809523809526,
+        "switch_demand_candidate_runs": 105,
+        "unadopted_examples": [
+          {
+            "end": 1069,
+            "length": 1,
+            "stage": 5,
+            "start": 1069
+          },
+          {
+            "end": 1109,
+            "length": 1,
+            "stage": 2,
+            "start": 1109
+          },
+          {
+            "end": 1140,
+            "length": 2,
+            "stage": 4,
+            "start": 1139
+          },
+          {
+            "end": 1177,
+            "length": 2,
+            "stage": 1,
+            "start": 1176
+          },
+          {
+            "end": 1201,
+            "length": 2,
+            "stage": 1,
+            "start": 1200
+          },
+          {
+            "end": 1204,
+            "length": 1,
+            "stage": 1,
+            "start": 1204
+          },
+          {
+            "end": 1246,
+            "length": 2,
+            "stage": 2,
+            "start": 1245
+          },
+          {
+            "end": 1263,
+            "length": 1,
+            "stage": 1,
+            "start": 1263
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 53,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 53
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 100,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.07041666666666667,
+      "candidate_formal_disagreement_share_candidate_bars": 0.1650390625,
+      "candidate_switches": 261,
+      "engine": "v0.6-phase-a",
+      "formal_carry_run_bars": {
+        "count": 95,
+        "max": 16,
+        "median": 2.0,
+        "p90": 8.600000000000009
+      },
+      "formal_carry_without_strong_candidate_share": 0.13416666666666666,
+      "formal_dwell_bars_all_states": {
+        "count": 62,
+        "max": 94,
+        "median": 13.5,
+        "p90": 54.49999999999999
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 18,
+          "max": 82,
+          "median": 15.0,
+          "p90": 34.5
+        },
+        "2_Markup": {
+          "count": 21,
+          "max": 94,
+          "median": 15.0,
+          "p90": 40.0
+        },
+        "3_Re-accumulation": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        },
+        "4_Distribution": {
+          "count": 9,
+          "max": 50,
+          "median": 4.0,
+          "p90": 19.60000000000001
+        },
+        "5_Markdown": {
+          "count": 14,
+          "max": 78,
+          "median": 30.5,
+          "p90": 63.2
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 63,
+      "formal_zero_share": 0.44,
+      "one_bar_flip_per_formal_switch": 0.015873015873015872,
+      "one_bar_formal_flips": 1,
+      "pair": "USDJPY",
+      "strong_candidate_share": 0.4266666666666667,
+      "weak_only_candidate_share": 0.11208333333333333,
+      "weak_only_run_bars": {
+        "count": 82,
+        "max": 15,
+        "median": 2.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 50,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 50,
+        "adoption_rate": 0.47619047619047616,
+        "switch_demand_candidate_runs": 105,
+        "unadopted_examples": [
+          {
+            "end": 1069,
+            "length": 1,
+            "stage": 1,
+            "start": 1069
+          },
+          {
+            "end": 1083,
+            "length": 2,
+            "stage": 2,
+            "start": 1082
+          },
+          {
+            "end": 1101,
+            "length": 2,
+            "stage": 5,
+            "start": 1100
+          },
+          {
+            "end": 1112,
+            "length": 1,
+            "stage": 1,
+            "start": 1112
+          },
+          {
+            "end": 1134,
+            "length": 1,
+            "stage": 1,
+            "start": 1134
+          },
+          {
+            "end": 1192,
+            "length": 1,
+            "stage": 3,
+            "start": 1192
+          },
+          {
+            "end": 1195,
+            "length": 1,
+            "stage": 4,
+            "start": 1195
+          },
+          {
+            "end": 1214,
+            "length": 1,
+            "stage": 4,
+            "start": 1214
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 55,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 55
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 101,
+        "max": 3,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.06666666666666667,
+      "candidate_formal_disagreement_share_candidate_bars": 0.148975791433892,
+      "candidate_switches": 272,
+      "engine": "v0.5.2.1",
+      "formal_carry_run_bars": {
+        "count": 97,
+        "max": 16,
+        "median": 2.0,
+        "p90": 6.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.10875,
+      "formal_dwell_bars_all_states": {
+        "count": 61,
+        "max": 107,
+        "median": 14.0,
+        "p90": 46.0
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 16,
+          "max": 32,
+          "median": 10.5,
+          "p90": 25.0
+        },
+        "2_Markup": {
+          "count": 19,
+          "max": 107,
+          "median": 20.0,
+          "p90": 55.8
+        },
+        "3_Re-accumulation": {
+          "count": 2,
+          "max": 11,
+          "median": 8.0,
+          "p90": 10.4
+        },
+        "4_Distribution": {
+          "count": 10,
+          "max": 46,
+          "median": 9.0,
+          "p90": 35.199999999999996
+        },
+        "5_Markdown": {
+          "count": 14,
+          "max": 99,
+          "median": 21.0,
+          "p90": 79.90000000000005
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 62,
+      "formal_zero_share": 0.445,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "GBPUSD",
+      "strong_candidate_share": 0.4475,
+      "weak_only_candidate_share": 0.0875,
+      "weak_only_run_bars": {
+        "count": 81,
+        "max": 16,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 49,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 49,
+        "adoption_rate": 0.4537037037037037,
+        "switch_demand_candidate_runs": 108,
+        "unadopted_examples": [
+          {
+            "end": 1069,
+            "length": 1,
+            "stage": 1,
+            "start": 1069
+          },
+          {
+            "end": 1083,
+            "length": 2,
+            "stage": 2,
+            "start": 1082
+          },
+          {
+            "end": 1101,
+            "length": 2,
+            "stage": 5,
+            "start": 1100
+          },
+          {
+            "end": 1112,
+            "length": 1,
+            "stage": 1,
+            "start": 1112
+          },
+          {
+            "end": 1134,
+            "length": 1,
+            "stage": 1,
+            "start": 1134
+          },
+          {
+            "end": 1192,
+            "length": 1,
+            "stage": 3,
+            "start": 1192
+          },
+          {
+            "end": 1195,
+            "length": 1,
+            "stage": 4,
+            "start": 1195
+          },
+          {
+            "end": 1214,
+            "length": 1,
+            "stage": 4,
+            "start": 1214
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 59,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 59
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 104,
+        "max": 3,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.06708333333333333,
+      "candidate_formal_disagreement_share_candidate_bars": 0.15060804490177737,
+      "candidate_switches": 278,
+      "engine": "v0.6-phase-a",
+      "formal_carry_run_bars": {
+        "count": 98,
+        "max": 16,
+        "median": 2.0,
+        "p90": 6.0
+      },
+      "formal_carry_without_strong_candidate_share": 0.11083333333333334,
+      "formal_dwell_bars_all_states": {
+        "count": 61,
+        "max": 99,
+        "median": 14.0,
+        "p90": 46.0
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 16,
+          "max": 32,
+          "median": 10.5,
+          "p90": 25.0
+        },
+        "2_Markup": {
+          "count": 19,
+          "max": 72,
+          "median": 20.0,
+          "p90": 55.8
+        },
+        "3_Re-accumulation": {
+          "count": 2,
+          "max": 11,
+          "median": 8.0,
+          "p90": 10.4
+        },
+        "4_Distribution": {
+          "count": 10,
+          "max": 46,
+          "median": 9.5,
+          "p90": 36.099999999999994
+        },
+        "5_Markdown": {
+          "count": 14,
+          "max": 99,
+          "median": 21.0,
+          "p90": 79.90000000000005
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 62,
+      "formal_zero_share": 0.445,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "GBPUSD",
+      "strong_candidate_share": 0.4454166666666667,
+      "weak_only_candidate_share": 0.08916666666666667,
+      "weak_only_run_bars": {
+        "count": 81,
+        "max": 16,
+        "median": 2.0,
+        "p90": 5.0
+      }
+    },
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 44,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 44,
+        "adoption_rate": 0.5365853658536586,
+        "switch_demand_candidate_runs": 82,
+        "unadopted_examples": [
+          {
+            "end": 1107,
+            "length": 2,
+            "stage": 5,
+            "start": 1106
+          },
+          {
+            "end": 1113,
+            "length": 1,
+            "stage": 1,
+            "start": 1113
+          },
+          {
+            "end": 1115,
+            "length": 1,
+            "stage": 1,
+            "start": 1115
+          },
+          {
+            "end": 1118,
+            "length": 1,
+            "stage": 1,
+            "start": 1118
+          },
+          {
+            "end": 1122,
+            "length": 1,
+            "stage": 1,
+            "start": 1122
+          },
+          {
+            "end": 1126,
+            "length": 2,
+            "stage": 4,
+            "start": 1125
+          },
+          {
+            "end": 1132,
+            "length": 2,
+            "stage": 4,
+            "start": 1131
+          },
+          {
+            "end": 1157,
+            "length": 1,
+            "stage": 4,
+            "start": 1157
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 38,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 38
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 76,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.05708333333333333,
+      "candidate_formal_disagreement_share_candidate_bars": 0.12626728110599078,
+      "candidate_switches": 232,
+      "engine": "v0.5.2.1",
+      "formal_carry_run_bars": {
+        "count": 86,
+        "max": 13,
+        "median": 1.5,
+        "p90": 7.5
+      },
+      "formal_carry_without_strong_candidate_share": 0.10125,
+      "formal_dwell_bars_all_states": {
+        "count": 53,
+        "max": 101,
+        "median": 16.0,
+        "p90": 55.800000000000004
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 15,
+          "max": 33,
+          "median": 11.0,
+          "p90": 25.199999999999996
+        },
+        "2_Markup": {
+          "count": 11,
+          "max": 83,
+          "median": 46.0,
+          "p90": 61.0
+        },
+        "3_Re-accumulation": {
+          "count": 1,
+          "max": 5,
+          "median": 5.0,
+          "p90": 5.0
+        },
+        "4_Distribution": {
+          "count": 8,
+          "max": 27,
+          "median": 14.5,
+          "p90": 24.2
+        },
+        "5_Markdown": {
+          "count": 18,
+          "max": 101,
+          "median": 23.5,
+          "p90": 57.900000000000006
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 56,
+      "formal_zero_share": 0.4508333333333333,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "AUDUSD",
+      "strong_candidate_share": 0.45208333333333334,
+      "weak_only_candidate_share": 0.08666666666666667,
+      "weak_only_run_bars": {
+        "count": 71,
+        "max": 13,
+        "median": 1.0,
+        "p90": 8.0
+      }
+    },
+    {
+      "bars": 2400,
+      "candidate_adoption": {
+        "adopted_delay_bars": {
+          "count": 48,
+          "max": 2,
+          "median": 2.0,
+          "p90": 2.0
+        },
+        "adopted_runs": 48,
+        "adoption_rate": 0.5581395348837209,
+        "switch_demand_candidate_runs": 86,
+        "unadopted_examples": [
+          {
+            "end": 1107,
+            "length": 2,
+            "stage": 5,
+            "start": 1106
+          },
+          {
+            "end": 1113,
+            "length": 1,
+            "stage": 1,
+            "start": 1113
+          },
+          {
+            "end": 1115,
+            "length": 1,
+            "stage": 1,
+            "start": 1115
+          },
+          {
+            "end": 1118,
+            "length": 1,
+            "stage": 1,
+            "start": 1118
+          },
+          {
+            "end": 1122,
+            "length": 1,
+            "stage": 1,
+            "start": 1122
+          },
+          {
+            "end": 1126,
+            "length": 2,
+            "stage": 4,
+            "start": 1125
+          },
+          {
+            "end": 1132,
+            "length": 2,
+            "stage": 4,
+            "start": 1131
+          },
+          {
+            "end": 1157,
+            "length": 1,
+            "stage": 4,
+            "start": 1157
+          }
+        ],
+        "unadopted_run_length_bars": {
+          "count": 38,
+          "max": 2,
+          "median": 1.0,
+          "p90": 2.0
+        },
+        "unadopted_runs": 38
+      },
+      "candidate_formal_disagreement_run_bars": {
+        "count": 80,
+        "max": 6,
+        "median": 2.0,
+        "p90": 2.0
+      },
+      "candidate_formal_disagreement_share_all_bars": 0.059166666666666666,
+      "candidate_formal_disagreement_share_candidate_bars": 0.13209302325581396,
+      "candidate_switches": 235,
+      "engine": "v0.6-phase-a",
+      "formal_carry_run_bars": {
+        "count": 85,
+        "max": 23,
+        "median": 2.0,
+        "p90": 7.6000000000000085
+      },
+      "formal_carry_without_strong_candidate_share": 0.10583333333333333,
+      "formal_dwell_bars_all_states": {
+        "count": 57,
+        "max": 101,
+        "median": 16.0,
+        "p90": 51.599999999999994
+      },
+      "formal_dwell_bars_by_stage": {
+        "1_Accumulation": {
+          "count": 15,
+          "max": 33,
+          "median": 11.0,
+          "p90": 26.199999999999996
+        },
+        "2_Markup": {
+          "count": 12,
+          "max": 83,
+          "median": 35.5,
+          "p90": 59.900000000000006
+        },
+        "3_Re-accumulation": {
+          "count": 1,
+          "max": 5,
+          "median": 5.0,
+          "p90": 5.0
+        },
+        "4_Distribution": {
+          "count": 11,
+          "max": 27,
+          "median": 10.0,
+          "p90": 23.0
+        },
+        "5_Markdown": {
+          "count": 18,
+          "max": 101,
+          "median": 23.5,
+          "p90": 56.900000000000006
+        },
+        "6_Re-distribution": {
+          "count": 0,
+          "max": null,
+          "median": null,
+          "p90": null
+        }
+      },
+      "formal_switches": 60,
+      "formal_zero_share": 0.4508333333333333,
+      "one_bar_flip_per_formal_switch": 0.0,
+      "one_bar_formal_flips": 0,
+      "pair": "AUDUSD",
+      "strong_candidate_share": 0.4479166666666667,
+      "weak_only_candidate_share": 0.09041666666666667,
+      "weak_only_run_bars": {
+        "count": 69,
+        "max": 23,
+        "median": 1.0,
+        "p90": 8.0
+      }
+    }
+  ],
+  "scope": "All Issue #55 frozen 2012-2022 FX bars are already-observed/burned and are used here only for persistence diagnosis. No PnL or independent OOS claim.",
+  "status": "audit_complete_pending_persistence_redesign",
+  "summary": {
+    "v0.5.2.1": {
+      "median_pair_adopted_switch_delay_bars": 2.0,
+      "median_pair_candidate_adoption_rate": 0.5004704775346978,
+      "median_pair_disagreement_run_p90_bars": 2.0,
+      "median_pair_disagreement_share_all_bars": 0.061875,
+      "median_pair_disagreement_share_candidate_bars": 0.1376215362699414,
+      "median_pair_formal_carry_run_p90_bars": 6.600000000000001,
+      "median_pair_formal_carry_share": 0.11583333333333333,
+      "median_pair_formal_dwell_median_bars": 15.0,
+      "total_formal_switches": 227,
+      "total_one_bar_formal_flips": 1
+    },
+    "v0.6-phase-a": {
+      "median_pair_adopted_switch_delay_bars": 2.0,
+      "median_pair_candidate_adoption_rate": 0.5107769423558897,
+      "median_pair_disagreement_run_p90_bars": 2.0,
+      "median_pair_disagreement_share_all_bars": 0.063125,
+      "median_pair_disagreement_share_candidate_bars": 0.14135053407879566,
+      "median_pair_formal_carry_run_p90_bars": 6.800000000000004,
+      "median_pair_formal_carry_share": 0.11958333333333333,
+      "median_pair_formal_dwell_median_bars": 15.0,
+      "total_formal_switches": 230,
+      "total_one_bar_formal_flips": 1
+    }
+  }
+}
