@@ -33,7 +33,7 @@ import yfinance as yf
 
 
 SOURCE_NAME = "Yahoo Finance via yfinance"
-SOURCE_START = "2000-01-01"
+SOURCE_START = "2006-01-01"
 SNAPSHOT_LAST_COMPLETE_BAR = "2026-08-07"
 DOWNLOAD_END_EXCLUSIVE = "2026-08-08"
 FREEZE_DECISION_DATE = "2026-08-10"
@@ -271,6 +271,12 @@ def freeze(output_dir: Path, manifest_path: Path) -> dict:
         "download_start": SOURCE_START,
         "download_end_exclusive": DOWNLOAD_END_EXCLUSIVE,
         "snapshot_last_complete_bar": SNAPSHOT_LAST_COMPLETE_BAR,
+        "data_quality_start_decision": (
+            "Canonical sample begins 2006-01-01. Before any regime-utility analysis, the pre-freeze Yahoo audit "
+            "found early EURUSD OHLC envelope defects, including a 2004-04-21 low/close inconsistency requiring "
+            "about 9.3 bps repair, above the predeclared 2 bps tolerance. Rather than loosen the repair limit, "
+            "the unreliable early provider history was excluded."
+        ),
         "normalization": {
             "columns": ["date", "open", "high", "low", "close"],
             "auto_adjust": False,
