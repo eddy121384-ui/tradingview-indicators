@@ -35,32 +35,22 @@ jobs:
             indicators/wyckoff-regime-radar/research/compare_tradingview_parity.py \
             indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
             indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
-            indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
-            indicators/wyckoff-regime-radar/research/probe_dukascopy_daily_feed.py \
-            indicators/wyckoff-regime-radar/research/probe_stooq_daily_feed.py \
-            indicators/wyckoff-regime-radar/research/probe_fxcm_daily_feed.py \
-            indicators/wyckoff-regime-radar/research/freeze_fx_canonical_data.py \
+            indicators/wyckoff-regime-radar/research/freeze_static_fx_canonical_data.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
             indicators/wyckoff-regime-radar/research/test_generate_2024_deep_diagnostic_pine.py \
             indicators/wyckoff-regime-radar/research/test_compare_tradingview_parity.py \
-            indicators/wyckoff-regime-radar/research/test_audit_fx_source_quality.py \
-            indicators/wyckoff-regime-radar/research/test_freeze_fx_canonical_data.py
-      - name: Run price-only mirror tests
+            indicators/wyckoff-regime-radar/research/test_freeze_static_fx_canonical_data.py
+      - name: Run research tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
-      - name: Record rejected FXCM public D1 probe
-        continue-on-error: true
-        run: python indicators/wyckoff-regime-radar/research/probe_fxcm_daily_feed.py
-      - name: Record Dukascopy source qualification
-        continue-on-error: true
-        run: python indicators/wyckoff-regime-radar/research/probe_dukascopy_daily_feed.py
-      - name: Record rejected Stooq feed probe
-        continue-on-error: true
-        run: python indicators/wyckoff-regime-radar/research/probe_stooq_daily_feed.py
-      - name: Audit rejected Yahoo FX source quality
+      - name: Freeze or verify canonical static FX inputs
         run: |
-          python indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
-            --output /tmp/issue-55-yahoo-fx-quality-audit.json
+          MANIFEST=indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json
+          if [ -f "$MANIFEST" ]; then
+            python indicators/wyckoff-regime-radar/research/freeze_static_fx_canonical_data.py verify
+          else
+            python indicators/wyckoff-regime-radar/research/freeze_static_fx_canonical_data.py freeze
+          fi
       - name: Generate TradingView parity harness
         run: |
           mkdir -p indicators/wyckoff-regime-radar/research/generated
@@ -82,29 +72,19 @@ jobs:
           cmp \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine \
             /tmp/wyckoff-issue-55-2024-deep-diagnostic.pine
-      - name: Provisional EURUSD cross-feed parity diagnostic
-        continue-on-error: true
-        run: |
-          python indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
-            --output /tmp/issue-55-cross-feed-parity.json
-          cat /tmp/issue-55-cross-feed-parity.json
-      - name: Focused 2024 Python/Yahoo decision-chain diagnostic
-        continue-on-error: true
-        run: |
-          python indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
-            --output /tmp/issue-55-2024-deep-diagnostic.json
-          cat /tmp/issue-55-2024-deep-diagnostic.json
-      - name: Commit generated harnesses on branch push
+      - name: Commit frozen inputs and generated harnesses on branch push
         if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
+            indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json \
+            indicators/wyckoff-regime-radar/research/data/frozen/issue-55-*-static-d1.csv \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
           if git diff --cached --quiet; then
-            echo "Generated harnesses already current."
+            echo "Frozen inputs and generated harnesses already current."
           else
-            git commit -m "Generate Issue #55 TradingView diagnostic harnesses"
+            git commit -m "Freeze Issue #55 canonical FX research fixture"
             git push origin HEAD:${GITHUB_REF_NAME}
           fi
