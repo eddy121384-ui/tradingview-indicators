@@ -37,7 +37,17 @@ class V06BoundarySensitivityDiagnosticTests(unittest.TestCase):
             }
             for row in report["cases"]
         ]
+        worst = max(report["cases"], key=lambda row: row["v06_probability_l1_jump"] - row["v05_probability_l1_jump"])
+        worst_path = {
+            "pair": worst["pair"],
+            "side": worst["side"],
+            "date": worst["date"],
+            "v05_l1": worst["v05_probability_l1_jump"],
+            "v06_l1": worst["v06_probability_l1_jump"],
+            "path": worst["v06_path_diagnostics"],
+        }
         print("V06_BOUNDARY_CASES=" + json.dumps(compact_cases, sort_keys=True))
+        print("V06_BOUNDARY_WORST_PATH=" + json.dumps(worst_path, sort_keys=True))
         print("V06_BOUNDARY_SWEEP=" + json.dumps(report["summary"], sort_keys=True))
 
 
