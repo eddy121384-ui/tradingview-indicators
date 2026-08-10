@@ -42,15 +42,19 @@ class GenerateParityPineTests(unittest.TestCase):
             "PARITY evidence_strength",
             "PARITY candidate_display_id",
             "PARITY formal_id",
-            "PARITY speed_rank",
-            "PARITY range_score",
         ]
         for field in required:
             with self.subTest(field=field):
                 self.assertIn(field, self.generated)
 
-    def test_generator_does_not_duplicate_visual_marker(self) -> None:
-        self.assertEqual(self.generated.count("// Visuals"), 1)
+    def test_original_visual_layer_is_removed(self) -> None:
+        self.assertNotIn("// Visuals", self.generated)
+        self.assertNotIn('plot(endRiskUp, "上漲末段風險"', self.generated)
+        self.assertNotIn("table.new(", self.generated)
+        self.assertNotIn("alertcondition(", self.generated)
+
+    def test_plot_budget_is_exactly_ten(self) -> None:
+        self.assertEqual(self.generated.count("plot("), 10)
         self.assertEqual(self.generated.count("Issue #55 Price-only parity export"), 1)
 
 
