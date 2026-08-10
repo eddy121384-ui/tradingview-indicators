@@ -1,6 +1,7 @@
 name: Wyckoff v0.6 Phase B Stale-Decay Candidate
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - feat/issue-57-wyckoff-v0.6-robustness
@@ -8,22 +9,8 @@ on:
       - "indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py"
       - "indicators/wyckoff-regime-radar/research/test_generate_v06_phase_b_core.py"
       - "indicators/wyckoff-regime-radar/research/diagnose_v06_phase_b_persistence_candidate.py"
-      - "indicators/wyckoff-regime-radar/research/diagnose_v06_phase_b_decay_sweep.py"
       - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_candidate_report.py"
-      - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_decay_sweep_report.py"
       - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-stale-decay-candidate.*"
-      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.*"
-      - ".github/workflows/wyckoff-v06-phase-b-candidate.yml"
-  pull_request:
-    paths:
-      - "indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py"
-      - "indicators/wyckoff-regime-radar/research/test_generate_v06_phase_b_core.py"
-      - "indicators/wyckoff-regime-radar/research/diagnose_v06_phase_b_persistence_candidate.py"
-      - "indicators/wyckoff-regime-radar/research/diagnose_v06_phase_b_decay_sweep.py"
-      - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_candidate_report.py"
-      - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_decay_sweep_report.py"
-      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-stale-decay-candidate.*"
-      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.*"
       - ".github/workflows/wyckoff-v06-phase-b-candidate.yml"
 
 permissions:
@@ -45,9 +32,7 @@ jobs:
             indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_v06_phase_b_core.py \
             indicators/wyckoff-regime-radar/research/diagnose_v06_phase_b_persistence_candidate.py \
-            indicators/wyckoff-regime-radar/research/diagnose_v06_phase_b_decay_sweep.py \
-            indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_candidate_report.py \
-            indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_decay_sweep_report.py
+            indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_candidate_report.py
       - name: Run Phase B candidate tests
         working-directory: indicators/wyckoff-regime-radar/research
         run: python -m unittest -v test_generate_v06_phase_b_core
@@ -62,29 +47,17 @@ jobs:
             --md-output /tmp/issue-57-phase-b-stale-decay-candidate.md
           cmp indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-stale-decay-candidate.json /tmp/issue-57-phase-b-stale-decay-candidate.json
           cmp indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-stale-decay-candidate.md /tmp/issue-57-phase-b-stale-decay-candidate.md
-      - name: Generate deterministic stale-decay horizon sweep
-        run: |
-          python indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_decay_sweep_report.py \
-            --json-output indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.json \
-            --md-output indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.md
-          python indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_decay_sweep_report.py \
-            --json-output /tmp/issue-57-phase-b-decay-horizon-sweep.json \
-            --md-output /tmp/issue-57-phase-b-decay-horizon-sweep.md
-          cmp indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.json /tmp/issue-57-phase-b-decay-horizon-sweep.json
-          cmp indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.md /tmp/issue-57-phase-b-decay-horizon-sweep.md
-      - name: Commit Phase B candidate reports on branch push
+      - name: Commit Phase B candidate report on branch push
         if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-stale-decay-candidate.json \
-            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-stale-decay-candidate.md \
-            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.json \
-            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-decay-horizon-sweep.md
+            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-stale-decay-candidate.md
           if git diff --cached --quiet; then
-            echo "Issue #57 Phase B candidate reports already current."
+            echo "Issue #57 Phase B candidate report already current."
           else
-            git commit -m "Record Issue #57 Phase B stale-decay engineering sweep"
+            git commit -m "Record Issue #57 Phase B frozen 2x stale-decay candidate"
             git push origin HEAD:${GITHUB_REF_NAME}
           fi
