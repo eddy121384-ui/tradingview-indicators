@@ -35,6 +35,7 @@ jobs:
             indicators/wyckoff-regime-radar/research/compare_tradingview_parity.py \
             indicators/wyckoff-regime-radar/research/freeze_static_fx_canonical_data.py \
             indicators/wyckoff-regime-radar/research/evaluate_regime_paths_pre_final.py \
+            indicators/wyckoff-regime-radar/research/evaluate_regime_episodes_pre_final.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
             indicators/wyckoff-regime-radar/research/test_generate_2024_deep_diagnostic_pine.py \
@@ -57,6 +58,11 @@ jobs:
           python indicators/wyckoff-regime-radar/research/evaluate_regime_paths_pre_final.py \
             --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.json \
             --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.md
+      - name: Evaluate formal-state occupancy and episodes
+        run: |
+          python indicators/wyckoff-regime-radar/research/evaluate_regime_episodes_pre_final.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.md
       - name: Generate TradingView parity harness
         run: |
           mkdir -p indicators/wyckoff-regime-radar/research/generated
@@ -78,7 +84,7 @@ jobs:
           cmp \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine \
             /tmp/wyckoff-issue-55-2024-deep-diagnostic.pine
-      - name: Commit frozen inputs, pre-final report, and generated harnesses on branch push
+      - name: Commit frozen inputs, pre-final reports, and generated harnesses on branch push
         if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
@@ -88,11 +94,13 @@ jobs:
             indicators/wyckoff-regime-radar/research/data/frozen/issue-55-*-static-d1.csv \
             indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.json \
             indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.md \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.md \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
           if git diff --cached --quiet; then
             echo "Frozen inputs, reports, and generated harnesses already current."
           else
-            git commit -m "Record Issue #55 pre-final FX regime path results"
+            git commit -m "Record Issue #55 pre-final FX regime episode results"
             git push origin HEAD:${GITHUB_REF_NAME}
           fi
