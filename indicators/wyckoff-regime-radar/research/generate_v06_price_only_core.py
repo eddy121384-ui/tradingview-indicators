@@ -20,12 +20,63 @@ BASELINE = HERE / "price_only_core.py"
 EXPECTED_BASELINE_GIT_BLOB_SHA = "b7d1c7e02194e46e162c999854aff6907bd5be3d"
 
 IMPORT_ANCHOR = "import pandas as pd\n"
-IMPORT_BLOCK = '''\ntry:\n    from .v06_boundary_scores import (\n        soft_above_range_score,\n        soft_below_range_score,\n        soft_hold_strength,\n        soft_no_break_high_score,\n        soft_no_break_low_score,\n    )\nexcept ImportError:  # direct script execution / generated-module execution\n    from v06_boundary_scores import (  # type: ignore\n        soft_above_range_score,\n        soft_below_range_score,\n        soft_hold_strength,\n        soft_no_break_high_score,\n        soft_no_break_low_score,\n    )\n'''
+IMPORT_BLOCK = '''\ntry:\n    from .v06_boundary_scores import (\n        soft_above_range_score,\n        soft_below_range_score,\n        soft_break_above_score,\n        soft_break_below_score,\n        soft_hold_strength,\n        soft_no_break_high_score,\n        soft_no_break_low_score,\n    )\nexcept ImportError:  # direct script execution / generated-module execution\n    from v06_boundary_scores import (  # type: ignore\n        soft_above_range_score,\n        soft_below_range_score,\n        soft_break_above_score,\n        soft_break_below_score,\n        soft_hold_strength,\n        soft_no_break_high_score,\n        soft_no_break_low_score,\n    )\n'''
 
 OLD_LOW = "    no_break_low_score = np.where(close > prev_abs_low, 100.0, 0.0)"
 OLD_HIGH = "    no_break_high_score = np.where(close < prev_abs_high, 100.0, 0.0)"
 NEW_LOW = "    no_break_low_score = soft_no_break_low_score(close, prev_abs_low, atr_v)"
 NEW_HIGH = "    no_break_high_score = soft_no_break_high_score(close, prev_abs_high, atr_v)"
+
+OLD_RECENT_BREAK = '''    recent_break_up = recent(range_break_up | ma_cross_up, cfg.breakout_bars)
+    recent_break_dn = recent(range_break_dn | ma_cross_dn, cfg.breakout_bars)
+    recent_range_break_dn = recent(range_break_dn, cfg.breakout_bars)
+    recent_ma_cross_dn = recent(ma_cross_dn, cfg.breakout_bars)'''
+NEW_RECENT_BREAK = '''    recent_break_up = recent(range_break_up | ma_cross_up, cfg.breakout_bars)
+    recent_break_dn = recent(range_break_dn | ma_cross_dn, cfg.breakout_bars)
+    recent_range_break_dn = recent(range_break_dn, cfg.breakout_bars)
+    recent_ma_cross_up = recent(ma_cross_up, cfg.breakout_bars)
+    recent_ma_cross_dn = recent(ma_cross_dn, cfg.breakout_bars)
+    range_break_up_strength = soft_break_above_score(close, range_high_break, atr_v)
+    range_break_dn_strength = soft_break_below_score(close, range_low_break, atr_v)
+    recent_range_break_up_strength = rolling_highest(range_break_up_strength, cfg.breakout_bars)
+    recent_range_break_dn_strength = rolling_highest(range_break_dn_strength, cfg.breakout_bars)'''
+
+OLD_BREAKOUT_SCORE = '''    breakout_score = np.where(
+        breakout_mode_up,
+        100.0,
+        np.where(recent_break_up, 70.0, np.where(close > ma, 35.0, 0.0)),
+    )
+    explicit_breakdown_score = np.where(
+        breakdown_mode_dn,
+        100.0,
+        np.where(
+            recent_range_break_dn,
+            85.0,
+            np.where(
+                recent_ma_cross_dn & (panic_heat_dn >= cfg.orange_level) & (structure_weak >= 50.0),
+                55.0,
+                0.0,
+            ),
+        ),
+    )'''
+NEW_BREAKOUT_SCORE = '''    breakout_range_evidence = np.nan_to_num(recent_range_break_up_strength, nan=0.0) * 0.70
+    breakout_ma_evidence = np.where(recent_ma_cross_up, 70.0, np.where(close > ma, 35.0, 0.0))
+    breakout_score = np.where(
+        breakout_mode_up,
+        100.0,
+        np.maximum(breakout_range_evidence, breakout_ma_evidence),
+    )
+    breakdown_range_evidence = np.nan_to_num(recent_range_break_dn_strength, nan=0.0) * 0.85
+    breakdown_ma_evidence = np.where(
+        recent_ma_cross_dn & (panic_heat_dn >= cfg.orange_level) & (structure_weak >= 50.0),
+        55.0,
+        0.0,
+    )
+    explicit_breakdown_score = np.where(
+        breakdown_mode_dn,
+        100.0,
+        np.maximum(breakdown_range_evidence, breakdown_ma_evidence),
+    )'''
 
 OLD_RANGE_CONT = '''    range_cont_up = np.where(sustained_above, 100.0, np.where(above_prev_range, 80.0, np.where(recent_break_up, 65.0, np.where(close > range_mid, 35.0, 0.0))))
     range_cont_dn = np.where(sustained_below, 100.0, np.where(below_prev_range, 80.0, np.where(recent_break_dn, 65.0, np.where(close < range_mid, 35.0, 0.0))))'''
@@ -33,8 +84,16 @@ NEW_RANGE_CONT = '''    above_prev_range_score = soft_above_range_score(close, p
     below_prev_range_score = soft_below_range_score(close, prev_range_low, atr_v)
     sustained_above_score = soft_hold_strength(above_prev_range_score, cfg.continuation_hold_bars)
     sustained_below_score = soft_hold_strength(below_prev_range_score, cfg.continuation_hold_bars)
-    range_cont_up_base = np.where(recent_break_up, 65.0, np.where(close > range_mid, 35.0, 0.0))
-    range_cont_dn_base = np.where(recent_break_dn, 65.0, np.where(close < range_mid, 35.0, 0.0))
+    range_break_up_evidence = np.nan_to_num(recent_range_break_up_strength, nan=0.0) * 0.65
+    range_break_dn_evidence = np.nan_to_num(recent_range_break_dn_strength, nan=0.0) * 0.65
+    range_cont_up_base = np.maximum(
+        range_break_up_evidence,
+        np.where(recent_ma_cross_up, 65.0, np.where(close > range_mid, 35.0, 0.0)),
+    )
+    range_cont_dn_base = np.maximum(
+        range_break_dn_evidence,
+        np.where(recent_ma_cross_dn, 65.0, np.where(close < range_mid, 35.0, 0.0)),
+    )
     range_cont_up = np.maximum(
         range_cont_up_base,
         np.maximum(
@@ -66,11 +125,17 @@ DIAGNOSTIC_INSERT = (
     '        "range_low_break": range_low_break,\n'
     '        "range_break_up": range_break_up.astype(float),\n'
     '        "range_break_dn": range_break_dn.astype(float),\n'
+    '        "range_break_up_strength": range_break_up_strength,\n'
+    '        "range_break_dn_strength": range_break_dn_strength,\n'
+    '        "recent_range_break_up_strength": recent_range_break_up_strength,\n'
+    '        "recent_range_break_dn_strength": recent_range_break_dn_strength,\n'
     '        "ma_cross_up": ma_cross_up.astype(float),\n'
     '        "ma_cross_dn": ma_cross_dn.astype(float),\n'
     '        "recent_break_up": recent_break_up.astype(float),\n'
     '        "recent_break_dn": recent_break_dn.astype(float),\n'
     '        "recent_range_break_dn": recent_range_break_dn.astype(float),\n'
+    '        "recent_ma_cross_up": recent_ma_cross_up.astype(float),\n'
+    '        "recent_ma_cross_dn": recent_ma_cross_dn.astype(float),\n'
     '        "breakout_mode_up": breakout_mode_up.astype(float),\n'
     '        "breakdown_mode_dn": breakdown_mode_dn.astype(float),\n'
     '        "range_cont_up": range_cont_up,\n'
@@ -111,6 +176,8 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
         (IMPORT_ANCHOR, "import anchor"),
         (OLD_LOW, "low hard threshold"),
         (OLD_HIGH, "high hard threshold"),
+        (OLD_RECENT_BREAK, "recent breakout block"),
+        (OLD_BREAKOUT_SCORE, "breakout score block"),
         (OLD_RANGE_CONT, "range continuation hard-threshold block"),
         (DIAGNOSTIC_ANCHOR, "diagnostic anchor"),
     ):
@@ -120,17 +187,19 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
     source = source.replace(IMPORT_ANCHOR, IMPORT_ANCHOR + IMPORT_BLOCK, 1)
     source = source.replace(OLD_LOW, NEW_LOW, 1)
     source = source.replace(OLD_HIGH, NEW_HIGH, 1)
+    source = source.replace(OLD_RECENT_BREAK, NEW_RECENT_BREAK, 1)
+    source = source.replace(OLD_BREAKOUT_SCORE, NEW_BREAKOUT_SCORE, 1)
     source = source.replace(OLD_RANGE_CONT, NEW_RANGE_CONT, 1)
     source = source.replace(DIAGNOSTIC_ANCHOR, DIAGNOSTIC_ANCHOR + DIAGNOSTIC_INSERT, 1)
 
     banner = (
         "# GENERATED EXPERIMENTAL CORE — Issue #57 / v0.6 Phase A\n"
         "# Mechanical delta from frozen v0.5.2.1 research mirror:\n"
-        "#   1) noBreakLowScore: binary 0/100 -> continuous ATR-scaled score\n"
-        "#   2) noBreakHighScore: binary 0/100 -> continuous ATR-scaled score\n"
-        "#   3) prior-range continuation: boolean 65/80/100 cliff -> continuous ATR-scaled hold strength\n"
-        "# Additional emitted columns are diagnostics only; they do not change calculations.\n"
-        "# No state-count, formal-state persistence, witness, or trading-rule changes.\n\n"
+        "#   1) noBreakLowScore/noBreakHighScore: binary cliffs -> continuous ATR-scaled scores\n"
+        "#   2) 50-bar prior-range continuation: boolean 65/80/100 cliff -> continuous hold strength\n"
+        "#   3) 20-bar range-break evidence: one-tick event -> one-sided ATR-scaled strength\n"
+        "# MA-cross evidence remains frozen; state count/persistence/witnesses/trading rules are unchanged.\n"
+        "# Additional emitted columns are diagnostics only; they do not change calculations.\n\n"
     )
     return banner + source
 
