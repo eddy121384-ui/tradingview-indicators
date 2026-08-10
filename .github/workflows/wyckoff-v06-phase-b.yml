@@ -1,0 +1,71 @@
+name: Wyckoff v0.6 Phase B Persistence Audit
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_v06_state_persistence.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_audit_report.py"
+      - "indicators/wyckoff-regime-radar/research/test_diagnose_v06_state_persistence.py"
+      - "indicators/wyckoff-regime-radar/research/v06_boundary_scores.py"
+      - "indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py"
+      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.*"
+      - ".github/workflows/wyckoff-v06-phase-b.yml"
+  pull_request:
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_v06_state_persistence.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_audit_report.py"
+      - "indicators/wyckoff-regime-radar/research/test_diagnose_v06_state_persistence.py"
+      - "indicators/wyckoff-regime-radar/research/v06_boundary_scores.py"
+      - "indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py"
+      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.*"
+      - ".github/workflows/wyckoff-v06-phase-b.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  persistence-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/wyckoff-regime-radar/research/requirements.txt
+      - name: Compile Phase B audit modules
+        run: |
+          python -m py_compile \
+            indicators/wyckoff-regime-radar/research/diagnose_v06_state_persistence.py \
+            indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_audit_report.py \
+            indicators/wyckoff-regime-radar/research/test_diagnose_v06_state_persistence.py
+      - name: Run Phase B metric tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m unittest -v test_diagnose_v06_state_persistence
+      - name: Generate deterministic Phase B persistence audit
+        run: |
+          mkdir -p indicators/wyckoff-regime-radar/research/reports
+          python indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_audit_report.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.md
+          python indicators/wyckoff-regime-radar/research/generate_issue57_phase_b_audit_report.py \
+            --json-output /tmp/issue-57-phase-b-persistence-audit.json \
+            --md-output /tmp/issue-57-phase-b-persistence-audit.md
+          cmp indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.json /tmp/issue-57-phase-b-persistence-audit.json
+          cmp indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.md /tmp/issue-57-phase-b-persistence-audit.md
+      - name: Commit Phase B audit on branch push
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-b-persistence-audit.md
+          if git diff --cached --quiet; then
+            echo "Issue #57 Phase B persistence audit already current."
+          else
+            git commit -m "Record Issue #57 Phase B persistence audit"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
