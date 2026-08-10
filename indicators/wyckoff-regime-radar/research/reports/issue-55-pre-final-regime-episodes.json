@@ -1,0 +1,2515 @@
+{
+  "schema_version": 1,
+  "issue": 55,
+  "status": "pre_final_formal_state_occupancy_episode_analysis",
+  "stage_names": {
+    "0": "No clear regime",
+    "1": "Accumulation",
+    "2": "Markup",
+    "3": "Re-accumulation",
+    "4": "Distribution",
+    "5": "Markdown",
+    "6": "Re-distribution"
+  },
+  "final_oos_status": "SEALED_NOT_COMPUTED",
+  "pairs": {
+    "EURUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440,
+          "state_counts": {
+            "0": 1052,
+            "1": 63,
+            "2": 179,
+            "3": 0,
+            "4": 79,
+            "5": 67,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.7305555555555555,
+            "1": 0.04375,
+            "2": 0.12430555555555556,
+            "3": 0.0,
+            "4": 0.05486111111111111,
+            "5": 0.04652777777777778,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "populated_stage_count": 4,
+          "dominant_state": 0,
+          "dominant_state_share": 0.7305555555555555,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 3,
+              "complete_episode_count": 3,
+              "complete_duration_mean": 21.0,
+              "complete_duration_median": 25.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.01185799120805009,
+                  "mfe_mean": 0.014014002552348082,
+                  "mae_mean": -0.004039748849792006,
+                  "realized_vol_mean": 0.07673138223370897
+                },
+                "10": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.0013906588719110695,
+                  "mfe_mean": 0.01719332166479896,
+                  "mae_mean": -0.006296909980670118,
+                  "realized_vol_mean": 0.07768550277278065
+                },
+                "20": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": -0.0030636483254298983,
+                  "mfe_mean": 0.017703581532860335,
+                  "mae_mean": -0.011753464228972351,
+                  "realized_vol_mean": 0.06702054216764859
+                },
+                "60": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.03908179964017422,
+                  "mfe_mean": 0.0508638295025472,
+                  "mae_mean": -0.012613899727372627,
+                  "realized_vol_mean": 0.0720592065316022
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 5,
+              "complete_episode_count": 5,
+              "complete_duration_mean": 35.8,
+              "complete_duration_median": 24.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.0008897536828719854,
+                  "mfe_mean": 0.007036114745472366,
+                  "mae_mean": -0.006890848662258975,
+                  "realized_vol_mean": 0.06357017236506525
+                },
+                "10": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": 0.007828870576562674,
+                  "mfe_mean": 0.013031476458339242,
+                  "mae_mean": -0.007946557723566117,
+                  "realized_vol_mean": 0.07072159042072473
+                },
+                "20": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": 0.008012101120291094,
+                  "mfe_mean": 0.019717445519247746,
+                  "mae_mean": -0.00880241482691535,
+                  "realized_vol_mean": 0.07032364726898717
+                },
+                "60": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": 0.018310919445813933,
+                  "mfe_mean": 0.045334401798000454,
+                  "mae_mean": -0.019711420593839835,
+                  "realized_vol_mean": 0.07002339656394817
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 3,
+              "complete_episode_count": 3,
+              "complete_duration_mean": 26.333333333333332,
+              "complete_duration_median": 19.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.0046705490431072265,
+                  "mfe_mean": 0.007874847775357555,
+                  "mae_mean": -0.007179414069073446,
+                  "realized_vol_mean": 0.06144584307205392
+                },
+                "10": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.00398799406759361,
+                  "mfe_mean": 0.012101196667954653,
+                  "mae_mean": -0.007179414069073446,
+                  "realized_vol_mean": 0.05584159261767885
+                },
+                "20": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": -0.006223218096410799,
+                  "mfe_mean": 0.01251526861904543,
+                  "mae_mean": -0.017419475542760316,
+                  "realized_vol_mean": 0.07012955712104359
+                },
+                "60": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": -0.015244100036091002,
+                  "mfe_mean": 0.015748044400494043,
+                  "mae_mean": -0.03242533721502,
+                  "realized_vol_mean": 0.06343399194599508
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 3,
+              "complete_episode_count": 2,
+              "complete_duration_mean": 15.0,
+              "complete_duration_median": 15.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": -0.0019447992351808348,
+                  "mfe_mean": 0.009449661571404588,
+                  "mae_mean": -0.010737697023511647,
+                  "realized_vol_mean": 0.07183384558148492
+                },
+                "10": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": -0.0012880188941759945,
+                  "mfe_mean": 0.011794660011224126,
+                  "mae_mean": -0.012397348524589772,
+                  "realized_vol_mean": 0.08356048616816221
+                },
+                "20": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.006686488892389246,
+                  "mfe_mean": 0.019960372608143356,
+                  "mae_mean": -0.01946272205775072,
+                  "realized_vol_mean": 0.08202121592850414
+                },
+                "60": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": 0.04140092027118203,
+                  "mfe_mean": 0.04984626223969013,
+                  "mae_mean": -0.010763583433897661,
+                  "realized_vol_mean": 0.07983998228708739
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 2,
+              "3": 0,
+              "4": 0,
+              "5": 1,
+              "6": 0
+            },
+            "2": {
+              "1": 2,
+              "2": 0,
+              "3": 0,
+              "4": 3,
+              "5": 0,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 0,
+              "2": 2,
+              "3": 0,
+              "4": 0,
+              "5": 1,
+              "6": 0
+            },
+            "5": {
+              "1": 1,
+              "2": 1,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480,
+          "state_counts": {
+            "0": 0,
+            "1": 168,
+            "2": 10,
+            "3": 0,
+            "4": 15,
+            "5": 287,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.0,
+            "1": 0.35,
+            "2": 0.020833333333333332,
+            "3": 0.0,
+            "4": 0.03125,
+            "5": 0.5979166666666667,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "populated_stage_count": 4,
+          "dominant_state": 5,
+          "dominant_state_share": 0.5979166666666667,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 5,
+              "complete_episode_count": 5,
+              "complete_duration_mean": 33.6,
+              "complete_duration_median": 30.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.0025364741285210713,
+                  "mfe_mean": 0.004605178453975345,
+                  "mae_mean": -0.008574713637530262,
+                  "realized_vol_mean": 0.06133824131124669
+                },
+                "10": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.0037559385789742716,
+                  "mfe_mean": 0.005881387885005918,
+                  "mae_mean": -0.010532501305927023,
+                  "realized_vol_mean": 0.06039902162877121
+                },
+                "20": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.0022434057577755072,
+                  "mfe_mean": 0.0086847575105518,
+                  "mae_mean": -0.016301663396834275,
+                  "realized_vol_mean": 0.062270294279532276
+                },
+                "60": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.014007887596943469,
+                  "mfe_mean": 0.010943453976627326,
+                  "mae_mean": -0.0264733838226076,
+                  "realized_vol_mean": 0.05761596752552757
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 1,
+              "complete_episode_count": 1,
+              "complete_duration_mean": 10.0,
+              "complete_duration_median": 10.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.006264961600412899,
+                  "mfe_mean": 0.023075348621975467,
+                  "mae_mean": -0.016169652312429394,
+                  "realized_vol_mean": 0.1625536429847227
+                },
+                "10": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.05145455678066402,
+                  "mfe_mean": 0.023075348621975467,
+                  "mae_mean": -0.051881713253419504,
+                  "realized_vol_mean": 0.17477590761820017
+                },
+                "20": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.03384325137268518,
+                  "mfe_mean": 0.023075348621975467,
+                  "mae_mean": -0.053536944585346746,
+                  "realized_vol_mean": 0.16080699287757497
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 1,
+              "complete_episode_count": 1,
+              "complete_duration_mean": 15.0,
+              "complete_duration_median": 15.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.007619047619047636,
+                  "mfe_mean": 0.011651651651651607,
+                  "mae_mean": -0.0021021021021021546,
+                  "realized_vol_mean": 0.034341496544789796
+                },
+                "10": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.0004461604461605262,
+                  "mfe_mean": 0.011651651651651607,
+                  "mae_mean": -0.0036207636207635785,
+                  "realized_vol_mean": 0.05117537754014196
+                },
+                "20": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.0030544830544829704,
+                  "mfe_mean": 0.011651651651651607,
+                  "mae_mean": -0.006889746889746862,
+                  "realized_vol_mean": 0.05611288805630892
+                },
+                "60": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.00950664950664959,
+                  "mfe_mean": 0.013710853710853899,
+                  "mae_mean": -0.030407550407550388,
+                  "realized_vol_mean": 0.06596814356580999
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 7,
+              "complete_episode_count": 5,
+              "complete_duration_mean": 50.0,
+              "complete_duration_median": 61.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": 0.005132244430086625,
+                  "mfe_mean": 0.00984831920238787,
+                  "mae_mean": -0.0072293609035104355,
+                  "realized_vol_mean": 0.06629773717762791
+                },
+                "10": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": 0.0013921261960683376,
+                  "mfe_mean": 0.013250256471620528,
+                  "mae_mean": -0.010356253992334339,
+                  "realized_vol_mean": 0.07200285901554057
+                },
+                "20": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.0010166782748986445,
+                  "mfe_mean": 0.015045845106624814,
+                  "mae_mean": -0.01438896718196089,
+                  "realized_vol_mean": 0.06713529738645749
+                },
+                "60": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.01004839835203214,
+                  "mfe_mean": 0.017585253948582385,
+                  "mae_mean": -0.026227651295843608,
+                  "realized_vol_mean": 0.06874462371281041
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 5,
+              "6": 0
+            },
+            "2": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 1,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 1,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "5": {
+              "1": 4,
+              "2": 1,
+              "3": 0,
+              "4": 1,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        }
+      }
+    },
+    "USDJPY": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440,
+          "state_counts": {
+            "0": 1052,
+            "1": 108,
+            "2": 91,
+            "3": 0,
+            "4": 50,
+            "5": 139,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.7305555555555555,
+            "1": 0.075,
+            "2": 0.06319444444444444,
+            "3": 0.0,
+            "4": 0.034722222222222224,
+            "5": 0.09652777777777778,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "populated_stage_count": 4,
+          "dominant_state": 0,
+          "dominant_state_share": 0.7305555555555555,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 8,
+              "complete_episode_count": 7,
+              "complete_duration_mean": 12.571428571428571,
+              "complete_duration_median": 8.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": 0.004355200503451048,
+                  "mfe_mean": 0.009097593826890488,
+                  "mae_mean": -0.005370088170005866,
+                  "realized_vol_mean": 0.06313882380051303
+                },
+                "10": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": 0.007136549090816985,
+                  "mfe_mean": 0.013251991150443704,
+                  "mae_mean": -0.006393738575701066,
+                  "realized_vol_mean": 0.06223022120079395
+                },
+                "20": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": 0.0032602536717687425,
+                  "mfe_mean": 0.016491077543978987,
+                  "mae_mean": -0.008884972689194954,
+                  "realized_vol_mean": 0.06233374425663427
+                },
+                "60": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.022472679588262396,
+                  "mfe_mean": 0.02017038314636077,
+                  "mae_mean": -0.03522972301268312,
+                  "realized_vol_mean": 0.06997752806546496
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 6,
+              "complete_episode_count": 6,
+              "complete_duration_mean": 15.166666666666666,
+              "complete_duration_median": 15.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.00036510971414264554,
+                  "mfe_mean": 0.008021361110364555,
+                  "mae_mean": -0.007262087380805933,
+                  "realized_vol_mean": 0.0488351959325806
+                },
+                "10": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.007957125132070217,
+                  "mfe_mean": 0.009793174988029932,
+                  "mae_mean": -0.015038289139575759,
+                  "realized_vol_mean": 0.07318625465721805
+                },
+                "20": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.011274098944881092,
+                  "mfe_mean": 0.010987487390482054,
+                  "mae_mean": -0.024480364257352005,
+                  "realized_vol_mean": 0.077498372284054
+                },
+                "60": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.020786833177701247,
+                  "mfe_mean": 0.013109424521966995,
+                  "mae_mean": -0.03985514578269529,
+                  "realized_vol_mean": 0.07930568908805041
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 1,
+              "complete_episode_count": 1,
+              "complete_duration_mean": 50.0,
+              "complete_duration_median": 50.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.005531691612639333,
+                  "mfe_mean": 0.012548580169508217,
+                  "mae_mean": -0.007603852618660145,
+                  "realized_vol_mean": 0.11912031793552488
+                },
+                "10": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.0022589222984090718,
+                  "mfe_mean": 0.022322421137821014,
+                  "mae_mean": -0.007603852618660145,
+                  "realized_vol_mean": 0.10219068991274469
+                },
+                "20": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.012833168805528095,
+                  "mfe_mean": 0.022322421137821014,
+                  "mae_mean": -0.007603852618660145,
+                  "realized_vol_mean": 0.09277137388410481
+                },
+                "60": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.008137456311197555,
+                  "mfe_mean": 0.027187108134788307,
+                  "mae_mean": -0.03836610549344999,
+                  "realized_vol_mean": 0.08183575865954619
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 6,
+              "complete_episode_count": 6,
+              "complete_duration_mean": 23.166666666666668,
+              "complete_duration_median": 12.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.004323929886742461,
+                  "mfe_mean": 0.010699566260924017,
+                  "mae_mean": -0.0063272436814838144,
+                  "realized_vol_mean": 0.08911550311299843
+                },
+                "10": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.004247368298993877,
+                  "mfe_mean": 0.016508536477731466,
+                  "mae_mean": -0.011609782385828363,
+                  "realized_vol_mean": 0.0807241760839202
+                },
+                "20": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.010534270197380569,
+                  "mfe_mean": 0.023604011665221376,
+                  "mae_mean": -0.012156149184738193,
+                  "realized_vol_mean": 0.07576433560034122
+                },
+                "60": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.005555771707456747,
+                  "mfe_mean": 0.029628322333855595,
+                  "mae_mean": -0.033078280637851676,
+                  "realized_vol_mean": 0.07830691406657093
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 4,
+              "3": 0,
+              "4": 0,
+              "5": 3,
+              "6": 0
+            },
+            "2": {
+              "1": 4,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 2,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 1,
+              "6": 0
+            },
+            "5": {
+              "1": 4,
+              "2": 1,
+              "3": 0,
+              "4": 1,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480,
+          "state_counts": {
+            "0": 4,
+            "1": 182,
+            "2": 133,
+            "3": 0,
+            "4": 18,
+            "5": 143,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.008333333333333333,
+            "1": 0.37916666666666665,
+            "2": 0.27708333333333335,
+            "3": 0.0,
+            "4": 0.0375,
+            "5": 0.29791666666666666,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "populated_stage_count": 4,
+          "dominant_state": 1,
+          "dominant_state_share": 0.37916666666666665,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 8,
+              "complete_episode_count": 7,
+              "complete_duration_mean": 23.571428571428573,
+              "complete_duration_median": 11.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": 3.608018466089158e-05,
+                  "mfe_mean": 0.005986410889463278,
+                  "mae_mean": -0.006586580006946605,
+                  "realized_vol_mean": 0.04596162975397383
+                },
+                "10": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": -0.0019583083010398378,
+                  "mfe_mean": 0.008349727337622126,
+                  "mae_mean": -0.009985155424717354,
+                  "realized_vol_mean": 0.05328085356290662
+                },
+                "20": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": 0.00024716543221592335,
+                  "mfe_mean": 0.01128552174536665,
+                  "mae_mean": -0.01313211115963929,
+                  "realized_vol_mean": 0.055980096774946884
+                },
+                "60": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": -0.0028494827613824436,
+                  "mfe_mean": 0.018774763028602037,
+                  "mae_mean": -0.026494924105720935,
+                  "realized_vol_mean": 0.0658830687469057
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 10,
+              "complete_episode_count": 10,
+              "complete_duration_mean": 13.3,
+              "complete_duration_median": 7.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 10,
+                  "forward_return_mean": -0.007765061381229998,
+                  "mfe_mean": 0.004837157448853891,
+                  "mae_mean": -0.011437777877944177,
+                  "realized_vol_mean": 0.06559539561662799
+                },
+                "10": {
+                  "episode_entry_count": 10,
+                  "forward_return_mean": -0.0075571549327764775,
+                  "mfe_mean": 0.006741945380642256,
+                  "mae_mean": -0.017482599791720864,
+                  "realized_vol_mean": 0.07118145171282003
+                },
+                "20": {
+                  "episode_entry_count": 9,
+                  "forward_return_mean": -0.012175399691600074,
+                  "mfe_mean": 0.009267256620176726,
+                  "mae_mean": -0.02910275546999668,
+                  "realized_vol_mean": 0.08498152753253754
+                },
+                "60": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.0061518825593717685,
+                  "mfe_mean": 0.017089691374570504,
+                  "mae_mean": -0.020782112019104754,
+                  "realized_vol_mean": 0.05427308221372454
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 4,
+              "complete_episode_count": 4,
+              "complete_duration_mean": 4.5,
+              "complete_duration_median": 3.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": 0.011847719239665655,
+                  "mfe_mean": 0.014726570338359557,
+                  "mae_mean": -0.0030569844307676564,
+                  "realized_vol_mean": 0.05854376591203088
+                },
+                "10": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": 0.0064215823081024415,
+                  "mfe_mean": 0.018321383762720633,
+                  "mae_mean": -0.007951219754894018,
+                  "realized_vol_mean": 0.06538171017500206
+                },
+                "20": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": 0.0030068172398030057,
+                  "mfe_mean": 0.02068859688695779,
+                  "mae_mean": -0.022450129662160728,
+                  "realized_vol_mean": 0.09710499628540965
+                },
+                "60": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.01215807669647532,
+                  "mfe_mean": 0.03262568095045489,
+                  "mae_mean": -0.02446139915839311,
+                  "realized_vol_mean": 0.08873834821084396
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 5,
+              "complete_episode_count": 4,
+              "complete_duration_mean": 33.25,
+              "complete_duration_median": 30.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.008704540233251623,
+                  "mfe_mean": 0.002212159800041058,
+                  "mae_mean": -0.025904422883097446,
+                  "realized_vol_mean": 0.12303112436064226
+                },
+                "10": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.0009333426780858411,
+                  "mfe_mean": 0.004999870213763996,
+                  "mae_mean": -0.031420805799669854,
+                  "realized_vol_mean": 0.138658095680134
+                },
+                "20": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.005226616178103022,
+                  "mfe_mean": 0.013727522522955615,
+                  "mae_mean": -0.03548807011269334,
+                  "realized_vol_mean": 0.11682904307579606
+                },
+                "60": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.00458528106811044,
+                  "mfe_mean": 0.016321034174442122,
+                  "mae_mean": -0.03203004540806557,
+                  "realized_vol_mean": 0.0577068610688064
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 5,
+              "3": 0,
+              "4": 1,
+              "5": 2,
+              "6": 0
+            },
+            "2": {
+              "1": 3,
+              "2": 0,
+              "3": 0,
+              "4": 3,
+              "5": 3,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 1,
+              "2": 3,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "5": {
+              "1": 3,
+              "2": 1,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        }
+      }
+    },
+    "GBPUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440,
+          "state_counts": {
+            "0": 1052,
+            "1": 39,
+            "2": 211,
+            "3": 16,
+            "4": 51,
+            "5": 71,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.7305555555555555,
+            "1": 0.027083333333333334,
+            "2": 0.14652777777777778,
+            "3": 0.011111111111111112,
+            "4": 0.035416666666666666,
+            "5": 0.049305555555555554,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "populated_stage_count": 5,
+          "dominant_state": 0,
+          "dominant_state_share": 0.7305555555555555,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 2,
+              "complete_episode_count": 2,
+              "complete_duration_mean": 19.5,
+              "complete_duration_median": 19.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": -0.0009557725072762424,
+                  "mfe_mean": 0.005914491235888275,
+                  "mae_mean": -0.01419989331725846,
+                  "realized_vol_mean": 0.09592771370412477
+                },
+                "10": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": -0.0054927343590773225,
+                  "mfe_mean": 0.006971573688319577,
+                  "mae_mean": -0.016793110569477576,
+                  "realized_vol_mean": 0.08378897720861266
+                },
+                "20": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": 0.004666353795920064,
+                  "mfe_mean": 0.018556559546647255,
+                  "mae_mean": -0.017512178657235866,
+                  "realized_vol_mean": 0.09036105987370743
+                },
+                "60": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": 0.015355391112447547,
+                  "mfe_mean": 0.03211978606462185,
+                  "mae_mean": -0.026919024750781728,
+                  "realized_vol_mean": 0.08791295331865015
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 8,
+              "complete_episode_count": 8,
+              "complete_duration_mean": 26.375,
+              "complete_duration_median": 20.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": -0.0007243724656714051,
+                  "mfe_mean": 0.009166687561657338,
+                  "mae_mean": -0.009868926637031775,
+                  "realized_vol_mean": 0.06491030708983328
+                },
+                "10": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": -0.002605652523276991,
+                  "mfe_mean": 0.012867125502152355,
+                  "mae_mean": -0.013735195619232643,
+                  "realized_vol_mean": 0.07524045872037839
+                },
+                "20": {
+                  "episode_entry_count": 8,
+                  "forward_return_mean": -0.0031668717430601706,
+                  "mfe_mean": 0.017640751384057657,
+                  "mae_mean": -0.01910658792722232,
+                  "realized_vol_mean": 0.07146809540647797
+                },
+                "60": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": 0.011002007598262007,
+                  "mfe_mean": 0.04137528790473494,
+                  "mae_mean": -0.020600952194046434,
+                  "realized_vol_mean": 0.07791571956756724
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 2,
+              "complete_episode_count": 2,
+              "complete_duration_mean": 8.0,
+              "complete_duration_median": 8.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": -0.0016474297895737733,
+                  "mfe_mean": 0.006677745660722101,
+                  "mae_mean": -0.010077397537104793,
+                  "realized_vol_mean": 0.08615624893690244
+                },
+                "10": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": 0.008016373772124274,
+                  "mfe_mean": 0.019955950315913906,
+                  "mae_mean": -0.011368878955359207,
+                  "realized_vol_mean": 0.10489814138663549
+                },
+                "20": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": 0.022469043137649747,
+                  "mfe_mean": 0.024655342369248157,
+                  "mae_mean": -0.011368878955359207,
+                  "realized_vol_mean": 0.08312581450780854
+                },
+                "60": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": 0.0375128316157991,
+                  "mfe_mean": 0.05560022688958677,
+                  "mae_mean": -0.011368878955359207,
+                  "realized_vol_mean": 0.08592354968363898
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 7,
+              "complete_episode_count": 7,
+              "complete_duration_mean": 7.285714285714286,
+              "complete_duration_median": 4.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.0035184775088435982,
+                  "mfe_mean": 0.006675387269895091,
+                  "mae_mean": -0.011341142347656834,
+                  "realized_vol_mean": 0.08871665788652405
+                },
+                "10": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.006055276802215658,
+                  "mfe_mean": 0.00839212868099797,
+                  "mae_mean": -0.015621398066373209,
+                  "realized_vol_mean": 0.07474460137054433
+                },
+                "20": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.007404961069271322,
+                  "mfe_mean": 0.01796094121345588,
+                  "mae_mean": -0.025649953594514257,
+                  "realized_vol_mean": 0.07715323911377771
+                },
+                "60": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.0018449432880090599,
+                  "mfe_mean": 0.03871016658844852,
+                  "mae_mean": -0.023716665556923755,
+                  "realized_vol_mean": 0.07806827511147205
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 3,
+              "complete_episode_count": 2,
+              "complete_duration_mean": 17.5,
+              "complete_duration_median": 17.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": -0.000572331235413411,
+                  "mfe_mean": 0.006285427268952685,
+                  "mae_mean": -0.013119351132430715,
+                  "realized_vol_mean": 0.049487677925126365
+                },
+                "10": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.0068175195387154925,
+                  "mfe_mean": 0.014139786537813373,
+                  "mae_mean": -0.013330554747450743,
+                  "realized_vol_mean": 0.0708547627435684
+                },
+                "20": {
+                  "episode_entry_count": 3,
+                  "forward_return_mean": 0.0029713681189976007,
+                  "mfe_mean": 0.01744100946600898,
+                  "mae_mean": -0.01939897489529326,
+                  "realized_vol_mean": 0.09299277689274765
+                },
+                "60": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": 0.032699417795618246,
+                  "mfe_mean": 0.053418476136804505,
+                  "mae_mean": -0.0155052994460122,
+                  "realized_vol_mean": 0.09592002003358246
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 0,
+              "3": 1,
+              "4": 0,
+              "5": 1,
+              "6": 0
+            },
+            "2": {
+              "1": 0,
+              "2": 0,
+              "3": 1,
+              "4": 7,
+              "5": 0,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 2,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 0,
+              "2": 6,
+              "3": 0,
+              "4": 0,
+              "5": 1,
+              "6": 0
+            },
+            "5": {
+              "1": 2,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480,
+          "state_counts": {
+            "0": 15,
+            "1": 106,
+            "2": 109,
+            "3": 0,
+            "4": 28,
+            "5": 222,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.03125,
+            "1": 0.22083333333333333,
+            "2": 0.22708333333333333,
+            "3": 0.0,
+            "4": 0.058333333333333334,
+            "5": 0.4625,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "populated_stage_count": 4,
+          "dominant_state": 5,
+          "dominant_state_share": 0.4625,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 9,
+              "complete_episode_count": 9,
+              "complete_duration_mean": 11.777777777777779,
+              "complete_duration_median": 9.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 9,
+                  "forward_return_mean": -0.0007829852875794124,
+                  "mfe_mean": 0.008305701499154081,
+                  "mae_mean": -0.007816686061526832,
+                  "realized_vol_mean": 0.07709456712442413
+                },
+                "10": {
+                  "episode_entry_count": 9,
+                  "forward_return_mean": 0.006291749027620925,
+                  "mfe_mean": 0.016873691528436627,
+                  "mae_mean": -0.008700731330741476,
+                  "realized_vol_mean": 0.09127298964355814
+                },
+                "20": {
+                  "episode_entry_count": 9,
+                  "forward_return_mean": 0.003941780310079006,
+                  "mfe_mean": 0.026063910629765936,
+                  "mae_mean": -0.012627713313472911,
+                  "realized_vol_mean": 0.0809207728982186
+                },
+                "60": {
+                  "episode_entry_count": 9,
+                  "forward_return_mean": 0.007586420295601736,
+                  "mfe_mean": 0.037714132488334697,
+                  "mae_mean": -0.023586917374242948,
+                  "realized_vol_mean": 0.08175565055424738
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 6,
+              "complete_episode_count": 6,
+              "complete_duration_mean": 18.166666666666668,
+              "complete_duration_median": 15.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.006092010139012301,
+                  "mfe_mean": 0.004643680524349121,
+                  "mae_mean": -0.013012061443053169,
+                  "realized_vol_mean": 0.060654137647492834
+                },
+                "10": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.008254804030441357,
+                  "mfe_mean": 0.009865196932069775,
+                  "mae_mean": -0.016659346425413484,
+                  "realized_vol_mean": 0.08019268550461442
+                },
+                "20": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 6.693462591276604e-05,
+                  "mfe_mean": 0.016722809415592826,
+                  "mae_mean": -0.020290902861054356,
+                  "realized_vol_mean": 0.08510038947774085
+                },
+                "60": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": -0.008414636715664411,
+                  "mfe_mean": 0.032100578727901764,
+                  "mae_mean": -0.03160106322211766,
+                  "realized_vol_mean": 0.07798756986877876
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 1,
+              "complete_episode_count": 1,
+              "complete_duration_mean": 28.0,
+              "complete_duration_median": 28.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.006155404783102725,
+                  "mfe_mean": 0.00311607773309186,
+                  "mae_mean": -0.012088232585270142,
+                  "realized_vol_mean": 0.05919284040587941
+                },
+                "10": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.0026095232247567157,
+                  "mfe_mean": 0.00311607773309186,
+                  "mae_mean": -0.012088232585270142,
+                  "realized_vol_mean": 0.05701546716937341
+                },
+                "20": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.016770024253215943,
+                  "mfe_mean": 0.00311607773309186,
+                  "mae_mean": -0.023309182451723864,
+                  "realized_vol_mean": 0.0696612238540861
+                },
+                "60": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.04653393915205861,
+                  "mfe_mean": 0.013085991465324076,
+                  "mae_mean": -0.12429005618150002,
+                  "realized_vol_mean": 0.16277715243143745
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 5,
+              "complete_episode_count": 4,
+              "complete_duration_mean": 41.0,
+              "complete_duration_median": 28.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.008470110177347778,
+                  "mfe_mean": 0.011288587114574256,
+                  "mae_mean": -0.020914102727511243,
+                  "realized_vol_mean": 0.14113228635575945
+                },
+                "10": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": 0.006246966488912875,
+                  "mfe_mean": 0.015587094860332273,
+                  "mae_mean": -0.021955891601018386,
+                  "realized_vol_mean": 0.1370139209165612
+                },
+                "20": {
+                  "episode_entry_count": 5,
+                  "forward_return_mean": -0.006125118569629518,
+                  "mfe_mean": 0.01667570444832629,
+                  "mae_mean": -0.030372566845442518,
+                  "realized_vol_mean": 0.11860595630530568
+                },
+                "60": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.007691530014452386,
+                  "mfe_mean": 0.022535807599835644,
+                  "mae_mean": -0.03734221846425112,
+                  "realized_vol_mean": 0.07858627037003331
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 6,
+              "3": 0,
+              "4": 0,
+              "5": 3,
+              "6": 0
+            },
+            "2": {
+              "1": 5,
+              "2": 0,
+              "3": 0,
+              "4": 1,
+              "5": 0,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 1,
+              "6": 0
+            },
+            "5": {
+              "1": 4,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        }
+      }
+    },
+    "AUDUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440,
+          "state_counts": {
+            "0": 1052,
+            "1": 11,
+            "2": 172,
+            "3": 5,
+            "4": 61,
+            "5": 139,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.7305555555555555,
+            "1": 0.007638888888888889,
+            "2": 0.11944444444444445,
+            "3": 0.003472222222222222,
+            "4": 0.04236111111111111,
+            "5": 0.09652777777777778,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            2,
+            4,
+            5
+          ],
+          "populated_stage_count": 3,
+          "dominant_state": 0,
+          "dominant_state_share": 0.7305555555555555,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 2,
+              "complete_episode_count": 2,
+              "complete_duration_mean": 5.5,
+              "complete_duration_median": 5.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": -0.016953361959243463,
+                  "mfe_mean": 0.004241506369107362,
+                  "mae_mean": -0.02027218687660509,
+                  "realized_vol_mean": 0.07210971667749959
+                },
+                "10": {
+                  "episode_entry_count": 2,
+                  "forward_return_mean": -0.03088696478445141,
+                  "mfe_mean": 0.004241506369107362,
+                  "mae_mean": -0.032541768244884806,
+                  "realized_vol_mean": 0.09159667659523603
+                },
+                "20": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.01223362273086026,
+                  "mfe_mean": 0.007752628764925884,
+                  "mae_mean": -0.027064185146523534,
+                  "realized_vol_mean": 0.09488093550954921
+                },
+                "60": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.030526771392927143,
+                  "mfe_mean": 0.007752628764925884,
+                  "mae_mean": -0.056407057565496244,
+                  "realized_vol_mean": 0.08313926168207524
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 4,
+              "complete_episode_count": 4,
+              "complete_duration_mean": 43.0,
+              "complete_duration_median": 48.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": 0.003345353689178626,
+                  "mfe_mean": 0.007848199159490143,
+                  "mae_mean": -0.005863593000959039,
+                  "realized_vol_mean": 0.05429301818884409
+                },
+                "10": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": 0.006193564676193031,
+                  "mfe_mean": 0.01351725140666854,
+                  "mae_mean": -0.007342294725696891,
+                  "realized_vol_mean": 0.07167948876314702
+                },
+                "20": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": 0.011706635546749361,
+                  "mfe_mean": 0.02763003433148903,
+                  "mae_mean": -0.012778698125468224,
+                  "realized_vol_mean": 0.07077801398514039
+                },
+                "60": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.0008570530568382806,
+                  "mfe_mean": 0.03953553356298334,
+                  "mae_mean": -0.02197457218057608,
+                  "realized_vol_mean": 0.07944111857589603
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 1,
+              "complete_episode_count": 1,
+              "complete_duration_mean": 5.0,
+              "complete_duration_median": 5.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.011492573007732654,
+                  "mfe_mean": 0.01441553955305186,
+                  "mae_mean": -0.0007307416363299124,
+                  "realized_vol_mean": 0.05511023287701323
+                },
+                "10": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.004384449817978808,
+                  "mfe_mean": 0.01441553955305186,
+                  "mae_mean": -0.0007307416363299124,
+                  "realized_vol_mean": 0.054149916703825234
+                },
+                "20": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.00949964127228764,
+                  "mfe_mean": 0.024619350038530108,
+                  "mae_mean": -0.0007307416363299124,
+                  "realized_vol_mean": 0.060002493323223285
+                },
+                "60": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": 0.058485903329524636,
+                  "mfe_mean": 0.07154624930247389,
+                  "mae_mean": -0.0007307416363299124,
+                  "realized_vol_mean": 0.07607854731943872
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 4,
+              "complete_episode_count": 4,
+              "complete_duration_mean": 15.25,
+              "complete_duration_median": 14.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.007018852400782344,
+                  "mfe_mean": 0.005434600767851017,
+                  "mae_mean": -0.011124681344010318,
+                  "realized_vol_mean": 0.07540914663400988
+                },
+                "10": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.0010287530486155494,
+                  "mfe_mean": 0.010842147091214172,
+                  "mae_mean": -0.014683185354839284,
+                  "realized_vol_mean": 0.08063946625179146
+                },
+                "20": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.00300663983877289,
+                  "mfe_mean": 0.016500897157294137,
+                  "mae_mean": -0.018956769717134586,
+                  "realized_vol_mean": 0.0740419123865686
+                },
+                "60": {
+                  "episode_entry_count": 4,
+                  "forward_return_mean": -0.005751377502767191,
+                  "mfe_mean": 0.03124250585750843,
+                  "mae_mean": -0.0343616487231127,
+                  "realized_vol_mean": 0.07311364586257346
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 7,
+              "complete_episode_count": 6,
+              "complete_duration_mean": 22.333333333333332,
+              "complete_duration_median": 19.5,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.005973311988512901,
+                  "mfe_mean": 0.011960409162517949,
+                  "mae_mean": -0.00597239838204372,
+                  "realized_vol_mean": 0.07819857423438141
+                },
+                "10": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.004241954917937514,
+                  "mfe_mean": 0.017487159173336653,
+                  "mae_mean": -0.007353918455816714,
+                  "realized_vol_mean": 0.07800738010044816
+                },
+                "20": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.007475269539000795,
+                  "mfe_mean": 0.023541656723126025,
+                  "mae_mean": -0.013657102812814995,
+                  "realized_vol_mean": 0.08062101072828327
+                },
+                "60": {
+                  "episode_entry_count": 6,
+                  "forward_return_mean": 0.03026900623942232,
+                  "mfe_mean": 0.05028196796243001,
+                  "mae_mean": -0.024256564804096548,
+                  "realized_vol_mean": 0.0760360779908868
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 2,
+              "6": 0
+            },
+            "2": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 2,
+              "5": 2,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 1,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 0,
+              "2": 2,
+              "3": 0,
+              "4": 0,
+              "5": 2,
+              "6": 0
+            },
+            "5": {
+              "1": 2,
+              "2": 1,
+              "3": 1,
+              "4": 2,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480,
+          "state_counts": {
+            "0": 19,
+            "1": 133,
+            "2": 6,
+            "3": 0,
+            "4": 0,
+            "5": 322,
+            "6": 0
+          },
+          "state_shares": {
+            "0": 0.03958333333333333,
+            "1": 0.27708333333333335,
+            "2": 0.0125,
+            "3": 0.0,
+            "4": 0.0,
+            "5": 0.6708333333333333,
+            "6": 0.0
+          },
+          "stages_with_at_least_1pct_share": [
+            1,
+            2,
+            5
+          ],
+          "populated_stage_count": 3,
+          "dominant_state": 5,
+          "dominant_state_share": 0.6708333333333333,
+          "episodes": {
+            "1": {
+              "run_count_including_censored": 7,
+              "complete_episode_count": 7,
+              "complete_duration_mean": 19.0,
+              "complete_duration_median": 20.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.003835695317227209,
+                  "mfe_mean": 0.005856515160511793,
+                  "mae_mean": -0.009252360471732819,
+                  "realized_vol_mean": 0.07863956215279203
+                },
+                "10": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.0036450473180337545,
+                  "mfe_mean": 0.00883968327777789,
+                  "mae_mean": -0.013157820865392142,
+                  "realized_vol_mean": 0.07513311664010468
+                },
+                "20": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.007913742503084773,
+                  "mfe_mean": 0.012604027339817676,
+                  "mae_mean": -0.01806206351784326,
+                  "realized_vol_mean": 0.07283016371465116
+                },
+                "60": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.03441893652010004,
+                  "mfe_mean": 0.01473013772280878,
+                  "mae_mean": -0.06783399066218912,
+                  "realized_vol_mean": 0.08283451433417081
+                }
+              }
+            },
+            "2": {
+              "run_count_including_censored": 2,
+              "complete_episode_count": 1,
+              "complete_duration_mean": 3.0,
+              "complete_duration_median": 3.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.006624042393871266,
+                  "mfe_mean": 0.0018864120730373024,
+                  "mae_mean": -0.013766488105523722,
+                  "realized_vol_mean": 0.09049560293859003
+                },
+                "10": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.010569667645872749,
+                  "mfe_mean": 0.0018864120730373024,
+                  "mae_mean": -0.013766488105523722,
+                  "realized_vol_mean": 0.06316001516320603
+                },
+                "20": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.03719543805080339,
+                  "mfe_mean": 0.0018864120730373024,
+                  "mae_mean": -0.03771384136858469,
+                  "realized_vol_mean": 0.05769018371355369
+                },
+                "60": {
+                  "episode_entry_count": 1,
+                  "forward_return_mean": -0.11214791774667354,
+                  "mfe_mean": 0.0018864120730373024,
+                  "mae_mean": -0.20694372443983633,
+                  "realized_vol_mean": 0.15415405259026196
+                }
+              }
+            },
+            "3": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "4": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            },
+            "5": {
+              "run_count_including_censored": 7,
+              "complete_episode_count": 6,
+              "complete_duration_mean": 37.666666666666664,
+              "complete_duration_median": 43.0,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.005447805242136854,
+                  "mfe_mean": 0.005362209672468825,
+                  "mae_mean": -0.011276044675319301,
+                  "realized_vol_mean": 0.06452019636618729
+                },
+                "10": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.0022404743010268386,
+                  "mfe_mean": 0.0074738697710997615,
+                  "mae_mean": -0.02019756273284287,
+                  "realized_vol_mean": 0.08069876832837881
+                },
+                "20": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.00389605957787918,
+                  "mfe_mean": 0.01151894159021554,
+                  "mae_mean": -0.025139020089091524,
+                  "realized_vol_mean": 0.07381946521512381
+                },
+                "60": {
+                  "episode_entry_count": 7,
+                  "forward_return_mean": -0.020409256203212815,
+                  "mfe_mean": 0.013833491215251268,
+                  "mae_mean": -0.057224234008665054,
+                  "realized_vol_mean": 0.08836864954657404
+                }
+              }
+            },
+            "6": {
+              "run_count_including_censored": 0,
+              "complete_episode_count": 0,
+              "complete_duration_mean": null,
+              "complete_duration_median": null,
+              "entry_forward_paths": {
+                "5": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "10": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "20": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "60": {
+                  "episode_entry_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              }
+            }
+          },
+          "transitions": {
+            "1": {
+              "1": 0,
+              "2": 1,
+              "3": 0,
+              "4": 0,
+              "5": 6,
+              "6": 0
+            },
+            "2": {
+              "1": 1,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "3": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "4": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "5": {
+              "1": 5,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            },
+            "6": {
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "collapse_diagnostic": [
+    {
+      "pair": "EURUSD",
+      "split": "development",
+      "populated_stage_count": 4,
+      "dominant_state": 0,
+      "dominant_state_share": 0.7305555555555555,
+      "markup_share": 0.12430555555555556,
+      "markdown_share": 0.04652777777777778
+    },
+    {
+      "pair": "EURUSD",
+      "split": "exploratory_oos",
+      "populated_stage_count": 4,
+      "dominant_state": 5,
+      "dominant_state_share": 0.5979166666666667,
+      "markup_share": 0.020833333333333332,
+      "markdown_share": 0.5979166666666667
+    },
+    {
+      "pair": "USDJPY",
+      "split": "development",
+      "populated_stage_count": 4,
+      "dominant_state": 0,
+      "dominant_state_share": 0.7305555555555555,
+      "markup_share": 0.06319444444444444,
+      "markdown_share": 0.09652777777777778
+    },
+    {
+      "pair": "USDJPY",
+      "split": "exploratory_oos",
+      "populated_stage_count": 4,
+      "dominant_state": 1,
+      "dominant_state_share": 0.37916666666666665,
+      "markup_share": 0.27708333333333335,
+      "markdown_share": 0.29791666666666666
+    },
+    {
+      "pair": "GBPUSD",
+      "split": "development",
+      "populated_stage_count": 5,
+      "dominant_state": 0,
+      "dominant_state_share": 0.7305555555555555,
+      "markup_share": 0.14652777777777778,
+      "markdown_share": 0.049305555555555554
+    },
+    {
+      "pair": "GBPUSD",
+      "split": "exploratory_oos",
+      "populated_stage_count": 4,
+      "dominant_state": 5,
+      "dominant_state_share": 0.4625,
+      "markup_share": 0.22708333333333333,
+      "markdown_share": 0.4625
+    },
+    {
+      "pair": "AUDUSD",
+      "split": "development",
+      "populated_stage_count": 3,
+      "dominant_state": 0,
+      "dominant_state_share": 0.7305555555555555,
+      "markup_share": 0.11944444444444445,
+      "markdown_share": 0.09652777777777778
+    },
+    {
+      "pair": "AUDUSD",
+      "split": "exploratory_oos",
+      "populated_stage_count": 3,
+      "dominant_state": 5,
+      "dominant_state_share": 0.6708333333333333,
+      "markup_share": 0.0125,
+      "markdown_share": 0.6708333333333333
+    }
+  ],
+  "boundary": "Development and exploratory OOS only. Formal-state occupancy, episodes and entry paths are descriptive; no final OOS and no trading-utility claim."
+}
