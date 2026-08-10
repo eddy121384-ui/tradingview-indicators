@@ -31,10 +31,13 @@ jobs:
             indicators/wyckoff-regime-radar/research/pine_math.py \
             indicators/wyckoff-regime-radar/research/price_only_core.py \
             indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py \
+            indicators/wyckoff-regime-radar/research/generate_2024_deep_diagnostic_pine.py \
             indicators/wyckoff-regime-radar/research/compare_tradingview_parity.py \
             indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
+            indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
+            indicators/wyckoff-regime-radar/research/test_generate_2024_deep_diagnostic_pine.py \
             indicators/wyckoff-regime-radar/research/test_compare_tradingview_parity.py
       - name: Run price-only mirror tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
@@ -50,21 +53,38 @@ jobs:
           cmp \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
             /tmp/wyckoff-issue-55-price-only-parity.pine
+      - name: Generate focused 2024 TradingView diagnostic harness
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_2024_deep_diagnostic_pine.py \
+            --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
+          python indicators/wyckoff-regime-radar/research/generate_2024_deep_diagnostic_pine.py \
+            --output /tmp/wyckoff-issue-55-2024-deep-diagnostic.pine
+          cmp \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine \
+            /tmp/wyckoff-issue-55-2024-deep-diagnostic.pine
       - name: Provisional EURUSD cross-feed parity diagnostic
         continue-on-error: true
         run: |
           python indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
             --output /tmp/issue-55-cross-feed-parity.json
           cat /tmp/issue-55-cross-feed-parity.json
-      - name: Commit generated parity harness on branch push
+      - name: Focused 2024 Python/Yahoo decision-chain diagnostic
+        continue-on-error: true
+        run: |
+          python indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
+            --output /tmp/issue-55-2024-deep-diagnostic.json
+          cat /tmp/issue-55-2024-deep-diagnostic.json
+      - name: Commit generated parity harnesses on branch push
         if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine
+          git add \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
           if git diff --cached --quiet; then
-            echo "Generated parity harness already current."
+            echo "Generated parity harnesses already current."
           else
-            git commit -m "Generate Issue #55 TradingView parity harness"
+            git commit -m "Generate Issue #55 TradingView diagnostic harnesses"
             git push origin HEAD:${GITHUB_REF_NAME}
           fi
