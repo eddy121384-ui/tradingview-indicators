@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import sys
+import types
 from pathlib import Path
 
 
@@ -72,12 +74,13 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
 
 
 def load_v06_namespace() -> dict[str, object]:
-    namespace: dict[str, object] = {
-        "__name__": "wyckoff_v06_generated",
-        "__file__": str(HERE / "generated" / "wyckoff-v06-price-only-core.py"),
-    }
-    exec(compile(render_v06_source(), namespace["__file__"], "exec"), namespace)
-    return namespace
+    module_name = "wyckoff_v06_generated"
+    module = types.ModuleType(module_name)
+    module.__file__ = str(HERE / "generated" / "wyckoff-v06-price-only-core.py")
+    module.__package__ = None
+    sys.modules[module_name] = module
+    exec(compile(render_v06_source(), module.__file__, "exec"), module.__dict__)
+    return module.__dict__
 
 
 def parse_args() -> argparse.Namespace:
