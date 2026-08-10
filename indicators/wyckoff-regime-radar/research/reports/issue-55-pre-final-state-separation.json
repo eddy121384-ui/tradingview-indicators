@@ -1,0 +1,2651 @@
+{
+  "schema_version": 1,
+  "issue": 55,
+  "status": "pre_final_state_separation_stability_analysis",
+  "minimum_group_n": 20,
+  "stage_names": {
+    "1": "Accumulation",
+    "2": "Markup",
+    "3": "Re-accumulation",
+    "4": "Distribution",
+    "5": "Markdown",
+    "6": "Re-distribution"
+  },
+  "final_oos_status": "SEALED_NOT_COMPUTED",
+  "pairs": {
+    "EURUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 383,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 63,
+                  "forward_return_mean": 0.000861392560449955,
+                  "mfe_mean": 0.008468002365064991,
+                  "mae_mean": -0.006736596203371626,
+                  "realized_vol_mean": 0.07001956081483404
+                },
+                "2": {
+                  "sample_count": 179,
+                  "forward_return_mean": 0.0026422226040316884,
+                  "mfe_mean": 0.009957329123399703,
+                  "mae_mean": -0.0065776922270300835,
+                  "realized_vol_mean": 0.07115602630151105
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 79,
+                  "forward_return_mean": -0.0007381361292404942,
+                  "mfe_mean": 0.007233300177759794,
+                  "mae_mean": -0.007407575029003672,
+                  "realized_vol_mean": 0.059230786652100936
+                },
+                "5": {
+                  "sample_count": 62,
+                  "forward_return_mean": 0.0010940772327149993,
+                  "mfe_mean": 0.01000131273505368,
+                  "mae_mean": -0.008915641958712557,
+                  "realized_vol_mean": 0.08555634221016009
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.018693568687934623,
+                "mfe": 0.02724911931277469,
+                "mae": 0.023945574164063274,
+                "realized_vol": 0.1110915079973385
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 378,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 63,
+                  "forward_return_mean": 0.0011859443456797428,
+                  "mfe_mean": 0.01175013494564531,
+                  "mae_mean": -0.009218976822449244,
+                  "realized_vol_mean": 0.07008030043452171
+                },
+                "2": {
+                  "sample_count": 179,
+                  "forward_return_mean": 0.005676579271022811,
+                  "mfe_mean": 0.015045024282090107,
+                  "mae_mean": -0.008194550970150071,
+                  "realized_vol_mean": 0.07280439132830822
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 79,
+                  "forward_return_mean": -0.002105678142344466,
+                  "mfe_mean": 0.010058793636773204,
+                  "mae_mean": -0.011304085699292728,
+                  "realized_vol_mean": 0.06111926788042196
+                },
+                "5": {
+                  "sample_count": 57,
+                  "forward_return_mean": 0.0033253734681838883,
+                  "mfe_mean": 0.01420655890005278,
+                  "mae_mean": -0.011697369837319482,
+                  "realized_vol_mean": 0.08446045657416844
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.050255620770502205,
+                "mfe": 0.051787412485965745,
+                "mae": 0.04105845785689745,
+                "realized_vol": 0.20581031765607896
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 368,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 63,
+                  "forward_return_mean": 0.011255892256672253,
+                  "mfe_mean": 0.02128874341156781,
+                  "mae_mean": -0.010930966991150152,
+                  "realized_vol_mean": 0.07333171654936778
+                },
+                "2": {
+                  "sample_count": 179,
+                  "forward_return_mean": 0.008249520135012756,
+                  "mfe_mean": 0.021270647437084372,
+                  "mae_mean": -0.01035923929396903,
+                  "realized_vol_mean": 0.07177650195785219
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 79,
+                  "forward_return_mean": -0.002605807122814784,
+                  "mfe_mean": 0.015082095913500501,
+                  "mae_mean": -0.017166497347946622,
+                  "realized_vol_mean": 0.0637948564657944
+                },
+                "5": {
+                  "sample_count": 47,
+                  "forward_return_mean": 0.002938824519963261,
+                  "mfe_mean": 0.019608189629219053,
+                  "mae_mean": -0.015293850195898122,
+                  "realized_vol_mean": 0.08159881646103356
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.061887737106252845,
+                "mfe": 0.03723271080039013,
+                "mae": 0.07577210000494981,
+                "realized_vol": 0.2723700491246918
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 328,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 63,
+                  "forward_return_mean": 0.04521132713313195,
+                  "mfe_mean": 0.05235222963941229,
+                  "mae_mean": -0.010971940110121594,
+                  "realized_vol_mean": 0.07265537778028579
+                },
+                "2": {
+                  "sample_count": 175,
+                  "forward_return_mean": 0.007113370266068471,
+                  "mfe_mean": 0.0351520822273949,
+                  "mae_mean": -0.02154315697977267,
+                  "realized_vol_mean": 0.07084277454917667
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 60,
+                  "forward_return_mean": 0.03735011465056747,
+                  "mfe_mean": 0.053142536073697885,
+                  "mae_mean": -0.01263637647692478,
+                  "realized_vol_mean": 0.06910759604792364
+                },
+                "5": {
+                  "sample_count": 30,
+                  "forward_return_mean": 0.035815900943781766,
+                  "mfe_mean": 0.046536699096830364,
+                  "mae_mean": -0.008678787609611938,
+                  "realized_vol_mean": 0.07697454787413803
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.20642561755451264,
+                "mfe": 0.1142129161173925,
+                "mae": 0.09695781936455562,
+                "realized_vol": 0.25367252534850226
+              }
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 475,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 168,
+                  "forward_return_mean": -0.0016233015723817435,
+                  "mfe_mean": 0.005187249901171842,
+                  "mae_mean": -0.006414363989000794,
+                  "realized_vol_mean": 0.04818903823518075
+                },
+                "2": {
+                  "sample_count": 10,
+                  "forward_return_mean": -0.024764066602310376,
+                  "mfe_mean": 0.00857337611214759,
+                  "mae_mean": -0.0335985757858626,
+                  "realized_vol_mean": 0.16561605177057284
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 15,
+                  "forward_return_mean": -0.00042177146736434393,
+                  "mfe_mean": 0.006186838106986991,
+                  "mae_mean": -0.006931628867863819,
+                  "realized_vol_mean": 0.05878706373809668
+                },
+                "5": {
+                  "sample_count": 282,
+                  "forward_return_mean": 0.0006787197555526486,
+                  "mfe_mean": 0.00760528997286862,
+                  "mae_mean": -0.006667831150059498,
+                  "realized_vol_mean": 0.057818573083943184
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.016052509165543394,
+                "mfe": 0.03316833806785975,
+                "mae": 0.0005987643608779969,
+                "realized_vol": 0.03498922702956318
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 470,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 168,
+                  "forward_return_mean": -0.0032810508012168192,
+                  "mfe_mean": 0.00679480477656118,
+                  "mae_mean": -0.009630406758884796,
+                  "realized_vol_mean": 0.05076589672150403
+                },
+                "2": {
+                  "sample_count": 10,
+                  "forward_return_mean": -0.02586908659057182,
+                  "mfe_mean": 0.011015112272071859,
+                  "mae_mean": -0.0490236913616506,
+                  "realized_vol_mean": 0.17463092486922624
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 15,
+                  "forward_return_mean": -0.0028649859350126463,
+                  "mfe_mean": 0.006286742795332086,
+                  "mae_mean": -0.009652585589067756,
+                  "realized_vol_mean": 0.05937663042171755
+                },
+                "5": {
+                  "sample_count": 277,
+                  "forward_return_mean": 0.0005984770095783469,
+                  "mfe_mean": 0.010728917844899202,
+                  "mae_mean": -0.009189766173148458,
+                  "realized_vol_mean": 0.06038066410310023
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.032233786458651666,
+                "mfe": 0.04608469697722848,
+                "mae": 0.001069525078968978,
+                "realized_vol": 0.04666648711417518
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 460,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 168,
+                  "forward_return_mean": -0.006371915424261442,
+                  "mfe_mean": 0.008340244134432932,
+                  "mae_mean": -0.014162448273975297,
+                  "realized_vol_mean": 0.0506968454806291
+                },
+                "2": {
+                  "sample_count": 10,
+                  "forward_return_mean": -0.02667383615705493,
+                  "mfe_mean": 0.011015112272071859,
+                  "mae_mean": -0.04920692912978899,
+                  "realized_vol_mean": 0.1493882010234691
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 15,
+                  "forward_return_mean": -0.015596192076752662,
+                  "mfe_mean": 0.006286742795332086,
+                  "mae_mean": -0.020783269331054708,
+                  "realized_vol_mean": 0.0634037439206489
+                },
+                "5": {
+                  "sample_count": 267,
+                  "forward_return_mean": 0.0006602579785488729,
+                  "mfe_mean": 0.01447032777794776,
+                  "mae_mean": -0.012174110700892648,
+                  "realized_vol_mean": 0.06283486448464382
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.09118549366519538,
+                "mfe": 0.06925287024492212,
+                "mae": 0.013872576007808944,
+                "realized_vol": 0.07187168288967467
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 420,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 168,
+                  "forward_return_mean": -0.016560639677339138,
+                  "mfe_mean": 0.01486859784286191,
+                  "mae_mean": -0.02889663483864698,
+                  "realized_vol_mean": 0.06037618110273173
+                },
+                "2": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 15,
+                  "forward_return_mean": -0.009766044684572745,
+                  "mfe_mean": 0.010819872908586985,
+                  "mae_mean": -0.03317271085496344,
+                  "realized_vol_mean": 0.06784982716751646
+                },
+                "5": {
+                  "sample_count": 237,
+                  "forward_return_mean": -0.0026012252555817224,
+                  "mfe_mean": 0.016382396473997696,
+                  "mae_mean": -0.01659909650915485,
+                  "realized_vol_mean": 0.05567241385213282
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.30218029708098487,
+                "mfe": 0.006255104371756844,
+                "mae": 0.28866817529178973,
+                "realized_vol": 0.01891038593759289
+              }
+            }
+          }
+        }
+      },
+      "development_to_exploratory_stability": {
+        "5": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 2,
+            "rho": null,
+            "stages": [
+              1,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 2,
+            "same_sign_count": 1,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.000861392560449955,
+                "exploratory_mean": -0.0016233015723817435,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.0010940772327149993,
+                "exploratory_mean": 0.0006787197555526486,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "10": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 2,
+            "rho": null,
+            "stages": [
+              1,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 2,
+            "same_sign_count": 1,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.0011859443456797428,
+                "exploratory_mean": -0.0032810508012168192,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.0033253734681838883,
+                "exploratory_mean": 0.0005984770095783469,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "20": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 2,
+            "rho": null,
+            "stages": [
+              1,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 2,
+            "same_sign_count": 1,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.011255892256672253,
+                "exploratory_mean": -0.006371915424261442,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.002938824519963261,
+                "exploratory_mean": 0.0006602579785488729,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "60": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 2,
+            "rho": null,
+            "stages": [
+              1,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 2,
+            "same_sign_count": 0,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.04521132713313195,
+                "exploratory_mean": -0.016560639677339138,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.035815900943781766,
+                "exploratory_mean": -0.0026012252555817224,
+                "same_sign": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "USDJPY": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 383,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 103,
+                  "forward_return_mean": 0.001709884829643482,
+                  "mfe_mean": 0.007862007911491426,
+                  "mae_mean": -0.006401667365151243,
+                  "realized_vol_mean": 0.0591736210002665
+                },
+                "2": {
+                  "sample_count": 91,
+                  "forward_return_mean": -0.005345873087864032,
+                  "mfe_mean": 0.006834672326437214,
+                  "mae_mean": -0.012165257487752655,
+                  "realized_vol_mean": 0.08655904269130284
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 50,
+                  "forward_return_mean": -0.0031333706807437035,
+                  "mfe_mean": 0.00855081929594806,
+                  "mae_mean": -0.011052712299914147,
+                  "realized_vol_mean": 0.0744928320859855
+                },
+                "5": {
+                  "sample_count": 139,
+                  "forward_return_mean": 0.0013626834863305838,
+                  "mfe_mean": 0.009558089359402572,
+                  "mae_mean": -0.00890714818719286,
+                  "realized_vol_mean": 0.07721907010208368
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.08410549970103164,
+                "mfe": 0.03139317986758926,
+                "mae": 0.09029420498247924,
+                "realized_vol": 0.09232107834697675
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 378,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 98,
+                  "forward_return_mean": 0.0009704343648276983,
+                  "mfe_mean": 0.01058595662751223,
+                  "mae_mean": -0.009402212596126952,
+                  "realized_vol_mean": 0.06056529051474478
+                },
+                "2": {
+                  "sample_count": 91,
+                  "forward_return_mean": -0.009960254427552577,
+                  "mfe_mean": 0.007916133034999134,
+                  "mae_mean": -0.018348115483587,
+                  "realized_vol_mean": 0.09085691445797515
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 50,
+                  "forward_return_mean": -0.0059686145859936725,
+                  "mfe_mean": 0.01178387026048384,
+                  "mae_mean": -0.01682783264225196,
+                  "realized_vol_mean": 0.07679164252794352
+                },
+                "5": {
+                  "sample_count": 139,
+                  "forward_return_mean": 0.0039954442719658916,
+                  "mfe_mean": 0.014071149035097914,
+                  "mae_mean": -0.011787950432874936,
+                  "realized_vol_mean": 0.07802290099259626
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.1533526974563063,
+                "mfe": 0.08435793603254498,
+                "mae": 0.13634755333067786,
+                "realized_vol": 0.17462382646124025
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 368,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 88,
+                  "forward_return_mean": -0.00332445103010182,
+                  "mfe_mean": 0.013514632508860942,
+                  "mae_mean": -0.016686200334681253,
+                  "realized_vol_mean": 0.06499123165840208
+                },
+                "2": {
+                  "sample_count": 91,
+                  "forward_return_mean": -0.012575091338377526,
+                  "mfe_mean": 0.009336139351582883,
+                  "mae_mean": -0.024683807649006365,
+                  "realized_vol_mean": 0.08751582309512196
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 50,
+                  "forward_return_mean": -0.006265003797220294,
+                  "mfe_mean": 0.015994873026158804,
+                  "mae_mean": -0.024338348298982123,
+                  "realized_vol_mean": 0.07678096323051607
+                },
+                "5": {
+                  "sample_count": 139,
+                  "forward_return_mean": 0.0053383239612754445,
+                  "mfe_mean": 0.01988751490653127,
+                  "mae_mean": -0.015568835121074383,
+                  "realized_vol_mean": 0.07798550697595216
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.12079899460631556,
+                "mfe": 0.13117266185063986,
+                "mae": 0.11566255106965215,
+                "realized_vol": 0.1536084087210165
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 328,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 65,
+                  "forward_return_mean": -0.0323557123771677,
+                  "mfe_mean": 0.01536597439164988,
+                  "mae_mean": -0.04524976681601474,
+                  "realized_vol_mean": 0.07214056057874808
+                },
+                "2": {
+                  "sample_count": 85,
+                  "forward_return_mean": -0.02158201108873566,
+                  "mfe_mean": 0.012559858456123753,
+                  "mae_mean": -0.0397285135858243,
+                  "realized_vol_mean": 0.08013099867032471
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 50,
+                  "forward_return_mean": -0.0060682759589223865,
+                  "mfe_mean": 0.022669627839845895,
+                  "mae_mean": -0.03818767499465234,
+                  "realized_vol_mean": 0.0840459361575202
+                },
+                "5": {
+                  "sample_count": 128,
+                  "forward_return_mean": 0.012167901516343966,
+                  "mfe_mean": 0.033980890264067844,
+                  "mae_mean": -0.02582533760757353,
+                  "realized_vol_mean": 0.07326348972617337
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.35353228198711134,
+                "mfe": 0.3464657333389459,
+                "mae": 0.17677838890213649,
+                "realized_vol": 0.18470613519649481
+              }
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 471,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 182,
+                  "forward_return_mean": 0.00030075947386904806,
+                  "mfe_mean": 0.0055986733548138035,
+                  "mae_mean": -0.005835236635612227,
+                  "realized_vol_mean": 0.043136970532706674
+                },
+                "2": {
+                  "sample_count": 133,
+                  "forward_return_mean": -0.004796955713290893,
+                  "mfe_mean": 0.0048398043790967935,
+                  "mae_mean": -0.011681064143020914,
+                  "realized_vol_mean": 0.06451879271500362
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 18,
+                  "forward_return_mean": 0.007581708203474264,
+                  "mfe_mean": 0.011655464528409883,
+                  "mae_mean": -0.002102463995846688,
+                  "realized_vol_mean": 0.059177319145393294
+                },
+                "5": {
+                  "sample_count": 138,
+                  "forward_return_mean": 0.002219557972033573,
+                  "mfe_mean": 0.008372843570217812,
+                  "mae_mean": -0.008337788946628783,
+                  "realized_vol_mean": 0.07581142465830186
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.06857197022407725,
+                "mfe": 0.046536996283384376,
+                "mae": 0.06568505239925818,
+                "realized_vol": 0.0868303169208755
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 466,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 182,
+                  "forward_return_mean": 0.0006770590729696651,
+                  "mfe_mean": 0.007879620559947642,
+                  "mae_mean": -0.008333485190826795,
+                  "realized_vol_mean": 0.04696211324217083
+                },
+                "2": {
+                  "sample_count": 133,
+                  "forward_return_mean": -0.006355913158601501,
+                  "mfe_mean": 0.006804764345523251,
+                  "mae_mean": -0.01823624751011869,
+                  "realized_vol_mean": 0.07259538827895949
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 18,
+                  "forward_return_mean": 0.0027480040125823315,
+                  "mfe_mean": 0.015196246085282349,
+                  "mae_mean": -0.006415075237042563,
+                  "realized_vol_mean": 0.0662358036304536
+                },
+                "5": {
+                  "sample_count": 133,
+                  "forward_return_mean": 0.003437179620768167,
+                  "mfe_mean": 0.012152817438812727,
+                  "mae_mean": -0.01114693600124033,
+                  "realized_vol_mean": 0.0754745596095704
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.07624418907299083,
+                "mfe": 0.056454467342311083,
+                "mae": 0.09378082760885018,
+                "realized_vol": 0.09170429152958784
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 458,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 182,
+                  "forward_return_mean": -5.064428641100925e-06,
+                  "mfe_mean": 0.010699723277065504,
+                  "mae_mean": -0.01138733089212748,
+                  "realized_vol_mean": 0.05002666535748226
+                },
+                "2": {
+                  "sample_count": 125,
+                  "forward_return_mean": -0.007035539066947619,
+                  "mfe_mean": 0.01048350357761651,
+                  "mae_mean": -0.02854160666465935,
+                  "realized_vol_mean": 0.07950600040220072
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 18,
+                  "forward_return_mean": -0.00026761094790938515,
+                  "mfe_mean": 0.017180027649244225,
+                  "mae_mean": -0.019078996381142046,
+                  "realized_vol_mean": 0.08595154991856635
+                },
+                "5": {
+                  "sample_count": 133,
+                  "forward_return_mean": 0.0025814347738933605,
+                  "mfe_mean": 0.015976474709044765,
+                  "mae_mean": -0.014628199970095438,
+                  "realized_vol_mean": 0.07073823965619486
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.060208482006795724,
+                "mfe": 0.053385970010630224,
+                "mae": 0.15592259834025055,
+                "realized_vol": 0.10031075924965685
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 420,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 181,
+                  "forward_return_mean": -0.0036356506706238206,
+                  "mfe_mean": 0.01858835040332906,
+                  "mae_mean": -0.029984008609113273,
+                  "realized_vol_mean": 0.06861890411449402
+                },
+                "2": {
+                  "sample_count": 104,
+                  "forward_return_mean": -0.012705782908850891,
+                  "mfe_mean": 0.014396435268956526,
+                  "mae_mean": -0.047143036982706325,
+                  "realized_vol_mean": 0.061245357450868315
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 15,
+                  "forward_return_mean": 0.006425117844888536,
+                  "mfe_mean": 0.024579107018632942,
+                  "mae_mean": -0.020975274261808105,
+                  "realized_vol_mean": 0.07529026564974697
+                },
+                "5": {
+                  "sample_count": 120,
+                  "forward_return_mean": 0.004010206300879514,
+                  "mfe_mean": 0.018776962676809526,
+                  "mae_mean": -0.022154323422875134,
+                  "realized_vol_mean": 0.0586317501383982
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.08617183841164416,
+                "mfe": 0.03343946079996764,
+                "mae": 0.1389549284737777,
+                "realized_vol": 0.025907532883124057
+              }
+            }
+          }
+        }
+      },
+      "development_to_exploratory_stability": {
+        "5": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 3,
+            "rho": 0.5,
+            "stages": [
+              1,
+              2,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 3,
+            "same_sign_count": 3,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.001709884829643482,
+                "exploratory_mean": 0.00030075947386904806,
+                "same_sign": true
+              },
+              {
+                "stage": 2,
+                "development_mean": -0.005345873087864032,
+                "exploratory_mean": -0.004796955713290893,
+                "same_sign": true
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.0013626834863305838,
+                "exploratory_mean": 0.002219557972033573,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "10": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 3,
+            "rho": 1.0,
+            "stages": [
+              1,
+              2,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 3,
+            "same_sign_count": 3,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.0009704343648276983,
+                "exploratory_mean": 0.0006770590729696651,
+                "same_sign": true
+              },
+              {
+                "stage": 2,
+                "development_mean": -0.009960254427552577,
+                "exploratory_mean": -0.006355913158601501,
+                "same_sign": true
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.0039954442719658916,
+                "exploratory_mean": 0.003437179620768167,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "20": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 3,
+            "rho": 1.0,
+            "stages": [
+              1,
+              2,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 3,
+            "same_sign_count": 3,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": -0.00332445103010182,
+                "exploratory_mean": -5.064428641100925e-06,
+                "same_sign": true
+              },
+              {
+                "stage": 2,
+                "development_mean": -0.012575091338377526,
+                "exploratory_mean": -0.007035539066947619,
+                "same_sign": true
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.0053383239612754445,
+                "exploratory_mean": 0.0025814347738933605,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "60": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 3,
+            "rho": 0.5,
+            "stages": [
+              1,
+              2,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 3,
+            "same_sign_count": 3,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": -0.0323557123771677,
+                "exploratory_mean": -0.0036356506706238206,
+                "same_sign": true
+              },
+              {
+                "stage": 2,
+                "development_mean": -0.02158201108873566,
+                "exploratory_mean": -0.012705782908850891,
+                "same_sign": true
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.012167901516343966,
+                "exploratory_mean": 0.004010206300879514,
+                "same_sign": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    "GBPUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 383,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 39,
+                  "forward_return_mean": -0.004277318690375677,
+                  "mfe_mean": 0.006031192287434004,
+                  "mae_mean": -0.010930303563274402,
+                  "realized_vol_mean": 0.07501407735251421
+                },
+                "2": {
+                  "sample_count": 211,
+                  "forward_return_mean": 0.0006593699392753984,
+                  "mfe_mean": 0.009432202828308908,
+                  "mae_mean": -0.00833015195025542,
+                  "realized_vol_mean": 0.07193127330160336
+                },
+                "3": {
+                  "sample_count": 16,
+                  "forward_return_mean": 0.007918457560329585,
+                  "mfe_mean": 0.01487437420740842,
+                  "mae_mean": -0.005207162568801979,
+                  "realized_vol_mean": 0.09647419121610376
+                },
+                "4": {
+                  "sample_count": 51,
+                  "forward_return_mean": 0.0034257092354394152,
+                  "mfe_mean": 0.010683378166603105,
+                  "mae_mean": -0.006831524390076132,
+                  "realized_vol_mean": 0.07110044638219266
+                },
+                "5": {
+                  "sample_count": 66,
+                  "forward_return_mean": 0.0019488991496789162,
+                  "mfe_mean": 0.010820477781239261,
+                  "mae_mean": -0.009080017691582187,
+                  "realized_vol_mean": 0.08712865849951199
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.03217700073397418,
+                "mfe": 0.032564503770398434,
+                "mae": 0.024989485786134812,
+                "realized_vol": 0.025339140534909963
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 378,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 39,
+                  "forward_return_mean": -0.004845127402562109,
+                  "mfe_mean": 0.008984642048925622,
+                  "mae_mean": -0.014788626742151112,
+                  "realized_vol_mean": 0.07681369396382962
+                },
+                "2": {
+                  "sample_count": 211,
+                  "forward_return_mean": 0.0005729871737784232,
+                  "mfe_mean": 0.013425005805222103,
+                  "mae_mean": -0.011566572264002784,
+                  "realized_vol_mean": 0.0739801009298642
+                },
+                "3": {
+                  "sample_count": 16,
+                  "forward_return_mean": 0.014398899703603557,
+                  "mfe_mean": 0.021662993396007954,
+                  "mae_mean": -0.005687438092906873,
+                  "realized_vol_mean": 0.0939052807353655
+                },
+                "4": {
+                  "sample_count": 51,
+                  "forward_return_mean": 0.008779863325294813,
+                  "mfe_mean": 0.018708763929706527,
+                  "mae_mean": -0.009349976630766728,
+                  "realized_vol_mean": 0.07691483984545475
+                },
+                "5": {
+                  "sample_count": 61,
+                  "forward_return_mean": 0.0037047173625902106,
+                  "mfe_mean": 0.01597237618552873,
+                  "mae_mean": -0.012579933697345388,
+                  "realized_vol_mean": 0.09400941154228817
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.05015897559291325,
+                "mfe": 0.054573854747126206,
+                "mae": 0.023073458039808963,
+                "realized_vol": 0.06382874457601778
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 368,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 39,
+                  "forward_return_mean": 0.0018182302224873908,
+                  "mfe_mean": 0.017558781138568954,
+                  "mae_mean": -0.02013173156739725,
+                  "realized_vol_mean": 0.08290389123085784
+                },
+                "2": {
+                  "sample_count": 211,
+                  "forward_return_mean": 0.001526190246475679,
+                  "mfe_mean": 0.019761475111147144,
+                  "mae_mean": -0.015578817998480052,
+                  "realized_vol_mean": 0.07573216672504814
+                },
+                "3": {
+                  "sample_count": 16,
+                  "forward_return_mean": 0.02202736647525974,
+                  "mfe_mean": 0.026838629634905437,
+                  "mae_mean": -0.005687438092906873,
+                  "realized_vol_mean": 0.07692397876872266
+                },
+                "4": {
+                  "sample_count": 51,
+                  "forward_return_mean": 0.010750840132998285,
+                  "mfe_mean": 0.029103230494144594,
+                  "mae_mean": -0.013242292178388132,
+                  "realized_vol_mean": 0.07854579182575624
+                },
+                "5": {
+                  "sample_count": 51,
+                  "forward_return_mean": 0.008921044253120954,
+                  "mfe_mean": 0.023098236414184226,
+                  "mae_mean": -0.01606291311598731,
+                  "realized_vol_mean": 0.09990188908909502
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.029002131225627493,
+                "mfe": 0.047631050095386415,
+                "mae": 0.021207515486958192,
+                "realized_vol": 0.13642898034273396
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 328,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 39,
+                  "forward_return_mean": 0.031098732870523484,
+                  "mfe_mean": 0.042223581592552094,
+                  "mae_mean": -0.02394237071220639,
+                  "realized_vol_mean": 0.08441874482281032
+                },
+                "2": {
+                  "sample_count": 194,
+                  "forward_return_mean": 0.012804868219663878,
+                  "mfe_mean": 0.042624067781636375,
+                  "mae_mean": -0.02138072929518241,
+                  "realized_vol_mean": 0.07767671527003953
+                },
+                "3": {
+                  "sample_count": 16,
+                  "forward_return_mean": 0.028329455245770865,
+                  "mfe_mean": 0.04698970515536044,
+                  "mae_mean": -0.008133450209742543,
+                  "realized_vol_mean": 0.08352510525094269
+                },
+                "4": {
+                  "sample_count": 44,
+                  "forward_return_mean": 0.02306681786114909,
+                  "mfe_mean": 0.048760112018741794,
+                  "mae_mean": -0.012181629176271103,
+                  "realized_vol_mean": 0.07715522565261057
+                },
+                "5": {
+                  "sample_count": 35,
+                  "forward_return_mean": 0.026683358681195247,
+                  "mfe_mean": 0.04458650422428667,
+                  "mae_mean": -0.015764336225872692,
+                  "realized_vol_mean": 0.09608308437222154
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.0575491950151046,
+                "mfe": 0.011425911309897962,
+                "mae": 0.06285034838305394,
+                "realized_vol": 0.3990854307977341
+              }
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 465,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 106,
+                  "forward_return_mean": 0.003044725654989422,
+                  "mfe_mean": 0.012082671126960496,
+                  "mae_mean": -0.008038452270684528,
+                  "realized_vol_mean": 0.08630918141848187
+                },
+                "2": {
+                  "sample_count": 109,
+                  "forward_return_mean": -0.0023161759215640605,
+                  "mfe_mean": 0.008084820892135755,
+                  "mae_mean": -0.009557481371639556,
+                  "realized_vol_mean": 0.07271736268102034
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 28,
+                  "forward_return_mean": -0.01410990966304119,
+                  "mfe_mean": 0.009421366279538481,
+                  "mae_mean": -0.02208902633560256,
+                  "realized_vol_mean": 0.09930894858717165
+                },
+                "5": {
+                  "sample_count": 222,
+                  "forward_return_mean": 0.0005243316943174339,
+                  "mfe_mean": 0.009833038427980254,
+                  "mae_mean": -0.010183645967439004,
+                  "realized_vol_mean": 0.07991652749851182
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.061709961808283684,
+                "mfe": 0.018513562204365272,
+                "mae": 0.08183238734136844,
+                "realized_vol": 0.02259396529832595
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 465,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 106,
+                  "forward_return_mean": 0.005421857544038439,
+                  "mfe_mean": 0.018657924083023483,
+                  "mae_mean": -0.011269476806498166,
+                  "realized_vol_mean": 0.08934768006706295
+                },
+                "2": {
+                  "sample_count": 109,
+                  "forward_return_mean": -0.003306100361319432,
+                  "mfe_mean": 0.010412648684420529,
+                  "mae_mean": -0.012439884703357284,
+                  "realized_vol_mean": 0.07633586445836488
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 28,
+                  "forward_return_mean": -0.03095233379079167,
+                  "mfe_mean": 0.012486960207218392,
+                  "mae_mean": -0.0430963698922696,
+                  "realized_vol_mean": 0.1366507906488441
+                },
+                "5": {
+                  "sample_count": 222,
+                  "forward_return_mean": 0.0007867188089539759,
+                  "mfe_mean": 0.013390781522032661,
+                  "mae_mean": -0.014793600846262753,
+                  "realized_vol_mean": 0.08284391019740202
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.1579351843289142,
+                "mfe": 0.04989059464848123,
+                "mae": 0.2107594864149859,
+                "realized_vol": 0.1064995894137629
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 460,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 4,
+              "states": {
+                "1": {
+                  "sample_count": 106,
+                  "forward_return_mean": 0.00341014689862451,
+                  "mfe_mean": 0.024519950140296037,
+                  "mae_mean": -0.016342945569880068,
+                  "realized_vol_mean": 0.09456268637334089
+                },
+                "2": {
+                  "sample_count": 109,
+                  "forward_return_mean": -0.0004278192242354152,
+                  "mfe_mean": 0.01511788535293207,
+                  "mae_mean": -0.01442227393021466,
+                  "realized_vol_mean": 0.07556047098199978
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 28,
+                  "forward_return_mean": -0.04552166700568799,
+                  "mfe_mean": 0.016656789836892266,
+                  "mae_mean": -0.08232411850701757,
+                  "realized_vol_mean": 0.1828434144555088
+                },
+                "5": {
+                  "sample_count": 217,
+                  "forward_return_mean": -0.0005568801219070623,
+                  "mfe_mean": 0.017959394824772885,
+                  "mae_mean": -0.020314487860969753,
+                  "realized_vol_mean": 0.08140115578545894
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.20372447605913246,
+                "mfe": 0.04497701711147587,
+                "mae": 0.5304460681698592,
+                "realized_vol": 0.4188418554999869
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 420,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                2,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 106,
+                  "forward_return_mean": -0.00044647651178806544,
+                  "mfe_mean": 0.03409125184002235,
+                  "mae_mean": -0.028167774782527,
+                  "realized_vol_mean": 0.08642266405648197
+                },
+                "2": {
+                  "sample_count": 109,
+                  "forward_return_mean": -0.027267220807385178,
+                  "mfe_mean": 0.024795787220915782,
+                  "mae_mean": -0.05579561059870986,
+                  "realized_vol_mean": 0.09688831280477139
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 2,
+                  "forward_return_mean": -0.04370095622259407,
+                  "mfe_mean": 0.014208144497315445,
+                  "mae_mean": -0.12332006885872637,
+                  "realized_vol_mean": 0.16289323443418846
+                },
+                "5": {
+                  "sample_count": 203,
+                  "forward_return_mean": 0.005346494970061927,
+                  "mfe_mean": 0.030381374997126048,
+                  "mae_mean": -0.03247699787542557,
+                  "realized_vol_mean": 0.08335703300535811
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.12876775964892642,
+                "mfe": 0.01895983222559298,
+                "mae": 0.13371904192009001,
+                "realized_vol": 0.06172486401888035
+              }
+            }
+          }
+        }
+      },
+      "development_to_exploratory_stability": {
+        "5": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 4,
+            "rho": -0.7999999999999999,
+            "stages": [
+              1,
+              2,
+              4,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 4,
+            "same_sign_count": 1,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": -0.004277318690375677,
+                "exploratory_mean": 0.003044725654989422,
+                "same_sign": false
+              },
+              {
+                "stage": 2,
+                "development_mean": 0.0006593699392753984,
+                "exploratory_mean": -0.0023161759215640605,
+                "same_sign": false
+              },
+              {
+                "stage": 4,
+                "development_mean": 0.0034257092354394152,
+                "exploratory_mean": -0.01410990966304119,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.0019488991496789162,
+                "exploratory_mean": 0.0005243316943174339,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "10": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 4,
+            "rho": -0.7999999999999999,
+            "stages": [
+              1,
+              2,
+              4,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 4,
+            "same_sign_count": 1,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": -0.004845127402562109,
+                "exploratory_mean": 0.005421857544038439,
+                "same_sign": false
+              },
+              {
+                "stage": 2,
+                "development_mean": 0.0005729871737784232,
+                "exploratory_mean": -0.003306100361319432,
+                "same_sign": false
+              },
+              {
+                "stage": 4,
+                "development_mean": 0.008779863325294813,
+                "exploratory_mean": -0.03095233379079167,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.0037047173625902106,
+                "exploratory_mean": 0.0007867188089539759,
+                "same_sign": true
+              }
+            ]
+          }
+        },
+        "20": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 4,
+            "rho": -0.7999999999999999,
+            "stages": [
+              1,
+              2,
+              4,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 4,
+            "same_sign_count": 1,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.0018182302224873908,
+                "exploratory_mean": 0.00341014689862451,
+                "same_sign": true
+              },
+              {
+                "stage": 2,
+                "development_mean": 0.001526190246475679,
+                "exploratory_mean": -0.0004278192242354152,
+                "same_sign": false
+              },
+              {
+                "stage": 4,
+                "development_mean": 0.010750840132998285,
+                "exploratory_mean": -0.04552166700568799,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.008921044253120954,
+                "exploratory_mean": -0.0005568801219070623,
+                "same_sign": false
+              }
+            ]
+          }
+        },
+        "60": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 3,
+            "rho": 0.5,
+            "stages": [
+              1,
+              2,
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 3,
+            "same_sign_count": 1,
+            "rows": [
+              {
+                "stage": 1,
+                "development_mean": 0.031098732870523484,
+                "exploratory_mean": -0.00044647651178806544,
+                "same_sign": false
+              },
+              {
+                "stage": 2,
+                "development_mean": 0.012804868219663878,
+                "exploratory_mean": -0.027267220807385178,
+                "same_sign": false
+              },
+              {
+                "stage": 5,
+                "development_mean": 0.026683358681195247,
+                "exploratory_mean": 0.005346494970061927,
+                "same_sign": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    "AUDUSD": {
+      "model_rows_computed": 1920,
+      "final_oos_rows_computed": 0,
+      "splits": {
+        "development": {
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 383,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 11,
+                  "forward_return_mean": -0.017688608878133536,
+                  "mfe_mean": 0.003001679941120933,
+                  "mae_mean": -0.020952306191009407,
+                  "realized_vol_mean": 0.0904130964487284
+                },
+                "2": {
+                  "sample_count": 172,
+                  "forward_return_mean": 0.0008590378980281349,
+                  "mfe_mean": 0.010002739651556866,
+                  "mae_mean": -0.008432253057481937,
+                  "realized_vol_mean": 0.07292838726151578
+                },
+                "3": {
+                  "sample_count": 5,
+                  "forward_return_mean": 0.0029575981365297377,
+                  "mfe_mean": 0.010496265053551657,
+                  "mae_mean": -0.003045029981112446,
+                  "realized_vol_mean": 0.05763201643077649
+                },
+                "4": {
+                  "sample_count": 61,
+                  "forward_return_mean": 1.56018247493452e-05,
+                  "mfe_mean": 0.009375963037609765,
+                  "mae_mean": -0.00840387985873014,
+                  "realized_vol_mean": 0.06956605293852522
+                },
+                "5": {
+                  "sample_count": 134,
+                  "forward_return_mean": 0.0015003785277966004,
+                  "mfe_mean": 0.009551929194747878,
+                  "mae_mean": -0.007385692113571917,
+                  "realized_vol_mean": 0.07420888565010207
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.0020616841299678852,
+                "mfe": 0.0013099832206003022,
+                "mae": 0.006172374769358018,
+                "realized_vol": 0.0032968458386165586
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 378,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 6,
+                  "forward_return_mean": -0.02341269343196724,
+                  "mfe_mean": 0.003475757701865293,
+                  "mae_mean": -0.02636495803133959,
+                  "realized_vol_mean": 0.09514445382611754
+                },
+                "2": {
+                  "sample_count": 172,
+                  "forward_return_mean": 0.0015356321165976836,
+                  "mfe_mean": 0.014596749944516256,
+                  "mae_mean": -0.011706733849773679,
+                  "realized_vol_mean": 0.07792335233419863
+                },
+                "3": {
+                  "sample_count": 5,
+                  "forward_return_mean": 0.007295574260552984,
+                  "mfe_mean": 0.012337848635097348,
+                  "mae_mean": -0.003245338350575988,
+                  "realized_vol_mean": 0.056392947198856756
+                },
+                "4": {
+                  "sample_count": 61,
+                  "forward_return_mean": 0.0006638088232438145,
+                  "mfe_mean": 0.013156466734159667,
+                  "mae_mean": -0.011713983505930831,
+                  "realized_vol_mean": 0.06859023115463034
+                },
+                "5": {
+                  "sample_count": 134,
+                  "forward_return_mean": 0.0016101926806877842,
+                  "mfe_mean": 0.013559992156955,
+                  "mae_mean": -0.011151056398403792,
+                  "realized_vol_mean": 0.07601495451314272
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.0004411705383634366,
+                "mfe": 0.0033920628525977692,
+                "mae": 0.0008647395094216186,
+                "realized_vol": 0.026917749033177757
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 368,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 4,
+                  "forward_return_mean": -0.0069098660621933206,
+                  "mfe_mean": 0.005578750935777366,
+                  "mae_mean": -0.021401439055019483,
+                  "realized_vol_mean": 0.08898084994362922
+                },
+                "2": {
+                  "sample_count": 172,
+                  "forward_return_mean": 0.0006586496671148113,
+                  "mfe_mean": 0.0203105503696989,
+                  "mae_mean": -0.016530110182836368,
+                  "realized_vol_mean": 0.08175931134025695
+                },
+                "3": {
+                  "sample_count": 5,
+                  "forward_return_mean": 0.012611144464275803,
+                  "mfe_mean": 0.02164214042573347,
+                  "mae_mean": -0.003245338350575988,
+                  "realized_vol_mean": 0.06049743220310265
+                },
+                "4": {
+                  "sample_count": 61,
+                  "forward_return_mean": -0.00026769184845783564,
+                  "mfe_mean": 0.019062694037231317,
+                  "mae_mean": -0.01778360325117957,
+                  "realized_vol_mean": 0.06709974249486539
+                },
+                "5": {
+                  "sample_count": 126,
+                  "forward_return_mean": 0.004015335620352202,
+                  "mfe_mean": 0.019762034232966078,
+                  "mae_mean": -0.015572517116212386,
+                  "realized_vol_mean": 0.07506560674530995
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.005771405686223228,
+                "mfe": 0.0008651395087273197,
+                "mae": 0.004532048028514246,
+                "realized_vol": 0.1535399315265972
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 328,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                2,
+                4,
+                5
+              ],
+              "retained_stage_count": 3,
+              "states": {
+                "1": {
+                  "sample_count": 4,
+                  "forward_return_mean": -0.023759244928221013,
+                  "mfe_mean": 0.0059452304511089515,
+                  "mae_mean": -0.05091509482225359,
+                  "realized_vol_mean": 0.08261986896978644
+                },
+                "2": {
+                  "sample_count": 172,
+                  "forward_return_mean": -0.017995708099203887,
+                  "mfe_mean": 0.023848336005407887,
+                  "mae_mean": -0.03407003925734052,
+                  "realized_vol_mean": 0.07947052553790977
+                },
+                "3": {
+                  "sample_count": 5,
+                  "forward_return_mean": 0.057719059739635446,
+                  "mfe_mean": 0.06767371986386546,
+                  "mae_mean": -0.003245338350575988,
+                  "realized_vol_mean": 0.07665435399994551
+                },
+                "4": {
+                  "sample_count": 61,
+                  "forward_return_mean": 0.015059652090065465,
+                  "mfe_mean": 0.041436591682746875,
+                  "mae_mean": -0.02758833190833152,
+                  "realized_vol_mean": 0.07209270605266345
+                },
+                "5": {
+                  "sample_count": 86,
+                  "forward_return_mean": 0.0314507869451952,
+                  "mfe_mean": 0.057578621117867566,
+                  "mae_mean": -0.01769851947607545,
+                  "realized_vol_mean": 0.07676296169665137
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.3254322700843658,
+                "mfe": 0.2803825558507633,
+                "mae": 0.13766180838977873,
+                "realized_vol": 0.16761251714410366
+              }
+            }
+          }
+        },
+        "exploratory_oos": {
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "horizons": {
+            "5": {
+              "eligible_origin_rows": 458,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 133,
+                  "forward_return_mean": -0.0032803304433570765,
+                  "mfe_mean": 0.006993957397695352,
+                  "mae_mean": -0.009474703823732054,
+                  "realized_vol_mean": 0.06609975642690383
+                },
+                "2": {
+                  "sample_count": 3,
+                  "forward_return_mean": -0.0023799831055155707,
+                  "mfe_mean": 0.003301106119193579,
+                  "mae_mean": -0.00982068633114371,
+                  "realized_vol_mean": 0.0756286937457095
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "5": {
+                  "sample_count": 322,
+                  "forward_return_mean": -0.0008516815248228297,
+                  "mfe_mean": 0.009491162749014855,
+                  "mae_mean": -0.01221700124670651,
+                  "realized_vol_mean": 0.0823219020305945
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.004969303543426578,
+                "mfe": 0.015220569008101937,
+                "mae": 0.00737068571007268,
+                "realized_vol": 0.03315290413374726
+              }
+            },
+            "10": {
+              "eligible_origin_rows": 458,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 133,
+                  "forward_return_mean": -0.006800058374976835,
+                  "mfe_mean": 0.009171995725090133,
+                  "mae_mean": -0.01547078250697885,
+                  "realized_vol_mean": 0.06926748343009581
+                },
+                "2": {
+                  "sample_count": 3,
+                  "forward_return_mean": -0.00790229411666595,
+                  "mfe_mean": 0.003975712760429036,
+                  "mae_mean": -0.010141003153600817,
+                  "realized_vol_mean": 0.05645175381845099
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "5": {
+                  "sample_count": 322,
+                  "forward_return_mean": -0.0012610075444233922,
+                  "mfe_mean": 0.01324980851046684,
+                  "mae_mean": -0.018064631957584978,
+                  "realized_vol_mean": 0.08763168234856476
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.014394786973616252,
+                "mfe": 0.025032239748752568,
+                "mae": 0.002874910735861673,
+                "realized_vol": 0.04230917224375686
+              }
+            },
+            "20": {
+              "eligible_origin_rows": 452,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 133,
+                  "forward_return_mean": -0.013830263281882142,
+                  "mfe_mean": 0.011759205052467319,
+                  "mae_mean": -0.026323839218119795,
+                  "realized_vol_mean": 0.07058705010910175
+                },
+                "2": {
+                  "sample_count": 3,
+                  "forward_return_mean": -0.03061307565229132,
+                  "mfe_mean": 0.003975712760429036,
+                  "mae_mean": -0.03406768805500182,
+                  "realized_vol_mean": 0.057935290189973454
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "5": {
+                  "sample_count": 316,
+                  "forward_return_mean": -0.003229705797332694,
+                  "mfe_mean": 0.017190759321875852,
+                  "mae_mean": -0.026950885402408597,
+                  "realized_vol_mean": 0.08983260797374319
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.030873867379871002,
+                "mfe": 0.027146802885790664,
+                "mae": 8.2452694981491e-05,
+                "realized_vol": 0.049073644942326695
+              }
+            },
+            "60": {
+              "eligible_origin_rows": 412,
+              "minimum_group_n": 20,
+              "retained_stages": [
+                1,
+                5
+              ],
+              "retained_stage_count": 2,
+              "states": {
+                "1": {
+                  "sample_count": 133,
+                  "forward_return_mean": -0.03761175125402013,
+                  "mfe_mean": 0.01574023902433362,
+                  "mae_mean": -0.07137048770317993,
+                  "realized_vol_mean": 0.08519319003762134
+                },
+                "2": {
+                  "sample_count": 3,
+                  "forward_return_mean": -0.11022196995610516,
+                  "mfe_mean": 0.003975712760429036,
+                  "mae_mean": -0.20377080157567862,
+                  "realized_vol_mean": 0.15393957222027924
+                },
+                "3": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "4": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                },
+                "5": {
+                  "sample_count": 276,
+                  "forward_return_mean": -0.01018124870611348,
+                  "mfe_mean": 0.020294054774472797,
+                  "mae_mean": -0.036398521545767615,
+                  "realized_vol_mean": 0.0776271483070956
+                },
+                "6": {
+                  "sample_count": 0,
+                  "forward_return_mean": null,
+                  "mfe_mean": null,
+                  "mae_mean": null,
+                  "realized_vol_mean": null
+                }
+              },
+              "metric_eta_squared": {
+                "forward_return": 0.16717062234208702,
+                "mfe": 0.033565752620446705,
+                "mae": 0.13503732339404928,
+                "realized_vol": 0.019179288038008568
+              }
+            }
+          }
+        }
+      },
+      "development_to_exploratory_stability": {
+        "5": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 1,
+            "rho": null,
+            "stages": [
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 1,
+            "same_sign_count": 0,
+            "rows": [
+              {
+                "stage": 5,
+                "development_mean": 0.0015003785277966004,
+                "exploratory_mean": -0.0008516815248228297,
+                "same_sign": false
+              }
+            ]
+          }
+        },
+        "10": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 1,
+            "rho": null,
+            "stages": [
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 1,
+            "same_sign_count": 0,
+            "rows": [
+              {
+                "stage": 5,
+                "development_mean": 0.0016101926806877842,
+                "exploratory_mean": -0.0012610075444233922,
+                "same_sign": false
+              }
+            ]
+          }
+        },
+        "20": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 1,
+            "rho": null,
+            "stages": [
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 1,
+            "same_sign_count": 0,
+            "rows": [
+              {
+                "stage": 5,
+                "development_mean": 0.004015335620352202,
+                "exploratory_mean": -0.003229705797332694,
+                "same_sign": false
+              }
+            ]
+          }
+        },
+        "60": {
+          "forward_return_stage_rank": {
+            "common_stage_count": 1,
+            "rho": null,
+            "stages": [
+              5
+            ]
+          },
+          "forward_return_sign": {
+            "common_stage_count": 1,
+            "same_sign_count": 0,
+            "rows": [
+              {
+                "stage": 5,
+                "development_mean": 0.0314507869451952,
+                "exploratory_mean": -0.01018124870611348,
+                "same_sign": false
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "horizons": {
+      "5": {
+        "metrics": {
+          "forward_return": {
+            "development_pair_median_eta_squared": 0.025435284710954402,
+            "exploratory_pair_median_eta_squared": 0.03888123548691354,
+            "exploratory_pairs_comparable": 4
+          },
+          "mfe": {
+            "development_pair_median_eta_squared": 0.029321149590181974,
+            "exploratory_pair_median_eta_squared": 0.02584095013611251,
+            "exploratory_pairs_comparable": 4
+          },
+          "mae": {
+            "development_pair_median_eta_squared": 0.024467529975099045,
+            "exploratory_pair_median_eta_squared": 0.03652786905466543,
+            "exploratory_pairs_comparable": 4
+          },
+          "realized_vol": {
+            "development_pair_median_eta_squared": 0.05883010944094336,
+            "exploratory_pair_median_eta_squared": 0.03407106558165522,
+            "exploratory_pairs_comparable": 4
+          }
+        },
+        "median_forward_return_stage_rank_rho": -0.14999999999999997,
+        "rank_comparable_pairs": 2,
+        "forward_return_sign_stability": {
+          "same_sign_count": 5,
+          "common_stage_count": 10,
+          "rate": 0.5
+        }
+      },
+      "10": {
+        "metrics": {
+          "forward_return": {
+            "development_pair_median_eta_squared": 0.05020729818170773,
+            "exploratory_pair_median_eta_squared": 0.05423898776582124,
+            "exploratory_pairs_comparable": 4
+          },
+          "mfe": {
+            "development_pair_median_eta_squared": 0.05318063361654597,
+            "exploratory_pair_median_eta_squared": 0.047987645812854855,
+            "exploratory_pairs_comparable": 4
+          },
+          "mae": {
+            "development_pair_median_eta_squared": 0.03206595794835321,
+            "exploratory_pair_median_eta_squared": 0.048327869172355924,
+            "exploratory_pairs_comparable": 4
+          },
+          "realized_vol": {
+            "development_pair_median_eta_squared": 0.11922628551862902,
+            "exploratory_pair_median_eta_squared": 0.06918538932188151,
+            "exploratory_pairs_comparable": 4
+          }
+        },
+        "median_forward_return_stage_rank_rho": 0.10000000000000003,
+        "rank_comparable_pairs": 2,
+        "forward_return_sign_stability": {
+          "same_sign_count": 5,
+          "common_stage_count": 10,
+          "rate": 0.5
+        }
+      },
+      "20": {
+        "metrics": {
+          "forward_return": {
+            "development_pair_median_eta_squared": 0.04544493416594017,
+            "exploratory_pair_median_eta_squared": 0.07569698783599554,
+            "exploratory_pairs_comparable": 4
+          },
+          "mfe": {
+            "development_pair_median_eta_squared": 0.04243188044788827,
+            "exploratory_pair_median_eta_squared": 0.049181493561053044,
+            "exploratory_pairs_comparable": 4
+          },
+          "mae": {
+            "development_pair_median_eta_squared": 0.048489807745954,
+            "exploratory_pair_median_eta_squared": 0.08489758717402975,
+            "exploratory_pairs_comparable": 4
+          },
+          "realized_vol": {
+            "development_pair_median_eta_squared": 0.15357417012380686,
+            "exploratory_pair_median_eta_squared": 0.08609122106966577,
+            "exploratory_pairs_comparable": 4
+          }
+        },
+        "median_forward_return_stage_rank_rho": 0.10000000000000003,
+        "rank_comparable_pairs": 2,
+        "forward_return_sign_stability": {
+          "same_sign_count": 5,
+          "common_stage_count": 10,
+          "rate": 0.5
+        }
+      },
+      "60": {
+        "metrics": {
+          "forward_return": {
+            "development_pair_median_eta_squared": 0.2659289438194392,
+            "exploratory_pair_median_eta_squared": 0.1479691909955067,
+            "exploratory_pairs_comparable": 4
+          },
+          "mfe": {
+            "development_pair_median_eta_squared": 0.1972977359840779,
+            "exploratory_pair_median_eta_squared": 0.02619964651278031,
+            "exploratory_pairs_comparable": 4
+          },
+          "mae": {
+            "development_pair_median_eta_squared": 0.11730981387716719,
+            "exploratory_pair_median_eta_squared": 0.13699612593391347,
+            "exploratory_pairs_comparable": 4
+          },
+          "realized_vol": {
+            "development_pair_median_eta_squared": 0.21918933027249854,
+            "exploratory_pair_median_eta_squared": 0.022543410460566314,
+            "exploratory_pairs_comparable": 4
+          }
+        },
+        "median_forward_return_stage_rank_rho": 0.5,
+        "rank_comparable_pairs": 2,
+        "forward_return_sign_stability": {
+          "same_sign_count": 4,
+          "common_stage_count": 9,
+          "rate": 0.4444444444444444
+        }
+      }
+    }
+  },
+  "interpretation": "Eta-squared is descriptive variance explained by the formal state among stages with at least 20 eligible bars. Rank/sign stability compare development with exploratory OOS and intentionally ignore the semantic stage names.",
+  "boundary": "No final-OOS model output, no final-OOS price path, and no trading-utility claim."
+}
