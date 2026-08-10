@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "issue": 55,
+  "source": {
+    "platform": "TradingView",
+    "symbol": "OANDA:EURUSD",
+    "timeframe": "1D",
+    "capture_time_local": "2026-08-10T12:36:00+08:00",
+    "capture_method": "manual screenshot of Issue #55 checkpoint table after session-cutover-safe capture update",
+    "screenshot_observation": "All six target dates matched the captured TradingView bar date exactly in this run."
+  },
+  "stage_id_map": {
+    "1": "accumulation",
+    "2": "markup",
+    "3": "reaccumulation",
+    "4": "distribution",
+    "5": "markdown",
+    "6": "redistribution"
+  },
+  "rows": [
+    {
+      "target_date": "2019-08-01",
+      "actual_bar_date": "2019-08-01",
+      "close": 1.1085,
+      "prob_acc": 0.2,
+      "prob_markup": 0.0,
+      "prob_reacc": 0.0,
+      "prob_dist": 0.0,
+      "prob_markdown": 99.8,
+      "prob_redist": 0.1,
+      "top_gap": 99.6,
+      "evidence_strength": 95.2,
+      "candidate_display_id": 5,
+      "formal_id": 5
+    },
+    {
+      "target_date": "2020-03-20",
+      "actual_bar_date": "2020-03-20",
+      "close": 1.06964,
+      "prob_acc": 1.1,
+      "prob_markup": 0.0,
+      "prob_reacc": 0.0,
+      "prob_dist": 1.0,
+      "prob_markdown": 98.9,
+      "prob_redist": 0.0,
+      "top_gap": 97.9,
+      "evidence_strength": 95.1,
+      "candidate_display_id": 5,
+      "formal_id": 5
+    },
+    {
+      "target_date": "2021-06-01",
+      "actual_bar_date": "2021-06-01",
+      "close": 1.22138,
+      "prob_acc": 0.2,
+      "prob_markup": 99.8,
+      "prob_reacc": 0.0,
+      "prob_dist": 0.0,
+      "prob_markdown": 0.0,
+      "prob_redist": 0.0,
+      "top_gap": 99.6,
+      "evidence_strength": 88.5,
+      "candidate_display_id": 2,
+      "formal_id": 2
+    },
+    {
+      "target_date": "2022-09-28",
+      "actual_bar_date": "2022-09-28",
+      "close": 0.97368,
+      "prob_acc": 0.0,
+      "prob_markup": 0.0,
+      "prob_reacc": 0.0,
+      "prob_dist": 0.0,
+      "prob_markdown": 100.0,
+      "prob_redist": 0.0,
+      "top_gap": 100.0,
+      "evidence_strength": 95.8,
+      "candidate_display_id": 5,
+      "formal_id": 5
+    },
+    {
+      "target_date": "2024-04-16",
+      "actual_bar_date": "2024-04-16",
+      "close": 1.06186,
+      "prob_acc": 0.0,
+      "prob_markup": 0.0,
+      "prob_reacc": 0.0,
+      "prob_dist": 14.0,
+      "prob_markdown": 86.0,
+      "prob_redist": 0.0,
+      "top_gap": 72.0,
+      "evidence_strength": 96.7,
+      "candidate_display_id": 5,
+      "formal_id": 5
+    },
+    {
+      "target_date": "2026-07-30",
+      "actual_bar_date": "2026-07-30",
+      "close": 1.1528,
+      "prob_acc": 99.5,
+      "prob_markup": 0.5,
+      "prob_reacc": 0.0,
+      "prob_dist": 0.0,
+      "prob_markdown": 0.0,
+      "prob_redist": 0.0,
+      "top_gap": 99.0,
+      "evidence_strength": 96.0,
+      "candidate_display_id": 1,
+      "formal_id": 5
+    }
+  ],
+  "parity_notes": [
+    "The revised checkpoint harness captured all six target dates successfully.",
+    "Target date and actual captured bar date are identical for all six checkpoints, so the prior 2020 missing row was a harness-capture issue rather than an absent OANDA daily bar.",
+    "The 2024-04-16 TradingView/OANDA reference remains Markdown-dominant (86.0) with Formal=5. Any disagreement with the Python public-feed diagnostic must therefore be investigated as feed sensitivity and/or mirror semantics, not as a target-date mismatch.",
+    "2026-07-30 is a useful state-machine checkpoint: Candidate=1 while Formal=5, testing confirmation/inertia rather than only score parity."
+  ],
+  "interpretation_boundary": "These are TradingView/OANDA reference outputs for Pine/Python parity only. They are not economic validation results."
+}

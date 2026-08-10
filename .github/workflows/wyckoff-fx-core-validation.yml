@@ -1,0 +1,142 @@
+name: Wyckoff FX Core Validation
+
+on:
+  push:
+    branches:
+      - research/issue-55-wyckoff-fx-core-validation
+    paths:
+      - "indicators/wyckoff-regime-radar/research/**"
+      - ".github/workflows/wyckoff-fx-core-validation.yml"
+  pull_request:
+    paths:
+      - "indicators/wyckoff-regime-radar/research/**"
+      - ".github/workflows/wyckoff-fx-core-validation.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  price-only-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/wyckoff-regime-radar/research/requirements.txt
+      - name: Compile research modules
+        run: |
+          python -m py_compile \
+            indicators/wyckoff-regime-radar/research/pine_math.py \
+            indicators/wyckoff-regime-radar/research/price_only_core.py \
+            indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py \
+            indicators/wyckoff-regime-radar/research/generate_2024_deep_diagnostic_pine.py \
+            indicators/wyckoff-regime-radar/research/compare_tradingview_parity.py \
+            indicators/wyckoff-regime-radar/research/freeze_static_fx_canonical_data.py \
+            indicators/wyckoff-regime-radar/research/evaluate_regime_paths_pre_final.py \
+            indicators/wyckoff-regime-radar/research/evaluate_regime_episodes_pre_final.py \
+            indicators/wyckoff-regime-radar/research/evaluate_state_separation_pre_final.py \
+            indicators/wyckoff-regime-radar/research/evaluate_confidence_calibration_pre_final.py \
+            indicators/wyckoff-regime-radar/research/evaluate_trading_utility_exploratory.py \
+            indicators/wyckoff-regime-radar/research/evaluate_final_oos.py \
+            indicators/wyckoff-regime-radar/research/test_price_only_core.py \
+            indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
+            indicators/wyckoff-regime-radar/research/test_generate_2024_deep_diagnostic_pine.py \
+            indicators/wyckoff-regime-radar/research/test_compare_tradingview_parity.py \
+            indicators/wyckoff-regime-radar/research/test_freeze_static_fx_canonical_data.py \
+            indicators/wyckoff-regime-radar/research/test_evaluate_regime_paths_pre_final.py \
+            indicators/wyckoff-regime-radar/research/test_evaluate_state_separation_pre_final.py \
+            indicators/wyckoff-regime-radar/research/test_evaluate_confidence_calibration_pre_final.py \
+            indicators/wyckoff-regime-radar/research/test_evaluate_trading_utility_exploratory.py \
+            indicators/wyckoff-regime-radar/research/test_evaluate_final_oos.py
+      - name: Run research tests
+        run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
+      - name: Freeze or verify canonical static FX inputs
+        run: |
+          MANIFEST=indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json
+          if [ -f "$MANIFEST" ]; then
+            python indicators/wyckoff-regime-radar/research/freeze_static_fx_canonical_data.py verify
+          else
+            python indicators/wyckoff-regime-radar/research/freeze_static_fx_canonical_data.py freeze
+          fi
+      - name: Evaluate development and exploratory OOS regime paths
+        run: |
+          mkdir -p indicators/wyckoff-regime-radar/research/reports
+          python indicators/wyckoff-regime-radar/research/evaluate_regime_paths_pre_final.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.md
+      - name: Evaluate formal-state occupancy and episodes
+        run: |
+          python indicators/wyckoff-regime-radar/research/evaluate_regime_episodes_pre_final.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.md
+      - name: Evaluate state separation and Development-to-OOS stability
+        run: |
+          python indicators/wyckoff-regime-radar/research/evaluate_state_separation_pre_final.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.md
+      - name: Evaluate Development-frozen confidence calibration on Exploratory OOS
+        run: |
+          python indicators/wyckoff-regime-radar/research/evaluate_confidence_calibration_pre_final.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.md
+      - name: Evaluate frozen response map against baselines on Exploratory OOS
+        run: |
+          python indicators/wyckoff-regime-radar/research/evaluate_trading_utility_exploratory.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-exploratory-trading-utility.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-exploratory-trading-utility.md
+      - name: Evaluate one-shot Final OOS under frozen rules
+        run: |
+          python indicators/wyckoff-regime-radar/research/evaluate_final_oos.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-final-oos.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-final-oos.md
+      - name: Generate TradingView parity harness
+        run: |
+          mkdir -p indicators/wyckoff-regime-radar/research/generated
+          python indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py \
+            --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine
+      - name: Verify generated parity harness is deterministic
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py \
+            --output /tmp/wyckoff-issue-55-price-only-parity.pine
+          cmp \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
+            /tmp/wyckoff-issue-55-price-only-parity.pine
+      - name: Generate focused 2024 TradingView diagnostic harness
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_2024_deep_diagnostic_pine.py \
+            --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
+          python indicators/wyckoff-regime-radar/research/generate_2024_deep_diagnostic_pine.py \
+            --output /tmp/wyckoff-issue-55-2024-deep-diagnostic.pine
+          cmp \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine \
+            /tmp/wyckoff-issue-55-2024-deep-diagnostic.pine
+      - name: Commit frozen inputs, research reports, Final OOS, and generated harnesses on branch push
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json \
+            indicators/wyckoff-regime-radar/research/data/frozen/issue-55-*-static-d1.csv \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-paths.md \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.md \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.md \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.md \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-exploratory-trading-utility.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-exploratory-trading-utility.md \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-final-oos.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-final-oos.md \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
+          if git diff --cached --quiet; then
+            echo "Frozen inputs, reports, and generated harnesses already current."
+          else
+            git commit -m "Record Issue #55 one-shot Final OOS result"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
