@@ -14,6 +14,7 @@ if str(HERE) not in sys.path:
 
 from freeze_fx_canonical_data import (  # noqa: E402
     chronological_splits,
+    repair_ohlc_envelope,
     serialize_ohlc,
     sha256_bytes,
     validate_ohlc,
@@ -59,6 +60,23 @@ class CanonicalFxFreezeTests(unittest.TestCase):
         frame.loc[3, "high"] = frame.loc[3, "low"] - 0.01
         with self.assertRaises(ValueError):
             validate_ohlc(frame)
+
+    def test_small_envelope_violation_is_minimally_repaired_and_recorded(self) -> None:
+        frame = self.make_frame(10)
+        original_close = float(frame.loc[3, "close"])
+        frame.loc[3, "high"] = original_close - 0.0001
+        repairs = repair_ohlc_envelope(frame)
+        self.assertEqual(len(repairs), 1)
+        self.assertEqual(repairs[0]["field"], "high")
+        self.assertAlmostEqual(float(frame.loc[3, "high"]), original_close)
+        self.assertAlmostEqual(float(frame.loc[3, "close"]), original_close)
+        validate_ohlc(frame)
+
+    def test_large_envelope_violation_fails_closed(self) -> None:
+        frame = self.make_frame(10)
+        frame.loc[3, "high"] = float(frame.loc[3, "close"]) - 0.01
+        with self.assertRaises(ValueError):
+            repair_ohlc_envelope(frame)
 
     def test_verify_fails_closed_if_frozen_csv_is_modified(self) -> None:
         frame = self.make_frame(10)
