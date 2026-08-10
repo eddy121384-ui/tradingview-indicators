@@ -1,0 +1,37 @@
+name: Wyckoff v0.6 Pine Parity
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - "indicators/wyckoff-regime-radar/research/extract_v06_pine_anchors.py"
+      - "indicators/wyckoff-regime-radar/research/reports/issue-57-v05-pine-anchor-map.md"
+      - ".github/workflows/wyckoff-v06-parity.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  pine-parity-prep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extract frozen Pine anchors
+        run: |
+          python indicators/wyckoff-regime-radar/research/extract_v06_pine_anchors.py \
+            --output indicators/wyckoff-regime-radar/research/reports/issue-57-v05-pine-anchor-map.md
+      - name: Commit anchor map on branch push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-v05-pine-anchor-map.md
+          if git diff --cached --quiet; then
+            echo "Anchor map already current."
+          else
+            git commit -m "Record Issue #57 frozen Pine anchor map"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
