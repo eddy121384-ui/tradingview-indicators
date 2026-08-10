@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "issue": 55,
+  "source": {
+    "platform": "TradingView",
+    "symbol": "OANDA:EURUSD",
+    "timeframe": "1D",
+    "capture_time_local": "2026-08-10T14:39:00+08:00",
+    "capture_method": "manual screenshot of Issue #55 2024 deep diagnostic table"
+  },
+  "target_date": "2024-04-16",
+  "actual_bar_date": "2024-04-16",
+  "close": 1.06186,
+  "values": {
+    "speed_rank": 15.6,
+    "accel_rank": 2.4,
+    "dist_rank": 10.6,
+    "heat_up": 11.0,
+    "panic_heat_dn": 89.0,
+    "maturity_up": 53.8,
+    "maturity_dn": 46.2,
+    "range_score": 53.4,
+    "upside_exhaustion": 82.0,
+    "resistance_holding": 86.6,
+    "dist_raw": 78.1,
+    "dist_gate_pct": 43.5,
+    "dist_eff": 34.0,
+    "prob_dist": 14.0,
+    "top_gap": 72.0,
+    "evidence_strength": 96.7,
+    "downside_exhaustion": 18.3,
+    "support_holding": 9.9,
+    "markdown_extension_score": 76.6,
+    "markdown_continuation_score": 92.3,
+    "markdown_raw": 84.4,
+    "markdown_gate_pct": 100.0,
+    "markdown_eff": 84.4,
+    "prob_markdown": 86.0
+  },
+  "derived_observation": {
+    "no_break_low_score_must_be_zero": true,
+    "reason": "Pine supportHolding contains a positive 0.35 or 0.45 weight on noBreakLowScore. If noBreakLowScore were 100, supportHolding could not be as low as the observed 9.9 because all other weighted terms are non-negative. Therefore the OANDA bar satisfies close <= previous 50-bar low."
+  },
+  "interpretation_boundary": "This fixture records TradingView/OANDA implementation diagnostics only. It is not economic validation and must not be used to tune model parameters."
+}
