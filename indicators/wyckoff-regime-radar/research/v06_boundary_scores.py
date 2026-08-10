@@ -92,6 +92,44 @@ def soft_below_range_score(
     return 100.0 - soft_no_break_low_score(close, previous_low, atr_values, width_atr)
 
 
+def soft_break_above_score(
+    close: np.ndarray | float,
+    previous_high: np.ndarray | float,
+    atr_values: np.ndarray | float,
+    width_atr: float = SOFT_BOUNDARY_WIDTH_ATR,
+) -> np.ndarray:
+    """One-sided continuous breakout evidence above a prior high.
+
+    Unlike ``soft_above_range_score``, this is event-like evidence: being at or
+    below the boundary contributes zero. Evidence then ramps linearly to 100 at
+    ``width_atr`` ATR above the boundary. This keeps the old notion that a
+    breakout requires clearing the level while removing the one-tick 0/1 cliff.
+    """
+
+    if width_atr <= 0.0:
+        raise ValueError("width_atr must be positive")
+    close_arr = np.asarray(close, dtype=float)
+    boundary = np.asarray(previous_high, dtype=float)
+    scale = _safe_scale(atr_values) * width_atr
+    return _clamp_score(100.0 * ((close_arr - boundary) / scale))
+
+
+def soft_break_below_score(
+    close: np.ndarray | float,
+    previous_low: np.ndarray | float,
+    atr_values: np.ndarray | float,
+    width_atr: float = SOFT_BOUNDARY_WIDTH_ATR,
+) -> np.ndarray:
+    """Mirror-symmetric one-sided breakdown evidence below a prior low."""
+
+    if width_atr <= 0.0:
+        raise ValueError("width_atr must be positive")
+    close_arr = np.asarray(close, dtype=float)
+    boundary = np.asarray(previous_low, dtype=float)
+    scale = _safe_scale(atr_values) * width_atr
+    return _clamp_score(100.0 * ((boundary - close_arr) / scale))
+
+
 def soft_hold_strength(values: np.ndarray, bars: int) -> np.ndarray:
     """Continuous N-bar persistence strength using the weakest bar in the run.
 
