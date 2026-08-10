@@ -1,22 +1,10 @@
 name: Wyckoff v0.6 Phase A Robustness
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - feat/issue-57-wyckoff-v0.6-robustness
-    paths:
-      - "indicators/wyckoff-regime-radar/research/v06_boundary_scores.py"
-      - "indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py"
-      - "indicators/wyckoff-regime-radar/research/diagnose_v06_boundary_sensitivity.py"
-      - "indicators/wyckoff-regime-radar/research/diagnose_v06_breakout20_sensitivity.py"
-      - "indicators/wyckoff-regime-radar/research/generate_issue57_phase_a_report.py"
-      - "indicators/wyckoff-regime-radar/research/test_v06_boundary_scores.py"
-      - "indicators/wyckoff-regime-radar/research/test_diagnose_v06_boundary_sensitivity.py"
-      - "indicators/wyckoff-regime-radar/research/test_diagnose_v06_breakout20_sensitivity.py"
-      - "indicators/wyckoff-regime-radar/research/test_generate_issue57_phase_a_report.py"
-      - "indicators/wyckoff-regime-radar/research/reports/issue-57-phase-a-boundary-robustness.*"
-      - ".github/workflows/wyckoff-v06-phase-a.yml"
-  pull_request:
     paths:
       - "indicators/wyckoff-regime-radar/research/v06_boundary_scores.py"
       - "indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py"
