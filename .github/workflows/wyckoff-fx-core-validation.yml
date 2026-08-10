@@ -37,13 +37,15 @@ jobs:
             indicators/wyckoff-regime-radar/research/evaluate_regime_paths_pre_final.py \
             indicators/wyckoff-regime-radar/research/evaluate_regime_episodes_pre_final.py \
             indicators/wyckoff-regime-radar/research/evaluate_state_separation_pre_final.py \
+            indicators/wyckoff-regime-radar/research/evaluate_confidence_calibration_pre_final.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
             indicators/wyckoff-regime-radar/research/test_generate_2024_deep_diagnostic_pine.py \
             indicators/wyckoff-regime-radar/research/test_compare_tradingview_parity.py \
             indicators/wyckoff-regime-radar/research/test_freeze_static_fx_canonical_data.py \
             indicators/wyckoff-regime-radar/research/test_evaluate_regime_paths_pre_final.py \
-            indicators/wyckoff-regime-radar/research/test_evaluate_state_separation_pre_final.py
+            indicators/wyckoff-regime-radar/research/test_evaluate_state_separation_pre_final.py \
+            indicators/wyckoff-regime-radar/research/test_evaluate_confidence_calibration_pre_final.py
       - name: Run research tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
       - name: Freeze or verify canonical static FX inputs
@@ -70,6 +72,11 @@ jobs:
           python indicators/wyckoff-regime-radar/research/evaluate_state_separation_pre_final.py \
             --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.json \
             --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.md
+      - name: Evaluate Development-frozen confidence calibration on Exploratory OOS
+        run: |
+          python indicators/wyckoff-regime-radar/research/evaluate_confidence_calibration_pre_final.py \
+            --json-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.json \
+            --md-output indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.md
       - name: Generate TradingView parity harness
         run: |
           mkdir -p indicators/wyckoff-regime-radar/research/generated
@@ -105,11 +112,13 @@ jobs:
             indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-regime-episodes.md \
             indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.json \
             indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-state-separation.md \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-55-pre-final-confidence-calibration.md \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-price-only-parity.pine \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-55-2024-deep-diagnostic.pine
           if git diff --cached --quiet; then
             echo "Frozen inputs, reports, and generated harnesses already current."
           else
-            git commit -m "Record Issue #55 pre-final state separation results"
+            git commit -m "Record Issue #55 pre-final confidence calibration"
             git push origin HEAD:${GITHUB_REF_NAME}
           fi
