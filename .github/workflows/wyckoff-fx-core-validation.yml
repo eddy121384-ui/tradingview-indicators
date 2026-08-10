@@ -30,6 +30,18 @@ jobs:
           python -m py_compile \
             indicators/wyckoff-regime-radar/research/pine_math.py \
             indicators/wyckoff-regime-radar/research/price_only_core.py \
-            indicators/wyckoff-regime-radar/research/test_price_only_core.py
+            indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py \
+            indicators/wyckoff-regime-radar/research/test_price_only_core.py \
+            indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py
       - name: Run price-only mirror tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
+      - name: Generate TradingView parity harness
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py \
+            --output build/wyckoff-issue-55-price-only-parity.pine
+      - name: Upload TradingView parity harness
+        uses: actions/upload-artifact@v4
+        with:
+          name: wyckoff-issue-55-price-only-parity
+          path: build/wyckoff-issue-55-price-only-parity.pine
+          retention-days: 7
