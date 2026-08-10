@@ -82,7 +82,7 @@
               "positive_return_rate": 0.48404255319148937,
               "mfe_mean": 0.006084967653514551,
               "mae_mean": -0.005840973669295979,
-              "realized_vol_mean": 0.05330501596439889,
+              "realized_vol_mean": 0.053305015964398884,
               "new_20bar_high_within_horizon_rate": 0.17553191489361702,
               "new_20bar_low_within_horizon_rate": 0.44148936170212766
             },
@@ -112,7 +112,7 @@
               "forward_return": 0.028582503220982863,
               "mfe": 0.04188814534696925,
               "mae": 0.061581149863072226,
-              "realized_vol": 0.03040656426847081
+              "realized_vol": 0.030406564268470864
             }
           },
           "directional_sanity": {
@@ -132,7 +132,7 @@
               "positive_return_rate": 0.3,
               "mfe_mean": 0.010433425731129037,
               "mae_mean": -0.015512147410101988,
-              "realized_vol_mean": 0.06195795410067286,
+              "realized_vol_mean": 0.061957954100672875,
               "new_20bar_high_within_horizon_rate": 0.4,
               "new_20bar_low_within_horizon_rate": 0.55
             },
@@ -214,7 +214,7 @@
               "forward_return": 0.014756584322039133,
               "mfe": 0.026841720023285883,
               "mae": 0.0882961859749202,
-              "realized_vol": 0.06739870162481981
+              "realized_vol": 0.06739870162481985
             }
           },
           "directional_sanity": {
@@ -388,7 +388,7 @@
               "positive_return_rate": 0.3227848101265823,
               "mfe_mean": 0.02159434799844084,
               "mae_mean": -0.02255385217751349,
-              "realized_vol_mean": 0.05701537283309091,
+              "realized_vol_mean": 0.057015372833090924,
               "new_20bar_high_within_horizon_rate": 0.4810126582278481,
               "new_20bar_low_within_horizon_rate": 0.8417721518987342
             },
@@ -418,7 +418,7 @@
               "forward_return": 0.06909042272998274,
               "mfe": 0.036393037427321424,
               "mae": 0.0558610072696481,
-              "realized_vol": 0.04137976539879823
+              "realized_vol": 0.041379765398797855
             }
           },
           "directional_sanity": {
@@ -1001,7 +1001,7 @@
               "positive_return_rate": 0.5769230769230769,
               "mfe_mean": 0.006598349194225233,
               "mae_mean": -0.005660341750628897,
-              "realized_vol_mean": 0.05079596479915215,
+              "realized_vol_mean": 0.050795964799152146,
               "new_20bar_high_within_horizon_rate": 0.3974358974358974,
               "new_20bar_low_within_horizon_rate": 0.13247863247863248
             },
@@ -1070,7 +1070,7 @@
               "forward_return": 0.0150631746408616,
               "mfe": 0.00968162728550687,
               "mae": 0.022396624211427484,
-              "realized_vol": 0.0021596654357113275
+              "realized_vol": 0.0021596654357113293
             }
           },
           "directional_sanity": {
@@ -1129,7 +1129,7 @@
               "positive_return_rate": 0.8214285714285714,
               "mfe_mean": 0.012004517473111074,
               "mae_mean": -0.00394428992087784,
-              "realized_vol_mean": 0.05052593139218212,
+              "realized_vol_mean": 0.05052593139218213,
               "new_20bar_high_within_horizon_rate": 0.6428571428571429,
               "new_20bar_low_within_horizon_rate": 0.14285714285714285
             },
@@ -1172,7 +1172,7 @@
               "forward_return": 0.03485828451376679,
               "mfe": 0.020595187994472963,
               "mae": 0.041658309009359,
-              "realized_vol": 0.0029489855311137497
+              "realized_vol": 0.0029489855311137427
             }
           },
           "directional_sanity": {
@@ -1376,7 +1376,7 @@
               "forward_return": 0.08148760921885882,
               "mfe": 0.022345871580232733,
               "mae": 0.24806973541370606,
-              "realized_vol": 0.0529747901280067
+              "realized_vol": 0.052974790128006696
             }
           },
           "directional_sanity": {
@@ -2232,7 +2232,7 @@
               "forward_return": 0.01990267617124705,
               "mfe": 0.038107974133525964,
               "mae": 0.06878966651858488,
-              "realized_vol": 0.08607654976226999
+              "realized_vol": 0.08607654976227001
             }
           },
           "directional_sanity": {
@@ -2334,7 +2334,7 @@
               "forward_return": 0.11014717955560957,
               "mfe": 0.10735449078706444,
               "mae": 0.01657552470289743,
-              "realized_vol": 0.09208835833750195
+              "realized_vol": 0.09208835833750197
             }
           },
           "directional_sanity": {
@@ -2943,7 +2943,7 @@
               "positive_return_rate": 0.6956521739130435,
               "mfe_mean": 0.012205132526755895,
               "mae_mean": -0.009225569911038303,
-              "realized_vol_mean": 0.08698364964272169,
+              "realized_vol_mean": 0.08698364964272172,
               "new_20bar_high_within_horizon_rate": 0.17391304347826086,
               "new_20bar_low_within_horizon_rate": 0.2826086956521739
             },
@@ -2986,7 +2986,7 @@
               "forward_return": 0.01213513899755092,
               "mfe": 0.025220440195896084,
               "mae": 0.004769125202935992,
-              "realized_vol": 0.05079285325251603
+              "realized_vol": 0.05079285325251601
             }
           },
           "directional_sanity": {
@@ -3292,7 +3292,7 @@
               "forward_return": 0.12062698734504435,
               "mfe": 0.1574932823235626,
               "mae": 0.08129331639964231,
-              "realized_vol": 0.2712214553893609
+              "realized_vol": 0.2712214553893608
             }
           },
           "directional_sanity": {
