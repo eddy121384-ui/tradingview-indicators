@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Derive the Issue #57 Phase-B persistence experiment from Phase A.
+"""Derive the Issue #57 Phase-B persistence core from Phase A.
 
 Phase B does not shorten strong-candidate confirmation and does not promote weak
-candidates. It adds a symmetric decay-to-neutral rule: if an existing Formal
+candidates. It adds a conservative decay-to-neutral rule: if an existing Formal
 state receives sustained chaos, a weak opposing challenger, or coexistence
-pressure for the already-frozen ``confirm_bars`` horizon, the stale Formal state
-is cleared to 0. A replacement state still requires the original strong-candidate
-confirmation path.
+pressure for ``2 * confirm_bars`` (6 bars under the frozen defaults), the stale
+Formal state is cleared to 0. A replacement state still requires the original
+strong-candidate confirmation path.
+
+The 2x horizon was selected from the preregistered 1x/2x/3x engineering sweep on
+burned history using stale-carry reduction versus Neutral/switch churn only. No
+PnL was consulted.
 """
 
 from __future__ import annotations
@@ -20,6 +24,7 @@ from generate_v06_price_only_core import render_v06_source
 
 
 HERE = Path(__file__).resolve().parent
+STALE_DECAY_MULTIPLIER = 2
 
 OLD_INERTIA_BLOCK = '''    # Regime inertia: imperative loop mirrors Pine var state exactly.
     formal_id = np.zeros(n, dtype=int)
@@ -54,9 +59,9 @@ OLD_INERTIA_BLOCK = '''    # Regime inertia: imperative loop mirrors Pine var st
         candidate_id[i] = candidate
         candidate_bars_series[i] = candidate_bars'''
 
-NEW_INERTIA_BLOCK = '''    # Phase B persistence experiment: preserve strong-candidate confirmation,
-    # but let an unsupported old Formal state decay to neutral after the same
-    # confirm_bars horizon. Weak challengers are never promoted directly.
+NEW_INERTIA_BLOCK = '''    # Phase B persistence redesign: preserve strong-candidate confirmation,
+    # but let an unsupported old Formal state decay to neutral after 2x the
+    # existing confirm_bars horizon. Weak challengers are never promoted directly.
     formal_id = np.zeros(n, dtype=int)
     candidate_id = np.zeros(n, dtype=int)
     candidate_bars_series = np.zeros(n, dtype=int)
@@ -67,6 +72,7 @@ NEW_INERTIA_BLOCK = '''    # Phase B persistence experiment: preserve strong-can
     candidate = 0
     candidate_bars = 0
     stale_pressure_bars = 0
+    stale_limit = cfg.confirm_bars * 2
     for i in range(n):
         if strong_candidate[i]:
             stale_pressure_bars = 0
@@ -96,7 +102,7 @@ NEW_INERTIA_BLOCK = '''    # Phase B persistence experiment: preserve strong-can
 
             if stale_reason != 0:
                 stale_pressure_bars += 1
-                if stale_pressure_bars >= cfg.confirm_bars:
+                if stale_pressure_bars >= stale_limit:
                     confirmed = 0
             else:
                 stale_pressure_bars = 0
@@ -132,9 +138,9 @@ def render_phase_b_source() -> str:
     source = source.replace(OLD_INERTIA_BLOCK, NEW_INERTIA_BLOCK, 1)
     source = source.replace(OLD_DIAGNOSTIC_TAIL, NEW_DIAGNOSTIC_TAIL, 1)
     return (
-        "# PHASE B PERSISTENCE EXPERIMENT — Issue #57\n"
+        "# PHASE B PERSISTENCE REDESIGN — Issue #57\n"
         "# Parent: mechanically generated v0.6 Phase-A core.\n"
-        "# Change: sustained unsupported Formal states decay to neutral; weak challengers are not promoted.\n\n"
+        "# Frozen rule: unsupported Formal states decay to neutral after 2x confirmBars; weak challengers are not promoted.\n\n"
         + source
     )
 
