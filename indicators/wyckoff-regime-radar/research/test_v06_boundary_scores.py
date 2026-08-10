@@ -9,12 +9,16 @@ import pandas as pd
 
 from generate_v06_price_only_core import (
     EXPECTED_BASELINE_GIT_BLOB_SHA,
+    NEW_BREAKOUT_SCORE,
     NEW_HIGH,
     NEW_LOW,
     NEW_RANGE_CONT,
+    NEW_RECENT_BREAK,
+    OLD_BREAKOUT_SCORE,
     OLD_HIGH,
     OLD_LOW,
     OLD_RANGE_CONT,
+    OLD_RECENT_BREAK,
     BASELINE,
     git_blob_sha,
     load_v06_namespace,
@@ -24,6 +28,8 @@ from v06_boundary_scores import (
     SOFT_BOUNDARY_WIDTH_ATR,
     soft_above_range_score,
     soft_below_range_score,
+    soft_break_above_score,
+    soft_break_below_score,
     soft_hold_strength,
     soft_no_break_high_score,
     soft_no_break_low_score,
@@ -31,11 +37,13 @@ from v06_boundary_scores import (
 
 
 class V06BoundaryPrimitiveTests(unittest.TestCase):
-    def test_boundary_equality_maps_to_midpoint(self) -> None:
+    def test_boundary_equality_maps_to_midpoint_or_zero_by_semantics(self) -> None:
         self.assertAlmostEqual(float(soft_no_break_low_score(1.0, 1.0, 0.02)), 50.0)
         self.assertAlmostEqual(float(soft_no_break_high_score(1.0, 1.0, 0.02)), 50.0)
         self.assertAlmostEqual(float(soft_above_range_score(1.0, 1.0, 0.02)), 50.0)
         self.assertAlmostEqual(float(soft_below_range_score(1.0, 1.0, 0.02)), 50.0)
+        self.assertAlmostEqual(float(soft_break_above_score(1.0, 1.0, 0.02)), 0.0)
+        self.assertAlmostEqual(float(soft_break_below_score(1.0, 1.0, 0.02)), 0.0)
 
     def test_transition_band_saturates_symmetrically(self) -> None:
         atr_value = 0.02
@@ -46,6 +54,8 @@ class V06BoundaryPrimitiveTests(unittest.TestCase):
         self.assertAlmostEqual(float(soft_no_break_high_score(1.0 - width, 1.0, atr_value)), 100.0)
         self.assertAlmostEqual(float(soft_above_range_score(1.0 + width, 1.0, atr_value)), 100.0)
         self.assertAlmostEqual(float(soft_below_range_score(1.0 - width, 1.0, atr_value)), 100.0)
+        self.assertAlmostEqual(float(soft_break_above_score(1.0 + width, 1.0, atr_value)), 100.0)
+        self.assertAlmostEqual(float(soft_break_below_score(1.0 - width, 1.0, atr_value)), 100.0)
 
     def test_low_and_high_are_mirror_symmetric(self) -> None:
         atr_value = 0.02
@@ -54,20 +64,27 @@ class V06BoundaryPrimitiveTests(unittest.TestCase):
         high_scores = soft_no_break_high_score(1.0 - offsets, 1.0, atr_value)
         above_scores = soft_above_range_score(1.0 + offsets, 1.0, atr_value)
         below_scores = soft_below_range_score(1.0 - offsets, 1.0, atr_value)
+        break_up = soft_break_above_score(1.0 + offsets, 1.0, atr_value)
+        break_dn = soft_break_below_score(1.0 - offsets, 1.0, atr_value)
         np.testing.assert_allclose(low_scores, high_scores, atol=1e-10)
         np.testing.assert_allclose(above_scores, below_scores, atol=1e-10)
+        np.testing.assert_allclose(break_up, break_dn, atol=1e-10)
 
-    def test_sub_pip_crossing_is_continuous_instead_of_100_point_jump(self) -> None:
+    def test_sub_pip_crossing_is_continuous_instead_of_binary_jump(self) -> None:
         boundary = 1.06236
         atr_value = 0.008
         epsilon = 0.000001  # 0.01 pip for EURUSD-style quoting.
-        below = float(soft_no_break_low_score(boundary - epsilon, boundary, atr_value))
-        above = float(soft_no_break_low_score(boundary + epsilon, boundary, atr_value))
-        breakout_below = float(soft_above_range_score(boundary - epsilon, boundary, atr_value))
-        breakout_above = float(soft_above_range_score(boundary + epsilon, boundary, atr_value))
-        self.assertLess(abs(above - below), 0.1)
-        self.assertLess(abs(breakout_above - breakout_below), 0.1)
-        self.assertEqual(100.0, abs(100.0 - 0.0))  # frozen v0.5 binary jump reference
+        no_break_below = float(soft_no_break_low_score(boundary - epsilon, boundary, atr_value))
+        no_break_above = float(soft_no_break_low_score(boundary + epsilon, boundary, atr_value))
+        structural_below = float(soft_above_range_score(boundary - epsilon, boundary, atr_value))
+        structural_above = float(soft_above_range_score(boundary + epsilon, boundary, atr_value))
+        event_below = float(soft_break_above_score(boundary - epsilon, boundary, atr_value))
+        event_above = float(soft_break_above_score(boundary + epsilon, boundary, atr_value))
+        self.assertLess(abs(no_break_above - no_break_below), 0.1)
+        self.assertLess(abs(structural_above - structural_below), 0.1)
+        self.assertLess(abs(event_above - event_below), 0.1)
+        self.assertEqual(event_below, 0.0)
+        self.assertGreater(event_above, 0.0)
 
     def test_soft_hold_uses_weakest_bar_in_window(self) -> None:
         values = np.array([20.0, 80.0, 60.0, 95.0])
@@ -83,6 +100,8 @@ class V06BoundaryPrimitiveTests(unittest.TestCase):
     def test_invalid_width_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             soft_no_break_low_score(1.0, 1.0, 0.02, width_atr=0.0)
+        with self.assertRaises(ValueError):
+            soft_break_above_score(1.0, 1.0, 0.02, width_atr=0.0)
 
 
 class V06MechanicalGeneratorTests(unittest.TestCase):
@@ -91,16 +110,16 @@ class V06MechanicalGeneratorTests(unittest.TestCase):
 
     def test_generator_replaces_only_the_named_boundary_blocks(self) -> None:
         source = render_v06_source()
-        self.assertNotIn(OLD_LOW, source)
-        self.assertNotIn(OLD_HIGH, source)
-        self.assertNotIn(OLD_RANGE_CONT, source)
-        self.assertEqual(source.count(NEW_LOW), 1)
-        self.assertEqual(source.count(NEW_HIGH), 1)
-        self.assertEqual(source.count(NEW_RANGE_CONT), 1)
+        for old in (OLD_LOW, OLD_HIGH, OLD_RECENT_BREAK, OLD_BREAKOUT_SCORE, OLD_RANGE_CONT):
+            self.assertNotIn(old, source)
+        for new in (NEW_LOW, NEW_HIGH, NEW_RECENT_BREAK, NEW_BREAKOUT_SCORE, NEW_RANGE_CONT):
+            self.assertEqual(source.count(new), 1)
         self.assertIn('"no_break_low_score": no_break_low_score', source)
         self.assertIn('"no_break_high_score": no_break_high_score', source)
         self.assertIn('"above_prev_range_score": above_prev_range_score', source)
         self.assertIn('"sustained_above_score": sustained_above_score', source)
+        self.assertIn('"range_break_up_strength": range_break_up_strength', source)
+        self.assertIn('"recent_range_break_up_strength": recent_range_break_up_strength', source)
 
     def test_generated_core_executes_without_touching_v05_module(self) -> None:
         namespace = load_v06_namespace()
@@ -122,6 +141,10 @@ class V06MechanicalGeneratorTests(unittest.TestCase):
             "below_prev_range_score",
             "sustained_above_score",
             "sustained_below_score",
+            "range_break_up_strength",
+            "range_break_dn_strength",
+            "recent_range_break_up_strength",
+            "recent_range_break_dn_strength",
         ):
             self.assertIn(column, result.columns)
             finite = result[column].dropna()
