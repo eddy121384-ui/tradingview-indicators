@@ -55,12 +55,18 @@ class GenerateParityPineTests(unittest.TestCase):
         self.assertIn("Issue #55 screenshot parity checkpoints", self.generated)
         self.assertIn('array.from("2019-08-01", "2020-03-20", "2021-06-01", "2022-09-28", "2024-04-16", "2026-07-30")', self.generated)
 
+    def test_checkpoint_capture_is_robust_to_fx_session_cutover(self) -> None:
+        self.assertIn("time_close >= targetTs", self.generated)
+        self.assertIn("cpCaptured", self.generated)
+        self.assertIn('str.format_time(time_close, "yyyy-MM-dd", syminfo.timezone)', self.generated)
+        self.assertNotIn("year == array.get(cpYear", self.generated)
+
     def test_plot_budget_is_exactly_ten(self) -> None:
         self.assertEqual(self.generated.count("plot("), 10)
         self.assertEqual(self.generated.count("Issue #55 Price-only parity export"), 1)
 
     def test_checkpoint_table_contains_all_research_fields(self) -> None:
-        headers = ["Close", "Acc", "Mk", "ReAcc", "Dist", "Md", "ReDist", "Gap", "Evid", "Cand", "Formal"]
+        headers = ["Target", "Bar", "Close", "Acc", "Mk", "ReAcc", "Dist", "Md", "ReDist", "Gap", "Evid", "Cand", "Formal"]
         for header in headers:
             with self.subTest(header=header):
                 self.assertIn(f'"{header}"', self.generated)
