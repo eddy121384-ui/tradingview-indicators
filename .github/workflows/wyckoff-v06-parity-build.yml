@@ -1,0 +1,59 @@
+name: Wyckoff v0.6 Pine Parity Build
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_generate_v06_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine"
+      - ".github/workflows/wyckoff-v06-parity-build.yml"
+  pull_request:
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_generate_v06_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine"
+      - ".github/workflows/wyckoff-v06-parity-build.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-v06-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile generator and tests
+        run: |
+          python -m py_compile \
+            indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py \
+            indicators/wyckoff-regime-radar/research/test_generate_v06_parity_pine.py
+      - name: Run v0.6 Pine generator tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m unittest -v test_generate_v06_parity_pine
+      - name: Generate deterministic v0.6 Pine harness
+        run: |
+          mkdir -p indicators/wyckoff-regime-radar/research/generated
+          python indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py \
+            --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine
+          python indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py \
+            --output /tmp/wyckoff-issue-57-v06-parity.pine
+          cmp \
+            indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine \
+            /tmp/wyckoff-issue-57-v06-parity.pine
+      - name: Commit generated harness on branch push
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine
+          if git diff --cached --quiet; then
+            echo "Issue #57 v0.6 Pine parity harness already current."
+          else
+            git commit -m "Generate Issue #57 v0.6 Pine parity harness"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
