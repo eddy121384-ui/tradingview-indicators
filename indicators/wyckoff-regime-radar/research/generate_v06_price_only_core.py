@@ -31,6 +31,30 @@ DIAGNOSTIC_ANCHOR = '        "range_score": range_score,\n'
 DIAGNOSTIC_INSERT = (
     '        "no_break_low_score": no_break_low_score,\n'
     '        "no_break_high_score": no_break_high_score,\n'
+    '        "prev_range_high": prev_range_high,\n'
+    '        "prev_range_low": prev_range_low,\n'
+    '        "above_prev_range": above_prev_range.astype(float),\n'
+    '        "below_prev_range": below_prev_range.astype(float),\n'
+    '        "range_break_up": range_break_up.astype(float),\n'
+    '        "range_break_dn": range_break_dn.astype(float),\n'
+    '        "recent_break_up": recent_break_up.astype(float),\n'
+    '        "recent_break_dn": recent_break_dn.astype(float),\n'
+    '        "range_cont_up": range_cont_up,\n'
+    '        "range_cont_dn": range_cont_dn,\n'
+    '        "breakout_score": breakout_score,\n'
+    '        "explicit_breakdown_score": explicit_breakdown_score,\n'
+    '        "breakout_gate": breakout_gate,\n'
+    '        "explicit_breakdown_gate": explicit_breakdown_gate,\n'
+    '        "range_cont_up_gate": range_cont_up_gate,\n'
+    '        "range_cont_dn_gate": range_cont_dn_gate,\n'
+    '        "markup_continuation_score": markup_continuation_score,\n'
+    '        "markdown_continuation_score": markdown_continuation_score,\n'
+    '        "breakout_markup_gate": breakout_markup_gate,\n'
+    '        "breakdown_markdown_gate": breakdown_markdown_gate,\n'
+    '        "markup_cont_gate": markup_cont_gate,\n'
+    '        "markdown_cont_gate": markdown_cont_gate,\n'
+    '        "markup_gate": markup_gate,\n'
+    '        "markdown_gate": markdown_gate,\n'
 )
 
 
@@ -68,6 +92,7 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
         "# Mechanical delta from frozen v0.5.2.1 research mirror:\n"
         "#   1) noBreakLowScore: binary 0/100 -> continuous ATR-scaled score\n"
         "#   2) noBreakHighScore: binary 0/100 -> continuous ATR-scaled score\n"
+        "# Additional emitted columns are diagnostics only; they do not change calculations.\n"
         "# No state-count, persistence, witness, or trading-rule changes.\n\n"
     )
     return banner + source
