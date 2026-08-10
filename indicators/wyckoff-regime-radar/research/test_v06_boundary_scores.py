@@ -9,11 +9,13 @@ import pandas as pd
 
 from generate_v06_price_only_core import (
     EXPECTED_BASELINE_GIT_BLOB_SHA,
+    NEW_BOUNDARY_GATES,
     NEW_BREAKOUT_SCORE,
     NEW_HIGH,
     NEW_LOW,
     NEW_RANGE_CONT,
     NEW_RECENT_BREAK,
+    OLD_BOUNDARY_GATES,
     OLD_BREAKOUT_SCORE,
     OLD_HIGH,
     OLD_LOW,
@@ -110,9 +112,23 @@ class V06MechanicalGeneratorTests(unittest.TestCase):
 
     def test_generator_replaces_only_the_named_boundary_blocks(self) -> None:
         source = render_v06_source()
-        for old in (OLD_LOW, OLD_HIGH, OLD_RECENT_BREAK, OLD_BREAKOUT_SCORE, OLD_RANGE_CONT):
+        for old in (
+            OLD_LOW,
+            OLD_HIGH,
+            OLD_RECENT_BREAK,
+            OLD_BREAKOUT_SCORE,
+            OLD_RANGE_CONT,
+            OLD_BOUNDARY_GATES,
+        ):
             self.assertNotIn(old, source)
-        for new in (NEW_LOW, NEW_HIGH, NEW_RECENT_BREAK, NEW_BREAKOUT_SCORE, NEW_RANGE_CONT):
+        for new in (
+            NEW_LOW,
+            NEW_HIGH,
+            NEW_RECENT_BREAK,
+            NEW_BREAKOUT_SCORE,
+            NEW_RANGE_CONT,
+            NEW_BOUNDARY_GATES,
+        ):
             self.assertEqual(source.count(new), 1)
         self.assertIn('"no_break_low_score": no_break_low_score', source)
         self.assertIn('"no_break_high_score": no_break_high_score', source)
@@ -120,6 +136,8 @@ class V06MechanicalGeneratorTests(unittest.TestCase):
         self.assertIn('"sustained_above_score": sustained_above_score', source)
         self.assertIn('"range_break_up_strength": range_break_up_strength', source)
         self.assertIn('"recent_range_break_up_strength": recent_range_break_up_strength', source)
+        self.assertIn('"breakout_recent_range_gate": breakout_recent_range_gate', source)
+        self.assertIn('"explicit_recent_breakdown_gate": explicit_recent_breakdown_gate', source)
 
     def test_generated_core_executes_without_touching_v05_module(self) -> None:
         namespace = load_v06_namespace()
@@ -150,6 +168,20 @@ class V06MechanicalGeneratorTests(unittest.TestCase):
             finite = result[column].dropna()
             self.assertGreater(len(finite), 0)
             self.assertTrue(((finite >= 0.0) & (finite <= 100.0)).all())
+
+        for column in (
+            "breakout_recent_range_gate",
+            "breakout_ma_gate",
+            "breakout_recent_gate",
+            "explicit_recent_breakdown_gate",
+            "explicit_breakdown_ma_gate",
+            "breakout_gate",
+            "explicit_breakdown_gate",
+        ):
+            self.assertIn(column, result.columns)
+            finite = result[column].dropna()
+            self.assertGreater(len(finite), 0)
+            self.assertTrue(((finite >= 0.0) & (finite <= 1.0)).all())
 
 
 if __name__ == "__main__":
