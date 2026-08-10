@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "issue": 55,
+  "freeze_decision_date": "2026-08-10",
+  "canonical_fixture": "ejtraderLabs/historical-data static D1 CSV snapshot",
+  "provider_claim_boundary": "The upstream repository does not establish an authoritative dealer/broker provenance in its README. This dataset is used because its exact files can be pinned and reproduced. Provider/feed robustness is evaluated separately and no conclusion should rely on this fixture being a universal FX close.",
+  "normalization": {
+    "columns": [
+      "date",
+      "open",
+      "high",
+      "low",
+      "close"
+    ],
+    "price_scaling": "divide stored integer-like prices by 100000 except USDJPY by 1000",
+    "sort_ascending": true,
+    "deduplicate_date_keep": "last",
+    "csv_float_format": "%.6f",
+    "ohlc_repair": "none; any envelope violation fails closed"
+  },
+  "split_rule": "per-pair chronological 60% development / 20% exploratory OOS / 20% final OOS; floor boundaries by row count",
+  "final_oos_status": "SEALED_DO_NOT_EVALUATE",
+  "pairs": {
+    "EURUSD": {
+      "source_repository": "ejtraderLabs/historical-data",
+      "source_ref_at_freeze": "main",
+      "source_path": "EURUSD/EURUSDd1.csv",
+      "source_url": "https://raw.githubusercontent.com/ejtraderLabs/historical-data/main/EURUSD/EURUSDd1.csv",
+      "source_git_blob_sha": "790cd874846de3ec9d88c088ac02458d707ec09d",
+      "source_raw_sha256": "0a59b41a5e08472aa95aae35c2e06750adefe84f8d2775d88562e302aedeebf2",
+      "source_price_scale_divisor": 100000.0,
+      "frozen_file": "frozen/issue-55-eurusd-static-d1.csv",
+      "frozen_sha256": "990f805bc5856b4256d33375efa69a76b0f619021094548e75bd6edfa7721089",
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "splits": {
+        "development": {
+          "start_index": 0,
+          "end_index": 1439,
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440
+        },
+        "exploratory_oos": {
+          "start_index": 1440,
+          "end_index": 1919,
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480
+        },
+        "final_oos": {
+          "start_index": 1920,
+          "end_index": 2399,
+          "start_date": "2020-04-30",
+          "end_date": "2022-03-04",
+          "rows": 480
+        }
+      }
+    },
+    "USDJPY": {
+      "source_repository": "ejtraderLabs/historical-data",
+      "source_ref_at_freeze": "main",
+      "source_path": "USDJPY/USDJPYd1.csv",
+      "source_url": "https://raw.githubusercontent.com/ejtraderLabs/historical-data/main/USDJPY/USDJPYd1.csv",
+      "source_git_blob_sha": "825510ca2ec567b3f78817197b86477e55f614b6",
+      "source_raw_sha256": "3e9faca2f5f63d23e25dbe0b0e4e0e9c7ba2a457081f1d99ba46411bcbf6cefe",
+      "source_price_scale_divisor": 1000.0,
+      "frozen_file": "frozen/issue-55-usdjpy-static-d1.csv",
+      "frozen_sha256": "4bb03153cd94814bff9759ac43fddc9e71c7c0d59c5f837219c42e860cabc71c",
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "splits": {
+        "development": {
+          "start_index": 0,
+          "end_index": 1439,
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440
+        },
+        "exploratory_oos": {
+          "start_index": 1440,
+          "end_index": 1919,
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480
+        },
+        "final_oos": {
+          "start_index": 1920,
+          "end_index": 2399,
+          "start_date": "2020-04-30",
+          "end_date": "2022-03-04",
+          "rows": 480
+        }
+      }
+    },
+    "GBPUSD": {
+      "source_repository": "ejtraderLabs/historical-data",
+      "source_ref_at_freeze": "main",
+      "source_path": "GBPUSD/GBPUSDd1.csv",
+      "source_url": "https://raw.githubusercontent.com/ejtraderLabs/historical-data/main/GBPUSD/GBPUSDd1.csv",
+      "source_git_blob_sha": "47bcf0dbea4a7fda74757069f02edc595a30f923",
+      "source_raw_sha256": "4262953cabb6246fd3d2526ba020601fb24e6d8b3aae6e918ed2583bebbcbca4",
+      "source_price_scale_divisor": 100000.0,
+      "frozen_file": "frozen/issue-55-gbpusd-static-d1.csv",
+      "frozen_sha256": "229b9c748c26226495432bc56e802ba8b17563a623775bdbc05627bfc49665c9",
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "splits": {
+        "development": {
+          "start_index": 0,
+          "end_index": 1439,
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440
+        },
+        "exploratory_oos": {
+          "start_index": 1440,
+          "end_index": 1919,
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480
+        },
+        "final_oos": {
+          "start_index": 1920,
+          "end_index": 2399,
+          "start_date": "2020-04-30",
+          "end_date": "2022-03-04",
+          "rows": 480
+        }
+      }
+    },
+    "AUDUSD": {
+      "source_repository": "ejtraderLabs/historical-data",
+      "source_ref_at_freeze": "main",
+      "source_path": "AUDUSD/AUDUSDd1.csv",
+      "source_url": "https://raw.githubusercontent.com/ejtraderLabs/historical-data/main/AUDUSD/AUDUSDd1.csv",
+      "source_git_blob_sha": "9f6571efa2f9508e7c36005d9df2ce254dc4a504",
+      "source_raw_sha256": "c769b8a5aba55565b1a0059bb8bc4db4f0570a35af4e03eb8da3d9f2ae161c1d",
+      "source_price_scale_divisor": 100000.0,
+      "frozen_file": "frozen/issue-55-audusd-static-d1.csv",
+      "frozen_sha256": "e66d77f181107fd3538e4adfa97e8470c3345e3d6e2a68fd4217fec101ac258b",
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "splits": {
+        "development": {
+          "start_index": 0,
+          "end_index": 1439,
+          "start_date": "2012-12-04",
+          "end_date": "2018-06-21",
+          "rows": 1440
+        },
+        "exploratory_oos": {
+          "start_index": 1440,
+          "end_index": 1919,
+          "start_date": "2018-06-22",
+          "end_date": "2020-04-29",
+          "rows": 480
+        },
+        "final_oos": {
+          "start_index": 1920,
+          "end_index": 2399,
+          "start_date": "2020-04-30",
+          "end_date": "2022-03-04",
+          "rows": 480
+        }
+      }
+    }
+  },
+  "research_boundary": "The committed frozen CSV files are the exact primary Issue #55 evaluation inputs. Do not refresh or replace them after the experiment starts. This freeze computes no Wyckoff outcome and opens no final-OOS statistic."
+}
