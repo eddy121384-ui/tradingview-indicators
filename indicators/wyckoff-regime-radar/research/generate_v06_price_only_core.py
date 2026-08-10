@@ -109,6 +109,20 @@ NEW_RANGE_CONT = '''    above_prev_range_score = soft_above_range_score(close, p
         ),
     )'''
 
+OLD_BOUNDARY_GATES = '''    breakout_gate = np.where(breakout_mode_up, 1.0, np.where(recent_break_up, 0.85, gate(breakout_score, 30.0, 70.0)))
+    explicit_breakdown_gate = np.where(breakdown_mode_dn, 1.0, np.where(recent_range_break_dn, 0.90, gate(explicit_breakdown_score, 50.0, 85.0)))'''
+NEW_BOUNDARY_GATES = '''    breakout_recent_range_gate = np.nan_to_num(recent_range_break_up_strength, nan=0.0) / 100.0 * 0.85
+    breakout_ma_gate = np.where(recent_ma_cross_up, 0.85, gate(breakout_ma_evidence, 30.0, 70.0))
+    breakout_recent_gate = np.maximum(breakout_recent_range_gate, breakout_ma_gate)
+    breakout_gate = np.where(breakout_mode_up, 1.0, breakout_recent_gate)
+    explicit_recent_breakdown_gate = np.nan_to_num(recent_range_break_dn_strength, nan=0.0) / 100.0 * 0.90
+    explicit_breakdown_ma_gate = gate(breakdown_ma_evidence, 50.0, 85.0)
+    explicit_breakdown_gate = np.where(
+        breakdown_mode_dn,
+        1.0,
+        np.maximum(explicit_recent_breakdown_gate, explicit_breakdown_ma_gate),
+    )'''
+
 DIAGNOSTIC_ANCHOR = '        "range_score": range_score,\n'
 DIAGNOSTIC_INSERT = (
     '        "no_break_low_score": no_break_low_score,\n'
@@ -142,6 +156,11 @@ DIAGNOSTIC_INSERT = (
     '        "range_cont_dn": range_cont_dn,\n'
     '        "breakout_score": breakout_score,\n'
     '        "explicit_breakdown_score": explicit_breakdown_score,\n'
+    '        "breakout_recent_range_gate": breakout_recent_range_gate,\n'
+    '        "breakout_ma_gate": breakout_ma_gate,\n'
+    '        "breakout_recent_gate": breakout_recent_gate,\n'
+    '        "explicit_recent_breakdown_gate": explicit_recent_breakdown_gate,\n'
+    '        "explicit_breakdown_ma_gate": explicit_breakdown_ma_gate,\n'
     '        "breakout_gate": breakout_gate,\n'
     '        "explicit_breakdown_gate": explicit_breakdown_gate,\n'
     '        "range_cont_up_gate": range_cont_up_gate,\n'
@@ -179,6 +198,7 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
         (OLD_RECENT_BREAK, "recent breakout block"),
         (OLD_BREAKOUT_SCORE, "breakout score block"),
         (OLD_RANGE_CONT, "range continuation hard-threshold block"),
+        (OLD_BOUNDARY_GATES, "breakout/breakdown hard gate block"),
         (DIAGNOSTIC_ANCHOR, "diagnostic anchor"),
     ):
         if source.count(needle) != 1:
@@ -190,6 +210,7 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
     source = source.replace(OLD_RECENT_BREAK, NEW_RECENT_BREAK, 1)
     source = source.replace(OLD_BREAKOUT_SCORE, NEW_BREAKOUT_SCORE, 1)
     source = source.replace(OLD_RANGE_CONT, NEW_RANGE_CONT, 1)
+    source = source.replace(OLD_BOUNDARY_GATES, NEW_BOUNDARY_GATES, 1)
     source = source.replace(DIAGNOSTIC_ANCHOR, DIAGNOSTIC_ANCHOR + DIAGNOSTIC_INSERT, 1)
 
     banner = (
@@ -198,6 +219,7 @@ def render_v06_source(baseline_path: Path = BASELINE) -> str:
         "#   1) noBreakLowScore/noBreakHighScore: binary cliffs -> continuous ATR-scaled scores\n"
         "#   2) 50-bar prior-range continuation: boolean 65/80/100 cliff -> continuous hold strength\n"
         "#   3) 20-bar range-break evidence: one-tick event -> one-sided ATR-scaled strength\n"
+        "#   4) range-break downstream gates: boolean 0.85/0.90 jumps -> strength-scaled gates\n"
         "# MA-cross evidence remains frozen; state count/persistence/witnesses/trading rules are unchanged.\n"
         "# Additional emitted columns are diagnostics only; they do not change calculations.\n\n"
     )
