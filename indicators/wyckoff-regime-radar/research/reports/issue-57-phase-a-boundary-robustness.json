@@ -1,0 +1,163 @@
+{
+  "boundary_50bar": {
+    "median_dist_markdown_reduction_pct": 99.99781289543574,
+    "median_probability_l1_reduction_pct": 99.97868984639312,
+    "summary": {
+      "case_count": 8,
+      "median_v05_dist_markdown_jump": 9.849172413349162,
+      "median_v05_probability_l1_jump": 26.09232802761072,
+      "median_v06_dist_markdown_jump": 0.00021541169939321824,
+      "median_v06_probability_l1_jump": 0.005560315182296091,
+      "median_v06_soft_primitive_jump": 0.03622193003170793,
+      "v05_hard_primitive_jump": 100.0,
+      "v06_probability_jump_equal_cases": 0,
+      "v06_probability_jump_higher_cases": 0,
+      "v06_probability_jump_lower_cases": 8
+    },
+    "worst_v06_case": {
+      "date": "2017-12-06",
+      "pair": "GBPUSD",
+      "side": "high",
+      "v05_candidate": [
+        2,
+        2
+      ],
+      "v05_probability_l1_jump": 41.84761241012828,
+      "v05_top": [
+        2,
+        2
+      ],
+      "v06_candidate": [
+        2,
+        2
+      ],
+      "v06_probability_l1_jump": 0.0282104186536003,
+      "v06_top": [
+        2,
+        2
+      ]
+    }
+  },
+  "breakout_20bar": {
+    "median_probability_l1_reduction_pct": 99.97626828851568,
+    "summary": {
+      "case_count": 8,
+      "event_toggle_cases": 8,
+      "event_toggle_isolated_from_50bar_band_cases": 4,
+      "max_v06_l1_toggled": 0.0282104186536003,
+      "median_v05_l1_all": 18.832589880969074,
+      "median_v06_l1_all": 0.004469295895577675,
+      "median_v06_l1_toggled": 0.004469295895577675
+    },
+    "worst_toggled_case": {
+      "date": "2017-12-06",
+      "pair": "GBPUSD",
+      "side": "high",
+      "v05_candidate": [
+        2,
+        2
+      ],
+      "v05_probability_l1_jump": 41.84761241012828,
+      "v05_top": [
+        2,
+        2
+      ],
+      "v06_candidate": [
+        2,
+        2
+      ],
+      "v06_probability_l1_jump": 0.0282104186536003,
+      "v06_top": [
+        2,
+        2
+      ]
+    },
+    "worst_toggled_path": {
+      "breakout_gate": [
+        0.85,
+        0.85
+      ],
+      "breakout_markup_gate": [
+        0.0,
+        0.0
+      ],
+      "breakout_mode_up": [
+        0.0,
+        0.0
+      ],
+      "breakout_score": [
+        70.0,
+        70.0
+      ],
+      "ma_cross_up": [
+        0.0,
+        0.0
+      ],
+      "markup_cont_gate": [
+        0.19546895500829134,
+        0.19552255440654306
+      ],
+      "markup_continuation_score": [
+        75.96034701359717,
+        75.96166019885435
+      ],
+      "markup_gate": [
+        0.19546895500829134,
+        0.19552255440654306
+      ],
+      "prob_markup": [
+        77.79930388410408,
+        77.81340909343088
+      ],
+      "range_break_up": [
+        0.0,
+        1.0
+      ],
+      "range_cont_up": [
+        65.0,
+        65.0
+      ],
+      "range_cont_up_gate": [
+        0.2857142857142857,
+        0.2857142857142857
+      ],
+      "recent_break_up": [
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "design": {
+    "changed_boundary_families": [
+      "50-bar no-break score",
+      "50-bar structural continuation strength",
+      "20-bar range-break evidence strength",
+      "range-break downstream gates"
+    ],
+    "intentionally_unchanged": [
+      "MA-cross evidence semantics",
+      "breakout/breakdown mode semantics",
+      "formal-state confirmation and persistence",
+      "state cardinality",
+      "Volume/MTF/Divergence/HMM",
+      "trading response map"
+    ],
+    "selection_basis": "fixed engineering transition width; not selected from trading PnL",
+    "soft_boundary_width_atr": 0.25
+  },
+  "interpretation_boundary": "A lower local discontinuity is evidence of improved numerical/feed robustness only. It is not evidence of predictive utility, profitability, calibrated confidence, or successful independent OOS validation.",
+  "issue": 57,
+  "phase": "A",
+  "preservation": {
+    "v05_pine_modified": false,
+    "v05_python_mirror_git_blob_sha": "b7d1c7e02194e46e162c999854aff6907bd5be3d"
+  },
+  "scope": {
+    "data": "Issue #55 Development-era frozen FX inputs",
+    "final_oos_evaluated": false,
+    "old_final_oos_is_burned": true,
+    "pnl_evaluated": false,
+    "purpose": "local boundary robustness only"
+  },
+  "status": "diagnostic_complete_pending_phase_review"
+}
