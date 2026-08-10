@@ -48,14 +48,14 @@ jobs:
             indicators/wyckoff-regime-radar/research/test_freeze_fx_canonical_data.py
       - name: Run price-only mirror tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
+      - name: Probe FXCM public D1 feed
+        run: python indicators/wyckoff-regime-radar/research/probe_fxcm_daily_feed.py
       - name: Record Dukascopy source qualification
         continue-on-error: true
         run: python indicators/wyckoff-regime-radar/research/probe_dukascopy_daily_feed.py
       - name: Record rejected Stooq feed probe
         continue-on-error: true
         run: python indicators/wyckoff-regime-radar/research/probe_stooq_daily_feed.py
-      - name: Probe FXCM public D1 feed
-        run: python indicators/wyckoff-regime-radar/research/probe_fxcm_daily_feed.py
       - name: Audit rejected Yahoo FX source quality
         run: |
           python indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
