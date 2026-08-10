@@ -6,6 +6,10 @@ second hand-written implementation. It forces all auxiliary witnesses off,
 keeps the frozen calculation core through formal-state resolution, removes the
 original visual/table/alert layer, and exposes only the fields required for the
 Issue #55 Pine/Python parity gate.
+
+Because some TradingView plans do not support chart-data export, the generated
+harness also renders a compact fixed-date checkpoint table. A single screenshot
+is enough to capture the parity values needed for manual comparison.
 """
 
 from __future__ import annotations
@@ -32,6 +36,76 @@ plot(topGap, "PARITY top_gap", display=display.data_window)
 plot(evidenceStrength, "PARITY evidence_strength", display=display.data_window)
 plot(float(candidateDisplayId), "PARITY candidate_display_id", display=display.data_window)
 plot(float(formalId), "PARITY formal_id", display=display.data_window)
+'''.strip()
+
+CHECKPOINT_TABLE = r'''
+// === Issue #55 screenshot parity checkpoints ===
+// This table is intentionally visual: it replaces CSV export for plans that do
+// not expose Export chart data. Values are captured when each fixed daily bar is
+// encountered and displayed together on the last bar.
+var int[] cpYear = array.from(2019, 2020, 2021, 2022, 2024, 2026)
+var int[] cpMonth = array.from(8, 3, 6, 9, 4, 7)
+var int[] cpDay = array.from(1, 20, 1, 28, 16, 30)
+var string[] cpDate = array.from("2019-08-01", "2020-03-20", "2021-06-01", "2022-09-28", "2024-04-16", "2026-07-30")
+
+var float[] cpClose = array.new_float(6, na)
+var float[] cpAcc = array.new_float(6, na)
+var float[] cpMarkup = array.new_float(6, na)
+var float[] cpReacc = array.new_float(6, na)
+var float[] cpDist = array.new_float(6, na)
+var float[] cpMarkdown = array.new_float(6, na)
+var float[] cpRedist = array.new_float(6, na)
+var float[] cpGap = array.new_float(6, na)
+var float[] cpEvidence = array.new_float(6, na)
+var float[] cpCandidate = array.new_float(6, na)
+var float[] cpFormal = array.new_float(6, na)
+
+for i = 0 to 5
+    if year == array.get(cpYear, i) and month == array.get(cpMonth, i) and dayofmonth == array.get(cpDay, i)
+        array.set(cpClose, i, close)
+        array.set(cpAcc, i, probAcc)
+        array.set(cpMarkup, i, probMarkup)
+        array.set(cpReacc, i, probReacc)
+        array.set(cpDist, i, probDist)
+        array.set(cpMarkdown, i, probMarkdown)
+        array.set(cpRedist, i, probRedist)
+        array.set(cpGap, i, topGap)
+        array.set(cpEvidence, i, evidenceStrength)
+        array.set(cpCandidate, i, float(candidateDisplayId))
+        array.set(cpFormal, i, float(formalId))
+
+f_cp1(x) => na(x) ? "—" : str.tostring(x, "#.0")
+f_cp5(x) => na(x) ? "—" : str.tostring(x, "#.#####")
+f_cpid(x) => na(x) ? "—" : str.tostring(math.round(x))
+
+var table cpTable = table.new(position.top_right, 12, 7, border_width=1)
+if barstate.islast
+    table.cell(cpTable, 0, 0, "Date", text_size=size.tiny)
+    table.cell(cpTable, 1, 0, "Close", text_size=size.tiny)
+    table.cell(cpTable, 2, 0, "Acc", text_size=size.tiny)
+    table.cell(cpTable, 3, 0, "Mk", text_size=size.tiny)
+    table.cell(cpTable, 4, 0, "ReAcc", text_size=size.tiny)
+    table.cell(cpTable, 5, 0, "Dist", text_size=size.tiny)
+    table.cell(cpTable, 6, 0, "Md", text_size=size.tiny)
+    table.cell(cpTable, 7, 0, "ReDist", text_size=size.tiny)
+    table.cell(cpTable, 8, 0, "Gap", text_size=size.tiny)
+    table.cell(cpTable, 9, 0, "Evid", text_size=size.tiny)
+    table.cell(cpTable, 10, 0, "Cand", text_size=size.tiny)
+    table.cell(cpTable, 11, 0, "Formal", text_size=size.tiny)
+    for i = 0 to 5
+        row = i + 1
+        table.cell(cpTable, 0, row, array.get(cpDate, i), text_size=size.tiny)
+        table.cell(cpTable, 1, row, f_cp5(array.get(cpClose, i)), text_size=size.tiny)
+        table.cell(cpTable, 2, row, f_cp1(array.get(cpAcc, i)), text_size=size.tiny)
+        table.cell(cpTable, 3, row, f_cp1(array.get(cpMarkup, i)), text_size=size.tiny)
+        table.cell(cpTable, 4, row, f_cp1(array.get(cpReacc, i)), text_size=size.tiny)
+        table.cell(cpTable, 5, row, f_cp1(array.get(cpDist, i)), text_size=size.tiny)
+        table.cell(cpTable, 6, row, f_cp1(array.get(cpMarkdown, i)), text_size=size.tiny)
+        table.cell(cpTable, 7, row, f_cp1(array.get(cpRedist, i)), text_size=size.tiny)
+        table.cell(cpTable, 8, row, f_cp1(array.get(cpGap, i)), text_size=size.tiny)
+        table.cell(cpTable, 9, row, f_cp1(array.get(cpEvidence, i)), text_size=size.tiny)
+        table.cell(cpTable, 10, row, f_cpid(array.get(cpCandidate, i)), text_size=size.tiny)
+        table.cell(cpTable, 11, row, f_cpid(array.get(cpFormal, i)), text_size=size.tiny)
 '''.strip()
 
 
@@ -87,7 +161,7 @@ def generate(source_path: Path) -> str:
         raise RuntimeError("expected exactly one // Visuals marker")
 
     calculation_core, _ = text.split(VISUAL_MARKER, 1)
-    return calculation_core.rstrip() + "\n\n" + PARITY_PLOTS + "\n"
+    return calculation_core.rstrip() + "\n\n" + PARITY_PLOTS + "\n\n" + CHECKPOINT_TABLE + "\n"
 
 
 def parse_args() -> argparse.Namespace:
