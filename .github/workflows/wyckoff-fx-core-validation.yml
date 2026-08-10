@@ -36,6 +36,7 @@ jobs:
             indicators/wyckoff-regime-radar/research/compare_reference_feed.py \
             indicators/wyckoff-regime-radar/research/diagnose_2024_divergence.py \
             indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
+            indicators/wyckoff-regime-radar/research/probe_dukascopy_daily_feed.py \
             indicators/wyckoff-regime-radar/research/freeze_fx_canonical_data.py \
             indicators/wyckoff-regime-radar/research/test_price_only_core.py \
             indicators/wyckoff-regime-radar/research/test_generate_price_only_parity_pine.py \
@@ -45,6 +46,8 @@ jobs:
             indicators/wyckoff-regime-radar/research/test_freeze_fx_canonical_data.py
       - name: Run price-only mirror tests
         run: python -m unittest discover -s indicators/wyckoff-regime-radar/research -p "test_*.py" -v
+      - name: Probe Dukascopy yearly daily FX feed
+        run: python indicators/wyckoff-regime-radar/research/probe_dukascopy_daily_feed.py
       - name: Audit Yahoo FX source quality
         run: |
           python indicators/wyckoff-regime-radar/research/audit_fx_source_quality.py \
