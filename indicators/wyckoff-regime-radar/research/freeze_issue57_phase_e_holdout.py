@@ -38,9 +38,11 @@ MANIFEST_PATH = DATA_DIR / "issue-57-phase-e-holdout-manifest.json"
 # computed; all three pairs remain untouched by Issue #55 / v0.6 Phases A-D.
 HOLDOUT_PAIRS = ("USDCAD", "USDCHF", "EURCHF")
 PRICE_SCALE = 100000.0
-EXPECTED_ROWS = 2400
-EXPECTED_START = "2012-12-04"
-EXPECTED_END = "2022-03-04"
+EXPECTED_COVERAGE = {
+    "USDCAD": {"rows": 2400, "start": "2012-12-04", "end": "2022-03-04"},
+    "USDCHF": {"rows": 2400, "start": "2012-12-03", "end": "2022-03-04"},
+    "EURCHF": {"rows": 2400, "start": "2012-11-16", "end": "2022-03-04"},
+}
 
 
 def _source_path(pair: str) -> str:
@@ -64,13 +66,14 @@ def _load_source(pair: str) -> tuple[pd.DataFrame, bytes, str, str]:
 
 
 def _validate_coverage(frame: pd.DataFrame, pair: str) -> None:
+    expected = EXPECTED_COVERAGE[pair]
     rows = len(frame)
     start = str(frame["date"].iloc[0])
     end = str(frame["date"].iloc[-1])
-    if rows != EXPECTED_ROWS or start != EXPECTED_START or end != EXPECTED_END:
+    if rows != expected["rows"] or start != expected["start"] or end != expected["end"]:
         raise RuntimeError(
-            f"{pair}: holdout coverage drifted; expected {EXPECTED_ROWS} rows "
-            f"{EXPECTED_START}..{EXPECTED_END}, got {rows} rows {start}..{end}"
+            f"{pair}: holdout coverage drifted; expected {expected['rows']} rows "
+            f"{expected['start']}..{expected['end']}, got {rows} rows {start}..{end}"
         )
 
 
