@@ -5,9 +5,7 @@ from __future__ import annotations
 import unittest
 
 from freeze_issue57_phase_e_holdout import (
-    EXPECTED_END,
-    EXPECTED_ROWS,
-    EXPECTED_START,
+    EXPECTED_COVERAGE,
     HOLDOUT_PAIRS,
     SOURCE_REF,
     _source_path,
@@ -24,10 +22,15 @@ class Issue57PhaseEHoldoutFreezeTests(unittest.TestCase):
         self.assertEqual(_source_path("USDCHF"), "USDCHF/USDCHFd1.csv")
         self.assertEqual(_source_path("EURCHF"), "EURCHF/EURCHFd1.csv")
 
-    def test_expected_coverage_is_frozen_before_download(self) -> None:
-        self.assertEqual(EXPECTED_ROWS, 2400)
-        self.assertEqual(EXPECTED_START, "2012-12-04")
-        self.assertEqual(EXPECTED_END, "2022-03-04")
+    def test_expected_coverage_is_frozen_per_pair_before_download(self) -> None:
+        self.assertEqual(
+            EXPECTED_COVERAGE,
+            {
+                "USDCAD": {"rows": 2400, "start": "2012-12-04", "end": "2022-03-04"},
+                "USDCHF": {"rows": 2400, "start": "2012-12-03", "end": "2022-03-04"},
+                "EURCHF": {"rows": 2400, "start": "2012-11-16", "end": "2022-03-04"},
+            },
+        )
 
 
 if __name__ == "__main__":
