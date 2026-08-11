@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Compatibility-fixed driver for the Issue #57 v0.6 Pine generator.
 
-The original generator made two overly-broad source assumptions: it treated
-Pine equality checks (`==`) as assignments, and it assumed there was only one
-`ta.atr()` call in the frozen script. This driver patches only those source-
-location helpers, then delegates all Phase A-D transformations to the audited
-base generator.
+The original generator made a few source-location assumptions that Python tests
+could tolerate but Pine could not: it treated equality checks (`==`) as
+assignments, assumed there was only one `ta.atr()` call, and emitted the v0.6
+helper functions after an earlier generated call site. This driver patches only
+those source-location / declaration-order issues, then delegates all Phase A-D
+transformations to the audited base generator.
 """
 
 from __future__ import annotations
@@ -20,6 +21,10 @@ import generate_v06_parity_pine as base
 EXPECTED_SOURCE_BLOB_SHA = base.EXPECTED_SOURCE_BLOB_SHA
 SOURCE = base.SOURCE
 git_blob_sha = base.git_blob_sha
+
+HELPER_START = "// ===== Issue #57 v0.6 research helpers (mechanically generated) ====="
+HELPER_END = "// ===== End Issue #57 helpers ====="
+FIRST_PHASE_A_HELPER_CALL = "float rangeBreakUpStrength = f_v06_soft_break_above"
 
 
 def _assignment_index_fixed(lines: list[str], variable: str) -> int:
@@ -43,13 +48,51 @@ def _extract_primary_atr_name_fixed(lines: list[str]) -> str:
     return "atr"
 
 
+def _move_v06_helpers_before_first_use(source: str) -> str:
+    """Move generated Pine helper declarations before their first call site.
+
+    Pine requires a user-defined function to be declared before it is called.
+    The audited base generator originally inserts the helper block near the
+    noBreak primitives, but Phase A also adds an earlier breakout-strength call.
+    Relocate only that generated helper block; do not alter any formulas.
+    """
+
+    lines = source.splitlines()
+    start_hits = [i for i, line in enumerate(lines) if line.strip() == HELPER_START]
+    end_hits = [i for i, line in enumerate(lines) if line.strip() == HELPER_END]
+    if len(start_hits) != 1 or len(end_hits) != 1:
+        raise RuntimeError(
+            f"Expected one v0.6 helper block; found starts={len(start_hits)} ends={len(end_hits)}"
+        )
+
+    start = start_hits[0]
+    end = end_hits[0]
+    if end < start:
+        raise RuntimeError("v0.6 helper block end appears before start")
+
+    helper_block = lines[start : end + 1]
+    del lines[start : end + 1]
+
+    call_hits = [i for i, line in enumerate(lines) if FIRST_PHASE_A_HELPER_CALL in line]
+    if len(call_hits) != 1:
+        raise RuntimeError(f"Expected one first Phase-A helper call; found {len(call_hits)}")
+
+    insert_at = call_hits[0]
+    lines[insert_at:insert_at] = helper_block + [""]
+    rendered = "\n".join(lines)
+    if source.endswith("\n"):
+        rendered += "\n"
+    return rendered
+
+
 def render_v06_parity_source() -> str:
     original_assignment = base._assignment_index
     original_atr = base._extract_atr_name
     base._assignment_index = _assignment_index_fixed
     base._extract_atr_name = _extract_primary_atr_name_fixed
     try:
-        return base.render_v06_parity_source()
+        rendered = base.render_v06_parity_source()
+        return _move_v06_helpers_before_first_use(rendered)
     finally:
         base._assignment_index = original_assignment
         base._extract_atr_name = original_atr
