@@ -84,3 +84,24 @@ If the Top-2 consensus hypothesis looks materially stronger on burned data, free
 This hypothesis intentionally tests whether the Wyckoff engine is more useful as a **directional evidence aggregator** than as a single-label regime classifier.
 
 A positive result would not mean Formal state becomes irrelevant for visualization or context. It would mean the actionable directional layer should be based on internal weight agreement rather than the persisted Formal label.
+
+## 2026-08-11 amendment — keep the research price-only
+
+Subsequent live-usage feedback supersedes the temporary idea that default `Volume Mode = Auto` should be restored merely to reproduce the old dashboard exactly.
+
+The user reports that, in actual use, adding the Volume layer did **not** make the indicator more useful and instead tended to make interpretation more complex. Therefore the current Issue #57 research direction is intentionally:
+
+- **price-only for the primary engine and Top-2 hypothesis work**;
+- no Volume contribution to stage weights;
+- no MTF contribution to stage weights;
+- no Divergence contribution to stage weights;
+- no attempt to explain a failed price-only hypothesis by adding witness layers after the fact.
+
+A temporary TradingView harness that preserved default Volume Auto was created only as a fidelity diagnostic idea and was then **shelved and removed from the branch before use**. It is not part of the research path.
+
+Also note that the broad `1/2/3` versus `4/5/6` family mapping above was the first diagnostic translation, not a final semantic claim. A later audit of the frozen Pine Flat Action logic shows that its explicitly actionable trend-compatible pairs are:
+
+- bullish: `2 Markup + 3 Re-accumulation`;
+- bearish: `5 Markdown + 6 Redistribution`.
+
+That corrected pair definition has also been tested on burned price-only data and did not show a directional edge by itself. The next work should therefore stay inside the **price-derived six-weight structure** and investigate whether the useful live intuition was about a different relationship among those weights, rather than re-introducing witness complexity.
