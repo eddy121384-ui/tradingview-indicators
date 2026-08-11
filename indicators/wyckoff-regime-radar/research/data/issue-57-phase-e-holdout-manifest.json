@@ -1,0 +1,61 @@
+{
+  "issue": 57,
+  "pairs": {
+    "EURCHF": {
+      "end_date": "2022-03-04",
+      "evaluation_status": "SEALED_NOT_COMPUTED",
+      "frozen_file": "frozen/issue-57-holdout-eurchf-static-d1.csv",
+      "frozen_sha256": "9d923f7af429e1fb0eed18f06bdd153468cfe0c558fa1db01c031da8acc2517b",
+      "ohlc_validation": "PASS_NO_REPAIR",
+      "raw_sha256": "7e385d5545d006afbbe5bcad2b6bbe9d9385f081cd939575cec8726b2d414fc4",
+      "rows": 2400,
+      "source_git_blob_sha": "68ef7be7031272c3779fd5e0ac6436b9bfebb51f",
+      "source_path": "EURCHF/EURCHFd1.csv",
+      "source_price_scale_divisor": 100000.0,
+      "source_url": "https://raw.githubusercontent.com/ejtraderLabs/historical-data/main/EURCHF/EURCHFd1.csv",
+      "start_date": "2012-11-16"
+    },
+    "USDCAD": {
+      "end_date": "2022-03-04",
+      "evaluation_status": "SEALED_NOT_COMPUTED",
+      "frozen_file": "frozen/issue-57-holdout-usdcad-static-d1.csv",
+      "frozen_sha256": "ee7de65fe382e431d9641dceb1b7bb0128378d8f7e34fd0361ffda1cdb4ee7f2",
+      "ohlc_validation": "PASS_NO_REPAIR",
+      "raw_sha256": "1a5de7b3991bd78c4e4a8ebc8e0e4e78618790752b37dcfdf9a6ca317030c359",
+      "rows": 2400,
+      "source_git_blob_sha": "83ad379db0bfcce7c149af2b400c7294b7a0b00b",
+      "source_path": "USDCAD/USDCADd1.csv",
+      "source_price_scale_divisor": 100000.0,
+      "source_url": "https://raw.githubusercontent.com/ejtraderLabs/historical-data/main/USDCAD/USDCADd1.csv",
+      "start_date": "2012-12-04"
+    },
+    "USDCHF": {
+      "end_date": "2022-03-04",
+      "evaluation_status": "SEALED_NOT_COMPUTED",
+      "frozen_file": "frozen/issue-57-holdout-usdchf-static-d1.csv",
+      "frozen_sha256": "b5b4fffee8ed6e17f8c5396f3cca6d3af4f2d6e03c915e5a13e117a9d2c10c25",
+      "ohlc_validation": "PASS_NO_REPAIR",
+      "raw_sha256": "8b0c9fc9d0bbc094373d4757b28f3692f1f33021e0cbc2d5e1da9c3cf7d12519",
+      "rows": 2400,
+      "source_git_blob_sha": "b39e3948e8b871566bfeb6d5e5042cc5d1369e17",
+      "source_path": "USDCHF/USDCHFd1.csv",
+      "source_price_scale_divisor": 100000.0,
+      "source_url": "https://raw.githubusercontent.com/ejtraderLabs/historical-data/main/USDCHF/USDCHFd1.csv",
+      "start_date": "2012-12-03"
+    }
+  },
+  "phase": "E-independent-cross-market-holdout",
+  "selection": {
+    "amendment": "EURCHF substituted for unavailable NZDUSD before any holdout outcome was computed",
+    "pairs": [
+      "USDCAD",
+      "USDCHF",
+      "EURCHF"
+    ],
+    "reason": "untouched cross-market holdout; same static source/bar-construction family as Issue #55",
+    "used_in_issue_55_or_v06_phases_a_to_d": false
+  },
+  "source_ref_at_freeze": "main",
+  "source_repository": "ejtraderLabs/historical-data",
+  "status": "SEALED_DO_NOT_EVALUATE_UNTIL_V06_PINE_PARITY_GATE_PASSES"
+}
