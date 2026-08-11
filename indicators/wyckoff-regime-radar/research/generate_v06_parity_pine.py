@@ -170,9 +170,6 @@ def _apply_phase_a(lines: list[str], atr_name: str) -> None:
         ],
     )
 
-    # The frozen Pine names these public continuation scores explicitly; keep
-    # those names so all downstream score/gate formulas remain mechanically
-    # connected to the v0.6 softened evidence.
     _replace_statement(
         lines,
         "rangeContinuationUpScore",
@@ -282,10 +279,10 @@ def _apply_phase_c_d(lines: list[str]) -> None:
     block = [
         "",
         "// ===== Issue #57 Phase C/D canonical four-state layer =====",
-        "float v06AccFamily = p1 + p3",
-        "float v06Markup = p2",
-        "float v06DistFamily = p4 + p6",
-        "float v06Markdown = p5",
+        "float v06AccFamily = probAcc + probReacc",
+        "float v06Markup = probMarkup",
+        "float v06DistFamily = probDist + probRedist",
+        "float v06Markdown = probMarkdown",
         "int v06FormalId = f_v06_map4(formalId)",
         "float v06FormalSupport = v06FormalId == 1 ? v06AccFamily : v06FormalId == 2 ? v06Markup : v06FormalId == 3 ? v06DistFamily : v06FormalId == 4 ? v06Markdown : na",
         "float v06Competitor = v06FormalId == 1 ? math.max(v06Markup, math.max(v06DistFamily, v06Markdown)) : v06FormalId == 2 ? math.max(v06AccFamily, math.max(v06DistFamily, v06Markdown)) : v06FormalId == 3 ? math.max(v06AccFamily, math.max(v06Markup, v06Markdown)) : v06FormalId == 4 ? math.max(v06AccFamily, math.max(v06Markup, v06DistFamily)) : na",
@@ -298,11 +295,7 @@ def _apply_phase_c_d(lines: list[str]) -> None:
 
 
 def _research_suffix() -> str:
-    target_rows = []
-    for year, month, day in CHECKPOINTS:
-        target_rows.append(f'    [{year}, {month}, {day}, "{year:04d}-{month:02d}-{day:02d}"]')
-    checkpoints_literal = ",\n".join(target_rows)
-    return f'''
+    return r'''
 // ===== Issue #57 v0.6 compact research outputs =====
 plot(v06AccFamily, "V06 acc_family", display=display.data_window)
 plot(v06Markup, "V06 markup", display=display.data_window)
