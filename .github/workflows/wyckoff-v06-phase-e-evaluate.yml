@@ -1,0 +1,80 @@
+name: Wyckoff v0.6 Phase E One-Shot Holdout
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - '.github/workflows/wyckoff-v06-phase-e-evaluate.yml'
+      - 'indicators/wyckoff-regime-radar/research/evaluate_issue57_phase_e_holdout.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_issue57_phase_e_holdout.py'
+      - 'indicators/wyckoff-regime-radar/research/issue-57-phase-e-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/reports/issue-57-phase-e-opening.md'
+      - 'indicators/wyckoff-regime-radar/research/reports/issue-57-pine-implementation-gate.md'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-57-phase-e-holdout-manifest.json'
+      - 'indicators/wyckoff-regime-radar/research/data/frozen/issue-57-holdout-*.csv'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/v06_state_mapping.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  evaluate-once:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/issue-57-wyckoff-v0.6-robustness
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/wyckoff-regime-radar/research/requirements.txt
+
+      - name: Compile Phase E evaluator
+        run: |
+          python -m py_compile \
+            indicators/wyckoff-regime-radar/research/evaluate_issue57_phase_e_holdout.py \
+            indicators/wyckoff-regime-radar/research/test_evaluate_issue57_phase_e_holdout.py
+
+      - name: Run Phase E evaluator contract tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m unittest -v test_evaluate_issue57_phase_e_holdout
+
+      - name: Verify sealed holdout files before opening calculation
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python freeze_issue57_phase_e_holdout.py verify
+
+      - name: Enforce one-shot result boundary
+        shell: bash
+        run: |
+          REPORT='indicators/wyckoff-regime-radar/research/reports/issue-57-phase-e-holdout.json'
+          if [ -f "$REPORT" ]; then
+            echo '::error::Phase-E holdout result already exists. The independent holdout is consumed; automatic rerun is forbidden.'
+            exit 1
+          fi
+
+      - name: Evaluate sealed independent holdout exactly once
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python evaluate_issue57_phase_e_holdout.py \
+            --json-output reports/issue-57-phase-e-holdout.json \
+            --md-output reports/issue-57-phase-e-holdout.md
+
+      - name: Commit one-shot Phase E result
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-e-holdout.json \
+            indicators/wyckoff-regime-radar/research/reports/issue-57-phase-e-holdout.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'research: record Issue 57 Phase E one-shot holdout result'
+          git push origin HEAD:feat/issue-57-wyckoff-v0.6-robustness
