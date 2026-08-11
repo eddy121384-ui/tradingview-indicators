@@ -6,12 +6,14 @@ on:
       - feat/issue-57-wyckoff-v0.6-robustness
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_v06_parity_pine_fixed.py"
       - "indicators/wyckoff-regime-radar/research/test_generate_v06_parity_pine.py"
       - "indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine"
       - ".github/workflows/wyckoff-v06-parity-build.yml"
   pull_request:
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_v06_parity_pine_fixed.py"
       - "indicators/wyckoff-regime-radar/research/test_generate_v06_parity_pine.py"
       - "indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine"
       - ".github/workflows/wyckoff-v06-parity-build.yml"
@@ -31,6 +33,7 @@ jobs:
         run: |
           python -m py_compile \
             indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py \
+            indicators/wyckoff-regime-radar/research/generate_v06_parity_pine_fixed.py \
             indicators/wyckoff-regime-radar/research/test_generate_v06_parity_pine.py
       - name: Run v0.6 Pine generator tests
         working-directory: indicators/wyckoff-regime-radar/research
@@ -38,9 +41,9 @@ jobs:
       - name: Generate deterministic v0.6 Pine harness
         run: |
           mkdir -p indicators/wyckoff-regime-radar/research/generated
-          python indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py \
+          python indicators/wyckoff-regime-radar/research/generate_v06_parity_pine_fixed.py \
             --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine
-          python indicators/wyckoff-regime-radar/research/generate_v06_parity_pine.py \
+          python indicators/wyckoff-regime-radar/research/generate_v06_parity_pine_fixed.py \
             --output /tmp/wyckoff-issue-57-v06-parity.pine
           cmp \
             indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v06-parity.pine \
