@@ -383,6 +383,27 @@ recentBreakDn = f_recent(rangeBreakDn or maCrossDn, breakoutBars)
 recentRangeBreakDn = f_recent(rangeBreakDn, breakoutBars)
 recentMaCrossDn = f_recent(maCrossDn, breakoutBars)
 bool recentMaCrossUp = ta.barssince(maCrossUp) <= breakoutBars
+// ===== Issue #57 v0.6 research helpers (mechanically generated) =====
+float V06_SOFT_WIDTH_ATR = 0.25
+f_v06_clamp100(float x) => math.max(0.0, math.min(100.0, x))
+f_v06_gate(float x, float lo, float hi) => hi <= lo ? 0.0 : math.max(0.0, math.min(1.0, (x - lo) / (hi - lo)))
+f_v06_soft_no_break_low(float c, float boundary, float atrValue) =>
+    float scale = atrValue * V06_SOFT_WIDTH_ATR
+    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(50.0 + 50.0 * ((c - boundary) / scale))
+f_v06_soft_no_break_high(float c, float boundary, float atrValue) =>
+    float scale = atrValue * V06_SOFT_WIDTH_ATR
+    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(50.0 + 50.0 * ((boundary - c) / scale))
+f_v06_soft_above_range(float c, float boundary, float atrValue) => 100.0 - f_v06_soft_no_break_high(c, boundary, atrValue)
+f_v06_soft_below_range(float c, float boundary, float atrValue) => 100.0 - f_v06_soft_no_break_low(c, boundary, atrValue)
+f_v06_soft_break_above(float c, float boundary, float atrValue) =>
+    float scale = atrValue * V06_SOFT_WIDTH_ATR
+    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(100.0 * ((c - boundary) / scale))
+f_v06_soft_break_below(float c, float boundary, float atrValue) =>
+    float scale = atrValue * V06_SOFT_WIDTH_ATR
+    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(100.0 * ((boundary - c) / scale))
+f_v06_map4(int id) => id == 1 or id == 3 ? 1 : id == 2 ? 2 : id == 4 or id == 6 ? 3 : id == 5 ? 4 : 0
+// ===== End Issue #57 helpers =====
+
 float rangeBreakUpStrength = f_v06_soft_break_above(close, rangeHighBreak, atr)
 float rangeBreakDnStrength = f_v06_soft_break_below(close, rangeLowBreak, atr)
 float recentRangeBreakUpStrength = ta.highest(rangeBreakUpStrength, breakoutBars)
@@ -454,26 +475,6 @@ prevAbsLow  = ta.lowest(low[1], absorbLen)
 prevAbsHigh = ta.highest(high[1], absorbLen)
 
 
-// ===== Issue #57 v0.6 research helpers (mechanically generated) =====
-float V06_SOFT_WIDTH_ATR = 0.25
-f_v06_clamp100(float x) => math.max(0.0, math.min(100.0, x))
-f_v06_gate(float x, float lo, float hi) => hi <= lo ? 0.0 : math.max(0.0, math.min(1.0, (x - lo) / (hi - lo)))
-f_v06_soft_no_break_low(float c, float boundary, float atrValue) =>
-    float scale = atrValue * V06_SOFT_WIDTH_ATR
-    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(50.0 + 50.0 * ((c - boundary) / scale))
-f_v06_soft_no_break_high(float c, float boundary, float atrValue) =>
-    float scale = atrValue * V06_SOFT_WIDTH_ATR
-    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(50.0 + 50.0 * ((boundary - c) / scale))
-f_v06_soft_above_range(float c, float boundary, float atrValue) => 100.0 - f_v06_soft_no_break_high(c, boundary, atrValue)
-f_v06_soft_below_range(float c, float boundary, float atrValue) => 100.0 - f_v06_soft_no_break_low(c, boundary, atrValue)
-f_v06_soft_break_above(float c, float boundary, float atrValue) =>
-    float scale = atrValue * V06_SOFT_WIDTH_ATR
-    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(100.0 * ((c - boundary) / scale))
-f_v06_soft_break_below(float c, float boundary, float atrValue) =>
-    float scale = atrValue * V06_SOFT_WIDTH_ATR
-    na(scale) or scale <= 0.0 or na(boundary) ? na : f_v06_clamp100(100.0 * ((boundary - c) / scale))
-f_v06_map4(int id) => id == 1 or id == 3 ? 1 : id == 2 ? 2 : id == 4 or id == 6 ? 3 : id == 5 ? 4 : 0
-// ===== End Issue #57 helpers =====
 
 float noBreakLowScore = f_v06_soft_no_break_low(close, prevAbsLow, atr)
 float noBreakHighScore = f_v06_soft_no_break_high(close, prevAbsHigh, atr)
