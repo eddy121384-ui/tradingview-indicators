@@ -71,7 +71,6 @@ def consensus_components(model: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, n
     top1, top2, val1, val2 = top_ids_and_values(model)
     direction = action_pair_direction(top1, top2)
     strength = val1 + val2
-    valid = (direction != 0.0) & np.isfinite(strength)
     return direction, strength, top1, top2
 
 
@@ -108,9 +107,9 @@ def continuous_spearman(frame: pd.DataFrame, model: pd.DataFrame, horizon: int) 
     if int(np.sum(valid)) < 3:
         return {"n": int(np.sum(valid)), "rho": None}
     aligned = direction[:n] * (close[horizon:] / close[:n] - 1.0)
-    x = pd.Series(strength[:n][valid])
-    y = pd.Series(aligned[valid])
-    rho = x.corr(y, method="spearman")
+    x_rank = pd.Series(strength[:n][valid]).rank(method="average")
+    y_rank = pd.Series(aligned[valid]).rank(method="average")
+    rho = x_rank.corr(y_rank, method="pearson")
     return {"n": int(np.sum(valid)), "rho": None if pd.isna(rho) else float(rho)}
 
 
@@ -198,23 +197,21 @@ def analyze_model(frame: pd.DataFrame, model: pd.DataFrame) -> dict[str, object]
         "adoption": adoption_stats(model),
     }
 
-    persistence = {
-        str(k): {
-            "events": int(np.sum(persistence_event_signal(model, k) != 0.0)),
-            "horizons": {
-                str(h): future_aligned_metrics(frame, persistence_event_signal(model, k), h)
-                for h in HORIZONS
-            },
+    persistence = {}
+    for k in PERSISTENCE_LEVELS:
+        event_signal = persistence_event_signal(model, k)
+        persistence[str(k)] = {
+            "events": int(np.sum(event_signal != 0.0)),
+            "horizons": {str(h): future_aligned_metrics(frame, event_signal, h) for h in HORIZONS},
         }
-        for k in PERSISTENCE_LEVELS
-    }
 
+    action_strength = strength[direction != 0.0]
     return {
         "action_pair_bar_share": float(np.mean(direction != 0.0)),
         "primary_90_bar_share": float(np.mean(threshold_signal(model) != 0.0)),
         "strength_summary": {
-            "median": float(np.nanmedian(strength[direction != 0.0])) if np.any(direction != 0.0) else None,
-            "p90": float(np.nanquantile(strength[direction != 0.0], 0.90)) if np.any(direction != 0.0) else None,
+            "median": float(np.nanmedian(action_strength)) if len(action_strength) else None,
+            "p90": float(np.nanquantile(action_strength, 0.90)) if len(action_strength) else None,
         },
         "monotonicity": monotonicity,
         "formal_lag": formal_lag,
