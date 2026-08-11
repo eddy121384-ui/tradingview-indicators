@@ -1,32 +1,40 @@
 # Issue #57 — Phase E independent validation preregistration
 
-Status: **PREREGISTERED / HOLDOUT SEALED**
+Status: **PREREGISTERED / HOLDOUT SELECTION AMENDED PRE-EVALUATION / SEALED**
 
 This document is committed before evaluating v0.6 on the Phase-E holdout.
 
-## Why cross-market holdout instead of a later-date feed
+## Pre-evaluation source-contract amendment
 
-Issue #55 documented material reproducibility/data-quality problems in candidate later-period free FX feeds (including Yahoo OHLC envelope defects and unstable public-feed access). Phase E therefore uses an untouched **cross-market holdout** from the same pinned static daily-data source and source commit as Issue #55.
+The first draft named `NZDUSD` and assumed underscore-form static source paths plus a source commit identifier that are not part of the actual Issue #55 static-data helper contract. CI caught that mismatch before the freeze/evaluation step ran.
 
-This keeps bar construction, source versioning, and OHLC validation identical while testing three currency pairs that were never used in Issue #55 or v0.6 Phases A-D.
+No v0.6 output, regime label, path statistic, PnL statistic, or other holdout outcome was computed from any Phase-E market before this amendment.
 
-A later-date independent test remains desirable after this cross-market gate, but is not substituted with a lower-quality feed merely to obtain newer dates.
-
-## Sealed holdout markets
+The holdout is therefore amended, before evaluation, to three untouched markets that exist in the same static source family used by Issue #55:
 
 - USDCAD
 - USDCHF
-- NZDUSD
+- EURCHF
 
 Source repository: `ejtraderLabs/historical-data`
 
-Pinned source commit: `a7c5089d96379d4de03cf0001eb5807304675f0e`
+Source ref at freeze: `main`
 
 Expected source paths:
 
-- `USDCAD/USDCAD_D1.csv`
-- `USDCHF/USDCHF_D1.csv`
-- `NZDUSD/NZDUSD_D1.csv`
+- `USDCAD/USDCADd1.csv`
+- `USDCHF/USDCHFd1.csv`
+- `EURCHF/EURCHFd1.csv`
+
+The freeze manifest records the exact Git blob SHA, raw SHA-256, normalized-file SHA-256, row count, and date range for each pair. Once the manifest exists, the freeze script refuses to redefine the holdout.
+
+## Why cross-market holdout instead of a later-date feed
+
+Issue #55 documented material reproducibility/data-quality problems in candidate later-period free FX feeds. Phase E therefore uses an untouched **cross-market holdout** from the same reproducible static daily-data source family and normalization rules as Issue #55.
+
+This keeps bar construction and OHLC validation consistent while testing three currency pairs that were never used in Issue #55 or v0.6 Phases A-D.
+
+A later-date independent test remains desirable after this cross-market gate, but is not substituted with a lower-quality feed merely to obtain newer dates.
 
 These markets were not used to select:
 
