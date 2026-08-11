@@ -114,6 +114,27 @@ Baselines remain transparent price-only rules:
 
 No response rule may be changed after the sealed holdout is evaluated.
 
+## Operational decision rules frozen before opening
+
+These rules are committed before any Phase-E regime output or performance statistic is computed.
+
+- The **live window** for each pair begins at the first bar where the four canonical regime weights are finite and have positive total weight. Warm-up bars before that point are excluded from occupancy and persistence statistics.
+- A canonical state is **materially populated** in a pair when it occupies at least **1%** of live-window bars.
+- **Coverage passes** when every one of the four canonical states is materially populated in at least **2 of 3** holdout pairs, and every pair has at least **3 of 4** materially populated states.
+- **Directional sanity passes** when Formal Markup has a higher mean forward return than Formal Markdown in **more than 50%** of comparable pair × horizon cases across 5/10/20/60 bars.
+- For **temporal stability**, each pair's live window is split chronologically into equal first/second halves. Occupancy stability passes when the median pair total-variation distance between half-state shares is **<= 0.30**. Relative-behavior stability passes when the sign of each state's mean forward return agrees between halves in at least **50%** of comparable pair × state × horizon cases. Both are required.
+- For **Regime Support / Margin**, tertile cut points are estimated from the first half of each pair only and applied unchanged to the second half. The strength check passes when at least one of the two fields has high-bin classification persistence greater than low-bin persistence in **more than 50%** of comparable field × pair × horizon cases. This is a persistence check, not a directional-return claim.
+- Forward-path eta-squared for return/MFE/MAE/realized volatility is reported as descriptive effect size and is **not** given an after-the-fact pass threshold.
+- **Cross-market regime robustness passes only if coverage, directional sanity, temporal stability, and the descriptive-strength persistence check all pass.**
+- Trading utility is **incremental** only when the equal-weight frozen Wyckoff response beats at least **2 of the 3 active baselines** (`SMA200`, `momentum60`, `Donchian55`) on both net annualized return and zero-cash Sharpe under the frozen one-bar lag and 1-pip turnover cost.
+
+Verdict mapping is mechanical:
+
+- any implementation/seal/checksum/data failure -> `implementation_or_data_blocked`
+- any required regime-robustness gate fails -> `unstable_on_independent_fx_pairs`
+- regime robustness passes but incremental trading utility fails -> `descriptive_but_not_incremental`
+- regime robustness and incremental utility both pass -> `validated_cross_market_robustness`
+
 ## Holdout decision boundary
 
 The cross-market gate will be reported without tuning as one of:
