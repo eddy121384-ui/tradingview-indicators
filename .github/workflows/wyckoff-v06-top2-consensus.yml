@@ -1,0 +1,60 @@
+name: Wyckoff v0.6 Top2 Consensus Diagnostic
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_v06_top2_directional_consensus.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_v06_top2_directional_consensus.py'
+      - 'indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-consensus-hypothesis.md'
+      - '.github/workflows/wyckoff-v06-top2-consensus.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_v06_top2_directional_consensus.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_v06_top2_directional_consensus.py'
+      - 'indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-consensus-hypothesis.md'
+      - '.github/workflows/wyckoff-v06-top2-consensus.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  burned-data-diagnostic:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile diagnostic
+        run: |
+          python -m py_compile diagnose_v06_top2_directional_consensus.py
+          python -m py_compile test_diagnose_v06_top2_directional_consensus.py
+      - name: Run Top2 rule tests
+        run: python -m unittest -v test_diagnose_v06_top2_directional_consensus
+      - name: Run burned-data Top2 diagnostic
+        run: |
+          python diagnose_v06_top2_directional_consensus.py \
+            --json-output reports/issue-57-top2-directional-consensus.json \
+            --md-output reports/issue-57-top2-directional-consensus.md
+      - name: Commit diagnostic report on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/issue-57-wyckoff-v0.6-robustness'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-consensus.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-consensus.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "research: record Issue 57 top2 consensus diagnostic"
+            git push
+          fi
