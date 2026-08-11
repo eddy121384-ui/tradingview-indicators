@@ -9,18 +9,20 @@ from freeze_issue57_phase_e_holdout import (
     EXPECTED_ROWS,
     EXPECTED_START,
     HOLDOUT_PAIRS,
-    SOURCE_COMMIT,
+    SOURCE_REF,
     _source_path,
 )
 
 
 class Issue57PhaseEHoldoutFreezeTests(unittest.TestCase):
     def test_holdout_pair_set_is_exact_and_untouched(self) -> None:
-        self.assertEqual(HOLDOUT_PAIRS, ("USDCAD", "USDCHF", "NZDUSD"))
+        self.assertEqual(HOLDOUT_PAIRS, ("USDCAD", "USDCHF", "EURCHF"))
 
-    def test_source_is_pinned_to_issue55_static_commit(self) -> None:
-        self.assertEqual(SOURCE_COMMIT, "a7c5089d96379d4de03cf0001eb5807304675f0e")
-        self.assertEqual(_source_path("USDCAD"), "USDCAD/USDCAD_D1.csv")
+    def test_source_contract_matches_static_repo(self) -> None:
+        self.assertEqual(SOURCE_REF, "main")
+        self.assertEqual(_source_path("USDCAD"), "USDCAD/USDCADd1.csv")
+        self.assertEqual(_source_path("USDCHF"), "USDCHF/USDCHFd1.csv")
+        self.assertEqual(_source_path("EURCHF"), "EURCHF/EURCHFd1.csv")
 
     def test_expected_coverage_is_frozen_before_download(self) -> None:
         self.assertEqual(EXPECTED_ROWS, 2400)
