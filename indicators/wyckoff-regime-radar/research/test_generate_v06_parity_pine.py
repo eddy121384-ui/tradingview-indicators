@@ -27,6 +27,12 @@ class V06PineParityGeneratorTests(unittest.TestCase):
         self.assertIn("v06RegimeMargin", source)
         self.assertIn("NOT confidence/probability", source)
 
+    def test_v06_helpers_are_declared_before_first_generated_call(self) -> None:
+        source = render_v06_parity_source()
+        helper_definition = source.index("f_v06_soft_break_above(float c, float boundary, float atrValue) =>")
+        first_call = source.index("float rangeBreakUpStrength = f_v06_soft_break_above")
+        self.assertLess(helper_definition, first_call)
+
     def test_old_visual_layer_is_removed_and_research_tables_exist(self) -> None:
         source = render_v06_parity_source()
         self.assertNotIn("// Visuals", source)
