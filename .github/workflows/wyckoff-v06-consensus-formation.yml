@@ -1,3 +1,4 @@
+# CI rerun after Actions quota recovery; no research semantics changed.
 name: Wyckoff v0.6 Consensus Formation Diagnostic
 
 on:
