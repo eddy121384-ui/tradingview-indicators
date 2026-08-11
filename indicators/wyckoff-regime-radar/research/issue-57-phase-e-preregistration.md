@@ -20,13 +20,13 @@ Source repository: `ejtraderLabs/historical-data`
 
 Source ref at freeze: `main`
 
-Expected source paths:
+Expected source paths and coverage are locked per pair before any evaluation:
 
-- `USDCAD/USDCADd1.csv`
-- `USDCHF/USDCHFd1.csv`
-- `EURCHF/EURCHFd1.csv`
+- `USDCAD/USDCADd1.csv` — 2400 rows, 2012-12-04 through 2022-03-04
+- `USDCHF/USDCHFd1.csv` — 2400 rows, 2012-12-03 through 2022-03-04
+- `EURCHF/EURCHFd1.csv` — 2400 rows, 2012-11-16 through 2022-03-04
 
-The freeze manifest records the exact Git blob SHA, raw SHA-256, normalized-file SHA-256, row count, and date range for each pair. Once the manifest exists, the freeze script refuses to redefine the holdout.
+The pair-specific start dates are intentionally preserved rather than trimming or repairing the source files to force a common calendar. The freeze manifest records the exact Git blob SHA, raw SHA-256, normalized-file SHA-256, row count, and date range for each pair. Once the manifest exists, the freeze script refuses to redefine the holdout.
 
 ## Why cross-market holdout instead of a later-date feed
 
