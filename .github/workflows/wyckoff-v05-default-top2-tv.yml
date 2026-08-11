@@ -1,0 +1,54 @@
+name: Wyckoff v0.5 Default Top2 TradingView Diagnostic
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/generate_v05_default_top2_tv_diagnostic.py'
+      - 'indicators/wyckoff-regime-radar/research/test_generate_v05_default_top2_tv_diagnostic.py'
+      - '.github/workflows/wyckoff-v05-default-top2-tv.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/generate_v05_default_top2_tv_diagnostic.py'
+      - 'indicators/wyckoff-regime-radar/research/test_generate_v05_default_top2_tv_diagnostic.py'
+      - '.github/workflows/wyckoff-v05-default-top2-tv.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile generator and tests
+        run: |
+          python -m py_compile generate_v05_default_top2_tv_diagnostic.py
+          python -m py_compile test_generate_v05_default_top2_tv_diagnostic.py
+      - name: Run generator contract tests
+        run: python -m unittest -v test_generate_v05_default_top2_tv_diagnostic
+      - name: Generate deterministic Pine diagnostic
+        run: |
+          python generate_v05_default_top2_tv_diagnostic.py \
+            --output generated/wyckoff-issue-57-v05-default-top2-diagnostic.pine
+      - name: Commit generated harness on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/issue-57-wyckoff-v0.6-robustness'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-57-v05-default-top2-diagnostic.pine
+          if git diff --cached --quiet; then
+            echo "No generated harness changes"
+          else
+            git commit -m "research: generate default v05 Top2 TradingView diagnostic"
+            git push
+          fi
