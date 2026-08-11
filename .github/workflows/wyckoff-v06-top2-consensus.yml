@@ -7,15 +7,19 @@ on:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_v06_top2_directional_consensus.py'
       - 'indicators/wyckoff-regime-radar/research/diagnose_v05_v06_top2_consensus_comparison.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_v05_v06_top2_action_consensus.py'
       - 'indicators/wyckoff-regime-radar/research/test_diagnose_v06_top2_directional_consensus.py'
       - 'indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-consensus-hypothesis.md'
+      - 'indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-semantics-amendment.md'
       - '.github/workflows/wyckoff-v06-top2-consensus.yml'
   pull_request:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_v06_top2_directional_consensus.py'
       - 'indicators/wyckoff-regime-radar/research/diagnose_v05_v06_top2_consensus_comparison.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_v05_v06_top2_action_consensus.py'
       - 'indicators/wyckoff-regime-radar/research/test_diagnose_v06_top2_directional_consensus.py'
       - 'indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-consensus-hypothesis.md'
+      - 'indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-semantics-amendment.md'
       - '.github/workflows/wyckoff-v06-top2-consensus.yml'
   workflow_dispatch:
 
@@ -39,6 +43,7 @@ jobs:
         run: |
           python -m py_compile diagnose_v06_top2_directional_consensus.py
           python -m py_compile diagnose_v05_v06_top2_consensus_comparison.py
+          python -m py_compile diagnose_v05_v06_top2_action_consensus.py
           python -m py_compile test_diagnose_v06_top2_directional_consensus.py
       - name: Run Top2 rule tests
         run: python -m unittest -v test_diagnose_v06_top2_directional_consensus
@@ -47,11 +52,16 @@ jobs:
           python diagnose_v06_top2_directional_consensus.py \
             --json-output reports/issue-57-top2-directional-consensus.json \
             --md-output reports/issue-57-top2-directional-consensus.md
-      - name: Run frozen v0.5 vs v0.6 Top2 comparison
+      - name: Run frozen v0.5 vs v0.6 broad-family Top2 comparison
         run: |
           python diagnose_v05_v06_top2_consensus_comparison.py \
             --json-output reports/issue-57-top2-v05-v06-comparison.json \
             --md-output reports/issue-57-top2-v05-v06-comparison.md
+      - name: Run action-compatible Top2 comparison
+        run: |
+          python diagnose_v05_v06_top2_action_consensus.py \
+            --json-output reports/issue-57-top2-action-v05-v06.json \
+            --md-output reports/issue-57-top2-action-v05-v06.md
       - name: Commit diagnostic reports on branch push
         if: github.event_name == 'push' && github.ref == 'refs/heads/feat/issue-57-wyckoff-v0.6-robustness'
         working-directory: .
@@ -62,6 +72,8 @@ jobs:
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-top2-directional-consensus.md
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-top2-v05-v06-comparison.json
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-top2-v05-v06-comparison.md
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-top2-action-v05-v06.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-top2-action-v05-v06.md
           if git diff --cached --quiet; then
             echo "No report changes to commit"
           else
