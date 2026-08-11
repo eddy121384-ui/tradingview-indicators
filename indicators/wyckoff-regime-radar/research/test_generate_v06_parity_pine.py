@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from generate_v06_parity_pine import (
+from generate_v06_parity_pine_fixed import (
     EXPECTED_SOURCE_BLOB_SHA,
     SOURCE,
     git_blob_sha,
