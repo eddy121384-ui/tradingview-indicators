@@ -15,6 +15,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/diagnose_bridge_formation_outcomes.py'
       - 'indicators/wyckoff-regime-radar/research/test_diagnose_bridge_formation_outcomes.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-bridge-formation-behavior-map.md'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_handoff_weight_behavior.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_handoff_weight_behavior.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-handoff-weight-behavior-map.md'
       - '.github/workflows/wyckoff-v06-transition-formation-decay.yml'
   pull_request:
     paths:
@@ -28,6 +31,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/diagnose_bridge_formation_outcomes.py'
       - 'indicators/wyckoff-regime-radar/research/test_diagnose_bridge_formation_outcomes.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-bridge-formation-behavior-map.md'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_handoff_weight_behavior.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_handoff_weight_behavior.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-handoff-weight-behavior-map.md'
       - '.github/workflows/wyckoff-v06-transition-formation-decay.yml'
   workflow_dispatch:
 
@@ -57,12 +63,15 @@ jobs:
           python -m py_compile test_diagnose_formation_transition_paths.py
           python -m py_compile diagnose_bridge_formation_outcomes.py
           python -m py_compile test_diagnose_bridge_formation_outcomes.py
+          python -m py_compile diagnose_handoff_weight_behavior.py
+          python -m py_compile test_diagnose_handoff_weight_behavior.py
       - name: Run contract tests
         run: |
           python -m unittest -v test_diagnose_transition_formation_and_regime_decay
           python -m unittest -v test_diagnose_decay_exit_policy
           python -m unittest -v test_diagnose_formation_transition_paths
           python -m unittest -v test_diagnose_bridge_formation_outcomes
+          python -m unittest -v test_diagnose_handoff_weight_behavior
       - name: Run burned-data behavior map
         run: |
           python diagnose_transition_formation_and_regime_decay.py \
@@ -83,6 +92,11 @@ jobs:
           python diagnose_bridge_formation_outcomes.py \
             --json-output reports/issue-57-bridge-formation-outcomes.json \
             --md-output reports/issue-57-bridge-formation-outcomes.md
+      - name: Map bridge handoff weights
+        run: |
+          python diagnose_handoff_weight_behavior.py \
+            --json-output reports/issue-57-handoff-weight-behavior.json \
+            --md-output reports/issue-57-handoff-weight-behavior.md
       - name: Commit behavior-map reports on branch push
         if: github.event_name == 'push' && github.ref == 'refs/heads/feat/issue-57-wyckoff-v0.6-robustness'
         working-directory: .
@@ -97,9 +111,11 @@ jobs:
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-formation-transition-paths.md
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-bridge-formation-outcomes.json
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-bridge-formation-outcomes.md
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-handoff-weight-behavior.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-handoff-weight-behavior.md
           if git diff --cached --quiet; then
             echo "No report changes to commit"
           else
-            git commit -m "research: record transition and early bridge behavior maps"
+            git commit -m "research: record transition and handoff behavior maps"
             git push
           fi
