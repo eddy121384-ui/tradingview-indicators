@@ -1,0 +1,647 @@
+{
+  "schema_version": 1,
+  "issue": 57,
+  "status": "BURNED_DATA_BEHAVIOR_MAP_ONLY",
+  "engine": "current Issue #57 v0.6 price-only core",
+  "formation_lookback_bars": 3,
+  "health_lookback_bars": 3,
+  "formation_definition": "first bar of a consecutive actionable Top-2 episode: 2+3 bullish or 5+6 bearish",
+  "fast_and_concentrating_definition": "Top-2 strength increased over prior 3 bars AND normalized six-weight entropy fell over prior 3 bars",
+  "health_warning_definitions": {
+    "top2_weakening": "Top-2 strength is lower than 3 bars earlier",
+    "distribution_dispersing": "normalized six-weight entropy is higher than 3 bars earlier",
+    "opposite_structural_pressure_rising": "opposite three-stage half (4+5+6 for bull, 1+2+3 for bear) is higher than 3 bars earlier"
+  },
+  "pairs": {
+    "EURUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "formation": {
+        "events": 39,
+        "median_duration": 2.0,
+        "rho_strength_change_vs_duration": 0.14445752437706214,
+        "rho_entropy_drop_vs_duration": 0.02015714998779117,
+        "rho_strength_change_vs_return_10": 0.2143762782346481,
+        "rho_entropy_drop_vs_return_10": 0.013677645256592626,
+        "groups": {
+          "fast_and_concentrating": {
+            "events": 23,
+            "median_duration": 2.0,
+            "survival_rate_5": 0.30434782608695654,
+            "survival_rate_10": 0.043478260869565216,
+            "survival_rate_20": 0.043478260869565216,
+            "mean_aligned_return_5": -0.0026080770081628626,
+            "mean_aligned_return_10": 0.0023611748867466203,
+            "mean_aligned_return_20": 0.0035580086927823186
+          },
+          "other_formations": {
+            "events": 16,
+            "median_duration": 1.5,
+            "survival_rate_5": 0.25,
+            "survival_rate_10": 0.125,
+            "survival_rate_20": 0.0,
+            "mean_aligned_return_5": -0.002068274465482108,
+            "mean_aligned_return_10": -0.002568991554474942,
+            "mean_aligned_return_20": 5.538580313571758e-05
+          }
+        }
+      },
+      "health": {
+        "warning_bins": {
+          "0": {
+            "observations": 64,
+            "end_within_5_rate": 0.609375,
+            "end_within_10_rate": 0.78125,
+            "median_remaining_bars": 3.5,
+            "mean_aligned_return_5": -0.00215898064614452,
+            "mean_adverse_excursion_5": 0.009777200791640659
+          },
+          "1": {
+            "observations": 2,
+            "end_within_5_rate": 0.5,
+            "end_within_10_rate": 0.5,
+            "median_remaining_bars": 8.5,
+            "mean_aligned_return_5": 0.011224051190402595,
+            "mean_adverse_excursion_5": 0.0040668738531723925
+          },
+          "2": {
+            "observations": 2,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 3.0,
+            "mean_aligned_return_5": -0.008171403620874651,
+            "mean_adverse_excursion_5": 0.01236052962261791
+          },
+          "3": {
+            "observations": 6,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 1.0,
+            "mean_aligned_return_5": 0.001185732101328422,
+            "mean_adverse_excursion_5": 0.009589481198860883
+          }
+        },
+        "first_two_plus_warning": {
+          "events": 4,
+          "end_within_5_rate": 1.0,
+          "end_within_10_rate": 1.0,
+          "median_remaining_bars": 3.0,
+          "mean_aligned_return_5": 0.00038951296486233744,
+          "mean_adverse_excursion_5": 0.009404368104518251
+        }
+      }
+    },
+    "USDJPY": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "formation": {
+        "events": 37,
+        "median_duration": 2.0,
+        "rho_strength_change_vs_duration": 0.005805815954391036,
+        "rho_entropy_drop_vs_duration": 0.20155614387210083,
+        "rho_strength_change_vs_return_10": -0.09975093676824943,
+        "rho_entropy_drop_vs_return_10": -0.2418207681365576,
+        "groups": {
+          "fast_and_concentrating": {
+            "events": 20,
+            "median_duration": 2.5,
+            "survival_rate_5": 0.35,
+            "survival_rate_10": 0.2,
+            "survival_rate_20": 0.0,
+            "mean_aligned_return_5": -0.0030323720742852557,
+            "mean_aligned_return_10": -0.0074895557222382945,
+            "mean_aligned_return_20": -0.005792253997414764
+          },
+          "other_formations": {
+            "events": 17,
+            "median_duration": 2.0,
+            "survival_rate_5": 0.35294117647058826,
+            "survival_rate_10": 0.058823529411764705,
+            "survival_rate_20": 0.0,
+            "mean_aligned_return_5": -0.004540412299813077,
+            "mean_aligned_return_10": -0.005829845905156463,
+            "mean_aligned_return_20": -0.0056853476898365216
+          }
+        }
+      },
+      "health": {
+        "warning_bins": {
+          "0": {
+            "observations": 66,
+            "end_within_5_rate": 0.7424242424242424,
+            "end_within_10_rate": 0.9848484848484849,
+            "median_remaining_bars": 3.0,
+            "mean_aligned_return_5": -0.004090375658716167,
+            "mean_adverse_excursion_5": 0.011249218616114219
+          },
+          "1": {
+            "observations": 1,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 3.0,
+            "mean_aligned_return_5": -0.004550094289026196,
+            "mean_adverse_excursion_5": 0.009567308524074059
+          },
+          "2": {
+            "observations": 2,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 3.5,
+            "mean_aligned_return_5": -0.009206650188853527,
+            "mean_adverse_excursion_5": 0.013078347071767416
+          },
+          "3": {
+            "observations": 13,
+            "end_within_5_rate": 0.8461538461538461,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 1.0,
+            "mean_aligned_return_5": -0.0010892949276959042,
+            "mean_adverse_excursion_5": 0.0070878321535981885
+          }
+        },
+        "first_two_plus_warning": {
+          "events": 6,
+          "end_within_5_rate": 0.8333333333333334,
+          "end_within_10_rate": 1.0,
+          "median_remaining_bars": 2.0,
+          "mean_aligned_return_5": -0.0009700408223584089,
+          "mean_adverse_excursion_5": 0.005598268858928075
+        }
+      }
+    },
+    "GBPUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "formation": {
+        "events": 50,
+        "median_duration": 2.0,
+        "rho_strength_change_vs_duration": -0.1437590856964682,
+        "rho_entropy_drop_vs_duration": -0.004404874186983368,
+        "rho_strength_change_vs_return_10": -0.16891704613869007,
+        "rho_entropy_drop_vs_return_10": -0.12275823366835464,
+        "groups": {
+          "fast_and_concentrating": {
+            "events": 26,
+            "median_duration": 2.0,
+            "survival_rate_5": 0.23076923076923078,
+            "survival_rate_10": 0.038461538461538464,
+            "survival_rate_20": 0.0,
+            "mean_aligned_return_5": -0.0010371572562573978,
+            "mean_aligned_return_10": -0.0024813587266902014,
+            "mean_aligned_return_20": -0.004928193931240345
+          },
+          "other_formations": {
+            "events": 24,
+            "median_duration": 2.0,
+            "survival_rate_5": 0.2916666666666667,
+            "survival_rate_10": 0.125,
+            "survival_rate_20": 0.041666666666666664,
+            "mean_aligned_return_5": 0.0006806879885720731,
+            "mean_aligned_return_10": 0.0012653608696987892,
+            "mean_aligned_return_20": 0.0019845327375743933
+          }
+        }
+      },
+      "health": {
+        "warning_bins": {
+          "0": {
+            "observations": 63,
+            "end_within_5_rate": 0.5873015873015873,
+            "end_within_10_rate": 0.8412698412698413,
+            "median_remaining_bars": 4.0,
+            "mean_aligned_return_5": -0.005288168204032873,
+            "mean_adverse_excursion_5": 0.013716593851790271
+          },
+          "1": {
+            "observations": 2,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 2.0,
+            "mean_aligned_return_5": -0.007529293044018837,
+            "mean_adverse_excursion_5": 0.012101055885680945
+          },
+          "2": {
+            "observations": 4,
+            "end_within_5_rate": 0.5,
+            "end_within_10_rate": 0.5,
+            "median_remaining_bars": 7.0,
+            "mean_aligned_return_5": -0.0007400649777404011,
+            "mean_adverse_excursion_5": 0.0066521555236692675
+          },
+          "3": {
+            "observations": 28,
+            "end_within_5_rate": 0.8571428571428571,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 1.0,
+            "mean_aligned_return_5": 0.00373463192832368,
+            "mean_adverse_excursion_5": 0.007851698006421964
+          }
+        },
+        "first_two_plus_warning": {
+          "events": 14,
+          "end_within_5_rate": 0.8571428571428571,
+          "end_within_10_rate": 0.9285714285714286,
+          "median_remaining_bars": 1.0,
+          "mean_aligned_return_5": 0.0013837046707466344,
+          "mean_adverse_excursion_5": 0.007106104350814236
+        }
+      }
+    },
+    "AUDUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "formation": {
+        "events": 32,
+        "median_duration": 3.5,
+        "rho_strength_change_vs_duration": -0.2940741738522928,
+        "rho_entropy_drop_vs_duration": -0.03417195825483445,
+        "rho_strength_change_vs_return_10": 0.1014493180405953,
+        "rho_entropy_drop_vs_return_10": -0.018328445747800584,
+        "groups": {
+          "fast_and_concentrating": {
+            "events": 16,
+            "median_duration": 3.5,
+            "survival_rate_5": 0.3125,
+            "survival_rate_10": 0.1875,
+            "survival_rate_20": 0.125,
+            "mean_aligned_return_5": -0.0016017330470321361,
+            "mean_aligned_return_10": -0.00442414535057388,
+            "mean_aligned_return_20": 0.002439627403529397
+          },
+          "other_formations": {
+            "events": 16,
+            "median_duration": 3.5,
+            "survival_rate_5": 0.375,
+            "survival_rate_10": 0.1875,
+            "survival_rate_20": 0.0,
+            "mean_aligned_return_5": -0.0036878222240060293,
+            "mean_aligned_return_10": -0.004826525306367166,
+            "mean_aligned_return_20": -0.00602765824277663
+          }
+        }
+      },
+      "health": {
+        "warning_bins": {
+          "0": {
+            "observations": 93,
+            "end_within_5_rate": 0.4731182795698925,
+            "end_within_10_rate": 0.7204301075268817,
+            "median_remaining_bars": 6.0,
+            "mean_aligned_return_5": 0.0005193864463827633,
+            "mean_adverse_excursion_5": 0.014532219177761839
+          },
+          "1": {
+            "observations": 2,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 0.0,
+            "mean_aligned_return_5": 0.010769792126238409,
+            "mean_adverse_excursion_5": 0.0040079643515685826
+          },
+          "2": {
+            "observations": 4,
+            "end_within_5_rate": 0.75,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 3.5,
+            "mean_aligned_return_5": -0.001545317034850141,
+            "mean_adverse_excursion_5": 0.008657681771607556
+          },
+          "3": {
+            "observations": 18,
+            "end_within_5_rate": 0.8333333333333334,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 1.5,
+            "mean_aligned_return_5": -0.004897425184335663,
+            "mean_adverse_excursion_5": 0.010506467192546436
+          }
+        },
+        "first_two_plus_warning": {
+          "events": 11,
+          "end_within_5_rate": 0.6363636363636364,
+          "end_within_10_rate": 1.0,
+          "median_remaining_bars": 2.0,
+          "mean_aligned_return_5": -0.002107189353820048,
+          "mean_adverse_excursion_5": 0.007984815096238567
+        }
+      }
+    },
+    "EURCHF": {
+      "rows": 2400,
+      "start_date": "2012-11-16",
+      "end_date": "2022-03-04",
+      "formation": {
+        "events": 44,
+        "median_duration": 2.5,
+        "rho_strength_change_vs_duration": 0.3193053790161501,
+        "rho_entropy_drop_vs_duration": 0.3955255072250724,
+        "rho_strength_change_vs_return_10": 0.007402372308268954,
+        "rho_entropy_drop_vs_return_10": 0.047115675022651765,
+        "groups": {
+          "fast_and_concentrating": {
+            "events": 21,
+            "median_duration": 5.0,
+            "survival_rate_5": 0.6190476190476191,
+            "survival_rate_10": 0.23809523809523808,
+            "survival_rate_20": 0.047619047619047616,
+            "mean_aligned_return_5": 0.0010874985363887092,
+            "mean_aligned_return_10": 0.001083177883027453,
+            "mean_aligned_return_20": 0.0038974577721395285
+          },
+          "other_formations": {
+            "events": 23,
+            "median_duration": 1.0,
+            "survival_rate_5": 0.17391304347826086,
+            "survival_rate_10": 0.13043478260869565,
+            "survival_rate_20": 0.043478260869565216,
+            "mean_aligned_return_5": 0.0008284526220735727,
+            "mean_aligned_return_10": -0.0007390767472941882,
+            "mean_aligned_return_20": -0.00013616276944202222
+          }
+        }
+      },
+      "health": {
+        "warning_bins": {
+          "0": {
+            "observations": 120,
+            "end_within_5_rate": 0.44166666666666665,
+            "end_within_10_rate": 0.675,
+            "median_remaining_bars": 7.0,
+            "mean_aligned_return_5": 0.0010684299557285582,
+            "mean_adverse_excursion_5": 0.004404471500201005
+          },
+          "1": {
+            "observations": 4,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 0.5,
+            "mean_aligned_return_5": 0.007924473691063944,
+            "mean_adverse_excursion_5": 0.0038759119812422083
+          },
+          "2": {
+            "observations": 5,
+            "end_within_5_rate": 0.8,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 3.0,
+            "mean_aligned_return_5": 0.0009564955766879323,
+            "mean_adverse_excursion_5": 0.0028096704389022342
+          },
+          "3": {
+            "observations": 22,
+            "end_within_5_rate": 0.8181818181818182,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 1.5,
+            "mean_aligned_return_5": 0.0068518292775333,
+            "mean_adverse_excursion_5": 0.003744926245891683
+          }
+        },
+        "first_two_plus_warning": {
+          "events": 11,
+          "end_within_5_rate": 0.8181818181818182,
+          "end_within_10_rate": 1.0,
+          "median_remaining_bars": 2.0,
+          "mean_aligned_return_5": 0.0006252347089679952,
+          "mean_adverse_excursion_5": 0.004789389247310024
+        }
+      }
+    },
+    "USDCAD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "formation": {
+        "events": 29,
+        "median_duration": 4.0,
+        "rho_strength_change_vs_duration": -0.15760827667173594,
+        "rho_entropy_drop_vs_duration": -0.23032555775707658,
+        "rho_strength_change_vs_return_10": -0.004438967616184752,
+        "rho_entropy_drop_vs_return_10": -0.11822660098522166,
+        "groups": {
+          "fast_and_concentrating": {
+            "events": 19,
+            "median_duration": 4.0,
+            "survival_rate_5": 0.47368421052631576,
+            "survival_rate_10": 0.2631578947368421,
+            "survival_rate_20": 0.10526315789473684,
+            "mean_aligned_return_5": 0.0018629483564864065,
+            "mean_aligned_return_10": 0.002387062359771667,
+            "mean_aligned_return_20": 0.0028268854707494346
+          },
+          "other_formations": {
+            "events": 10,
+            "median_duration": 4.0,
+            "survival_rate_5": 0.4,
+            "survival_rate_10": 0.2,
+            "survival_rate_20": 0.0,
+            "mean_aligned_return_5": 0.0009535993669027687,
+            "mean_aligned_return_10": -0.0014749997859401565,
+            "mean_aligned_return_20": -0.002896570673294574
+          }
+        }
+      },
+      "health": {
+        "warning_bins": {
+          "0": {
+            "observations": 97,
+            "end_within_5_rate": 0.5154639175257731,
+            "end_within_10_rate": 0.7319587628865979,
+            "median_remaining_bars": 5.0,
+            "mean_aligned_return_5": -0.0006370182889843188,
+            "mean_adverse_excursion_5": 0.0076794322558742965
+          },
+          "1": {
+            "observations": 4,
+            "end_within_5_rate": 0.5,
+            "end_within_10_rate": 0.75,
+            "median_remaining_bars": 4.5,
+            "mean_aligned_return_5": -0.00221712507500213,
+            "mean_adverse_excursion_5": 0.008691542712059852
+          },
+          "2": {
+            "observations": 4,
+            "end_within_5_rate": 1.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 3.5,
+            "mean_aligned_return_5": -0.0020627579794988693,
+            "mean_adverse_excursion_5": 0.007433539007359963
+          },
+          "3": {
+            "observations": 11,
+            "end_within_5_rate": 0.9090909090909091,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 1.0,
+            "mean_aligned_return_5": -0.0009056213760844493,
+            "mean_adverse_excursion_5": 0.007165251119169234
+          }
+        },
+        "first_two_plus_warning": {
+          "events": 7,
+          "end_within_5_rate": 0.8571428571428571,
+          "end_within_10_rate": 1.0,
+          "median_remaining_bars": 3.0,
+          "mean_aligned_return_5": -0.0032856470237076574,
+          "mean_adverse_excursion_5": 0.009342022950013613
+        }
+      }
+    },
+    "USDCHF": {
+      "rows": 2400,
+      "start_date": "2012-12-03",
+      "end_date": "2022-03-04",
+      "formation": {
+        "events": 32,
+        "median_duration": 2.0,
+        "rho_strength_change_vs_duration": 0.20318809525689652,
+        "rho_entropy_drop_vs_duration": 0.23776891920241555,
+        "rho_strength_change_vs_return_10": -0.2401466584805884,
+        "rho_entropy_drop_vs_return_10": -0.27419354838709675,
+        "groups": {
+          "fast_and_concentrating": {
+            "events": 19,
+            "median_duration": 2.0,
+            "survival_rate_5": 0.47368421052631576,
+            "survival_rate_10": 0.2631578947368421,
+            "survival_rate_20": 0.05263157894736842,
+            "mean_aligned_return_5": -0.0004220473316117979,
+            "mean_aligned_return_10": -0.004256157797532616,
+            "mean_aligned_return_20": -0.003897213177491693
+          },
+          "other_formations": {
+            "events": 13,
+            "median_duration": 1.0,
+            "survival_rate_5": 0.23076923076923078,
+            "survival_rate_10": 0.15384615384615385,
+            "survival_rate_20": 0.0,
+            "mean_aligned_return_5": -0.003124382153038802,
+            "mean_aligned_return_10": 0.0005495388250158324,
+            "mean_aligned_return_20": 0.002826279365795613
+          }
+        }
+      },
+      "health": {
+        "warning_bins": {
+          "0": {
+            "observations": 90,
+            "end_within_5_rate": 0.5,
+            "end_within_10_rate": 0.7888888888888889,
+            "median_remaining_bars": 5.5,
+            "mean_aligned_return_5": -0.0022897826533348105,
+            "mean_adverse_excursion_5": 0.010158928221157333
+          },
+          "1": {
+            "observations": 1,
+            "end_within_5_rate": 0.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 10.0,
+            "mean_aligned_return_5": -0.0005252652589557982,
+            "mean_adverse_excursion_5": 0.002920474839794185
+          },
+          "2": {
+            "observations": 1,
+            "end_within_5_rate": 0.0,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 6.0,
+            "mean_aligned_return_5": 0.0032411737834721066,
+            "mean_adverse_excursion_5": 0.000511191838332814
+          },
+          "3": {
+            "observations": 16,
+            "end_within_5_rate": 0.6875,
+            "end_within_10_rate": 1.0,
+            "median_remaining_bars": 1.5,
+            "mean_aligned_return_5": 0.0004329465765394516,
+            "mean_adverse_excursion_5": 0.00563529527953955
+          }
+        },
+        "first_two_plus_warning": {
+          "events": 5,
+          "end_within_5_rate": 0.6,
+          "end_within_10_rate": 1.0,
+          "median_remaining_bars": 4.0,
+          "mean_aligned_return_5": -0.0010406458767708848,
+          "mean_adverse_excursion_5": 0.005692035842964338
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "formation": {
+      "total_events": 263,
+      "median_pair_median_duration": 2.0,
+      "median_pair_rho_strength_change_vs_duration": 0.005805815954391036,
+      "median_pair_rho_entropy_drop_vs_duration": 0.02015714998779117,
+      "median_pair_rho_strength_change_vs_return_10": -0.004438967616184752,
+      "median_pair_rho_entropy_drop_vs_return_10": -0.11822660098522166,
+      "groups": {
+        "fast_and_concentrating": {
+          "total_events": 144,
+          "median_pair_median_duration": 2.5,
+          "median_pair_survival_rate_5": 0.35,
+          "median_pair_survival_rate_10": 0.2,
+          "median_pair_survival_rate_20": 0.047619047619047616,
+          "median_pair_mean_aligned_return_5": -0.0010371572562573978,
+          "median_pair_mean_aligned_return_10": -0.0024813587266902014,
+          "median_pair_mean_aligned_return_20": 0.002439627403529397
+        },
+        "other_formations": {
+          "total_events": 119,
+          "median_pair_median_duration": 2.0,
+          "median_pair_survival_rate_5": 0.2916666666666667,
+          "median_pair_survival_rate_10": 0.13043478260869565,
+          "median_pair_survival_rate_20": 0.0,
+          "median_pair_mean_aligned_return_5": -0.002068274465482108,
+          "median_pair_mean_aligned_return_10": -0.0014749997859401565,
+          "median_pair_mean_aligned_return_20": -0.00013616276944202222
+        }
+      }
+    },
+    "health": {
+      "warning_bins": {
+        "0": {
+          "total_observations": 593,
+          "median_pair_end_within_5_rate": 0.5154639175257731,
+          "median_pair_end_within_10_rate": 0.78125,
+          "median_pair_median_remaining_bars": 5.0,
+          "median_pair_mean_aligned_return_5": -0.00215898064614452,
+          "median_pair_mean_adverse_excursion_5": 0.010158928221157333
+        },
+        "1": {
+          "total_observations": 16,
+          "median_pair_end_within_5_rate": 1.0,
+          "median_pair_end_within_10_rate": 1.0,
+          "median_pair_median_remaining_bars": 3.0,
+          "median_pair_mean_aligned_return_5": -0.0005252652589557982,
+          "median_pair_mean_adverse_excursion_5": 0.0040668738531723925
+        },
+        "2": {
+          "total_observations": 22,
+          "median_pair_end_within_5_rate": 0.8,
+          "median_pair_end_within_10_rate": 1.0,
+          "median_pair_median_remaining_bars": 3.5,
+          "median_pair_mean_aligned_return_5": -0.001545317034850141,
+          "median_pair_mean_adverse_excursion_5": 0.007433539007359963
+        },
+        "3": {
+          "total_observations": 114,
+          "median_pair_end_within_5_rate": 0.8461538461538461,
+          "median_pair_end_within_10_rate": 1.0,
+          "median_pair_median_remaining_bars": 1.0,
+          "median_pair_mean_aligned_return_5": 0.0004329465765394516,
+          "median_pair_mean_adverse_excursion_5": 0.007165251119169234
+        }
+      },
+      "first_two_plus_warning": {
+        "total_events": 58,
+        "median_pair_end_within_5_rate": 0.8333333333333334,
+        "median_pair_end_within_10_rate": 1.0,
+        "median_pair_median_remaining_bars": 2.0,
+        "median_pair_mean_aligned_return_5": -0.0009700408223584089,
+        "median_pair_mean_adverse_excursion_5": 0.007106104350814236
+      }
+    }
+  },
+  "boundary": "Existing burned fixtures are intentionally reused to understand indicator behavior. No threshold is optimized and no independent OOS claim is made."
+}
