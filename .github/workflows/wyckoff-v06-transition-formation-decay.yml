@@ -1,0 +1,58 @@
+name: Wyckoff v0.6 Transition Formation and Regime Decay
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_transition_formation_and_regime_decay.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_transition_formation_and_regime_decay.py'
+      - '.github/workflows/wyckoff-v06-transition-formation-decay.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_transition_formation_and_regime_decay.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_transition_formation_and_regime_decay.py'
+      - '.github/workflows/wyckoff-v06-transition-formation-decay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  behavior-map:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile diagnostic
+        run: |
+          python -m py_compile diagnose_transition_formation_and_regime_decay.py
+          python -m py_compile test_diagnose_transition_formation_and_regime_decay.py
+      - name: Run contract tests
+        run: python -m unittest -v test_diagnose_transition_formation_and_regime_decay
+      - name: Run burned-data behavior map
+        run: |
+          python diagnose_transition_formation_and_regime_decay.py \
+            --json-output reports/issue-57-transition-formation-and-regime-decay.json \
+            --md-output reports/issue-57-transition-formation-and-regime-decay.md
+      - name: Commit behavior-map reports on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/issue-57-wyckoff-v0.6-robustness'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-transition-formation-and-regime-decay.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-transition-formation-and-regime-decay.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "research: record transition formation and regime decay behavior map"
+            git push
+          fi
