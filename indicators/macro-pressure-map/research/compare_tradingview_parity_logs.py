@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare copied Pine Logs checkpoints against the frozen V6.6 Python mirror."""
+"""Compare copied full-history Pine Logs against the frozen V6.6 Python mirror."""
 from __future__ import annotations
 
 import argparse
@@ -62,33 +62,38 @@ def compare_log_text(text: str) -> dict:
         py_values = py[py_name].to_numpy(float)
         valid = np.isfinite(tv_values) & np.isfinite(py_values)
         if not valid.any():
-            comparisons[py_name] = {"comparable_checkpoints": 0}
+            comparisons[py_name] = {"comparable_rows": 0}
             continue
         diff = np.abs(tv_values[valid] - py_values[valid])
+        valid_indices = np.flatnonzero(valid)
+        worst_order = valid_indices[
+            np.argsort(np.abs(tv_values[valid_indices] - py_values[valid_indices]))[::-1][:20]
+        ]
         comparisons[py_name] = {
-            "comparable_checkpoints": int(valid.sum()),
+            "comparable_rows": int(valid.sum()),
             "max_abs_error": float(diff.max()),
             "mean_abs_error": float(diff.mean()),
-            "errors_by_date": {
+            "worst_20_errors_by_date": {
                 frame.index[i].date().isoformat(): float(abs(tv_values[i] - py_values[i]))
-                for i in np.flatnonzero(valid)
+                for i in worst_order
             },
         }
 
-    counts = [comparisons[name].get("comparable_checkpoints", 0) for name in TARGETS.values()]
+    counts = [comparisons[name].get("comparable_rows", 0) for name in TARGETS.values()]
     maxima = [comparisons[name].get("max_abs_error", np.inf) for name in TARGETS.values()]
     acceptance = {
-        "at_least_8_comparable_checkpoints_per_axis": min(counts, default=0) >= 8,
+        "at_least_100_comparable_rows_per_axis": min(counts, default=0) >= 100,
         "all_axes_max_abs_error_at_most_0_50_points": bool(maxima) and max(maxima) <= 0.50,
     }
     acceptance["pass"] = all(acceptance.values())
     return {
-        "checkpoints": int(len(frame)),
-        "dates": [value.date().isoformat() for value in frame.index],
+        "rows": int(len(frame)),
+        "first_date": frame.index.min().date().isoformat(),
+        "last_date": frame.index.max().date().isoformat(),
         "comparisons": comparisons,
         "acceptance": acceptance,
         "notes": [
-            "Pine Logs fallback is intended for accounts/environments where chart-data CSV export is unavailable.",
+            "Pine Logs fallback is intended for accounts/environments where chart-data CSV export is unavailable. The helper logs the full available daily history from its configured start year so rolling V6.6 calculations can be reconstructed.",
             "The helper's three input.source fields must be set to the frozen V6.6 GPI/IPI/FCPI plotted outputs, not chart close.",
             "The helper logs TradingView source rows and original V6.6 plotted EMA axes; Python then recomputes from those same source rows.",
             "This is an engineering parity gate, not an economic-performance gate.",
@@ -97,7 +102,7 @@ def compare_log_text(text: str) -> dict:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Compare Macro Pressure V6.6 Pine Logs checkpoints")
+    parser = argparse.ArgumentParser(description="Compare Macro Pressure V6.6 Pine Logs history")
     parser.add_argument("--input", type=Path, required=True, help="Text copied from TradingView Pine Logs")
     parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args()
