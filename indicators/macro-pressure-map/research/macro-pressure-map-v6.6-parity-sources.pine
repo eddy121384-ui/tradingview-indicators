@@ -3,14 +3,39 @@ indicator("Macro Pressure Map V6.6 Parity Sources", shorttitle="MPM V6.6 PARITY 
 
 // Issue #59 Stage-2 helper.
 // Attach this helper together with the frozen Macro Pressure Map V6.6 to an
-// SPY 1D chart, keep both market-proxy timeframes at D, then export chart data.
-// The helper exports the same default source series requested by V6.6 while
-// leaving the production V6.6 script unchanged.
+// SPY 1D chart. Keep both market-proxy timeframes at D.
+//
+// Two parity paths are supported:
+// 1) Export chart data: the PARITY SRC plots become CSV columns.
+// 2) Pine Logs fallback: select the frozen V6.6 GPI/IPI/FCPI plots in the three
+//    source inputs below. The helper logs fixed historical checkpoints using
+//    TradingView source rows plus the original indicator's plotted outputs.
 
 marketTf = input.timeframe("D", "Market Proxy Timeframe")
+tvGpiPlot = input.source(close, "Frozen V6.6 plot: GPI - Growth Pressure")
+tvIpiPlot = input.source(close, "Frozen V6.6 plot: IPI - Inflation Pressure")
+tvFcpiPlot = input.source(close, "Frozen V6.6 plot: FCPI - Financial Conditions Pressure")
 
 f_req(symbol) =>
     request.security(symbol, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_num(v) =>
+    str.tostring(v, "#.########")
+
+f_isCheckpoint() =>
+    (year == 2012 and month == 6 and dayofmonth == 1) or
+     (year == 2013 and month == 6 and dayofmonth == 24) or
+     (year == 2015 and month == 8 and dayofmonth == 24) or
+     (year == 2016 and month == 11 and dayofmonth == 9) or
+     (year == 2018 and month == 2 and dayofmonth == 5) or
+     (year == 2018 and month == 12 and dayofmonth == 24) or
+     (year == 2020 and month == 3 and dayofmonth == 16) or
+     (year == 2020 and month == 6 and dayofmonth == 8) or
+     (year == 2022 and month == 6 and dayofmonth == 13) or
+     (year == 2023 and month == 10 and dayofmonth == 19) or
+     (year == 2024 and month == 8 and dayofmonth == 5) or
+     (year == 2025 and month == 4 and dayofmonth == 7) or
+     (year == 2026 and month == 4 and dayofmonth == 1)
 
 spy = f_req("AMEX:SPY")
 iwm = f_req("AMEX:IWM")
@@ -53,3 +78,16 @@ plot(hyg, "PARITY SRC hyg", display=display.data_window)
 plot(ief, "PARITY SRC ief", display=display.data_window)
 plot(hyOas, "PARITY SRC hy_oas", display=display.data_window)
 plot(realYield, "PARITY SRC real_yield", display=display.data_window)
+
+if barstate.isconfirmed and f_isCheckpoint()
+    message = "MPM_PARITY" +
+      "|date=" + str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) +
+      "|spy=" + f_num(spy) + "|iwm=" + f_num(iwm) + "|rsp=" + f_num(rsp) +
+      "|xly=" + f_num(xly) + "|xlp=" + f_num(xlp) + "|xli=" + f_num(xli) + "|xlu=" + f_num(xlu) +
+      "|copper=" + f_num(copper) + "|gold=" + f_num(gold) +
+      "|breakeven_10y=" + f_num(breakeven10y) + "|oil=" + f_num(oil) + "|gasoline=" + f_num(gasoline) +
+      "|commodity_basket=" + f_num(commodityBasket) + "|dxy=" + f_num(dxy) +
+      "|vix=" + f_num(vix) + "|move=" + f_num(move) + "|hyg=" + f_num(hyg) + "|ief=" + f_num(ief) +
+      "|hy_oas=" + f_num(hyOas) + "|real_yield=" + f_num(realYield) +
+      "|tv_plot_gpi=" + f_num(tvGpiPlot) + "|tv_plot_ipi=" + f_num(tvIpiPlot) + "|tv_plot_fcpi=" + f_num(tvFcpiPlot)
+    log.info(message)
