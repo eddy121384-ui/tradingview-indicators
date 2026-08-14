@@ -8,8 +8,8 @@ indicator("Macro Pressure Map V6.6 Parity Sources", shorttitle="MPM V6.6 PARITY 
 // Two parity paths are supported:
 // 1) Export chart data: the PARITY SRC plots become CSV columns.
 // 2) Pine Logs fallback: select the frozen V6.6 GPI/IPI/FCPI plots in the three
-//    source inputs below. The helper logs fixed historical checkpoints using
-//    TradingView source rows plus the original indicator's plotted outputs.
+//    source inputs below. The helper logs full daily history from the configured
+//    start year using TradingView source rows plus the original indicator plots.
 
 marketTf = input.timeframe("D", "Market Proxy Timeframe")
 tvGpiPlot = input.source(close, "Frozen V6.6 plot: GPI - Growth Pressure")
@@ -22,20 +22,7 @@ f_req(symbol) =>
 f_num(v) =>
     str.tostring(v, "#.########")
 
-f_isCheckpoint() =>
-    (year == 2012 and month == 6 and dayofmonth == 1) or
-     (year == 2013 and month == 6 and dayofmonth == 24) or
-     (year == 2015 and month == 8 and dayofmonth == 24) or
-     (year == 2016 and month == 11 and dayofmonth == 9) or
-     (year == 2018 and month == 2 and dayofmonth == 5) or
-     (year == 2018 and month == 12 and dayofmonth == 24) or
-     (year == 2020 and month == 3 and dayofmonth == 16) or
-     (year == 2020 and month == 6 and dayofmonth == 8) or
-     (year == 2022 and month == 6 and dayofmonth == 13) or
-     (year == 2023 and month == 10 and dayofmonth == 19) or
-     (year == 2024 and month == 8 and dayofmonth == 5) or
-     (year == 2025 and month == 4 and dayofmonth == 7) or
-     (year == 2026 and month == 4 and dayofmonth == 1)
+logFromYear = input.int(2007, "Pine Logs start year", minval=2000, maxval=2100)
 
 spy = f_req("AMEX:SPY")
 iwm = f_req("AMEX:IWM")
@@ -79,7 +66,7 @@ plot(ief, "PARITY SRC ief", display=display.data_window)
 plot(hyOas, "PARITY SRC hy_oas", display=display.data_window)
 plot(realYield, "PARITY SRC real_yield", display=display.data_window)
 
-if barstate.isconfirmed and f_isCheckpoint()
+if barstate.isconfirmed and year >= logFromYear
     message = "MPM_PARITY" +
       "|date=" + str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) +
       "|spy=" + f_num(spy) + "|iwm=" + f_num(iwm) + "|rsp=" + f_num(rsp) +
