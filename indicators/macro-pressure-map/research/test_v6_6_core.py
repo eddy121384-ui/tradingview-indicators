@@ -8,12 +8,14 @@ import pandas as pd
 from v6_6_core import (
     SOURCE_COLUMNS,
     V66Config,
+    component_score,
     compute_v66,
     core_regime,
     fcpi_state,
     gpi_state,
     ipi_state,
     weighted_avg_series,
+    zscore,
 )
 
 
@@ -72,6 +74,29 @@ def test_weighted_average_reweights_around_missing_values() -> None:
     b = pd.Series([20.0, 20.0, np.nan], index=index)
     result = weighted_avg_series([(a, 0.25), (b, 0.75)])
     assert np.allclose(result.to_numpy(), [17.5, 20.0, 10.0], equal_nan=True)
+
+
+def test_zscore_uses_last_non_na_values_like_pine() -> None:
+    src = pd.Series([1.0, 2.0, 3.0, np.nan, 4.0])
+    result = zscore(src, 3)
+    expected = (4.0 - 3.0) / np.std([2.0, 3.0, 4.0], ddof=0)
+    assert np.isclose(result.iloc[-1], expected)
+
+
+def test_zero_real_yield_roc_na_does_not_poison_following_252_bars() -> None:
+    cfg = V66Config()
+    src = pd.Series(np.linspace(-1.2, 1.3, 700))
+    src.iloc[300] = 0.0
+    score = component_score(src, False, cfg.z_len_daily, cfg)
+
+    # A zero denominator makes ROC undefined exactly 20 and 63 bars later.
+    assert pd.isna(score.iloc[320])
+    assert pd.isna(score.iloc[363])
+
+    # Pine's rolling statistics ignore those isolated na values, so the next
+    # valid bar recovers immediately instead of being poisoned for 252 bars.
+    assert np.isfinite(score.iloc[321])
+    assert np.isfinite(score.iloc[364])
 
 
 def test_default_market_only_path_produces_axes_and_states() -> None:
