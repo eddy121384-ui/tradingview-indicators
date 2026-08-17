@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "issue": 57,
+  "status": "FROZEN_BEFORE_OUTCOME_EVALUATION",
+  "source": "Yahoo Finance via yfinance",
+  "download_start": "2018-01-01",
+  "download_end_exclusive": "2026-08-15",
+  "score_start": "2022-01-01",
+  "score_end": "2026-08-14",
+  "pairs": {
+    "NZDUSD": {
+      "ticker": "NZDUSD=X",
+      "frozen_file": "issue-57-transition-health-oos-nzdusd.csv",
+      "sha256": "acf09066adfd4d693c320e0410b5896b61b33e5e81ab575e692a587cd2468adc",
+      "rows": 2244,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14"
+    },
+    "EURGBP": {
+      "ticker": "EURGBP=X",
+      "frozen_file": "issue-57-transition-health-oos-eurgbp.csv",
+      "sha256": "46f76bc275dfa269bda253302b086d5afb543f154d6108c2ea2eb4c0f39e69be",
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14"
+    },
+    "GBPJPY": {
+      "ticker": "GBPJPY=X",
+      "frozen_file": "issue-57-transition-health-oos-gbpjpy.csv",
+      "sha256": "2d2892dddc7640583875f7d457c7e46d78f1684066e59d1f5db8367906ea0b3e",
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14"
+    },
+    "AUDJPY": {
+      "ticker": "AUDJPY=X",
+      "frozen_file": "issue-57-transition-health-oos-audjpy.csv",
+      "sha256": "e8ad120cde806142e48fd44f34a50357d41faacfcb20a40dbda3cfe24802073a",
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14"
+    },
+    "CADJPY": {
+      "ticker": "CADJPY=X",
+      "frozen_file": "issue-57-transition-health-oos-cadjpy.csv",
+      "sha256": "dda2c36879f4889dedd0916f601b56c71b6cc7bdfa85284db720784603c0e88f",
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14"
+    }
+  }
+}
