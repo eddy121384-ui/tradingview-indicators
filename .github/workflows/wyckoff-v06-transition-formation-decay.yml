@@ -24,6 +24,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/diagnose_post_handoff_hold_persistence.py'
       - 'indicators/wyckoff-regime-radar/research/test_diagnose_post_handoff_hold_persistence.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-post-handoff-hold-persistence-map.md'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_post_retake_reseizure.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_post_retake_reseizure.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-post-retake-reseizure-map.md'
       - '.github/workflows/wyckoff-v06-transition-formation-decay.yml'
   pull_request:
     paths:
@@ -46,6 +49,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/diagnose_post_handoff_hold_persistence.py'
       - 'indicators/wyckoff-regime-radar/research/test_diagnose_post_handoff_hold_persistence.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-post-handoff-hold-persistence-map.md'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_post_retake_reseizure.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_post_retake_reseizure.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-post-retake-reseizure-map.md'
       - '.github/workflows/wyckoff-v06-transition-formation-decay.yml'
   workflow_dispatch:
 
@@ -81,6 +87,8 @@ jobs:
           python -m py_compile test_diagnose_post_handoff_companion_progression.py
           python -m py_compile diagnose_post_handoff_hold_persistence.py
           python -m py_compile test_diagnose_post_handoff_hold_persistence.py
+          python -m py_compile diagnose_post_retake_reseizure.py
+          python -m py_compile test_diagnose_post_retake_reseizure.py
       - name: Run contract tests
         run: |
           python -m unittest -v test_diagnose_transition_formation_and_regime_decay
@@ -90,6 +98,7 @@ jobs:
           python -m unittest -v test_diagnose_handoff_weight_behavior
           python -m unittest -v test_diagnose_post_handoff_companion_progression
           python -m unittest -v test_diagnose_post_handoff_hold_persistence
+          python -m unittest -v test_diagnose_post_retake_reseizure
       - name: Run burned-data behavior map
         run: |
           python diagnose_transition_formation_and_regime_decay.py \
@@ -125,6 +134,11 @@ jobs:
           python diagnose_post_handoff_hold_persistence.py \
             --json-output reports/issue-57-post-handoff-hold-persistence.json \
             --md-output reports/issue-57-post-handoff-hold-persistence.md
+      - name: Map post-retake reseizure behavior
+        run: |
+          python diagnose_post_retake_reseizure.py \
+            --json-output reports/issue-57-post-retake-reseizure.json \
+            --md-output reports/issue-57-post-retake-reseizure.md
       - name: Commit behavior-map reports on branch push
         if: github.event_name == 'push' && github.ref == 'refs/heads/feat/issue-57-wyckoff-v0.6-robustness'
         working-directory: .
@@ -145,6 +159,8 @@ jobs:
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-post-handoff-companion-progression.md
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-post-handoff-hold-persistence.json
           git add indicators/wyckoff-regime-radar/research/reports/issue-57-post-handoff-hold-persistence.md
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-post-retake-reseizure.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-post-retake-reseizure.md
           if git diff --cached --quiet; then
             echo "No report changes to commit"
           else
