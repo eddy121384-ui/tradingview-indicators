@@ -162,30 +162,73 @@ Regime forward-SPY behavior is also not stable enough to support universal tradi
 - Goldilocks mean forward 20d SPY: -7.31% (2008–2012), +1.22% (2013–2019), +0.26% (2020–2026)
 - Stagflation mean forward 20d SPY: +0.18%, +0.86%, -0.82% across the same eras
 
+## 5. Preliminary simple-baseline pre-check
+
+This is not yet the full incremental-value study, but it gives an early answer to whether the composite axes beat obvious one-line proxies on **out-of-component** outcomes.
+
+### GPI vs Copper/Gold momentum → future oil
+
+Top-vs-bottom 20% signal spread in forward 20d oil return:
+
+- GPI 20d change: **+6.08 percentage points**
+- Copper/Gold 20d momentum: **+3.36 percentage points**
+
+The GPI separation is larger in all three broad eras:
+
+| Era | GPI spread | Copper/Gold spread |
+|---|---:|---:|
+| 2008–2012 | +5.79% | +3.35% |
+| 2013–2019 | +3.60% | +2.06% |
+| 2020–2026 | +9.15% | +4.84% |
+
+This is the strongest preliminary evidence that the GPI composite may add value beyond a single cyclical proxy.
+
+### IPI vs 10Y breakeven momentum → future IEF
+
+Top-vs-bottom 20% signal spread in forward 20d IEF return:
+
+- IPI 20d change: **-0.67 percentage points**
+- 10Y breakeven 20d momentum: **-0.59 percentage points**
+
+IPI is only modestly stronger in the full sample and the advantage is not stable across all eras. Early verdict: **possible incremental value, not demonstrated yet**.
+
+### FCPI vs HY OAS momentum → future oil / IEF / SPY
+
+For forward 20d oil return, top-vs-bottom 20% stress-change spread:
+
+- FCPI 20d change: **-4.14 percentage points**
+- HY OAS 20d momentum: **-7.12 percentage points**
+
+For forward SPY, both are weak separators. For IEF, HY OAS momentum also separates more strongly than FCPI in this first pass.
+
+Early verdict: **the FCPI composite has not yet earned incremental-value status over a simple credit-spread proxy**. This does not mean FCPI is useless; it means the burden of proof is now higher for this axis.
+
 ## First-pass verdict
 
 ### KEEP
 
 The three-axis architecture appears to contain useful information as a **macro-state compression / transition monitor**. The cleanest evidence so far is not static level and not direct SPY prediction; it is the persistence and cross-asset coherence of **axis changes**.
 
+Preliminary axis ranking by evidence so far:
+
+1. **GPI — strongest**: clear transition coherence and early incremental advantage over Copper/Gold on an out-of-component oil outcome.
+2. **IPI — promising but modest**: coherent inflation/rates behavior; only small early advantage over simple breakeven momentum.
+3. **FCPI — useful descriptively, incremental value unproven**: stress persistence is coherent, but simple HY OAS momentum can outperform it on tested out-of-component outcomes.
+
 ### DO NOT CLAIM YET
 
 - Do not claim V6.6 is a profitable trading signal.
 - Do not claim `Goldilocks`, `Reflation`, `Stagflation`, etc. imply fixed future returns.
-- Do not claim incremental value yet: many outcomes above are also V6.6 components, so part of the result is internal persistence rather than independent prediction.
+- Do not claim final incremental value: the baseline pre-check is deliberately simple and not yet a full robustness study.
 
 ## Next gate
 
-The next research stage should answer the harder question:
+The next research stage should formalize the incremental-value comparison and use more independent outcomes:
 
-> Does V6.6 add information beyond much simpler proxies?
+- nominal UST yields / TY (not just real yield or IEF)
+- USDJPY / EURUSD (not just DXY)
+- potentially gold / oil depending on which axis is being tested, while avoiding direct component circularity
 
-Recommended comparisons:
-
-- GPI vs simple cyclical proxy / Copper-Gold or IWM-SPY momentum
-- IPI vs breakeven / commodity momentum
-- FCPI vs VIX / HY OAS or HYG-IEF stress proxy
-
-And the strongest validation should use **out-of-component outcomes**, especially nominal UST yields / TY, USDJPY or EURUSD, and other assets not directly embedded in the axis being tested.
+For each axis, compare V6.6 against its strongest simple baseline across eras and de-overlapped transition events. Only after that should Issue #59 decide KEEP / SIMPLIFY / RECALIBRATE for each axis.
 
 No V6.6 parameter changes are justified by this first pass.
