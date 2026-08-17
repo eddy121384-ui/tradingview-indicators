@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "issue": 57,
+  "status": "INDEPENDENT_OOS_TRANSITION_HEALTH_EVALUATED",
+  "checkpoint": 3,
+  "horizons": [
+    5,
+    10,
+    20
+  ],
+  "score_start": "2022-01-01",
+  "score_end": "2026-08-14",
+  "source_manifest": "data/issue-57-transition-health-independent-oos-manifest.json",
+  "pairs": {
+    "NZDUSD": {
+      "rows": 2244,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14",
+      "score_start": "2022-01-01",
+      "score_end": "2026-08-14",
+      "eligible_events": 19,
+      "groups": {
+        "healthy_hold": {
+          "events": 8,
+          "horizons": {
+            "5": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.007508841498774954,
+              "median_aligned_return": -0.0067079461824339215,
+              "hit_rate": 0.125,
+              "mean_mfe": 0.006424297001041357,
+              "mean_mae": 0.014293468121656425,
+              "mean_mfe_minus_mae": -0.007869171120615068
+            },
+            "10": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.005912574062914289,
+              "median_aligned_return": -0.0026665465410475875,
+              "hit_rate": 0.375,
+              "mean_mfe": 0.009093674890334427,
+              "mean_mae": 0.019302921650195176,
+              "mean_mfe_minus_mae": -0.010209246759860749
+            },
+            "20": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.0071685146522206394,
+              "median_aligned_return": -0.01620037435452082,
+              "hit_rate": 0.375,
+              "mean_mfe": 0.01679805533227023,
+              "mean_mae": 0.026403742009077413,
+              "mean_mfe_minus_mae": -0.009605686676807182
+            }
+          }
+        },
+        "damaged_retake": {
+          "events": 11,
+          "horizons": {
+            "5": {
+              "valid_events": 11,
+              "mean_aligned_return": 0.0002951039260108928,
+              "median_aligned_return": -0.003677744241011971,
+              "hit_rate": 0.45454545454545453,
+              "mean_mfe": 0.01059979242187477,
+              "mean_mae": 0.011414322826735601,
+              "mean_mfe_minus_mae": -0.0008145304048608319
+            },
+            "10": {
+              "valid_events": 11,
+              "mean_aligned_return": -0.006083210965307739,
+              "median_aligned_return": -0.008274649380491494,
+              "hit_rate": 0.36363636363636365,
+              "mean_mfe": 0.0176613822659985,
+              "mean_mae": 0.018188091410890807,
+              "mean_mfe_minus_mae": -0.0005267091448923092
+            },
+            "20": {
+              "valid_events": 11,
+              "mean_aligned_return": -0.0148820738614601,
+              "median_aligned_return": -0.01610305768367315,
+              "hit_rate": 0.2727272727272727,
+              "mean_mfe": 0.02043684457615041,
+              "mean_mae": 0.029514893867998358,
+              "mean_mfe_minus_mae": -0.009078049291847946
+            }
+          }
+        }
+      }
+    },
+    "EURGBP": {
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14",
+      "score_start": "2022-01-01",
+      "score_end": "2026-08-14",
+      "eligible_events": 7,
+      "groups": {
+        "healthy_hold": {
+          "events": 3,
+          "horizons": {
+            "5": {
+              "valid_events": 3,
+              "mean_aligned_return": 0.0011481217200874916,
+              "median_aligned_return": -0.0009388337117284262,
+              "hit_rate": 0.3333333333333333,
+              "mean_mfe": 0.006102970316664587,
+              "mean_mae": 0.0037613693433800797,
+              "mean_mfe_minus_mae": 0.0023416009732845078
+            },
+            "10": {
+              "valid_events": 3,
+              "mean_aligned_return": -0.003528183799257826,
+              "median_aligned_return": -0.004264106885136676,
+              "hit_rate": 0.3333333333333333,
+              "mean_mfe": 0.00700786889425294,
+              "mean_mae": 0.009472392029034271,
+              "mean_mfe_minus_mae": -0.0024645231347813303
+            },
+            "20": {
+              "valid_events": 3,
+              "mean_aligned_return": 0.0016213858639919643,
+              "median_aligned_return": -0.006205435924481417,
+              "hit_rate": 0.3333333333333333,
+              "mean_mfe": 0.010085585134649041,
+              "mean_mae": 0.011169079699268983,
+              "mean_mfe_minus_mae": -0.001083494564619943
+            }
+          }
+        },
+        "damaged_retake": {
+          "events": 4,
+          "horizons": {
+            "5": {
+              "valid_events": 4,
+              "mean_aligned_return": -0.000443559526658005,
+              "median_aligned_return": -0.00044697859213038704,
+              "hit_rate": 0.5,
+              "mean_mfe": 0.008778704547111077,
+              "mean_mae": 0.00603536448917999,
+              "mean_mfe_minus_mae": 0.0027433400579310874
+            },
+            "10": {
+              "valid_events": 4,
+              "mean_aligned_return": -0.0042446812444330295,
+              "median_aligned_return": -0.005126992128581365,
+              "hit_rate": 0.25,
+              "mean_mfe": 0.010014672678305442,
+              "mean_mae": 0.010108768098624071,
+              "mean_mfe_minus_mae": -9.40954203186295e-05
+            },
+            "20": {
+              "valid_events": 4,
+              "mean_aligned_return": -0.0060619307439333525,
+              "median_aligned_return": -0.00755567241887789,
+              "hit_rate": 0.25,
+              "mean_mfe": 0.010014672678305442,
+              "mean_mae": 0.014625677940522885,
+              "mean_mfe_minus_mae": -0.0046110052622174436
+            }
+          }
+        }
+      }
+    },
+    "GBPJPY": {
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14",
+      "score_start": "2022-01-01",
+      "score_end": "2026-08-14",
+      "eligible_events": 23,
+      "groups": {
+        "healthy_hold": {
+          "events": 15,
+          "horizons": {
+            "5": {
+              "valid_events": 15,
+              "mean_aligned_return": 0.000746140918443546,
+              "median_aligned_return": -0.000928840222986782,
+              "hit_rate": 0.4666666666666667,
+              "mean_mfe": 0.008130337071949833,
+              "mean_mae": 0.01031906417367822,
+              "mean_mfe_minus_mae": -0.0021887271017283863
+            },
+            "10": {
+              "valid_events": 15,
+              "mean_aligned_return": 0.00093118526101581,
+              "median_aligned_return": 0.002190570817677706,
+              "hit_rate": 0.5333333333333333,
+              "mean_mfe": 0.011322619023004746,
+              "mean_mae": 0.01605600872557048,
+              "mean_mfe_minus_mae": -0.004733389702565731
+            },
+            "20": {
+              "valid_events": 15,
+              "mean_aligned_return": 0.009242779249996065,
+              "median_aligned_return": 0.013967454677393576,
+              "hit_rate": 0.6666666666666666,
+              "mean_mfe": 0.018182745171124857,
+              "mean_mae": 0.0164539834956379,
+              "mean_mfe_minus_mae": 0.0017287616754869599
+            }
+          }
+        },
+        "damaged_retake": {
+          "events": 8,
+          "horizons": {
+            "5": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.009367702896640587,
+              "median_aligned_return": -0.012073215276728222,
+              "hit_rate": 0.25,
+              "mean_mfe": 0.007133730285253492,
+              "mean_mae": 0.02364142290254677,
+              "mean_mfe_minus_mae": -0.016507692617293276
+            },
+            "10": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.00933489432320353,
+              "median_aligned_return": -0.004401993368585488,
+              "hit_rate": 0.375,
+              "mean_mfe": 0.008521606058514347,
+              "mean_mae": 0.029407083650030724,
+              "mean_mfe_minus_mae": -0.020885477591516377
+            },
+            "20": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.010963773772167673,
+              "median_aligned_return": -0.010170107147367047,
+              "hit_rate": 0.375,
+              "mean_mfe": 0.013202981468482394,
+              "mean_mae": 0.03438273537090113,
+              "mean_mfe_minus_mae": -0.021179753902418733
+            }
+          }
+        }
+      }
+    },
+    "AUDJPY": {
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14",
+      "score_start": "2022-01-01",
+      "score_end": "2026-08-14",
+      "eligible_events": 16,
+      "groups": {
+        "healthy_hold": {
+          "events": 8,
+          "horizons": {
+            "5": {
+              "valid_events": 8,
+              "mean_aligned_return": 0.006193052053562742,
+              "median_aligned_return": 0.0005363182858771354,
+              "hit_rate": 0.5,
+              "mean_mfe": 0.017593123470276723,
+              "mean_mae": 0.00993356021724813,
+              "mean_mfe_minus_mae": 0.007659563253028592
+            },
+            "10": {
+              "valid_events": 8,
+              "mean_aligned_return": 0.007470771591526204,
+              "median_aligned_return": 0.007716155132752811,
+              "hit_rate": 0.625,
+              "mean_mfe": 0.026558180551670058,
+              "mean_mae": 0.01903314970309429,
+              "mean_mfe_minus_mae": 0.007525030848575767
+            },
+            "20": {
+              "valid_events": 8,
+              "mean_aligned_return": 0.011627098657754825,
+              "median_aligned_return": 0.013831539547032201,
+              "hit_rate": 0.625,
+              "mean_mfe": 0.030731713059872295,
+              "mean_mae": 0.02171208568782315,
+              "mean_mfe_minus_mae": 0.009019627372049144
+            }
+          }
+        },
+        "damaged_retake": {
+          "events": 8,
+          "horizons": {
+            "5": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.004129326082628004,
+              "median_aligned_return": -0.005130355601171643,
+              "hit_rate": 0.25,
+              "mean_mfe": 0.007108132565297298,
+              "mean_mae": 0.014923515099188392,
+              "mean_mfe_minus_mae": -0.007815382533891094
+            },
+            "10": {
+              "valid_events": 8,
+              "mean_aligned_return": -0.0018860910508008422,
+              "median_aligned_return": 0.0017104171773750232,
+              "hit_rate": 0.75,
+              "mean_mfe": 0.009898048742967777,
+              "mean_mae": 0.015904135633117295,
+              "mean_mfe_minus_mae": -0.006006086890149517
+            },
+            "20": {
+              "valid_events": 8,
+              "mean_aligned_return": 0.006431628982204382,
+              "median_aligned_return": 0.007227541460867681,
+              "hit_rate": 0.625,
+              "mean_mfe": 0.018263081425660035,
+              "mean_mae": 0.017754717991566152,
+              "mean_mfe_minus_mae": 0.0005083634340938836
+            }
+          }
+        }
+      }
+    },
+    "CADJPY": {
+      "rows": 2245,
+      "start_date": "2018-01-01",
+      "end_date": "2026-08-14",
+      "score_start": "2022-01-01",
+      "score_end": "2026-08-14",
+      "eligible_events": 16,
+      "groups": {
+        "healthy_hold": {
+          "events": 11,
+          "horizons": {
+            "5": {
+              "valid_events": 11,
+              "mean_aligned_return": 0.0049727109463680455,
+              "median_aligned_return": 0.003039233661686014,
+              "hit_rate": 0.5454545454545454,
+              "mean_mfe": 0.011901114223093439,
+              "mean_mae": 0.009478957688595312,
+              "mean_mfe_minus_mae": 0.0024221565344981263
+            },
+            "10": {
+              "valid_events": 11,
+              "mean_aligned_return": 0.0079700380009863,
+              "median_aligned_return": 0.007004489639493849,
+              "hit_rate": 0.6363636363636364,
+              "mean_mfe": 0.017030670127857042,
+              "mean_mae": 0.01115447019316121,
+              "mean_mfe_minus_mae": 0.005876199934695832
+            },
+            "20": {
+              "valid_events": 11,
+              "mean_aligned_return": 0.0137253400100542,
+              "median_aligned_return": 0.01242794857444851,
+              "hit_rate": 0.7272727272727273,
+              "mean_mfe": 0.027339264468898148,
+              "mean_mae": 0.011257873738136954,
+              "mean_mfe_minus_mae": 0.016081390730761192
+            }
+          }
+        },
+        "damaged_retake": {
+          "events": 5,
+          "horizons": {
+            "5": {
+              "valid_events": 5,
+              "mean_aligned_return": 0.005629341553334566,
+              "median_aligned_return": 0.0004991482815965842,
+              "hit_rate": 0.6,
+              "mean_mfe": 0.013244217727380958,
+              "mean_mae": 0.012377984289229782,
+              "mean_mfe_minus_mae": 0.000866233438151176
+            },
+            "10": {
+              "valid_events": 5,
+              "mean_aligned_return": 0.006631033000146646,
+              "median_aligned_return": 0.016399267589445765,
+              "hit_rate": 0.6,
+              "mean_mfe": 0.021180254693593657,
+              "mean_mae": 0.01558650265943944,
+              "mean_mfe_minus_mae": 0.00559375203415422
+            },
+            "20": {
+              "valid_events": 5,
+              "mean_aligned_return": 0.019437366230813224,
+              "median_aligned_return": 0.02408615957467264,
+              "hit_rate": 0.6,
+              "mean_mfe": 0.037392978324881684,
+              "mean_mae": 0.016063202105782604,
+              "mean_mfe_minus_mae": 0.021329776219099084
+            }
+          }
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "eligible_events": 81,
+    "group_events": {
+      "healthy_hold": 45,
+      "damaged_retake": 36
+    },
+    "horizons": {
+      "5": {
+        "groups": {
+          "healthy_hold": {
+            "median_pair_mean_aligned_return": 0.0011481217200874916,
+            "median_pair_hit_rate": 0.4666666666666667,
+            "median_pair_mean_mfe": 0.008130337071949833,
+            "median_pair_mean_mae": 0.00993356021724813,
+            "median_pair_mean_mfe_minus_mae": 0.0023416009732845078,
+            "pairs_with_metric": 5
+          },
+          "damaged_retake": {
+            "median_pair_mean_aligned_return": -0.000443559526658005,
+            "median_pair_hit_rate": 0.45454545454545453,
+            "median_pair_mean_mfe": 0.008778704547111077,
+            "median_pair_mean_mae": 0.012377984289229782,
+            "median_pair_mean_mfe_minus_mae": -0.0008145304048608319,
+            "pairs_with_metric": 5
+          }
+        },
+        "pair_comparison": {
+          "comparable_pairs": 5,
+          "healthy_return_wins": 3,
+          "healthy_hit_rate_wins": 2,
+          "healthy_mfe_minus_mae_wins": 3
+        }
+      },
+      "10": {
+        "groups": {
+          "healthy_hold": {
+            "median_pair_mean_aligned_return": 0.00093118526101581,
+            "median_pair_hit_rate": 0.5333333333333333,
+            "median_pair_mean_mfe": 0.011322619023004746,
+            "median_pair_mean_mae": 0.01605600872557048,
+            "median_pair_mean_mfe_minus_mae": -0.0024645231347813303,
+            "pairs_with_metric": 5
+          },
+          "damaged_retake": {
+            "median_pair_mean_aligned_return": -0.0042446812444330295,
+            "median_pair_hit_rate": 0.375,
+            "median_pair_mean_mfe": 0.010014672678305442,
+            "median_pair_mean_mae": 0.015904135633117295,
+            "median_pair_mean_mfe_minus_mae": -0.0005267091448923092,
+            "pairs_with_metric": 5
+          }
+        },
+        "pair_comparison": {
+          "comparable_pairs": 5,
+          "healthy_return_wins": 5,
+          "healthy_hit_rate_wins": 4,
+          "healthy_mfe_minus_mae_wins": 3
+        }
+      },
+      "20": {
+        "groups": {
+          "healthy_hold": {
+            "median_pair_mean_aligned_return": 0.009242779249996065,
+            "median_pair_hit_rate": 0.625,
+            "median_pair_mean_mfe": 0.018182745171124857,
+            "median_pair_mean_mae": 0.0164539834956379,
+            "median_pair_mean_mfe_minus_mae": 0.0017287616754869599,
+            "pairs_with_metric": 5
+          },
+          "damaged_retake": {
+            "median_pair_mean_aligned_return": -0.0060619307439333525,
+            "median_pair_hit_rate": 0.375,
+            "median_pair_mean_mfe": 0.018263081425660035,
+            "median_pair_mean_mae": 0.017754717991566152,
+            "median_pair_mean_mfe_minus_mae": -0.0046110052622174436,
+            "pairs_with_metric": 5
+          }
+        },
+        "pair_comparison": {
+          "comparable_pairs": 5,
+          "healthy_return_wins": 4,
+          "healthy_hit_rate_wins": 4,
+          "healthy_mfe_minus_mae_wins": 3
+        }
+      }
+    }
+  },
+  "boundary": "Independent OOS evaluation of the rule frozen before this sample was read. No threshold or checkpoint tuning is permitted on this sample."
+}
