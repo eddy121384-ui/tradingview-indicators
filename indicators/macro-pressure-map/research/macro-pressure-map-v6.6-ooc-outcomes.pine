@@ -1,0 +1,52 @@
+//@version=6
+indicator("Macro Pressure Map V6.6 OOC Outcomes", shorttitle="MPM V6.6 OOC", overlay=false)
+
+// Issue #59 incremental-value helper.
+// Attach beside the frozen V6.6 on an SPY 1D chart.
+// Select the three frozen V6.6 plots below. This helper logs only outcomes that
+// are not direct default-path inputs to the three axes.
+
+marketTf = input.timeframe("D", "Outcome timeframe")
+tvGpiPlot = input.source(close, "Frozen V6.6 plot: GPI - Growth Pressure")
+tvIpiPlot = input.source(close, "Frozen V6.6 plot: IPI - Inflation Pressure")
+tvFcpiPlot = input.source(close, "Frozen V6.6 plot: FCPI - Financial Conditions Pressure")
+logFromYear = input.int(2007, "Pine Logs start year", minval=2000, maxval=2100)
+
+f_req(symbol) =>
+    request.security(symbol, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_num(v) =>
+    str.tostring(v, "#.########")
+
+// Yield outcomes: market display feeds plus official FRED H.15 series.
+us10yTvc = f_req("TVC:US10Y")
+us02yTvc = f_req("TVC:US02Y")
+dgs10Fred = f_req("FRED:DGS10")
+dgs2Fred = f_req("FRED:DGS2")
+
+// FX outcomes not used by the default-path V6.6 axes.
+usdJpy = f_req("FX_IDC:USDJPY")
+eurUsd = f_req("FX_IDC:EURUSD")
+
+// Bond-price outcomes, also absent from the default-path axes.
+zn1 = f_req("CBOT:ZN1!")
+tlt = f_req("NASDAQ:TLT")
+
+plot(us10yTvc, "OOC US10Y TVC", display=display.data_window)
+plot(us02yTvc, "OOC US02Y TVC", display=display.data_window)
+plot(dgs10Fred, "OOC DGS10 FRED", display=display.data_window)
+plot(dgs2Fred, "OOC DGS2 FRED", display=display.data_window)
+plot(usdJpy, "OOC USDJPY", display=display.data_window)
+plot(eurUsd, "OOC EURUSD", display=display.data_window)
+plot(zn1, "OOC ZN1", display=display.data_window)
+plot(tlt, "OOC TLT", display=display.data_window)
+
+if barstate.isconfirmed and year >= logFromYear
+    message = "MPM_OOC" +
+      "|date=" + str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) +
+      "|tv_plot_gpi=" + f_num(tvGpiPlot) + "|tv_plot_ipi=" + f_num(tvIpiPlot) + "|tv_plot_fcpi=" + f_num(tvFcpiPlot) +
+      "|us10y_tvc=" + f_num(us10yTvc) + "|us02y_tvc=" + f_num(us02yTvc) +
+      "|dgs10_fred=" + f_num(dgs10Fred) + "|dgs2_fred=" + f_num(dgs2Fred) +
+      "|usdjpy=" + f_num(usdJpy) + "|eurusd=" + f_num(eurUsd) +
+      "|zn1=" + f_num(zn1) + "|tlt=" + f_num(tlt)
+    log.info(message)
