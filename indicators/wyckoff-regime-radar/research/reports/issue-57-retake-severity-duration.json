@@ -1,0 +1,1019 @@
+{
+  "schema_version": 1,
+  "issue": 57,
+  "status": "BURNED_DATA_RETAKE_SEVERITY_DURATION_ONLY",
+  "pairs": {
+    "EURUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "retake_events": 11,
+      "correlations": {
+        "normalized_first_retake_margin": {
+          "rho_same_direction_completion": -0.6708203932499369,
+          "rho_opposite_actionable_failure": 0.29814239699997197
+        },
+        "first_control_spell_bars": {
+          "rho_same_direction_completion": -0.0750490537653217,
+          "rho_opposite_actionable_failure": 0.4878188494745911
+        },
+        "max_normalized_retake_margin": {
+          "rho_same_direction_completion": -0.6042980653299476,
+          "rho_opposite_actionable_failure": 0.34531318018854146
+        },
+        "dominance_area": {
+          "rho_same_direction_completion": -0.447213595499958,
+          "rho_opposite_actionable_failure": 0.6708203932499369
+        }
+      },
+      "by_duration": {
+        "1_bar": {
+          "events": 1,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "2_3_bars": {
+          "events": 3,
+          "success_rate": 0.3333333333333333,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 0.6666666666666666
+        },
+        "4_plus_bars": {
+          "events": 7,
+          "success_rate": 0.14285714285714285,
+          "opposite_failure_rate": 0.2857142857142857,
+          "timeout_rate": 0.5714285714285714
+        }
+      },
+      "by_severity": {
+        "low": {
+          "events": 3,
+          "success_rate": 0.6666666666666666,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 0.3333333333333333
+        },
+        "mid": {
+          "events": 4,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.25,
+          "timeout_rate": 0.75
+        },
+        "high": {
+          "events": 4,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.25,
+          "timeout_rate": 0.75
+        }
+      },
+      "matrix": {
+        "low": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 2,
+            "success_rate": 0.5,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 0.5
+          },
+          "4_plus_bars": {
+            "events": 1,
+            "success_rate": 1.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "mid": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 4,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.25,
+            "timeout_rate": 0.75
+          }
+        },
+        "high": {
+          "1_bar": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "4_plus_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.5,
+            "timeout_rate": 0.5
+          }
+        }
+      }
+    },
+    "USDJPY": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "retake_events": 15,
+      "correlations": {
+        "normalized_first_retake_margin": {
+          "rho_same_direction_completion": 0.04539206495016018,
+          "rho_opposite_actionable_failure": -0.16366341767699427
+        },
+        "first_control_spell_bars": {
+          "rho_same_direction_completion": -0.3914654420350439,
+          "rho_opposite_actionable_failure": -0.2988950238697822
+        },
+        "max_normalized_retake_margin": {
+          "rho_same_direction_completion": -0.28128433856309726,
+          "rho_opposite_actionable_failure": -0.13522468075656263
+        },
+        "dominance_area": {
+          "rho_same_direction_completion": -0.4085285845514416,
+          "rho_opposite_actionable_failure": -0.22912878474779197
+        }
+      },
+      "by_duration": {
+        "1_bar": {
+          "events": 3,
+          "success_rate": 0.3333333333333333,
+          "opposite_failure_rate": 0.3333333333333333,
+          "timeout_rate": 0.3333333333333333
+        },
+        "2_3_bars": {
+          "events": 3,
+          "success_rate": 0.3333333333333333,
+          "opposite_failure_rate": 0.6666666666666666,
+          "timeout_rate": 0.0
+        },
+        "4_plus_bars": {
+          "events": 9,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.2222222222222222,
+          "timeout_rate": 0.7777777777777778
+        }
+      },
+      "by_severity": {
+        "low": {
+          "events": 5,
+          "success_rate": 0.2,
+          "opposite_failure_rate": 0.4,
+          "timeout_rate": 0.4
+        },
+        "mid": {
+          "events": 5,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.6,
+          "timeout_rate": 0.4
+        },
+        "high": {
+          "events": 5,
+          "success_rate": 0.2,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 0.8
+        }
+      },
+      "matrix": {
+        "low": {
+          "1_bar": {
+            "events": 3,
+            "success_rate": 0.3333333333333333,
+            "opposite_failure_rate": 0.3333333333333333,
+            "timeout_rate": 0.3333333333333333
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.5,
+            "timeout_rate": 0.5
+          }
+        },
+        "mid": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 1.0,
+            "timeout_rate": 0.0
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.3333333333333333,
+            "timeout_rate": 0.6666666666666666
+          }
+        },
+        "high": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 1.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "4_plus_bars": {
+            "events": 4,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        }
+      }
+    },
+    "GBPUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "retake_events": 13,
+      "correlations": {
+        "normalized_first_retake_margin": {
+          "rho_same_direction_completion": -0.30903148567229,
+          "rho_opposite_actionable_failure": 0.41532842945780407
+        },
+        "first_control_spell_bars": {
+          "rho_same_direction_completion": -0.038735793273367757,
+          "rho_opposite_actionable_failure": -0.17149066720418
+        },
+        "max_normalized_retake_margin": {
+          "rho_same_direction_completion": -0.439832219093123,
+          "rho_opposite_actionable_failure": 0.05563486402641868
+        },
+        "dominance_area": {
+          "rho_same_direction_completion": -0.07715167498104596,
+          "rho_opposite_actionable_failure": -0.09759000729485331
+        }
+      },
+      "by_duration": {
+        "1_bar": {
+          "events": 1,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "2_3_bars": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.3333333333333333,
+          "timeout_rate": 0.6666666666666666
+        },
+        "4_plus_bars": {
+          "events": 9,
+          "success_rate": 0.1111111111111111,
+          "opposite_failure_rate": 0.2222222222222222,
+          "timeout_rate": 0.6666666666666666
+        }
+      },
+      "by_severity": {
+        "low": {
+          "events": 4,
+          "success_rate": 0.25,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 0.75
+        },
+        "mid": {
+          "events": 4,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.25,
+          "timeout_rate": 0.75
+        },
+        "high": {
+          "events": 5,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.4,
+          "timeout_rate": 0.6
+        }
+      },
+      "matrix": {
+        "low": {
+          "1_bar": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.3333333333333333,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 0.6666666666666666
+          }
+        },
+        "mid": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 4,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.25,
+            "timeout_rate": 0.75
+          }
+        },
+        "high": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 3,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.3333333333333333,
+            "timeout_rate": 0.6666666666666666
+          },
+          "4_plus_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.5,
+            "timeout_rate": 0.5
+          }
+        }
+      }
+    },
+    "AUDUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "retake_events": 13,
+      "correlations": {
+        "normalized_first_retake_margin": {
+          "rho_same_direction_completion": -0.23145502494313785,
+          "rho_opposite_actionable_failure": null
+        },
+        "first_control_spell_bars": {
+          "rho_same_direction_completion": 0.0,
+          "rho_opposite_actionable_failure": null
+        },
+        "max_normalized_retake_margin": {
+          "rho_same_direction_completion": 0.28403126388700284,
+          "rho_opposite_actionable_failure": null
+        },
+        "dominance_area": {
+          "rho_same_direction_completion": -0.07715167498104596,
+          "rho_opposite_actionable_failure": null
+        }
+      },
+      "by_duration": {
+        "1_bar": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "2_3_bars": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "4_plus_bars": {
+          "events": 7,
+          "success_rate": 0.14285714285714285,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 0.8571428571428571
+        }
+      },
+      "by_severity": {
+        "low": {
+          "events": 4,
+          "success_rate": 0.25,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 0.75
+        },
+        "mid": {
+          "events": 4,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "high": {
+          "events": 5,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        }
+      },
+      "matrix": {
+        "low": {
+          "1_bar": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 2,
+            "success_rate": 0.5,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 0.5
+          }
+        },
+        "mid": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "4_plus_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        },
+        "high": {
+          "1_bar": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        }
+      }
+    },
+    "EURCHF": {
+      "rows": 2400,
+      "start_date": "2012-11-16",
+      "end_date": "2022-03-04",
+      "retake_events": 10,
+      "correlations": {
+        "normalized_first_retake_margin": {
+          "rho_same_direction_completion": 0.41119596982930745,
+          "rho_opposite_actionable_failure": 0.08811342210628018
+        },
+        "first_control_spell_bars": {
+          "rho_same_direction_completion": -0.5254270830780441,
+          "rho_opposite_actionable_failure": 0.08757118051300736
+        },
+        "max_normalized_retake_margin": {
+          "rho_same_direction_completion": 0.21417646843905966,
+          "rho_opposite_actionable_failure": 0.3212647026585895
+        },
+        "dominance_area": {
+          "rho_same_direction_completion": -0.40618119722996154,
+          "rho_opposite_actionable_failure": 0.17407765595569782
+        }
+      },
+      "by_duration": {
+        "1_bar": {
+          "events": 1,
+          "success_rate": 1.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "2_3_bars": {
+          "events": 2,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "4_plus_bars": {
+          "events": 7,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.2857142857142857,
+          "timeout_rate": 0.7142857142857143
+        }
+      },
+      "by_severity": {
+        "low": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.3333333333333333,
+          "timeout_rate": 0.6666666666666666
+        },
+        "mid": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "high": {
+          "events": 4,
+          "success_rate": 0.25,
+          "opposite_failure_rate": 0.25,
+          "timeout_rate": 0.5
+        }
+      },
+      "matrix": {
+        "low": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "4_plus_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.5,
+            "timeout_rate": 0.5
+          }
+        },
+        "mid": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        },
+        "high": {
+          "1_bar": {
+            "events": 1,
+            "success_rate": 1.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "4_plus_bars": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.5,
+            "timeout_rate": 0.5
+          }
+        }
+      }
+    },
+    "USDCAD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "retake_events": 17,
+      "correlations": {
+        "normalized_first_retake_margin": {
+          "rho_same_direction_completion": null,
+          "rho_opposite_actionable_failure": 0.14153462926807447
+        },
+        "first_control_spell_bars": {
+          "rho_same_direction_completion": null,
+          "rho_opposite_actionable_failure": -0.08630689563233264
+        },
+        "max_normalized_retake_margin": {
+          "rho_same_direction_completion": null,
+          "rho_opposite_actionable_failure": 0.14467126339014671
+        },
+        "dominance_area": {
+          "rho_same_direction_completion": null,
+          "rho_opposite_actionable_failure": 0.08492077756084469
+        }
+      },
+      "by_duration": {
+        "1_bar": {
+          "events": 2,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "2_3_bars": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.6666666666666666,
+          "timeout_rate": 0.3333333333333333
+        },
+        "4_plus_bars": {
+          "events": 12,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.16666666666666666,
+          "timeout_rate": 0.8333333333333334
+        }
+      },
+      "by_severity": {
+        "low": {
+          "events": 5,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.2,
+          "timeout_rate": 0.8
+        },
+        "mid": {
+          "events": 6,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "high": {
+          "events": 6,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.5,
+          "timeout_rate": 0.5
+        }
+      },
+      "matrix": {
+        "low": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 1.0,
+            "timeout_rate": 0.0
+          },
+          "4_plus_bars": {
+            "events": 4,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        },
+        "mid": {
+          "1_bar": {
+            "events": 2,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        },
+        "high": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 1.0,
+            "timeout_rate": 0.0
+          },
+          "4_plus_bars": {
+            "events": 5,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.4,
+            "timeout_rate": 0.6
+          }
+        }
+      }
+    },
+    "USDCHF": {
+      "rows": 2400,
+      "start_date": "2012-12-03",
+      "end_date": "2022-03-04",
+      "retake_events": 10,
+      "correlations": {
+        "normalized_first_retake_margin": {
+          "rho_same_direction_completion": 0.40618119722996154,
+          "rho_opposite_actionable_failure": 0.2901294265928297
+        },
+        "first_control_spell_bars": {
+          "rho_same_direction_completion": -0.05820252464746485,
+          "rho_opposite_actionable_failure": -0.17460757394239454
+        },
+        "max_normalized_retake_margin": {
+          "rho_same_direction_completion": 0.21417646843905966,
+          "rho_opposite_actionable_failure": 0.21417646843905966
+        },
+        "dominance_area": {
+          "rho_same_direction_completion": -0.058025885318565944,
+          "rho_opposite_actionable_failure": -0.1740776559556978
+        }
+      },
+      "by_duration": {
+        "1_bar": {
+          "events": 1,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "2_3_bars": {
+          "events": 0,
+          "success_rate": null,
+          "opposite_failure_rate": null,
+          "timeout_rate": null
+        },
+        "4_plus_bars": {
+          "events": 9,
+          "success_rate": 0.1111111111111111,
+          "opposite_failure_rate": 0.1111111111111111,
+          "timeout_rate": 0.7777777777777778
+        }
+      },
+      "by_severity": {
+        "low": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "mid": {
+          "events": 3,
+          "success_rate": 0.0,
+          "opposite_failure_rate": 0.0,
+          "timeout_rate": 1.0
+        },
+        "high": {
+          "events": 4,
+          "success_rate": 0.25,
+          "opposite_failure_rate": 0.25,
+          "timeout_rate": 0.5
+        }
+      },
+      "matrix": {
+        "low": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        },
+        "mid": {
+          "1_bar": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          }
+        },
+        "high": {
+          "1_bar": {
+            "events": 1,
+            "success_rate": 0.0,
+            "opposite_failure_rate": 0.0,
+            "timeout_rate": 1.0
+          },
+          "2_3_bars": {
+            "events": 0,
+            "success_rate": null,
+            "opposite_failure_rate": null,
+            "timeout_rate": null
+          },
+          "4_plus_bars": {
+            "events": 3,
+            "success_rate": 0.3333333333333333,
+            "opposite_failure_rate": 0.3333333333333333,
+            "timeout_rate": 0.3333333333333333
+          }
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "total_retake_events": 89,
+    "pairs_with_retake_events": 7,
+    "correlations": {
+      "normalized_first_retake_margin": {
+        "median_pair_rho_same_direction_completion": -0.09303147999648884,
+        "median_pair_rho_opposite_actionable_failure": 0.21583202793045209,
+        "pairs_same_direction": 6,
+        "pairs_opposite_failure": 6
+      },
+      "first_control_spell_bars": {
+        "median_pair_rho_same_direction_completion": -0.06662578920639328,
+        "median_pair_rho_opposite_actionable_failure": -0.1288987814182563,
+        "pairs_same_direction": 6,
+        "pairs_opposite_failure": 6
+      },
+      "max_normalized_retake_margin": {
+        "median_pair_rho_same_direction_completion": -0.0335539350620188,
+        "median_pair_rho_opposite_actionable_failure": 0.1794238659146032,
+        "pairs_same_direction": 6,
+        "pairs_opposite_failure": 6
+      },
+      "dominance_area": {
+        "median_pair_rho_same_direction_completion": -0.24166643610550376,
+        "median_pair_rho_opposite_actionable_failure": -0.006334614867004311,
+        "pairs_same_direction": 6,
+        "pairs_opposite_failure": 6
+      }
+    },
+    "by_duration": {
+      "1_bar": {
+        "events": 12,
+        "pairs_with_events": 7,
+        "median_pair_success_rate": 0.0,
+        "median_pair_opposite_failure_rate": 0.0,
+        "median_pair_timeout_rate": 1.0
+      },
+      "2_3_bars": {
+        "events": 17,
+        "pairs_with_events": 6,
+        "median_pair_success_rate": 0.0,
+        "median_pair_opposite_failure_rate": 0.16666666666666666,
+        "median_pair_timeout_rate": 0.6666666666666666
+      },
+      "4_plus_bars": {
+        "events": 60,
+        "pairs_with_events": 7,
+        "median_pair_success_rate": 0.1111111111111111,
+        "median_pair_opposite_failure_rate": 0.2222222222222222,
+        "median_pair_timeout_rate": 0.7777777777777778
+      }
+    },
+    "by_severity": {
+      "low": {
+        "events": 27,
+        "pairs_with_events": 7,
+        "median_pair_success_rate": 0.2,
+        "median_pair_opposite_failure_rate": 0.0,
+        "median_pair_timeout_rate": 0.75
+      },
+      "mid": {
+        "events": 29,
+        "pairs_with_events": 7,
+        "median_pair_success_rate": 0.0,
+        "median_pair_opposite_failure_rate": 0.0,
+        "median_pair_timeout_rate": 1.0
+      },
+      "high": {
+        "events": 33,
+        "pairs_with_events": 7,
+        "median_pair_success_rate": 0.0,
+        "median_pair_opposite_failure_rate": 0.25,
+        "median_pair_timeout_rate": 0.6
+      }
+    },
+    "matrix": {
+      "low": {
+        "1_bar": {
+          "events": 6,
+          "pairs_with_events": 3,
+          "median_pair_success_rate": 0.0
+        },
+        "2_3_bars": {
+          "events": 4,
+          "pairs_with_events": 3,
+          "median_pair_success_rate": 0.0
+        },
+        "4_plus_bars": {
+          "events": 17,
+          "pairs_with_events": 7,
+          "median_pair_success_rate": 0.0
+        }
+      },
+      "mid": {
+        "1_bar": {
+          "events": 2,
+          "pairs_with_events": 1,
+          "median_pair_success_rate": 0.0
+        },
+        "2_3_bars": {
+          "events": 5,
+          "pairs_with_events": 3,
+          "median_pair_success_rate": 0.0
+        },
+        "4_plus_bars": {
+          "events": 22,
+          "pairs_with_events": 7,
+          "median_pair_success_rate": 0.0
+        }
+      },
+      "high": {
+        "1_bar": {
+          "events": 4,
+          "pairs_with_events": 4,
+          "median_pair_success_rate": 0.0
+        },
+        "2_3_bars": {
+          "events": 8,
+          "pairs_with_events": 6,
+          "median_pair_success_rate": 0.0
+        },
+        "4_plus_bars": {
+          "events": 21,
+          "pairs_with_events": 7,
+          "median_pair_success_rate": 0.0
+        }
+      }
+    }
+  },
+  "boundary": "Reused-data structural research only; bins were frozen before outcomes and are not production thresholds."
+}
