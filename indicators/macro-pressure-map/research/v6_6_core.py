@@ -82,10 +82,23 @@ def safe_ratio(a: pd.Series, b: pd.Series) -> pd.Series:
     return (a / b).where(a.notna() & b.notna() & (b != 0.0))
 
 
+def pine_sma(src: pd.Series, length: int) -> pd.Series:
+    """Mirror Pine TA rolling semantics: count the latest `length` non-na values."""
+    valid = src.dropna()
+    rolled = valid.rolling(length, min_periods=length).mean()
+    return rolled.reindex(src.index).ffill()
+
+
+def pine_stdev(src: pd.Series, length: int) -> pd.Series:
+    """Mirror ta.stdev(source, length) with biased=true and ignored na values."""
+    valid = src.dropna()
+    rolled = valid.rolling(length, min_periods=length).std(ddof=0)
+    return rolled.reindex(src.index).ffill()
+
+
 def zscore(src: pd.Series, length: int) -> pd.Series:
-    mean = src.rolling(length, min_periods=length).mean()
-    # Pine ta.stdev defaults to biased=true, so ddof=0.
-    sd = src.rolling(length, min_periods=length).std(ddof=0)
+    mean = pine_sma(src, length)
+    sd = pine_stdev(src, length)
     return ((src - mean) / sd).where(src.notna() & mean.notna() & sd.notna() & (sd != 0.0))
 
 
@@ -112,12 +125,14 @@ def roc_percent(src: pd.Series, length: int) -> pd.Series:
 def component_score(src: pd.Series, invert: bool, z_len: int, cfg: V66Config) -> pd.Series:
     """Mirror Pine f_componentScore()."""
     lvl = zscore(src, z_len)
-    mom_raw = 0.6 * roc_percent(src, cfg.fast_len) + 0.4 * roc_percent(src, cfg.mid_len)
+    roc_fast = roc_percent(src, cfg.fast_len)
+    roc_mid = roc_percent(src, cfg.mid_len)
+    mom_raw = 0.6 * roc_fast + 0.4 * roc_mid
     mom = zscore(mom_raw, z_len)
 
-    sd = src.rolling(z_len, min_periods=z_len).std(ddof=0)
-    fast = src.rolling(cfg.fast_len, min_periods=cfg.fast_len).mean()
-    mid = src.rolling(cfg.mid_len, min_periods=cfg.mid_len).mean()
+    sd = pine_stdev(src, z_len)
+    fast = pine_sma(src, cfg.fast_len)
+    mid = pine_sma(src, cfg.mid_len)
     direction = pine_tanh(((fast - mid) / sd).where(sd.notna() & (sd != 0.0)))
 
     raw = (0.5 * lvl + 0.3 * mom + 0.2 * direction).where(
