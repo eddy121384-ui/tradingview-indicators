@@ -1,0 +1,64 @@
+name: Wyckoff v0.6 Transition Health Independent OOS
+
+on:
+  push:
+    branches:
+      - feat/issue-57-wyckoff-v0.6-robustness
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_transition_health_independent_oos.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_transition_health_independent_oos.py'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-57-transition-health-independent-oos-manifest.json'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-57-transition-health-oos-*.csv'
+      - '.github/workflows/wyckoff-v06-transition-health-independent-oos.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_transition_health_independent_oos.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_transition_health_independent_oos.py'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-57-transition-health-independent-oos-manifest.json'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-57-transition-health-oos-*.csv'
+      - '.github/workflows/wyckoff-v06-transition-health-independent-oos.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  independent-oos:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/issue-57-wyckoff-v0.6-robustness
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile evaluator
+        run: |
+          python -m py_compile evaluate_transition_health_independent_oos.py
+          python -m py_compile test_evaluate_transition_health_independent_oos.py
+      - name: Verify frozen snapshot contract
+        run: python -m unittest -v test_evaluate_transition_health_independent_oos
+      - name: Evaluate frozen Transition Health candidate
+        run: |
+          python evaluate_transition_health_independent_oos.py \
+            --json-output reports/issue-57-transition-health-independent-oos.json \
+            --md-output reports/issue-57-transition-health-independent-oos.md
+      - name: Commit OOS report
+        if: github.event_name != 'workflow_dispatch'
+        working-directory: ${{ github.workspace }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-transition-health-independent-oos.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-57-transition-health-independent-oos.md
+          if git diff --cached --quiet; then
+            echo "No OOS report changes to commit"
+          else
+            git commit -m "research: record transition health independent OOS result"
+            git push origin HEAD:feat/issue-57-wyckoff-v0.6-robustness
+          fi
