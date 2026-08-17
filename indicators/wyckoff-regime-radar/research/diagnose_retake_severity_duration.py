@@ -81,6 +81,7 @@ def severity_terciles(values: pd.Series) -> pd.Series:
 
 
 def safe_spearman(x: pd.Series, y: pd.Series) -> float | None:
+    """Spearman rho without scipy: Pearson correlation of average ranks."""
     mask = x.notna() & y.notna()
     if int(mask.sum()) < 3:
         return None
@@ -88,8 +89,10 @@ def safe_spearman(x: pd.Series, y: pd.Series) -> float | None:
     yv = y.loc[mask].astype(float)
     if xv.nunique() < 2 or yv.nunique() < 2:
         return None
-    value = xv.corr(yv, method="spearman")
-    return None if pd.isna(value) else float(value)
+    xr = xv.rank(method="average").to_numpy(dtype=float)
+    yr = yv.rank(method="average").to_numpy(dtype=float)
+    value = float(np.corrcoef(xr, yr)[0, 1])
+    return None if not np.isfinite(value) else value
 
 
 def analyze_pair(frame: pd.DataFrame) -> dict[str, object]:
