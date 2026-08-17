@@ -9,6 +9,12 @@ on:
       - 'indicators/wyckoff-regime-radar/research/test_freeze_transition_health_independent_oos.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-transition-health-independent-oos-freeze.md'
       - '.github/workflows/wyckoff-v06-transition-health-oos-freeze.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/freeze_transition_health_independent_oos.py'
+      - 'indicators/wyckoff-regime-radar/research/test_freeze_transition_health_independent_oos.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-57-transition-health-independent-oos-freeze.md'
+      - '.github/workflows/wyckoff-v06-transition-health-oos-freeze.yml'
   workflow_dispatch:
 
 permissions:
@@ -22,6 +28,8 @@ jobs:
         working-directory: indicators/wyckoff-regime-radar/research
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: feat/issue-57-wyckoff-v0.6-robustness
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -39,7 +47,7 @@ jobs:
             --output-dir data \
             --manifest data/issue-57-transition-health-independent-oos-manifest.json
       - name: Commit frozen snapshot
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/issue-57-wyckoff-v0.6-robustness'
+        if: github.event_name != 'workflow_dispatch'
         working-directory: .
         run: |
           git config user.name "github-actions[bot]"
@@ -50,5 +58,5 @@ jobs:
             echo "No frozen-data changes to commit"
           else
             git commit -m "research: freeze transition health independent OOS data"
-            git push
+            git push origin HEAD:feat/issue-57-wyckoff-v0.6-robustness
           fi
