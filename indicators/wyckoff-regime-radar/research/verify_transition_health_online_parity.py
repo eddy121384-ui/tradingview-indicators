@@ -11,7 +11,13 @@ import pandas as pd
 
 from diagnose_consensus_formation_and_formal_lag import compute_v06, load_burned_pairs
 from diagnose_post_handoff_hold_persistence import build_rows
-from transition_health_online import CHECKPOINT, STATE_DAMAGED, STATE_HEALTHY, compute_transition_health
+from transition_health_online import (
+    CHECKPOINT,
+    MAX_WATCH_BARS,
+    STATE_DAMAGED,
+    STATE_HEALTHY,
+    compute_transition_health,
+)
 
 HERE = Path(__file__).resolve().parent
 INDEPENDENT_MANIFEST = HERE / "data" / "issue-57-transition-health-independent-oos-manifest.json"
@@ -39,21 +45,34 @@ def expected_health_labels(model: pd.DataFrame) -> dict[int, int]:
     return expected
 
 
-def actual_health_labels(model: pd.DataFrame) -> tuple[dict[int, int], pd.DataFrame]:
+def actual_health_labels(model: pd.DataFrame) -> tuple[dict[int, int], pd.DataFrame, int]:
+    """Historical-comparable online labels plus count of legitimate live-tail labels.
+
+    The retrospective research extractor intentionally excluded bridge onsets
+    without a full 20-bar future observation window. A live TradingView state
+    machine cannot and should not suppress such current-tail events. Therefore
+    those labels are counted but excluded only from the parity comparison.
+    """
     online = compute_transition_health(model)
     actual: dict[int, int] = {}
+    tail_labels = 0
     mask = online["transition_health_healthy_pulse"].to_numpy(bool) | online[
         "transition_health_damaged_pulse"
     ].to_numpy(bool)
-    for bar in np.flatnonzero(mask):
-        actual[int(bar)] = int(online.iloc[int(bar)]["transition_health_state"])
-    return actual, online
+    for bar_raw in np.flatnonzero(mask):
+        bar = int(bar_raw)
+        onset = bar - CHECKPOINT
+        if onset + MAX_WATCH_BARS >= len(model):
+            tail_labels += 1
+            continue
+        actual[bar] = int(online.iloc[bar]["transition_health_state"])
+    return actual, online, tail_labels
 
 
 def analyze_pair(frame: pd.DataFrame) -> dict[str, object]:
     model = compute_v06(frame.copy())
     expected = expected_health_labels(model)
-    actual, online = actual_health_labels(model)
+    actual, online, tail_labels = actual_health_labels(model)
     if actual != expected:
         missing = sorted(set(expected) - set(actual))
         extra = sorted(set(actual) - set(expected))
@@ -80,6 +99,7 @@ def analyze_pair(frame: pd.DataFrame) -> dict[str, object]:
         "healthy_pulses": len(healthy),
         "damaged_pulses": len(damaged),
         "eligible_plus3_labels": len(expected),
+        "live_tail_labels_excluded_from_research_parity": tail_labels,
         "exact_match": True,
         "healthy_anchors": anchors(healthy),
         "damaged_anchors": anchors(damaged),
@@ -94,11 +114,13 @@ def build_report() -> dict[str, object]:
     report_suites: dict[str, object] = {}
     total_pairs = 0
     total_labels = 0
+    total_tail_labels = 0
     for suite_name, pairs in suites.items():
         pair_results = {pair: analyze_pair(frame) for pair, frame in pairs.items()}
         report_suites[suite_name] = pair_results
         total_pairs += len(pair_results)
         total_labels += sum(int(item["eligible_plus3_labels"]) for item in pair_results.values())
+        total_tail_labels += sum(int(item["live_tail_labels_excluded_from_research_parity"]) for item in pair_results.values())
     return {
         "schema_version": 1,
         "issue": 57,
@@ -106,8 +128,9 @@ def build_report() -> dict[str, object]:
         "checkpoint": CHECKPOINT,
         "total_pairs": total_pairs,
         "total_plus3_labels": total_labels,
+        "live_tail_labels_excluded_from_research_parity": total_tail_labels,
         "suites": report_suites,
-        "boundary": "Engineering parity only. This does not create new statistical evidence or permit tuning.",
+        "boundary": "Engineering parity on the historical research-eligible window only. Live-tail labels are valid real-time outputs but were not part of retrospective research because their 20-bar outcome window was incomplete. No tuning is permitted.",
     }
 
 
@@ -119,16 +142,17 @@ def render_markdown(report: dict[str, object]) -> str:
         "",
         f"- Frozen checkpoint: **+{report['checkpoint']} bars**.",
         f"- Pairs checked: **{report['total_pairs']}**.",
-        f"- Eligible +3 labels checked: **{report['total_plus3_labels']}**.",
-        "- Online implementation is compared bar-for-bar with the previously frozen retrospective extractor.",
+        f"- Research-eligible +3 labels checked: **{report['total_plus3_labels']}**.",
+        f"- Live-tail labels intentionally outside retrospective parity window: **{report['live_tail_labels_excluded_from_research_parity']}**.",
+        "- Online implementation is compared bar-for-bar with the previously frozen retrospective extractor wherever the original research had a complete 20-bar future window.",
         "",
     ]
     for suite_name, pair_results in report["suites"].items():
-        lines += [f"## {suite_name}", "", "| Pair | Handoff | Healthy | Damaged | +3 labels | Exact |", "|---|---:|---:|---:|---:|---|"]
+        lines += [f"## {suite_name}", "", "| Pair | Handoff | Healthy | Damaged | +3 labels | Tail live | Exact |", "|---|---:|---:|---:|---:|---:|---|"]
         for pair, item in pair_results.items():
             lines.append(
                 f"| {pair} | {item['handoff_pulses']} | {item['healthy_pulses']} | {item['damaged_pulses']} | "
-                f"{item['eligible_plus3_labels']} | {'PASS' if item['exact_match'] else 'FAIL'} |"
+                f"{item['eligible_plus3_labels']} | {item['live_tail_labels_excluded_from_research_parity']} | {'PASS' if item['exact_match'] else 'FAIL'} |"
             )
         lines.append("")
     lines += ["## Boundary", "", str(report["boundary"]), ""]
@@ -145,7 +169,7 @@ def main() -> None:
     args.md_output.parent.mkdir(parents=True, exist_ok=True)
     args.json_output.write_text(json.dumps(report, indent=2), encoding="utf-8")
     args.md_output.write_text(render_markdown(report), encoding="utf-8")
-    print(json.dumps({"status": report["status"], "pairs": report["total_pairs"], "labels": report["total_plus3_labels"]}, indent=2))
+    print(json.dumps({"status": report["status"], "pairs": report["total_pairs"], "labels": report["total_plus3_labels"], "tail_live": report["live_tail_labels_excluded_from_research_parity"]}, indent=2))
 
 
 if __name__ == "__main__":
