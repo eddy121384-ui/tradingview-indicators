@@ -97,28 +97,31 @@ class TransitionHealthOnlineTests(unittest.TestCase):
         self.assertTrue(bool(out.loc[8, "transition_health_healthy_pulse"]))
 
     def test_online_plus_three_pulses_match_frozen_research_extractor(self) -> None:
-        model = frame(
-            [
-                (35, 60, 3, 1, 1, 0),
-                (30, 64, 4, 1, 1, 0),
-                (28, 63, 7, 1, 1, 0),
-                (25, 61, 11, 1, 1, 1),
-                (5, 60, 32, 1, 1, 1),
-                (2, 2, 2, 35, 60, 3),
-                (2, 2, 2, 52, 43, 1),
-                (2, 2, 2, 40, 54, 2),
-                (2, 2, 2, 35, 58, 1),
-                (2, 2, 2, 5, 60, 32),
-                (35, 60, 3, 1, 1, 0),
-                (30, 64, 4, 1, 1, 0),
-                (5, 60, 32, 1, 1, 1),  # early resolution: no +3 row
-                (1, 1, 1, 35, 60, 3),
-                (1, 1, 1, 30, 64, 4),
-                (1, 1, 1, 28, 63, 7),
-                (1, 1, 1, 25, 61, 11),
-                (1, 1, 1, 5, 60, 32),
-            ]
-        )
+        rows = [
+            (35, 60, 3, 1, 1, 0),
+            (30, 64, 4, 1, 1, 0),
+            (28, 63, 7, 1, 1, 0),
+            (25, 61, 11, 1, 1, 1),
+            (5, 60, 32, 1, 1, 1),
+            (2, 2, 2, 35, 60, 3),
+            (2, 2, 2, 52, 43, 1),
+            (2, 2, 2, 40, 54, 2),
+            (2, 2, 2, 35, 58, 1),
+            (2, 2, 2, 5, 60, 32),
+            (35, 60, 3, 1, 1, 0),
+            (30, 64, 4, 1, 1, 0),
+            (5, 60, 32, 1, 1, 1),  # early resolution: no +3 row
+            (1, 1, 1, 35, 60, 3),
+            (1, 1, 1, 30, 64, 4),
+            (1, 1, 1, 28, 63, 7),
+            (1, 1, 1, 25, 61, 11),
+            (1, 1, 1, 5, 60, 32),
+        ]
+        # The frozen extractor excludes tail onsets without a full 20-bar future window.
+        # Add cross-directional non-bridge bars so this fixture tests semantics, not tail truncation.
+        rows.extend([(1, 50, 1, 1, 40, 1)] * 25)
+        model = frame(rows)
+
         _, checkpoints = build_rows(model)
         expected: dict[int, int] = {}
         for item in checkpoints:
