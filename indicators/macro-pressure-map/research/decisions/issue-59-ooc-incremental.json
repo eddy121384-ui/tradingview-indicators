@@ -1,0 +1,66 @@
+{
+  "issue": 59,
+  "study": "out-of-component incremental-value validation",
+  "input_sha256": {
+    "parity_log": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
+    "ooc_log": "192151f5cf90c7ac067ec63b2aad62749c11766fa7775268bb1ee01fd3b39363"
+  },
+  "ooc_rows": 4936,
+  "overlap_rows": 4935,
+  "sample_rows_after_warmup": 4580,
+  "sample_start": "2008-06-02",
+  "sample_end": "2026-08-14",
+  "plot_wiring_max_abs_error": {
+    "gpi": 0.0,
+    "ipi": 0.0,
+    "fcpi": 0.0
+  },
+  "yield_feed_sensitivity": {
+    "10y_level_corr_tvc_vs_fred": 0.9991529209815939,
+    "2y_level_corr_tvc_vs_fred": 0.9996593725834916,
+    "10y_forward20_change_corr": 0.971155692488365,
+    "2y_forward20_change_corr": 0.9722114317719738
+  },
+  "entry_event_20d_summary": {
+    "GPI": {
+      "baseline": "Copper/Gold 20d momentum",
+      "us10y_tvc": {"axis_spread_bp": -4.4445734299, "baseline_spread_bp": -3.4633548826, "axis_ci95": [-10.4905596504, 1.4233184772]},
+      "us02y_tvc": {"axis_spread_bp": -2.4536472090, "baseline_spread_bp": -0.7288319266},
+      "usdjpy": {"axis_spread_pct": -0.0007553547, "baseline_spread_pct": 0.0492622056},
+      "eurusd": {"axis_spread_pct": -0.1496847890, "baseline_spread_pct": -0.2957934192},
+      "zn1": {"axis_spread_pct": 0.3616402064, "baseline_spread_pct": 0.0262315140, "axis_ci95": [-0.0175036652, 0.7536432038]},
+      "tlt": {"axis_spread_pct": 0.3109730070, "baseline_spread_pct": 0.3830000000},
+      "dgs10_fred_sensitivity": {"axis_spread_bp": -6.07, "axis_ci95": [-12.08, -0.22]},
+      "era_us10y_tvc_spread_bp": {"2008-2012": -13.022, "2013-2019": -0.996, "2020-2026": 2.145}
+    },
+    "IPI": {
+      "baseline": "10Y breakeven 20d change",
+      "us10y_tvc": {"axis_spread_bp": -4.520, "baseline_spread_bp": -5.834},
+      "us02y_tvc": {"axis_spread_bp": -5.322, "baseline_spread_bp": -5.038},
+      "usdjpy": {"axis_spread_pct": 0.292, "baseline_spread_pct": -0.070},
+      "eurusd": {"axis_spread_pct": -0.8157165847, "baseline_spread_pct": -0.0616367536, "axis_ci95": [-1.4251866271, -0.2048401574]},
+      "zn1": {"axis_spread_pct": 0.220, "baseline_spread_pct": 0.220},
+      "tlt": {"axis_spread_pct": 0.431, "baseline_spread_pct": 0.498},
+      "forward60_us10y_tvc": {"axis_spread_bp": -15.9861296692, "baseline_spread_bp": -11.7561457604, "axis_ci95": [-27.1815713642, -4.7267402680]},
+      "forward60_tlt": {"axis_spread_pct": 2.2308202191, "baseline_spread_pct": 1.6518389093, "axis_ci95": [0.2994687664, 4.1265784216]},
+      "era_eurusd_spread_pct": {"2008-2012": -1.741, "2013-2019": 0.033, "2020-2026": -0.599}
+    },
+    "FCPI": {
+      "primary_baseline": "HY OAS 20d change",
+      "secondary_baseline": "VIX 20d change",
+      "us10y_tvc": {"axis_spread_bp": 2.2919217778, "hyoas_spread_bp": 2.2862805541, "vix_spread_bp": 2.104},
+      "us02y_tvc": {"axis_spread_bp": 3.145, "hyoas_spread_bp": -0.785, "vix_spread_bp": 2.956},
+      "usdjpy": {"axis_spread_pct": 0.291, "hyoas_spread_pct": -0.527, "vix_spread_pct": -0.519},
+      "eurusd": {"axis_spread_pct": 0.089, "hyoas_spread_pct": -0.177, "vix_spread_pct": 0.103},
+      "zn1": {"axis_spread_pct": -0.137, "hyoas_spread_pct": 0.018, "vix_spread_pct": 0.014},
+      "tlt": {"axis_spread_pct": 0.1987302798, "hyoas_spread_pct": -0.0766311770, "vix_spread_pct": -0.138, "axis_ci95": [-0.6176633040, 1.0469449921]}
+    }
+  },
+  "verdict": {
+    "project": "KEEP V6.6 frozen; do not tune weights or thresholds yet",
+    "GPI": "KEEP / promising, broad OOC incremental value not proven",
+    "IPI": "KEEP / modest incremental evidence; strongest external clue so far",
+    "FCPI": "descriptively useful; incremental value not demonstrated",
+    "next_gate": "joint three-axis incremental validation with walk-forward era holdout"
+  }
+}
