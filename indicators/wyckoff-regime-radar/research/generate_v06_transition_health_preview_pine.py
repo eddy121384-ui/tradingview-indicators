@@ -18,7 +18,6 @@ from generate_v06_parity_pine import (
     _apply_phase_a,
     _apply_phase_b,
     _apply_phase_c_d,
-    _extract_atr_name,
     _find_unique,
     git_blob_sha,
 )
@@ -42,6 +41,15 @@ def _force_price_only_modes(lines: list[str]) -> None:
         index = hits[0]
         indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
         lines[index] = indent + replacement
+
+
+def _extract_primary_atr_name(lines: list[str]) -> str:
+    """Find the short ATR used by Phase A, not the separate maturity ATR."""
+    pattern = re.compile(r"^\s*(?:float\s+)?([A-Za-z_]\w*)\s*=\s*ta\.atr\(atrLen\)\s*$")
+    hits = [match.group(1) for line in lines if (match := pattern.search(line))]
+    if len(hits) != 1:
+        raise RuntimeError(f"Expected one ta.atr(atrLen) assignment; found {hits}")
+    return hits[0]
 
 
 def _transition_health_block() -> list[str]:
@@ -180,7 +188,7 @@ def render_preview_source() -> str:
 
     # Keep the validated Issue #57 research boundary: price-only witnesses Off.
     _force_price_only_modes(lines)
-    atr_name = _extract_atr_name(lines)
+    atr_name = _extract_primary_atr_name(lines)
     _apply_phase_a(lines, atr_name)
     _apply_phase_b(lines)
     _apply_phase_c_d(lines)
