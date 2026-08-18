@@ -15,14 +15,21 @@ from pathlib import Path
 from generate_v06_parity_pine import (
     EXPECTED_SOURCE_BLOB_SHA,
     SOURCE,
+    STALE_DECAY_MULTIPLIER,
     _apply_phase_a,
-    _apply_phase_b,
-    _apply_phase_c_d,
     _find_unique,
     git_blob_sha,
 )
 
 VISUAL_MARKER = "// Visuals"
+
+
+def _exact_assignment_index(lines: list[str], variable: str) -> int:
+    pattern = re.compile(rf"^\s*(?:(?:bool|float|int|string)\s+)?{re.escape(variable)}\s*=(?!=)")
+    hits = [i for i, line in enumerate(lines) if pattern.search(line)]
+    if len(hits) != 1:
+        raise RuntimeError(f"Expected one exact assignment to {variable}; found {len(hits)}")
+    return hits[0]
 
 
 def _force_price_only_modes(lines: list[str]) -> None:
@@ -34,11 +41,7 @@ def _force_price_only_modes(lines: list[str]) -> None:
         "witnessStageBiasMode": 'string witnessStageBiasMode = "Conservative"',
     }
     for variable, replacement in replacements.items():
-        pattern = re.compile(rf"^\s*(?:string\s+)?{re.escape(variable)}\s*=(?!=)")
-        hits = [i for i, line in enumerate(lines) if pattern.search(line)]
-        if len(hits) != 1:
-            raise RuntimeError(f"Expected one declaration for {variable}; found {len(hits)}")
-        index = hits[0]
+        index = _exact_assignment_index(lines, variable)
         indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
         lines[index] = indent + replacement
 
@@ -50,6 +53,90 @@ def _extract_primary_atr_name(lines: list[str]) -> str:
     if len(hits) != 1:
         raise RuntimeError(f"Expected one ta.atr(atrLen) assignment; found {hits}")
     return hits[0]
+
+
+def _apply_phase_b_full(lines: list[str]) -> None:
+    """Same Phase-B block as compact parity, with exact assignment matching."""
+    start = _find_unique(lines, "var int confirmed")
+    formal_line = _exact_assignment_index(lines, "formalId")
+    if formal_line <= start:
+        raise RuntimeError("formalId appears before persistence state")
+
+    old_block = lines[start : formal_line + 1]
+    confirm_expr = None
+    for line in old_block:
+        match = re.search(r"candidateBars\s*>=\s*([^\s]+)", line)
+        if match:
+            confirm_expr = match.group(1)
+            break
+    if confirm_expr is None:
+        confirm_expr = "activeConfirmBars"
+
+    new_block = [
+        "// ===== Issue #57 Phase B persistence redesign =====",
+        "var int confirmedId = 0",
+        "var int candidateId = 0",
+        "var int candidateBars = 0",
+        "var int stalePressureBars = 0",
+        "int stalePressureReason = 0",
+        f"int staleLimit = confirmBars * {STALE_DECAY_MULTIPLIER}",
+        "int candidateDisplayIdPre = (strongCandidate or weakCandidateRaw) ? topId : 0",
+        "if strongCandidate",
+        "    stalePressureBars := 0",
+        "    stalePressureReason := 0",
+        "    int rawId = topId",
+        "    if rawId == candidateId",
+        "        candidateBars += 1",
+        "    else",
+        "        candidateId := rawId",
+        "        candidateBars := 1",
+        f"    if candidateBars >= {confirm_expr}",
+        "        confirmedId := candidateId",
+        "else",
+        "    candidateId := 0",
+        "    candidateBars := 0",
+        "    bool weakChallenger = confirmedId != 0 and candidateDisplayIdPre != 0 and candidateDisplayIdPre != confirmedId",
+        "    bool coexistPressure = confirmedId != 0 and coexistRaw and candidateDisplayIdPre == 0",
+        "    if chaosRaw and confirmedId != 0",
+        "        stalePressureReason := 1",
+        "    else if weakChallenger",
+        "        stalePressureReason := 2",
+        "    else if coexistPressure",
+        "        stalePressureReason := 3",
+        "    else",
+        "        stalePressureReason := 0",
+        "    if stalePressureReason != 0",
+        "        stalePressureBars += 1",
+        "        if stalePressureBars >= staleLimit",
+        "            confirmedId := 0",
+        "    else",
+        "        stalePressureBars := 0",
+        "int formalId = confirmedId",
+        "// ===== End Issue #57 Phase B =====",
+    ]
+    lines[start : formal_line + 1] = new_block
+
+
+def _apply_phase_c_d_full(lines: list[str]) -> None:
+    """Same canonical four-state layer as compact parity, exact-match insertion."""
+    candidate_display = _exact_assignment_index(lines, "candidateDisplayId")
+    insert_at = candidate_display + 1
+    block = [
+        "",
+        "// ===== Issue #57 Phase C/D canonical four-state layer =====",
+        "float v06AccFamily = probAcc + probReacc",
+        "float v06Markup = probMarkup",
+        "float v06DistFamily = probDist + probRedist",
+        "float v06Markdown = probMarkdown",
+        "int v06FormalId = f_v06_map4(formalId)",
+        "float v06FormalSupport = v06FormalId == 1 ? v06AccFamily : v06FormalId == 2 ? v06Markup : v06FormalId == 3 ? v06DistFamily : v06FormalId == 4 ? v06Markdown : na",
+        "float v06Competitor = v06FormalId == 1 ? math.max(v06Markup, math.max(v06DistFamily, v06Markdown)) : v06FormalId == 2 ? math.max(v06AccFamily, math.max(v06DistFamily, v06Markdown)) : v06FormalId == 3 ? math.max(v06AccFamily, math.max(v06Markup, v06Markdown)) : v06FormalId == 4 ? math.max(v06AccFamily, math.max(v06Markup, v06DistFamily)) : na",
+        "float v06RegimeMargin = v06FormalId == 0 ? na : v06FormalSupport - v06Competitor",
+        "// Regime Support / Regime Margin are descriptive state-strength measures; NOT confidence/probability.",
+        "// ===== End Issue #57 Phase C/D =====",
+        "",
+    ]
+    lines[insert_at:insert_at] = block
 
 
 def _transition_health_block() -> list[str]:
@@ -190,8 +277,8 @@ def render_preview_source() -> str:
     _force_price_only_modes(lines)
     atr_name = _extract_primary_atr_name(lines)
     _apply_phase_a(lines, atr_name)
-    _apply_phase_b(lines)
-    _apply_phase_c_d(lines)
+    _apply_phase_b_full(lines)
+    _apply_phase_c_d_full(lines)
 
     visual_index = _find_unique(lines, VISUAL_MARKER)
     block = ["", *_transition_health_block(), ""]
