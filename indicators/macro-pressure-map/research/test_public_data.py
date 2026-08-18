@@ -40,6 +40,18 @@ def test_align_to_anchor_forward_fills_but_never_backfills() -> None:
     assert frame.loc[pd.Timestamp("2020-01-07"), "breakeven_10y"] == 3.0
 
 
+def test_align_to_anchor_preserves_weekend_observation_for_next_trading_day() -> None:
+    anchor_idx = pd.to_datetime(["2020-01-03", "2020-01-06", "2020-01-07"])
+    spy = pd.Series([100.0, 101.0, 102.0], index=anchor_idx)
+    monthly = pd.Series([7.0], index=pd.to_datetime(["2020-01-04"]))  # Saturday
+
+    frame = align_to_anchor({"spy": spy, "pmi": monthly})
+
+    assert np.isnan(frame.loc[pd.Timestamp("2020-01-03"), "pmi"])
+    assert frame.loc[pd.Timestamp("2020-01-06"), "pmi"] == 7.0
+    assert frame.loc[pd.Timestamp("2020-01-07"), "pmi"] == 7.0
+
+
 def test_build_public_sources_uses_anchor_calendar_and_records_manifest() -> None:
     calendar = pd.bdate_range("2020-01-01", periods=8)
 
