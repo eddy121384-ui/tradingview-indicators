@@ -82,7 +82,9 @@ def compute_transition_health(model: pd.DataFrame) -> pd.DataFrame:
             if tracked and age <= CHECKPOINT:
                 context_weight = float(weights[i, context_id - 1])
                 carried_weight = float(weights[i, carried_id - 1])
-                if context_weight >= carried_weight:
+                # Frozen research uses np.all(carried > context). Any NaN therefore
+                # breaks the continuous-hold condition rather than being ignored.
+                if not (carried_weight > context_weight):
                     lead_held = False
 
             # Frozen research eligibility is resolution_lag > CHECKPOINT.
