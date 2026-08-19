@@ -2,7 +2,7 @@
 """Finalize the generated v0.6 Transition Health Pine preview.
 
 The full-source generator deliberately reuses a large legacy visual source.
-This finalizer applies three parity/compile-critical corrections:
+This finalizer applies four parity/compile/UI-critical corrections:
 1. the frozen research condition `np.all(carried > context)` means an undefined
    weight breaks the hold instead of being ignored;
 2. Pine's parser can reject the generated multi-line ternary stage-weight helper,
@@ -10,7 +10,10 @@ This finalizer applies three parity/compile-critical corrections:
 3. the shared Phase-A generator inserts its helper block near `noBreakLowScore`,
    but the full visual source first calls those helpers earlier. Pine requires the
    function definitions to appear before that first use, so the helper block is
-   relocated without changing any formula.
+   relocated without changing any formula;
+4. dense text labels are reduced to event-only geometric markers so historical
+   Transition Health episodes remain visually readable without changing state
+   semantics or event timing.
 """
 from __future__ import annotations
 
@@ -33,6 +36,21 @@ OLD_STAGE_WEIGHT = """f_v06_stage_weight(int id) =>
     id == 6 ? probRedist : na"""
 NEW_STAGE_WEIGHT = """f_v06_stage_weight(int id) =>
     id == 1 ? probAcc : id == 2 ? probMarkup : id == 3 ? probReacc : id == 4 ? probDist : id == 5 ? probMarkdown : id == 6 ? probRedist : na"""
+
+OLD_EVENT_MARKERS = """if showTransitionHealthLabels and v06ThHandoffPulse
+    label.new(bar_index, v06ThWatchDir > 0 ? 8.0 : 92.0, v06ThWatchDir > 0 ? \"Handoff ↑\" : \"Handoff ↓\", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colYellow, 0), textcolor=colDarkText, size=size.tiny)
+if showTransitionHealthLabels and v06ThHealthyPulse
+    label.new(bar_index, v06ThWatchDir > 0 ? 18.0 : 82.0, v06ThWatchDir > 0 ? \"Healthy ↑\" : \"Healthy ↓\", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colBreakout, 0), textcolor=colDarkText, size=size.tiny)
+if showTransitionHealthLabels and v06ThDamagedPulse
+    label.new(bar_index, v06ThWatchDir > 0 ? 18.0 : 82.0, v06ThWatchDir > 0 ? \"Damaged ↑\" : \"Damaged ↓\", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colRed, 0), textcolor=color.white, size=size.tiny)"""
+
+NEW_EVENT_MARKERS = """// Minimal event-only markers: no repeated text strip on historical charts.
+if showTransitionHealthLabels and v06ThHandoffPulse
+    label.new(bar_index, v06ThWatchDir > 0 ? 7.0 : 93.0, \"\", style=label.style_circle, color=color.new(colYellow, 30), textcolor=colYellow, size=size.tiny)
+if showTransitionHealthLabels and v06ThHealthyPulse
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, \"\", style=v06ThWatchDir > 0 ? label.style_triangleup : label.style_triangledown, color=color.new(colBreakout, 0), textcolor=colBreakout, size=size.small)
+if showTransitionHealthLabels and v06ThDamagedPulse
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, \"\", style=label.style_xcross, color=color.new(colRed, 0), textcolor=colRed, size=size.small)"""
 
 HELPER_START = "// ===== Issue #57 v0.6 research helpers (mechanically generated) ====="
 HELPER_END = "// ===== End Issue #57 helpers ====="
@@ -91,6 +109,12 @@ def finalize_preview_source(source: str) -> str:
         OLD_STAGE_WEIGHT,
         NEW_STAGE_WEIGHT,
         "Transition Health stage-weight helper",
+    )
+    source = _replace_exactly_once(
+        source,
+        OLD_EVENT_MARKERS,
+        NEW_EVENT_MARKERS,
+        "Transition Health event-marker block",
     )
     source = _relocate_phase_a_helpers(source)
     return source
