@@ -1,6 +1,6 @@
 # Issue #59 — Out-of-component incremental-value validation
 
-Status: **OOC FIRST PASS COMPLETE**
+Status: **OOC STUDY COMPLETE — NON-OVERLAPPING EVENT WINDOWS**
 
 This stage tests frozen Macro Pressure Map V6.6 against outcomes that are not direct default-path inputs, using the user-supplied TradingView Pine Logs.
 
@@ -22,118 +22,120 @@ Outcome set:
 - CBOT ZN1! 10Y Treasury futures
 - TLT
 
-Signal definition remains frozen for this diagnostic: trailing 20-trading-day change. Primary evidence uses the first day entering the top/bottom 20% bucket to reduce duplicated multi-day regimes.
+Signal definition remains frozen: trailing 20-trading-day axis change versus simple proxy baselines.
+
+## Review correction — overlapping event windows
+
+The first OOC report counted first entries into top/bottom 20% signal buckets, but a signal could clear briefly and re-enter before the previous 20d or 60d forward window ended. Those overlapping outcomes were then resampled as if independent.
+
+The corrected study applies a **shared horizon-length embargo across high and low entry events**:
+
+- 5d outcome -> 5-trading-row embargo
+- 20d outcome -> 20-trading-row embargo
+- 60d outcome -> 60-trading-row embargo
+
+An accepted event suppresses later events of either sign until the corresponding forward window no longer overlaps.
+
+Bootstrap confidence intervals are calculated only after that de-overlap step.
 
 ## Feed-sensitivity check
 
-The TVC and FRED Treasury yield feeds are close enough that the broad conclusions are not a feed artifact:
+The TVC and FRED Treasury yield feeds remain close enough that broad conclusions are not a feed artifact:
 
 - 10Y level correlation: **0.99915**
 - 2Y level correlation: **0.99966**
 - forward-20d yield-change correlation: **0.9712** for 10Y, **0.9722** for 2Y
 
-## 20-day entry-event comparison
+## Corrected 20-day non-overlapping entry-event comparison
 
-The table reports high-signal minus low-signal forward outcome spread.
+High-signal minus low-signal forward outcome spread:
 
 ### GPI vs Copper/Gold 20d momentum
 
-| OOC outcome | GPI spread | Copper/Gold baseline |
-|---|---:|---:|
-| US10Y | **-4.45 bp** | -3.46 bp |
-| US02Y | **-2.45 bp** | -0.73 bp |
-| USDJPY | -0.00% | +0.05% |
-| EURUSD | -0.15% | **-0.30%** |
-| ZN1! | **+0.36%** | +0.03% |
-| TLT | +0.31% | **+0.38%** |
+| OOC outcome | GPI spread | Copper/Gold baseline | GPI 95% CI |
+|---|---:|---:|---:|
+| US10Y | +4.26 bp | +6.64 bp | [-3.58, +11.83] |
+| US02Y | +3.58 bp | +1.20 bp | [-2.71, +10.20] |
+| USDJPY | +0.64% | -0.15% | [-0.33%, +1.60%] |
+| EURUSD | +0.29% | +0.27% | [-0.54%, +1.16%] |
+| ZN1! | -0.30% | -0.18% | [-0.84%, +0.26%] |
+| TLT | -0.73% | -0.53% | [-1.96%, +0.52%] |
 
-GPI has some incremental separation on nominal rates / ZN, but the evidence is not robust enough to call a universal edge. The TVC 10Y 95% bootstrap CI is `[-10.49, +1.42] bp`; the FRED DGS10 sensitivity result is stronger at **-6.07 bp** with CI `[-12.08, -0.22] bp`.
+No main corrected GPI 20d OOC confidence interval excludes zero.
 
-Era stability is the weakness. For 20d US10Y entry events, GPI spread is:
-- 2008–2012: **-13.0 bp**
-- 2013–2019: **-1.0 bp**
-- 2020–2026: **+2.1 bp**
+Era-stability also remains weak. Corrected GPI -> US10Y spread:
+- 2008–2012: **-5.31 bp**
+- 2013–2019: **+4.46 bp**
+- 2020–2026: **-1.16 bp**
 
-So the rate effect is heavily concentrated in the crisis-heavy early sample.
-
-**Verdict: KEEP / PROMISING, but broad out-of-component incremental value is not yet proven.** The earlier strong oil result does not generalize cleanly to all external markets.
+**Verdict: KEEP as a growth/cyclical state axis, but standalone OOC incremental prediction is not demonstrated.**
 
 ### IPI vs 10Y breakeven 20d change
 
-| OOC outcome | IPI spread | Breakeven baseline |
-|---|---:|---:|
-| US10Y | -4.52 bp | **-5.83 bp** |
-| US02Y | **-5.32 bp** | -5.04 bp |
-| USDJPY | **+0.29%** | -0.07% |
-| EURUSD | **-0.82%** | -0.06% |
-| ZN1! | +0.22% | +0.22% |
-| TLT | +0.43% | **+0.50%** |
-
-The clearest unique OOC result is EURUSD: high-vs-low IPI transition entry events are followed by **-0.82%** relative EURUSD performance over 20 trading days, with a bootstrap 95% CI of **[-1.43%, -0.20%]**. The simple breakeven baseline is almost flat.
-
-At 60 days, IPI also separates rates more than the baseline in some tests:
-- US10Y: **-15.99 bp** vs breakeven baseline **-11.76 bp**, IPI CI `[-27.18, -4.73] bp`
-- TLT: **+2.23%** vs baseline **+1.65%**, IPI CI `[+0.30%, +4.13%]`
-
-However, era stability remains mixed. EURUSD 20d IPI spread is:
-- 2008–2012: **-1.74%**
-- 2013–2019: **+0.03%**
-- 2020–2026: **-0.60%**
-
-The effect is therefore strongest in macro-active eras, not universal.
-
-**Verdict: KEEP / MODEST INCREMENTAL EVIDENCE.** IPI currently has the best genuinely external result, but it should not be sold as a stable directional inflation trade signal.
-
-### FCPI vs HY OAS 20d change / VIX 20d change
-
-| OOC outcome | FCPI spread | HY OAS baseline | VIX baseline |
+| OOC outcome | IPI spread | Breakeven baseline | IPI 95% CI |
 |---|---:|---:|---:|
-| US10Y | +2.29 bp | +2.29 bp | +2.10 bp |
-| US02Y | +3.15 bp | -0.79 bp | +2.96 bp |
-| USDJPY | +0.29% | -0.53% | -0.52% |
-| EURUSD | +0.09% | -0.18% | +0.10% |
-| ZN1! | -0.14% | +0.02% | +0.01% |
-| TLT | +0.20% | -0.08% | -0.14% |
+| US10Y | +4.58 bp | +3.08 bp | [-3.27, +12.53] |
+| US02Y | +4.38 bp | +4.51 bp | [-2.30, +11.31] |
+| USDJPY | -0.37% | -0.10% | [-1.25%, +0.50%] |
+| EURUSD | +0.47% | -0.05% | [-0.37%, +1.31%] |
+| ZN1! | -0.24% | -0.00% | [-0.79%, +0.30%] |
+| TLT | -0.54% | -0.32% | [-1.93%, +0.80%] |
 
-No 20d FCPI OOC spread above has a bootstrap interval excluding zero. Era signs also change frequently.
+The previous headline IPI-EURUSD result of about `-0.82%` with a CI excluding zero **does not survive** the non-overlapping-event rule. It becomes about `+0.47%` with a wide CI crossing zero.
 
-**Verdict: DESCRIPTIVELY USEFUL, INCREMENTAL VALUE NOT DEMONSTRATED.** FCPI still compresses credit/rates/volatility conditions into one dashboard variable, but the current evidence does not justify claiming it forecasts external assets better than simple stress proxies.
+The previous 60d IPI rate / TLT evidence also does not survive:
+- US10Y: **+7.92 bp**, CI `[-14.59, +31.06] bp`; breakeven baseline +7.63 bp
+- TLT: **-1.21%**, CI `[-4.84%, +2.44%]`; breakeven baseline -1.50%
 
-## What changed from the previous first-pass ranking
+Corrected IPI -> EURUSD era spread:
+- 2008–2012: **-0.46%**
+- 2013–2019: **+0.15%**
+- 2020–2026: **+0.58%**
 
-The earlier in-sample / partially component-overlapping study ranked GPI strongest because its transitions separated oil and credit behavior well. This stricter OOC study downgrades that claim:
+**Verdict: KEEP as an inflation-pressure axis and as part of the joint GPI+IPI architecture, but no robust standalone OOC incremental edge is demonstrated.**
 
-1. **IPI — best external incremental clue so far**, especially EURUSD at 20d and rates/TLT at 60d, though era stability is mixed.
-2. **GPI — still useful, but its strongest prior advantage was more concentrated in commodity/credit outcomes; external rates evidence is episodic.**
-3. **FCPI — still the weakest on incremental value; keep as a state-compression layer unless later joint-regime tests justify the extra complexity.**
+### FCPI vs HY OAS / VIX baselines
 
-This does **not** mean IPI is now a trading strategy or that GPI/FCPI should be deleted. It means the burden of proof is different once circular component validation is removed.
+| OOC outcome | FCPI spread | HY OAS baseline | VIX baseline | FCPI 95% CI |
+|---|---:|---:|---:|---:|
+| US10Y | +1.74 bp | -3.10 bp | -1.53 bp | [-7.16, +10.45] |
+| US02Y | -1.12 bp | -0.02 bp | -0.65 bp | [-9.01, +6.90] |
+| USDJPY | -0.21% | +0.40% | +0.49% | [-1.17%, +0.71%] |
+| EURUSD | +0.37% | +0.75% | -0.24% | [-0.36%, +1.11%] |
+| ZN1! | -0.07% | -0.09% | -0.20% | [-0.62%, +0.51%] |
+| TLT | -0.84% | +0.21% | -0.23% | [-2.09%, +0.45%] |
+
+No corrected main FCPI 20d OOC confidence interval excludes zero.
+
+**Verdict: DESCRIPTIVELY USEFUL; standalone incremental predictive value not demonstrated.** FCPI remains justified as a financial-stress / risk-context compression layer.
+
+## Corrected project-level interpretation
+
+After removing overlapping event windows, the earlier ranking of single-axis predictive strength is withdrawn.
+
+The conservative conclusion is now:
+
+1. **GPI — KEEP for state / transition information, not as a validated standalone external predictor.**
+2. **IPI — KEEP for inflation state and joint alignment, not as a validated standalone external predictor.**
+3. **FCPI — KEEP as stress / risk context; standalone incremental prediction remains unsupported.**
+
+No individual axis has earned a robust general-purpose OOC predictive claim from this study.
+
+That makes the separate joint-axis holdout test more important: if the full architecture has incremental value, it must come from **cross-axis alignment / synchronized transition**, not from pretending one axis is a universal signal.
 
 ## Current project-level verdict
 
-**KEEP V6.6 frozen. Do not tune thresholds or weights yet.**
+**KEEP V6.6 frozen. Do not tune thresholds or weights.**
 
-What V6.6 has already earned:
-- Pine ↔ Python implementation parity
-- coherent macro-state compression
-- evidence that transition/change contains more information than static labels
-- some cross-asset separation
-- at least one meaningful out-of-component incremental result
+What this OOC study supports:
+- reducing circular self-validation by using external outcome markets;
+- retaining the axes as macro-state descriptors;
+- downgrading all standalone single-axis predictive claims;
+- using the corrected joint holdout as the main test of incremental architecture value.
 
-What V6.6 has not earned:
-- a claim of direct trading profitability
-- stable universal regime-to-return mappings
-- proof that every composite axis beats a simple proxy
-- justification for parameter optimization
-
-## Recommended next gate
-
-The remaining question is whether the **three-axis combination itself** adds information beyond the best individual axis.
-
-Next study should keep V6.6 frozen and test:
-1. joint GPI/IPI transition alignment;
-2. FCPI as a conditioning overlay rather than a standalone predictor;
-3. regime-entry events versus the best single-axis / simple-proxy baseline;
-4. walk-forward era holdout, so any rule selected from 2008–2019 is judged on 2020–2026 without retuning.
-
-That is the point where we can decide whether V6.7 should preserve all three axes, simplify FCPI, or redesign the regime layer.
+What it does not support:
+- direct trading profitability;
+- universal single-axis directional rules;
+- stable FX edge;
+- FCPI superiority over simple stress proxies;
+- any parameter optimization on Issue #59 data.
