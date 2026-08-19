@@ -107,6 +107,33 @@ def entry_events(mask: pd.Series) -> pd.Series:
     return mask & ~prev
 
 
+def embargo_entry_events(
+    high_mask: pd.Series,
+    low_mask: pd.Series,
+    horizon: int,
+) -> tuple[pd.Series, pd.Series]:
+    """Select non-overlapping high/low entry events with one shared embargo."""
+    high_entries = entry_events(high_mask)
+    low_entries = entry_events(low_mask)
+    keep_high = pd.Series(False, index=high_mask.index)
+    keep_low = pd.Series(False, index=high_mask.index)
+    last_position: int | None = None
+
+    for position in range(len(high_mask.index)):
+        is_high = bool(high_entries.iloc[position])
+        is_low = bool(low_entries.iloc[position])
+        if not (is_high or is_low):
+            continue
+        if last_position is not None and position - last_position < horizon:
+            continue
+        if is_high:
+            keep_high.iloc[position] = True
+        else:
+            keep_low.iloc[position] = True
+        last_position = position
+    return keep_high, keep_low
+
+
 def bootstrap_spread(
     high_values: np.ndarray,
     low_values: np.ndarray,
@@ -126,11 +153,19 @@ def bootstrap_spread(
     return float(np.quantile(sims, 0.025)), float(np.quantile(sims, 0.975))
 
 
-def spread_stats(signal: pd.Series, outcome: pd.Series, event_only: bool) -> dict:
+def spread_stats(
+    signal: pd.Series,
+    outcome: pd.Series,
+    event_only: bool,
+    event_horizon: int | None = None,
+) -> dict:
     high, low, lo_cut, hi_cut = classify_extremes(signal)
     if event_only:
-        high = entry_events(high)
-        low = entry_events(low)
+        if event_horizon is None:
+            high = entry_events(high)
+            low = entry_events(low)
+        else:
+            high, low = embargo_entry_events(high, low, event_horizon)
     valid_high = high & outcome.notna()
     valid_low = low & outcome.notna()
     hv = outcome[valid_high].to_numpy(float)
@@ -235,21 +270,29 @@ def evaluate(frame: pd.DataFrame) -> dict:
                 col = outcome_column(outcome, horizon)
                 cell = {
                     "all_rows": {"axis": spread_stats(frame[axis_signal], frame[col], False)},
-                    "entry_events": {"axis": spread_stats(frame[axis_signal], frame[col], True)},
+                    "entry_events": {
+                        "axis": spread_stats(frame[axis_signal], frame[col], True, horizon)
+                    },
                     "eras_20d": {},
                 }
                 for baseline in baseline_names:
                     cell["all_rows"][baseline] = spread_stats(frame[baseline], frame[col], False)
-                    cell["entry_events"][baseline] = spread_stats(frame[baseline], frame[col], True)
+                    cell["entry_events"][baseline] = spread_stats(
+                        frame[baseline], frame[col], True, horizon
+                    )
 
                 if horizon == 20:
                     for era_name, era_mask in eras.items():
                         era_frame = frame.loc[era_mask]
                         era_cell = {
-                            "axis": spread_stats(era_frame[axis_signal], era_frame[col], True)
+                            "axis": spread_stats(
+                                era_frame[axis_signal], era_frame[col], True, horizon
+                            )
                         }
                         for baseline in baseline_names:
-                            era_cell[baseline] = spread_stats(era_frame[baseline], era_frame[col], True)
+                            era_cell[baseline] = spread_stats(
+                                era_frame[baseline], era_frame[col], True, horizon
+                            )
                         cell["eras_20d"][era_name] = era_cell
                 outcome_out[str(horizon)] = cell
             axis_out["outcomes"][outcome] = outcome_out
@@ -265,13 +308,14 @@ def render_markdown(report: dict) -> str:
     lines = [
         "# Issue #59 — Out-of-component incremental-value validation",
         "",
-        "Status: **OOC STUDY COMPLETE FOR PROVIDED LOGS**",
+        "Status: **OOC STUDY COMPLETE — NON-OVERLAPPING EVENT WINDOWS**",
         "",
         f"Sample: {report['sample']['rows']:,} rows, {report['sample']['first_date']} to {report['sample']['last_date']}.",
         "",
         "Signal definition: trailing 20-trading-day axis change. Baselines are frozen simple proxies; 20/80% cuts are descriptive research buckets, not production thresholds.",
         "",
-        "Primary evidence is the **entry-event** spread (first bar entering an extreme bucket) to reduce overlapping-state duplication. Bootstrap CIs are descriptive and do not correct every form of time-series dependence.",
+        "Primary event evidence uses the first bar entering an extreme bucket plus a horizon-length shared embargo across high/low events, so accepted 5d/20d/60d forward windows do not overlap within each comparison.",
+        "Bootstrap CIs are applied only after that de-overlap step and remain descriptive rather than causal proof.",
         "",
     ]
     for axis, axis_data in report["axes"].items():
@@ -291,7 +335,7 @@ def render_markdown(report: dict) -> str:
                 f"| {outcome} | {_fmt(a['spread'])} {unit} | {_fmt(b['spread'])} {unit} | "
                 f"[{_fmt(a['ci95_low'])}, {_fmt(a['ci95_high'])}] | {a['n_high']} / {a['n_low']} |"
             )
-        lines += ["", "### Era stability (20d entry events)", ""]
+        lines += ["", "### Era stability (20d non-overlapping entry events)", ""]
         for outcome in ("us10y_tvc", "usdjpy", "eurusd", "tlt"):
             lines.append(f"**{outcome}**")
             for era, cell in axis_data["outcomes"][outcome]["20"]["eras_20d"].items():
@@ -305,7 +349,7 @@ def render_markdown(report: dict) -> str:
         "- These outcomes are not default-path V6.6 inputs, reducing circular self-validation.",
         "- DGS10/DGS2 FRED series are sensitivity checks for TVC yield feeds, not independent extra votes.",
         "- No V6.6 parameter is tuned by this study.",
-        "- A composite only earns incremental-value credit where it repeatedly separates outcomes more than its simple baseline and remains directionally coherent across eras.",
+        "- After removing overlapping event windows, single-axis incremental evidence is materially weaker; no standalone axis should be promoted as a validated predictive rule from this study.",
         "",
     ]
     return "\n".join(lines)
