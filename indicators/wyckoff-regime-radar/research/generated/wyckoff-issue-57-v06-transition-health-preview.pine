@@ -1549,12 +1549,7 @@ int V06_TH_HEALTHY = 2
 int V06_TH_DAMAGED = 3
 
 f_v06_stage_weight(int id) =>
-    id == 1 ? probAcc :
-    id == 2 ? probMarkup :
-    id == 3 ? probReacc :
-    id == 4 ? probDist :
-    id == 5 ? probMarkdown :
-    id == 6 ? probRedist : na
+    id == 1 ? probAcc : id == 2 ? probMarkup : id == 3 ? probReacc : id == 4 ? probDist : id == 5 ? probMarkdown : id == 6 ? probRedist : na
 
 bool v06BullBridge = ((topId == 1 and (secondaryId == 2 or secondaryId == 3)) or (secondaryId == 1 and (topId == 2 or topId == 3)))
 bool v06BearBridge = ((topId == 4 and (secondaryId == 5 or secondaryId == 6)) or (secondaryId == 4 and (topId == 5 or topId == 6)))
