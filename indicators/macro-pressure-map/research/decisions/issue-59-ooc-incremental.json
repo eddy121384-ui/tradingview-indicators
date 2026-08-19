@@ -1,6 +1,7 @@
 {
   "issue": 59,
   "study": "out-of-component incremental-value validation",
+  "methodology_revision": "horizon-length shared embargo across high/low entry events before bootstrap",
   "input_sha256": {
     "parity_log": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
     "ooc_log": "192151f5cf90c7ac067ec63b2aad62749c11766fa7775268bb1ee01fd3b39363"
@@ -15,52 +16,96 @@
     "ipi": 0.0,
     "fcpi": 0.0
   },
+  "event_embargo_trading_rows": {
+    "5d_outcome": 5,
+    "20d_outcome": 20,
+    "60d_outcome": 60
+  },
   "yield_feed_sensitivity": {
     "10y_level_corr_tvc_vs_fred": 0.9991529209815939,
     "2y_level_corr_tvc_vs_fred": 0.9996593725834916,
     "10y_forward20_change_corr": 0.971155692488365,
     "2y_forward20_change_corr": 0.9722114317719738
   },
-  "entry_event_20d_summary": {
+  "corrected_entry_event_20d_summary": {
     "GPI": {
       "baseline": "Copper/Gold 20d momentum",
-      "us10y_tvc": {"axis_spread_bp": -4.4445734299, "baseline_spread_bp": -3.4633548826, "axis_ci95": [-10.4905596504, 1.4233184772]},
-      "us02y_tvc": {"axis_spread_bp": -2.4536472090, "baseline_spread_bp": -0.7288319266},
-      "usdjpy": {"axis_spread_pct": -0.0007553547, "baseline_spread_pct": 0.0492622056},
-      "eurusd": {"axis_spread_pct": -0.1496847890, "baseline_spread_pct": -0.2957934192},
-      "zn1": {"axis_spread_pct": 0.3616402064, "baseline_spread_pct": 0.0262315140, "axis_ci95": [-0.0175036652, 0.7536432038]},
-      "tlt": {"axis_spread_pct": 0.3109730070, "baseline_spread_pct": 0.3830000000},
-      "dgs10_fred_sensitivity": {"axis_spread_bp": -6.07, "axis_ci95": [-12.08, -0.22]},
-      "era_us10y_tvc_spread_bp": {"2008-2012": -13.022, "2013-2019": -0.996, "2020-2026": 2.145}
+      "us10y_tvc": {
+        "axis_spread_bp": 4.26286236966731,
+        "baseline_spread_bp": 6.636293511750887,
+        "axis_ci95": [-3.583794408928583, 11.834012679579248],
+        "axis_n_high": 70,
+        "axis_n_low": 73
+      },
+      "zn1": {
+        "axis_spread_pct": -0.2959202358378936,
+        "baseline_spread_pct": -0.1819328366194799,
+        "axis_ci95": [-0.8411204852824788, 0.2638560925247099]
+      },
+      "era_us10y_tvc_spread_bp": {
+        "2008-2012": -5.306721997198887,
+        "2013-2019": 4.464451508158509,
+        "2020-2026": -1.1639665185185089
+      }
     },
     "IPI": {
       "baseline": "10Y breakeven 20d change",
-      "us10y_tvc": {"axis_spread_bp": -4.520, "baseline_spread_bp": -5.834},
-      "us02y_tvc": {"axis_spread_bp": -5.322, "baseline_spread_bp": -5.038},
-      "usdjpy": {"axis_spread_pct": 0.292, "baseline_spread_pct": -0.070},
-      "eurusd": {"axis_spread_pct": -0.8157165847, "baseline_spread_pct": -0.0616367536, "axis_ci95": [-1.4251866271, -0.2048401574]},
-      "zn1": {"axis_spread_pct": 0.220, "baseline_spread_pct": 0.220},
-      "tlt": {"axis_spread_pct": 0.431, "baseline_spread_pct": 0.498},
-      "forward60_us10y_tvc": {"axis_spread_bp": -15.9861296692, "baseline_spread_bp": -11.7561457604, "axis_ci95": [-27.1815713642, -4.7267402680]},
-      "forward60_tlt": {"axis_spread_pct": 2.2308202191, "baseline_spread_pct": 1.6518389093, "axis_ci95": [0.2994687664, 4.1265784216]},
-      "era_eurusd_spread_pct": {"2008-2012": -1.741, "2013-2019": 0.033, "2020-2026": -0.599}
+      "us10y_tvc": {
+        "axis_spread_bp": 4.578271462981741,
+        "baseline_spread_bp": 3.0766441567666933,
+        "axis_ci95": [-3.2696858787778926, 12.531981680654154]
+      },
+      "eurusd": {
+        "axis_spread_pct": 0.46562999267087546,
+        "baseline_spread_pct": -0.05109692508405535,
+        "axis_ci95": [-0.3730601678199677, 1.3096371131461202],
+        "axis_n_high": 58,
+        "axis_n_low": 68
+      },
+      "forward60_us10y_tvc": {
+        "axis_spread_bp": 7.919790441244244,
+        "baseline_spread_bp": 7.626308722751332,
+        "axis_ci95": [-14.592824588479251, 31.06290974029378]
+      },
+      "forward60_tlt": {
+        "axis_spread_pct": -1.2100394828177528,
+        "baseline_spread_pct": -1.499828607707015,
+        "axis_ci95": [-4.839827994439689, 2.443854979294389]
+      },
+      "era_eurusd_spread_pct": {
+        "2008-2012": -0.45782760940053346,
+        "2013-2019": 0.15304213198328062,
+        "2020-2026": 0.5760628432436474
+      }
     },
     "FCPI": {
       "primary_baseline": "HY OAS 20d change",
       "secondary_baseline": "VIX 20d change",
-      "us10y_tvc": {"axis_spread_bp": 2.2919217778, "hyoas_spread_bp": 2.2862805541, "vix_spread_bp": 2.104},
-      "us02y_tvc": {"axis_spread_bp": 3.145, "hyoas_spread_bp": -0.785, "vix_spread_bp": 2.956},
-      "usdjpy": {"axis_spread_pct": 0.291, "hyoas_spread_pct": -0.527, "vix_spread_pct": -0.519},
-      "eurusd": {"axis_spread_pct": 0.089, "hyoas_spread_pct": -0.177, "vix_spread_pct": 0.103},
-      "zn1": {"axis_spread_pct": -0.137, "hyoas_spread_pct": 0.018, "vix_spread_pct": 0.014},
-      "tlt": {"axis_spread_pct": 0.1987302798, "hyoas_spread_pct": -0.0766311770, "vix_spread_pct": -0.138, "axis_ci95": [-0.6176633040, 1.0469449921]}
+      "us10y_tvc": {
+        "axis_spread_bp": 1.7402316563018232,
+        "hyoas_spread_bp": -3.0960978214285735,
+        "vix_spread_bp": -1.528078,
+        "axis_ci95": [-7.157720959774043, 10.45324963548404]
+      },
+      "tlt": {
+        "axis_spread_pct": -0.838224,
+        "hyoas_spread_pct": 0.213639,
+        "vix_spread_pct": -0.227507,
+        "axis_ci95": [-2.0949909723198736, 0.4504352675022256]
+      }
     }
   },
+  "superseded_claims": [
+    "IPI EURUSD 20d spread -0.82% with CI excluding zero",
+    "IPI 60d US10Y spread -15.99 bp with CI excluding zero",
+    "IPI 60d TLT spread +2.23% with CI excluding zero",
+    "single-axis ranking that treated IPI as a validated external incremental edge"
+  ],
   "verdict": {
-    "project": "KEEP V6.6 frozen; do not tune weights or thresholds yet",
-    "GPI": "KEEP / promising, broad OOC incremental value not proven",
-    "IPI": "KEEP / modest incremental evidence; strongest external clue so far",
-    "FCPI": "descriptively useful; incremental value not demonstrated",
-    "next_gate": "joint three-axis incremental validation with walk-forward era holdout"
+    "project": "KEEP V6.6 frozen; do not tune weights or thresholds",
+    "GPI": "KEEP as state/transition axis; standalone OOC incremental prediction not demonstrated",
+    "IPI": "KEEP as inflation axis and joint-alignment input; standalone OOC incremental prediction not demonstrated",
+    "FCPI": "KEEP as stress/risk context; standalone incremental value not demonstrated",
+    "decision_grade_evidence": "use corrected joint-axis holdout, not single-axis OOC significance claims"
   }
 }
