@@ -1,36 +1,38 @@
 # Issue #59 — Final Research Verdict for Macro Pressure Map V6.6
 
-Status: **FINAL SYNTHESIS COMPLETE — POST-REVIEW STATISTICAL AUDIT**
+Status: **FINAL SYNTHESIS COMPLETE — POST-REVIEW MATCHED AUDIT**
 
-Final verdict category: **`partially_validated_some_axes_or_transitions_useful`**
+Final verdict category: **`descriptive_but_little_incremental_information`**
 
 ## Executive decision
 
-Macro Pressure Map V6.6 should be **kept as the frozen benchmark**, but the claims around it must be narrower than the first synthesis suggested.
+Macro Pressure Map V6.6 should be **kept as the frozen benchmark and descriptive macro-state dashboard**, but Issue #59 does **not** establish robust incremental predictive value.
 
-The evidence does **not** support:
-- treating V6.6 as a direct directional trading signal;
-- reading static `Goldilocks`, `Reflation`, or `Stagflation` labels as deterministic forecasts;
-- claiming any individual GPI / IPI / FCPI axis has a robust standalone out-of-component predictive edge;
-- claiming the joint GPI+IPI effect was statistically precise in both training and holdout.
+The final evidence supports:
 
-The evidence **does** support:
-- V6.6 as a coherent macro-state compression framework;
-- transition / impulse information being more useful than static level labels;
-- retaining GPI and IPI as the two main macro-pressure axes;
-- retaining FCPI as financial-stress / risk context;
-- a **frozen-threshold 2020–2026 holdout result** in which synchronized GPI+IPI transitions discriminate future nominal Treasury yields and ZN better than either axis alone.
+- engineering-valid Pine ↔ Python parity;
+- coherent growth / inflation / financial-stress state compression;
+- transition / impulse information being more informative descriptively than static regime names;
+- keeping GPI, IPI, and FCPI as interpretable state axes;
+- keeping GPI+IPI interaction as an exploratory research / context feature.
+
+The final evidence does **not** support:
+
+- a standalone trading signal;
+- a universal regime-to-return map;
+- robust standalone GPI / IPI / FCPI out-of-component predictive superiority;
+- a validated incremental predictive benefit from adding the second axis to GPI or IPI;
+- treating 2020–2026 as an untouched holdout for the synchronized-transition hypothesis;
+- optimal weights, thresholds, lookbacks, or regime boundaries.
 
 Practical architecture decision:
 
-- **GPI — KEEP**
-- **IPI — KEEP**
-- **GPI+IPI synchronized transition / alignment — KEEP; strongest decision-grade result**
-- **FCPI — KEEP AS STRESS / RISK OVERLAY; DO NOT PROMOTE AS STANDALONE PREDICTOR**
-- **Static 3x3 regime labels — KEEP AS DESCRIPTIVE UI, but demote relative to transition/alignment information**
-- **V6.6 parameters — DO NOT RETUNE in Issue #59**
-
-A future V6.7 should be a separately specified design/research iteration, not an in-place optimization of this sample.
+- **GPI — KEEP as descriptive growth/cyclical state + transition axis**
+- **IPI — KEEP as descriptive inflation state + transition axis**
+- **FCPI — KEEP as financial-stress / risk-context overlay**
+- **GPI+IPI alignment — KEEP as descriptive / exploratory interaction; predictive incrementality NOT demonstrated**
+- **Static 3x3 regime labels — KEEP as descriptive UI, not deterministic forward calls**
+- **V6.6 parameters — DO NOT RETUNE on Issue #59 data**
 
 ---
 
@@ -48,92 +50,91 @@ Evidence:
 
 ---
 
-## 2. Review-driven statistical correction
+## 2. Review-driven statistical audit
 
-A later Codex review identified two material problems in the first joint-holdout inference:
+Three successive review corrections materially narrowed the research claims.
 
-1. entry events could re-enter within the 20-day outcome horizon, producing overlapping forward returns that were bootstrapped as if independent;
-2. training events in the final 20 trading rows of 2019 could use forward returns extending into the 2020 holdout.
+### A. Off-calendar public-data alignment
 
-The corrected methodology now:
-- detects true entries on the complete chronological frame before sample splitting;
-- applies a shared horizon-length embargo across positive and negative events so accepted forward windows do not overlap;
-- purges the final 20 trading rows from training outcome evaluation;
-- keeps threshold estimation frozen through 2019-12-31;
-- leaves all V6.6 production parameters unchanged.
+Weekend / holiday source observations are now preserved before forward-filling onto the anchor trading calendar.
 
-The same overlap audit was also applied to the single-axis OOC event study.
+This affected the public optional-data loader, not the TradingView-based default-path parity evidence.
 
-This correction materially narrows the claims below.
+### B. Overlapping event outcomes + train/holdout leakage
+
+The event studies were corrected to:
+
+- detect true entries on the full chronological frame;
+- apply a horizon-length shared embargo so accepted forward windows do not overlap;
+- purge the final 20 development rows before forward-20d evaluation so no 2019 event uses 2020 prices.
+
+These fixes removed earlier single-axis significance claims and made the development joint confidence intervals cross zero.
+
+### C. Reused evaluation era + unmatched joint comparison
+
+The 2020–2026 era had already been inspected in earlier Issue #59 diagnostics before the synchronized-transition hypothesis was selected. It is therefore **not an untouched holdout**.
+
+Also, comparing a joint spread with separately embargoed GPI-only / IPI-only spreads does not establish incremental information because the event dates and sample sizes differ.
+
+A matched conditional test was therefore added.
+
+Evidence:
+- `issue-59-matched-incremental.md`
+- `issue-59-matched-incremental.json`
 
 ---
 
-## 3. GPI verdict — KEEP, NOT STANDALONE PREDICTOR
+## 3. GPI verdict — KEEP AS DESCRIPTIVE AXIS
 
-### What works
+GPI remains economically coherent as a growth / cyclical pressure summary.
 
-GPI remains economically coherent as a growth / cyclical pressure axis.
+Its transitions line up sensibly with cyclical, commodity, credit, and breakeven behavior in descriptive diagnostics.
 
-Sharp strengthening and weakening correspond to sensible cyclical, commodity, credit, and breakeven behavior in descriptive diagnostics. GPI also contributes materially to the joint GPI+IPI transition state that survives the holdout audit.
-
-### What does not work
-
-Static GPI level is not a stable SPY long/short signal.
-
-After applying non-overlapping event windows to the stricter out-of-component study, no main 20d GPI OOC confidence interval excludes zero. Corrected GPI -> US10Y separation is about `+4.26 bp` versus `+6.64 bp` for the Copper/Gold baseline, with a wide CI crossing zero.
+However, after de-overlap and stricter out-of-component testing, no main GPI external predictive result is robust enough to establish incremental superiority over simpler proxies.
 
 ### Decision
 
-**KEEP GPI** as a growth/cyclical state and transition axis, especially as one half of joint alignment. Do not claim robust standalone external predictive superiority.
+**KEEP GPI** as descriptive macro state / transition information. Do not present it as a validated standalone external predictor.
 
 ---
 
-## 4. IPI verdict — KEEP, PREVIOUS SINGLE-AXIS EDGE WITHDRAWN
+## 4. IPI verdict — KEEP AS DESCRIPTIVE AXIS
 
-### What works
+IPI remains economically coherent as an inflation-pressure summary.
 
-IPI remains economically coherent as an inflation-pressure axis and contributes to the strongest joint transition result.
+The first OOC pass appeared to show stronger EURUSD and 60d rates/TLT evidence, but those results disappeared after non-overlapping event windows were enforced.
 
-### What changed
-
-The first OOC report highlighted IPI-EURUSD and 60d rates/TLT as the strongest single-axis incremental evidence. Those conclusions depended on overlapping event windows.
-
-After enforcing horizon-length embargoes:
-- IPI -> EURUSD 20d spread changes from about `-0.82%` to about `+0.47%`, with CI crossing zero;
-- IPI -> US10Y 60d becomes about `+7.92 bp`, CI crossing zero;
-- IPI -> TLT 60d becomes about `-1.21%`, CI crossing zero.
-
-The earlier claim that IPI had a decision-grade standalone external edge is therefore **withdrawn**.
+The earlier standalone IPI edge is therefore withdrawn.
 
 ### Decision
 
-**KEEP IPI** as an inflation-pressure axis and as the second half of GPI+IPI alignment. Do not describe IPI as a validated standalone external predictor.
+**KEEP IPI** as descriptive inflation state / transition information. Do not present it as a validated standalone external predictor.
 
 ---
 
-## 5. FCPI verdict — KEEP AS OVERLAY
+## 5. FCPI verdict — KEEP AS RISK CONTEXT
 
-FCPI remains directionally coherent as a compression of credit, rates/dollar, and volatility stress.
+FCPI compresses credit, rates/dollar, and volatility stress into one interpretable financial-conditions axis.
 
-However, even before the overlap audit it did not beat simple HY OAS / VIX baselines consistently. After de-overlap, no main FCPI 20d OOC confidence interval excludes zero.
+It remains useful descriptively, but Issue #59 never established stable incremental predictive value over simple HY OAS / VIX baselines.
 
 ### Decision
 
 **KEEP FCPI as financial-stress / risk-context overlay.**
 
-Do not promote FCPI into a predictive gating rule based on Issue #59. Any simplification or redesign belongs in a separately pre-registered V6.7 study.
+Do not promote it into a predictive gating rule based on this sample.
 
 ---
 
 ## 6. Static Core Regime verdict — DESCRIPTIVE, NOT PREDICTIVE
 
-The 3x3 labels create useful historical macro descriptions and cross-asset fingerprints, but they are not reliable deterministic forward-return rules.
+The 3x3 regime labels create understandable historical macro-state fingerprints, but they are not reliable deterministic forward-return rules.
 
 ### Decision
 
-Keep the labels for communication and state compression, but UI/documentation should emphasize:
+Keep the labels for communication / state compression, while documentation should emphasize:
 
-> current macro state + direction of change + cross-axis alignment
+> current state + direction of change + context
 
 rather than:
 
@@ -141,146 +142,148 @@ rather than:
 
 ---
 
-## 7. Corrected joint GPI + IPI holdout — STRONGEST RESULT
+## 7. Joint GPI + IPI result — INTERESTING, BUT EXPLORATORY
 
-Threshold-definition period:
-- 2008-06-02 through 2019-12-31
+The corrected non-overlapping joint event study still shows a notable post-2019 Treasury association:
 
-Training outcome evaluation:
-- purged through 2019-12-02 so no 20d training return enters 2020
+- Reflation impulse = GPI high + IPI high
+- Slowdown / disinflation impulse = GPI low + IPI low
 
-Holdout:
-- 2020-01-02 through 2026-08-14
+Post-2019 exploratory Reflation minus Slowdown/Disinflation forward-20d spread:
 
-Frozen 20d transition cuts:
-- GPI: low `-21.06`, high `+19.53`
-- IPI: low `-21.20`, high `+22.51`
+- US10Y: **+18.81 bp**
+- US02Y: **+17.68 bp**
+- ZN1!: **-1.18%**
+- TLT: **-2.03%**
 
-Joint states:
-- **Reflation impulse** = GPI high + IPI high
-- **Slowdown / disinflation impulse** = GPI low + IPI low
+But this era is not untouched OOS, because the period had already been inspected before the joint hypothesis was selected.
 
-A shared 20-trading-row embargo removes overlapping event windows.
+Therefore the raw joint pattern is retained only as an **exploratory association**.
 
-Non-overlapping joint event counts:
-- training: **23** reflation vs **33** slowdown/disinflation
-- holdout: **15** vs **15**
-
-Corrected Reflation minus Slowdown/Disinflation forward-20d spread:
-
-| Outcome | Training joint | Training 95% CI | Holdout joint | Holdout 95% CI | Holdout GPI-only | Holdout IPI-only |
-|---|---:|---:|---:|---:|---:|---:|
-| US10Y | +5.87 bp | [-3.88, +15.69] | **+18.81 bp** | **[+2.19, +35.60]** | +11.10 bp | +10.79 bp |
-| US02Y | +3.30 bp | [-3.38, +10.11] | **+17.68 bp** | **[+2.80, +33.19]** | +11.62 bp | +5.53 bp |
-| ZN1! | -0.44% | [-1.11%, +0.24%] | **-1.18%** | **[-2.15%, -0.21%]** | -0.64% | -0.59% |
-| TLT | -1.35% | [-3.23%, +0.42%] | -2.03% | [-4.29%, +0.40%] | -1.20% | -1.65% |
-
-### What the corrected study earns
-
-- The **training effect is directionally coherent but not statistically precise** after de-overlap.
-- The **holdout effect survives** the stricter methodology for US10Y, US02Y, and ZN.
-- On those strongest holdout outcomes, the joint GPI+IPI contrast is larger than GPI-only or IPI-only.
-- This is the main decision-grade evidence that the combination contains information beyond either individual axis.
-
-### What it does not earn
-
-- significance in both training and holdout;
-- a universal cross-asset rule;
-- a stable FX edge;
-- TLT statistical significance;
-- a complete trading strategy;
-- causal macro forecasting.
-
-### Decision
-
-**KEEP the GPI+IPI synchronized transition architecture, with the claim explicitly narrowed to holdout-supported Treasury / ZN discrimination.**
+Evidence:
+- `issue-59-joint-holdout.md` (historical filename retained; interpretation corrected)
 
 ---
 
-## 8. Final KEEP / SIMPLIFY / RECALIBRATE decision
+## 8. Matched conditional incremental test — NO INCREMENTAL CLAIM EARNED
+
+To answer the central review question, the study fixes one de-overlapped anchor-event universe at a time and asks whether same-direction confirmation from the second axis improves the high-minus-low spread.
+
+### GPI anchor; add IPI confirmation — post-2019 exploratory era
+
+| Outcome | GPI anchor-only | GPI + IPI confirmed | Confirmation lift | Lift 95% CI |
+|---|---:|---:|---:|---:|
+| US10Y | +11.10 bp | +12.48 bp | +1.38 bp | [-17.88, +22.49] |
+| US02Y | +11.62 bp | +8.05 bp | -3.58 bp | [-24.86, +18.47] |
+| ZN1! | -0.64% | -0.74% | -0.11% | [-1.33%, +1.04%] |
+| TLT | -1.20% | -1.01% | +0.18% | [-2.80%, +2.95%] |
+
+### IPI anchor; add GPI confirmation — post-2019 exploratory era
+
+| Outcome | IPI anchor-only | IPI + GPI confirmed | Confirmation lift | Lift 95% CI |
+|---|---:|---:|---:|---:|
+| US10Y | +10.79 bp | +8.51 bp | -2.28 bp | [-22.19, +15.56] |
+| US02Y | +5.53 bp | +12.60 bp | +7.07 bp | [-12.43, +26.94] |
+| ZN1! | -0.59% | -0.61% | -0.02% | [-1.18%, +1.23%] |
+| TLT | -1.65% | -1.28% | +0.37% | [-2.62%, +3.62%] |
+
+The principal confirmation-lift confidence intervals also cross zero in the development sample.
+
+### Decision
+
+**Issue #59 does not demonstrate that adding the second axis provides incremental predictive information beyond the anchor axis.**
+
+Synchronized GPI+IPI movement may still identify a distinctive historical subset, but the predictive-incrementality claim is withdrawn.
+
+---
+
+## 9. Final KEEP / SIMPLIFY / RECALIBRATE decision
 
 ### KEEP
 
-- GPI calculation and role
-- IPI calculation and role
-- GPI+IPI joint transition architecture
+- GPI as growth/cyclical state compression
+- IPI as inflation-state compression
 - FCPI as stress/risk context
+- GPI+IPI alignment as descriptive / exploratory context
 - V6.6 as the frozen benchmark
 
-### SIMPLIFY / REFRAME IN A FUTURE VERSION
+### SIMPLIFY / REFRAME
 
-- reduce emphasis on static regime names as forecasts
-- surface transition velocity / impulse more clearly
-- surface GPI+IPI alignment / convergence more clearly
-- present FCPI primarily as a conditioning overlay
-- distinguish descriptive state from prospective signal in UI/documentation
+A future version may improve communication by:
+
+- making transition velocity / impulse easier to see;
+- treating static regime names as secondary descriptors;
+- presenting FCPI clearly as risk context;
+- separating **descriptive state** from **prospective evidence** in the UI.
+
+This is a UX / interpretation improvement, not evidence of predictive alpha.
 
 ### DO NOT RECALIBRATE YET
 
-Do **not** optimize on Issue #59 data:
-- axis or component weights
+Do not optimize on Issue #59 data:
+
+- axis weights
+- component weights
 - +/-10 / +/-30 / +/-60 thresholds
 - 20 / 63 / 252 lookbacks
 - smoothing
 - regime boundaries
 
-Any parameter redesign requires a separately defined fresh OOS evaluation.
+Any parameter redesign would turn this already-inspected sample into training data and requires a separately pre-registered future evaluation.
 
 ---
 
-## 9. Claims V6.6 has earned
+## 10. Claims V6.6 has earned
 
 V6.6 can defensibly be described as:
-- a macro market-state compression dashboard;
+
+- an engineering-verified macro market-state compression dashboard;
 - a three-axis growth / inflation / financial-stress framework;
-- a tool where **changes and synchronized axis transitions are more informative than static labels**;
-- a framework with frozen-threshold holdout evidence that joint GPI+IPI impulses discriminate future nominal Treasury-rate / ZN behavior.
+- a descriptive tool where changes / transitions often reveal more context than static labels;
+- a framework that generates interesting historical cross-asset patterns worth prospective study.
 
 ---
 
-## 10. Claims V6.6 has NOT earned
+## 11. Claims V6.6 has NOT earned
 
 Do not claim:
+
 - profitable standalone trading strategy;
 - universal regime-to-return mapping;
-- reliable SPY timing from static GPI / regime states;
-- robust standalone GPI or IPI OOC predictive edge;
+- reliable SPY timing;
+- robust standalone GPI / IPI / FCPI external predictive edge;
+- validated incremental predictive value from GPI+IPI synchronization;
+- an untouched 2020–2026 holdout for the joint hypothesis;
 - FCPI superiority over simple stress proxies;
-- stable FX edge across eras;
-- optimal weights / thresholds;
+- stable FX edge;
+- optimal parameters;
 - causal macro forecasting.
 
 ---
 
-## 11. Recommendation for V6.7
+## 12. Recommendation after Issue #59
 
-Open a **separate** V6.7 issue only after Issue #59 / PR #60 is reviewed and merged.
+Issue #59 should close after PR #60 receives a clean review and lands on `main`.
 
-The V6.7 question should be:
+Two separate follow-ups are appropriate:
 
-> How should the indicator expose the information that Issue #59 actually validated?
+1. **Prospective OOS validation** — freeze the GPI+IPI confirmation hypothesis now and evaluate only genuinely unseen future observations after the current 2026-08-14 evidence cutoff.
+2. **V6.7 UI / interpretation redesign** — if desired, improve how transition velocity, regime context, and FCPI risk state are displayed, without claiming that the redesign creates predictive edge.
 
-Priority design hypotheses:
-1. explicit GPI / IPI transition velocity or impulse state;
-2. joint alignment / convergence indicator;
-3. static regime labels made secondary to transition state;
-4. FCPI retained as risk context unless new evidence supports more;
-5. any parameter redesign pre-registered and tested on fresh OOS data.
+Do not merge those two goals into one optimization exercise.
 
 ---
 
 ## Final conclusion
 
-Macro Pressure Map V6.6 is **not validated as a universal trading signal**, and the post-review audit removes the earlier standalone IPI edge and the claim of training+holdout significance.
+Macro Pressure Map V6.6 is **not validated as a predictive trading model**, and the final matched audit does not prove incremental information beyond simpler / single-axis signals.
 
-It is nevertheless **not merely decorative complexity**.
+It is nevertheless useful as a coherent, engineering-verified **descriptive macro-state map**.
 
-The strongest surviving evidence lies in **synchronized GPI+IPI transitions**, with the clearest decision-grade result in the 2020–2026 frozen-threshold holdout for nominal US Treasury yields and ZN futures.
+Therefore the final Issue #59 classification is:
 
-Therefore the final Issue #59 classification remains:
-
-**`partially_validated_some_axes_or_transitions_useful`**
+**`descriptive_but_little_incremental_information`**
 
 with the practical product decision:
 
-**KEEP V6.6 as the frozen benchmark; REFRAME the next version around transition/alignment; KEEP FCPI as context; DO NOT RECALIBRATE on this sample.**
+**KEEP V6.6 as the frozen descriptive benchmark; REFRAME claims around state/context; DO NOT RECALIBRATE on this sample; prospectively test any future predictive hypothesis on genuinely unseen data.**
