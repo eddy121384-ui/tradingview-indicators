@@ -20,6 +20,7 @@ def test_embargo_entry_events_uses_one_shared_horizon_across_high_and_low() -> N
         for position in range(len(index))
         if kept_high.iloc[position] or kept_low.iloc[position]
     ]
-    assert accepted == [0, 20]
+    assert accepted == [0, 12, 24]
     assert kept_high.iloc[0]
-    assert kept_high.iloc[20]
+    assert kept_low.iloc[12]
+    assert kept_low.iloc[24]
