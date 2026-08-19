@@ -2,7 +2,7 @@
 
 Status: **JOINT-AXIS EXPLORATORY EVALUATION COMPLETE — NON-OVERLAPPING EVENTS**
 
-This file preserves the corrected joint GPI+IPI event result, but its interpretation is narrowed after later review.
+Historical note: this file keeps the old `issue-59-joint-holdout.md` filename so existing links do not break. Its current interpretation is exploratory reused-era analysis, not untouched holdout validation.
 
 ## Evidence boundary
 
@@ -40,7 +40,7 @@ Non-overlapping joint event counts:
 
 Reflation minus Slowdown/Disinflation forward-20d spread:
 
-| Outcome | Development joint | Development 95% CI | Post-2019 joint | Post-2019 95% CI |
+| Outcome | Development joint | Development 95% CI | Post-2019 exploratory joint | Exploratory 95% CI |
 |---|---:|---:|---:|---:|
 | US10Y yield | +5.87 bp | [-3.88, +15.69] | **+18.81 bp** | **[+2.19, +35.60]** |
 | US02Y yield | +3.30 bp | [-3.38, +10.11] | **+17.68 bp** | **[+2.80, +33.19]** |
@@ -49,32 +49,27 @@ Reflation minus Slowdown/Disinflation forward-20d spread:
 | USDJPY | +0.57% | [-0.92%, +2.17%] | +0.62% | [-1.30%, +2.59%] |
 | EURUSD | -0.25% | [-1.83%, +1.39%] | +0.31% | [-1.19%, +1.86%] |
 
-The post-2019 Treasury association remains economically coherent: synchronized growth+inflation acceleration is associated with higher nominal yields / weaker ZN relative to synchronized deceleration.
+The post-2019 Treasury association remains economically coherent, but it is reused-era historical evidence only.
 
 ## Why the old incremental claim is withdrawn
 
 The first interpretation compared the raw joint spread with separately embargoed GPI-only and IPI-only spreads. Those event sets use different dates and sample sizes, so a larger raw joint point estimate does **not** prove that the second axis adds information.
 
-A later matched conditional study fixes one anchor-event universe and tests the nested confirmation lift directly:
+A later matched conditional study fixes one anchor-event universe and tests the nested confirmation lift directly. The matched values below are synchronized to the actual script-generated evidence under `research/generated/`.
 
-- GPI anchor events: compare all GPI high/low entries with the subset where IPI confirms the same direction.
-- IPI anchor events: compare all IPI high/low entries with the subset where GPI confirms.
-- bootstrap both nested statistics from the same resampled anchor events.
+| Anchor | Outcome | Anchor-only spread | Confirmed spread | Confirmation lift | Generated 95% CI |
+|---|---:|---:|---:|---:|---:|
+| GPI | US10Y | +11.10 bp | +12.48 bp | +1.38 bp | [-17.98, +23.78] |
+| GPI | ZN1! | -0.64% | -0.74% | -0.11% | [-1.40%, +1.08%] |
+| IPI | US10Y | +10.79 bp | +8.51 bp | -2.28 bp | [-22.50, +15.20] |
+| IPI | ZN1! | -0.59% | -0.61% | -0.02% | [-1.16%, +1.26%] |
+
+All principal confirmation-lift intervals cross zero in both the development and post-2019 exploratory samples.
 
 Evidence:
 - `issue-59-matched-incremental.md`
 - `issue-59-matched-incremental.json`
-
-In the post-2019 era, examples are:
-
-| Anchor | Outcome | Anchor-only spread | Confirmed spread | Confirmation lift | Lift 95% CI |
-|---|---:|---:|---:|---:|---:|
-| GPI | US10Y | +11.10 bp | +12.48 bp | +1.38 bp | [-17.88, +22.49] |
-| GPI | ZN1! | -0.64% | -0.74% | -0.11% | [-1.33%, +1.04%] |
-| IPI | US10Y | +10.79 bp | +8.51 bp | -2.28 bp | [-22.19, +15.56] |
-| IPI | ZN1! | -0.59% | -0.61% | -0.02% | [-1.18%, +1.23%] |
-
-All principal confirmation-lift intervals cross zero in both the development and post-2019 exploratory samples.
+- `../generated/issue-59-matched-incremental.generated.json`
 
 ## Correct interpretation
 
@@ -94,4 +89,4 @@ What Issue #59 does **not** support:
 
 **KEEP GPI+IPI interaction as a descriptive / research feature, but withdraw the claim that incremental predictive value is validated.**
 
-Any future predictive hypothesis about synchronized GPI+IPI movement should be frozen in advance and tested on genuinely unseen future data.
+The generator `joint_holdout_validation.py` now preserves the same exploratory reused-era boundary on rerun. Any future predictive hypothesis about synchronized GPI+IPI movement should be frozen in advance and tested on genuinely unseen future data.
