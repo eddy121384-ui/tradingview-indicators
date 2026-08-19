@@ -1622,12 +1622,13 @@ string v06ThStateText = v06ThState == V06_TH_HANDOFF ? "Handoff｜等待 +3" : v
 string v06ThDirText = v06ThDisplayDir > 0 ? "Bull ↑" : v06ThDisplayDir < 0 ? "Bear ↓" : "—"
 color v06ThStateColor = v06ThState == V06_TH_HEALTHY ? colBreakout : v06ThState == V06_TH_DAMAGED ? colRed : v06ThState == V06_TH_HANDOFF ? colYellow : colNeutral
 
+// Minimal event-only markers: no repeated text strip on historical charts.
 if showTransitionHealthLabels and v06ThHandoffPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 8.0 : 92.0, v06ThWatchDir > 0 ? "Handoff ↑" : "Handoff ↓", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colYellow, 0), textcolor=colDarkText, size=size.tiny)
+    label.new(bar_index, v06ThWatchDir > 0 ? 7.0 : 93.0, "", style=label.style_circle, color=color.new(colYellow, 30), textcolor=colYellow, size=size.tiny)
 if showTransitionHealthLabels and v06ThHealthyPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 18.0 : 82.0, v06ThWatchDir > 0 ? "Healthy ↑" : "Healthy ↓", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colBreakout, 0), textcolor=colDarkText, size=size.tiny)
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=v06ThWatchDir > 0 ? label.style_triangleup : label.style_triangledown, color=color.new(colBreakout, 0), textcolor=colBreakout, size=size.small)
 if showTransitionHealthLabels and v06ThDamagedPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 18.0 : 82.0, v06ThWatchDir > 0 ? "Damaged ↑" : "Damaged ↓", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colRed, 0), textcolor=color.white, size=size.tiny)
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=label.style_xcross, color=color.new(colRed, 0), textcolor=colRed, size=size.small)
 
 plot(float(v06ThState), "V06 Transition Health State｜0 none 1 handoff 2 healthy 3 damaged", display=display.data_window)
 plot(float(v06ThDisplayDir), "V06 Transition Health Direction｜+1 bull -1 bear", display=display.data_window)
