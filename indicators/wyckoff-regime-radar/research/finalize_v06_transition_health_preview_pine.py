@@ -2,11 +2,15 @@
 """Finalize the generated v0.6 Transition Health Pine preview.
 
 The full-source generator deliberately reuses a large legacy visual source.
-This finalizer applies two parity/compile-critical corrections:
+This finalizer applies three parity/compile-critical corrections:
 1. the frozen research condition `np.all(carried > context)` means an undefined
    weight breaks the hold instead of being ignored;
 2. Pine's parser can reject the generated multi-line ternary stage-weight helper,
-   so the exact same expression is emitted on one line.
+   so the exact same expression is emitted on one line;
+3. the shared Phase-A generator inserts its helper block near `noBreakLowScore`,
+   but the full visual source first calls those helpers earlier. Pine requires the
+   function definitions to appear before that first use, so the helper block is
+   relocated without changing any formula.
 """
 from __future__ import annotations
 
@@ -30,12 +34,49 @@ OLD_STAGE_WEIGHT = """f_v06_stage_weight(int id) =>
 NEW_STAGE_WEIGHT = """f_v06_stage_weight(int id) =>
     id == 1 ? probAcc : id == 2 ? probMarkup : id == 3 ? probReacc : id == 4 ? probDist : id == 5 ? probMarkdown : id == 6 ? probRedist : na"""
 
+HELPER_START = "// ===== Issue #57 v0.6 research helpers (mechanically generated) ====="
+HELPER_END = "// ===== End Issue #57 helpers ====="
+FIRST_HELPER_USE = "float rangeBreakUpStrength = f_v06_soft_break_above(close, rangeHighBreak, atr)"
+
 
 def _replace_exactly_once(source: str, old: str, new: str, label: str) -> str:
     count = source.count(old)
     if count != 1:
         raise RuntimeError(f"Expected exactly one {label}; found {count}")
     return source.replace(old, new, 1)
+
+
+def _relocate_phase_a_helpers(source: str) -> str:
+    """Move the generated Phase-A helper block before its first full-source use."""
+    lines = source.splitlines()
+    starts = [i for i, line in enumerate(lines) if line.strip() == HELPER_START]
+    ends = [i for i, line in enumerate(lines) if line.strip() == HELPER_END]
+    uses = [i for i, line in enumerate(lines) if FIRST_HELPER_USE in line]
+    if len(starts) != 1 or len(ends) != 1 or len(uses) != 1:
+        raise RuntimeError(
+            "Expected one Phase-A helper block and one first-use anchor; "
+            f"starts={starts}, ends={ends}, uses={uses}"
+        )
+
+    start, end, use = starts[0], ends[0], uses[0]
+    if end < start:
+        raise RuntimeError("Phase-A helper end appears before helper start")
+    if start < use:
+        return source
+
+    block = lines[start : end + 1]
+    del lines[start : end + 1]
+
+    # Removing a block that originally lived after the first-use anchor does not
+    # change the first-use index. Insert one blank line plus the helper block.
+    lines[use:use] = [*block, ""]
+
+    rebuilt = "\n".join(lines).rstrip() + "\n"
+    helper_pos = rebuilt.find(HELPER_START)
+    use_pos = rebuilt.find(FIRST_HELPER_USE)
+    if helper_pos < 0 or use_pos < 0 or helper_pos >= use_pos:
+        raise RuntimeError("Phase-A helper relocation failed compile-order check")
+    return rebuilt
 
 
 def finalize_preview_source(source: str) -> str:
@@ -51,6 +92,7 @@ def finalize_preview_source(source: str) -> str:
         NEW_STAGE_WEIGHT,
         "Transition Health stage-weight helper",
     )
+    source = _relocate_phase_a_helpers(source)
     return source
 
 
