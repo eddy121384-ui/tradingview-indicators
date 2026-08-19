@@ -2,141 +2,91 @@
 
 This folder implements Issue #59: validation of the frozen Macro Pressure Map V6.6 before any V6.7 redesign.
 
+## Final research status
+
+Issue #59 final category:
+
+`descriptive_but_little_incremental_information`
+
+The frozen V6.6 remains useful as an engineering-verified descriptive growth / inflation / financial-stress state map. Issue #59 does not establish robust standalone or joint incremental predictive value beyond simpler / single-axis information.
+
 ## Research rule
 
-`macro-pressure-map-v6.6.pine` is the behavioral source of truth. During Issue #59, do not change component definitions, weights, thresholds, lookbacks, or regime rules in response to observed historical results.
+`macro-pressure-map-v6.6.pine` is the behavioral source of truth. During Issue #59, do not change component definitions, weights, thresholds, lookbacks, smoothing, or regime rules in response to observed historical results.
 
 The Python code here is a research mirror, not a replacement for the TradingView indicator.
 
-## Current scope
-
-`v6_6_core.py` mirrors:
-
-- `f_componentScore()` level / momentum / direction construction;
-- population-standard-deviation Z-scores (`ta.stdev` default biased behavior);
-- GPI market and optional macro-confirmation paths;
-- IPI market and optional macro-confirmation paths;
-- FCPI market and optional official-FCI paths;
-- optional T5YIE, industrial-metals, and KRE switches;
-- V6.6 default weights and thresholds;
-- GPI / IPI / FCPI five-state classification;
-- 3x3 Core Regime classification;
-- Risk Note and Risk Posture logic;
-- display-only EMA lines separately from raw regime axes.
-
-The parity target is the Pine default configuration: market proxy only, official FCI off, T5YIE off, industrial metals off, and KRE add-on off.
-
-## Input contract
-
-`compute_v66()` expects a date-indexed pandas DataFrame whose columns use these canonical names.
-
-### GPI market
-
-`spy`, `iwm`, `rsp`, `xly`, `xlp`, `xli`, `xlu`, `copper`, `gold`
-
-### IPI market
-
-`breakeven_10y`, `breakeven_5y`, `oil`, `gasoline`, `commodity_basket`, `industrial_metals`
-
-### FCPI market
-
-`dxy`, `vix`, `move`, `hyg`, `ief`, `kre`, `hy_oas`, `real_yield`
-
-### Optional official FCI
-
-`nfci`, `stlfsi`
-
-### Optional macro confirmation
-
-`pmi`, `cfnai`, `building_permits`, `initial_claims`, `unemployment`, `cpi`, `core_cpi`, `pce`, `core_pce`, `ppi`, `wage`
-
-Missing optional columns are treated as `NaN`. Supplied series are forward-filled on the aligned research calendar to approximate Pine `request.security(..., gaps=barmerge.gaps_off)` behavior.
-
-## Public-data research layer
-
-`public_data.py` makes the public-feed approximation explicit instead of hiding symbol substitutions inside analysis code.
-
-The default V6.6 market-only path maps:
-
-- ETFs directly through Yahoo (`SPY`, `IWM`, `RSP`, `XLY`, `XLP`, `XLI`, `XLU`, `DBC`, `HYG`, `IEF`);
-- TradingView continuous futures to Yahoo research proxies (`HG1! -> HG=F`, `GC1! -> GC=F`, `CL1! -> CL=F`, `RB1! -> RB=F`);
-- `TVC:DXY -> DX-Y.NYB`, `CBOE:VIX -> ^VIX`, `TVC:MOVE -> ^MOVE`;
-- FRED symbols such as `T10YIE`, `BAMLH0A0HYM2`, and `DFII10` through FRED CSV.
-
-Optional T5YIE, DBB, KRE, official FCI, and macro-confirmation mappings are declared but remain off under the default parity target.
-
-Every mapping is written into a generated manifest with provider, public symbol, TradingView/Pine symbol, coverage, and feed-risk notes. Public providers are **not** assumed to be TradingView-equivalent.
-
-### Calendar semantics
-
-The public-data build uses the SPY trading calendar as the daily research anchor. Source observations dated on weekends / anchor holidays are preserved on a union calendar before forward-filling, then projected onto SPY trading dates. Values are never backfilled before their first observation.
-
-### Build a public history bundle
-
-Install research dependencies, then from this folder run for example:
-
-```bash
-python build_public_history.py --start 2007-01-01 --output-dir data/public-v6.6
-```
-
-The builder emits source history, calculated V6.6 history, and a manifest. These outputs are research inputs only and are not TradingView parity evidence.
-
 ## Important V6.6 semantic detail
 
-The dashboard states and Core Regime use **raw unsmoothed** `GPI`, `IPI`, and `FCPI`. The default EMA(5) is only used for displayed plot lines. Do not classify regimes from `plot_GPI`, `plot_IPI`, or `plot_FCPI`.
+Dashboard states and Core Regime use **raw unsmoothed** `GPI`, `IPI`, and `FCPI`. The default EMA(5) is only used for displayed plot lines. Do not classify regimes from `plot_GPI`, `plot_IPI`, or `plot_FCPI`.
 
-## Validation tooling
+## Research components
 
-The research folder now includes:
+- `v6_6_core.py` — frozen Python calculation mirror.
+- `public_data.py` / `build_public_history.py` — optional public Yahoo/FRED approximation layer; public feeds are not TradingView parity evidence.
+- `macro-pressure-map-v6.6-parity-sources.pine` and parity comparators — Pine ↔ Python engineering parity.
+- `historical_diagnostics.py` — static-state, transition, regime, and horizon diagnostics.
+- `incremental_validation.py` — single-axis out-of-component / simple-baseline study with horizon-length event embargoes.
+- `joint_holdout_validation.py` — historical filename retained; current semantics are a **post-2019 exploratory reused-era** joint-axis study, not untouched holdout validation.
+- `matched_incremental_validation.py` — matched conditional test of whether the second axis adds lift inside a fixed anchor-event universe.
 
-- Pine ↔ Python parity helpers / comparators;
-- first historical axis / regime diagnostics;
-- out-of-component baseline comparisons;
-- non-overlapping joint-event analysis;
-- `matched_incremental_validation.py`, which tests second-axis confirmation inside one fixed anchor-event universe rather than comparing unrelated event samples.
+## Reproducibility contract
+
+See `REPRODUCIBILITY.md`.
+
+Machine-generated matched evidence is kept separate from curated research decisions:
+
+- `generated/issue-59-matched-incremental.generated.json`
+- `generated/issue-59-matched-incremental.generated.md`
+
+The matched generator refuses to overwrite:
+
+- `decisions/issue-59-matched-incremental.json`
+- `decisions/issue-59-matched-incremental.md`
+
+This prevents a rerun from silently replacing the curated synthesis with a structurally different generated report.
+
+The 2020–2026 era is explicitly classified as `exploratory_reused_era_not_untouched_holdout`, because it had already been inspected before the synchronized-transition hypothesis was selected.
 
 ## Tests
 
-From this directory:
+Core / public-data tests:
+
+```bash
+python -m pytest -q test_v6_6_core.py test_public_data.py
+```
+
+Review-driven regression tests:
 
 ```bash
 python -m pytest -q \
-  test_v6_6_core.py \
-  test_public_data.py \
   test_incremental_validation.py \
   test_joint_holdout_validation.py \
   test_matched_incremental_validation.py
 ```
 
-Coverage includes:
+The regression coverage includes:
 
-- threshold / Core Regime semantics;
-- Pine-compatible rolling / missing-value behavior;
-- public-data calendar causality;
-- horizon-length event embargoes;
-- training-tail purge before forward-outcome evaluation;
-- matched nested confirmation-lift calculation.
+- Pine-compatible non-`na` rolling semantics;
+- weekend / holiday public-data observations preserved before anchor-calendar forward-fill;
+- shared event embargoes preventing overlapping forward windows;
+- development-tail purge before the post-2019 era;
+- generated joint reports preserving the exploratory / reused-era boundary;
+- matched inference using one fixed anchor-event universe;
+- script-generated matched outputs defaulting outside curated `decisions/` paths;
+- refusal to overwrite curated matched decision artifacts.
 
-## Final Issue #59 result
+## Evidence interpretation
 
-Final verdict:
+Engineering parity is a **PASS**, but it does not imply economic usefulness.
 
-**`descriptive_but_little_incremental_information`**
+The final research boundary is:
 
-The research established engineering-valid V6.6 parity and coherent macro-state compression, but after circularity controls, non-overlapping events, leakage repair, holdout-status audit, and a matched conditional test, it did **not** establish robust standalone or joint incremental predictive value.
+- GPI / IPI / FCPI remain coherent descriptive axes;
+- static regime names are descriptive, not deterministic forward calls;
+- standalone out-of-component predictive superiority is not demonstrated;
+- the post-2019 GPI+IPI Treasury / ZN pattern is exploratory reused-era evidence;
+- matched conditional confirmation-lift confidence intervals cross zero, so incremental predictive information from adding the second axis is not demonstrated;
+- no production V6.6 parameter should be recalibrated on Issue #59 data.
 
-Durable evidence:
-
-- `decisions/issue-59-final-verdict.md`
-- `decisions/issue-59-tradingview-parity.md`
-- `decisions/issue-59-ooc-incremental.md`
-- `decisions/issue-59-joint-holdout.md` (historical filename; interpretation downgraded to exploratory)
-- `decisions/issue-59-matched-incremental.md`
-
-## Next step
-
-Do not optimize V6.6 on the already-inspected Issue #59 sample.
-
-If predictive value is still a goal, freeze the GPI+IPI confirmation hypothesis now and evaluate it prospectively only on genuinely unseen future observations after the current evidence cutoff.
-
-A separate V6.7 may improve UI / interpretation — for example clearer transition velocity and risk context — but such a redesign should not be described as predictive improvement without fresh OOS evidence.
+Any future predictive validation should pre-register the hypothesis and use genuinely unseen observations after the current evidence cutoff.
