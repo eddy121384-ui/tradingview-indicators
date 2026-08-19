@@ -3,8 +3,17 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
 
-from matched_incremental_validation import matched_lift_stats
+from matched_incremental_validation import (
+    CURATED_DECISION_JSON,
+    CURATED_DECISION_MD,
+    DEFAULT_OUTPUT_JSON,
+    DEFAULT_OUTPUT_MD,
+    GENERATED_DIR,
+    _assert_not_curated_output,
+    matched_lift_stats,
+)
 
 
 def test_matched_lift_uses_same_anchor_event_universe() -> None:
@@ -27,3 +36,19 @@ def test_matched_lift_uses_same_anchor_event_universe() -> None:
     assert np.isclose(stats["aligned_spread"], 20.0)
     assert np.isclose(stats["aligned_minus_all"], 9.0)
     assert stats["bootstrap_valid_draws"] > 0
+
+
+def test_generated_outputs_default_outside_curated_decisions() -> None:
+    assert DEFAULT_OUTPUT_JSON.parent == GENERATED_DIR
+    assert DEFAULT_OUTPUT_MD.parent == GENERATED_DIR
+    assert DEFAULT_OUTPUT_JSON.name.endswith(".generated.json")
+    assert DEFAULT_OUTPUT_MD.name.endswith(".generated.md")
+
+
+def test_curated_decision_paths_cannot_be_overwritten_by_generator(tmp_path) -> None:
+    with pytest.raises(ValueError, match="generated evidence only"):
+        _assert_not_curated_output(CURATED_DECISION_JSON)
+    with pytest.raises(ValueError, match="generated evidence only"):
+        _assert_not_curated_output(CURATED_DECISION_MD)
+
+    _assert_not_curated_output(tmp_path / "matched.generated.json")
