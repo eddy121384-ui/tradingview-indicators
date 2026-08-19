@@ -1,6 +1,6 @@
 # Issue #59 — Final Research Verdict for Macro Pressure Map V6.6
 
-Status: **FINAL SYNTHESIS COMPLETE — POST-REVIEW MATCHED AUDIT**
+Status: **FINAL SYNTHESIS COMPLETE — POST-REVIEW REPRODUCIBILITY AUDIT**
 
 Final verdict category: **`descriptive_but_little_incremental_information`**
 
@@ -14,7 +14,7 @@ The final evidence supports:
 - coherent growth / inflation / financial-stress state compression;
 - transition / impulse information being more informative descriptively than static regime names;
 - keeping GPI, IPI, and FCPI as interpretable state axes;
-- keeping GPI+IPI interaction as an exploratory research / context feature.
+- keeping GPI+IPI interaction as exploratory research / context.
 
 The final evidence does **not** support:
 
@@ -38,11 +38,11 @@ Practical architecture decision:
 
 ## 1. Engineering validity — PASS
 
-The Python research mirror was verified against user-supplied TradingView Pine Logs covering 2007–2026.
+The Python research mirror was verified against the user-supplied TradingView Pine Logs covering 2007–2026.
 
 After correcting Pine-compatible `na` rolling semantics around zero-crossing real-yield ROC, the default market-only Python mirror reproduces the Pine V6.6 plotted axes to effectively machine precision after warmup.
 
-Therefore the historical diagnostics are testing the intended V6.6 calculation rather than a materially different Python approximation.
+Therefore the historical diagnostics test the intended V6.6 calculation rather than a materially different Python approximation.
 
 Evidence:
 - `issue-59-tradingview-parity.md`
@@ -50,89 +50,50 @@ Evidence:
 
 ---
 
-## 2. Review-driven statistical audit
+## 2. Review-driven statistical and reproducibility audit
 
-Three successive review corrections materially narrowed the research claims.
+Successive Codex reviews materially narrowed the claims and improved the evidence pipeline.
 
-### A. Off-calendar public-data alignment
+Corrections now in the research code:
 
-Weekend / holiday source observations are now preserved before forward-filling onto the anchor trading calendar.
+1. weekend / holiday public-data observations are preserved before anchor-calendar forward-fill;
+2. event studies apply horizon-length shared embargoes so accepted forward windows do not overlap;
+3. the final 20 development rows are purged before forward-20d evaluation so late-2019 events cannot use 2020 prices;
+4. 2020–2026 is explicitly classified as **exploratory reused-era evidence**, not an untouched holdout;
+5. raw joint-vs-single spread comparisons are not interpreted as incremental information;
+6. matched conditional inference fixes one anchor-event universe at a time;
+7. machine-generated matched evidence is separated from curated decision memos so rerunning a script cannot silently overwrite the research interpretation.
 
-This affected the public optional-data loader, not the TradingView-based default-path parity evidence.
+Reproducibility contract:
+- `research/REPRODUCIBILITY.md`
+- generated matched outputs default to `research/generated/issue-59-matched-incremental.generated.{json,md}`
+- curated synthesis remains under `research/decisions/`
 
-### B. Overlapping event outcomes + train/holdout leakage
-
-The event studies were corrected to:
-
-- detect true entries on the full chronological frame;
-- apply a horizon-length shared embargo so accepted forward windows do not overlap;
-- purge the final 20 development rows before forward-20d evaluation so no 2019 event uses 2020 prices.
-
-These fixes removed earlier single-axis significance claims and made the development joint confidence intervals cross zero.
-
-### C. Reused evaluation era + unmatched joint comparison
-
-The 2020–2026 era had already been inspected in earlier Issue #59 diagnostics before the synchronized-transition hypothesis was selected. It is therefore **not an untouched holdout**.
-
-Also, comparing a joint spread with separately embargoed GPI-only / IPI-only spreads does not establish incremental information because the event dates and sample sizes differ.
-
-A matched conditional test was therefore added.
-
-Evidence:
-- `issue-59-matched-incremental.md`
-- `issue-59-matched-incremental.json`
+No V6.6 production parameter changed.
 
 ---
 
-## 3. GPI verdict — KEEP AS DESCRIPTIVE AXIS
+## 3. Axis verdicts
 
-GPI remains economically coherent as a growth / cyclical pressure summary.
+### GPI — KEEP AS DESCRIPTIVE AXIS
 
-Its transitions line up sensibly with cyclical, commodity, credit, and breakeven behavior in descriptive diagnostics.
+GPI remains economically coherent as a growth / cyclical pressure summary, but stricter de-overlapped OOC testing does not establish robust external predictive superiority over simpler proxies.
 
-However, after de-overlap and stricter out-of-component testing, no main GPI external predictive result is robust enough to establish incremental superiority over simpler proxies.
+### IPI — KEEP AS DESCRIPTIVE AXIS
 
-### Decision
+IPI remains economically coherent as an inflation-pressure summary. The earlier apparent EURUSD and 60d rates/TLT single-axis edges disappeared after non-overlapping event windows were enforced and are withdrawn.
 
-**KEEP GPI** as descriptive macro state / transition information. Do not present it as a validated standalone external predictor.
+### FCPI — KEEP AS RISK CONTEXT
 
----
-
-## 4. IPI verdict — KEEP AS DESCRIPTIVE AXIS
-
-IPI remains economically coherent as an inflation-pressure summary.
-
-The first OOC pass appeared to show stronger EURUSD and 60d rates/TLT evidence, but those results disappeared after non-overlapping event windows were enforced.
-
-The earlier standalone IPI edge is therefore withdrawn.
-
-### Decision
-
-**KEEP IPI** as descriptive inflation state / transition information. Do not present it as a validated standalone external predictor.
+FCPI remains useful as a compression of credit, rates/dollar, and volatility stress, but Issue #59 does not establish stable incremental predictive value over simple HY OAS / VIX baselines.
 
 ---
 
-## 5. FCPI verdict — KEEP AS RISK CONTEXT
-
-FCPI compresses credit, rates/dollar, and volatility stress into one interpretable financial-conditions axis.
-
-It remains useful descriptively, but Issue #59 never established stable incremental predictive value over simple HY OAS / VIX baselines.
-
-### Decision
-
-**KEEP FCPI as financial-stress / risk-context overlay.**
-
-Do not promote it into a predictive gating rule based on this sample.
-
----
-
-## 6. Static Core Regime verdict — DESCRIPTIVE, NOT PREDICTIVE
+## 4. Static Core Regime verdict — DESCRIPTIVE, NOT PREDICTIVE
 
 The 3x3 regime labels create understandable historical macro-state fingerprints, but they are not reliable deterministic forward-return rules.
 
-### Decision
-
-Keep the labels for communication / state compression, while documentation should emphasize:
+Keep them for communication / state compression, while emphasizing:
 
 > current state + direction of change + context
 
@@ -142,7 +103,7 @@ rather than:
 
 ---
 
-## 7. Joint GPI + IPI result — INTERESTING, BUT EXPLORATORY
+## 5. Joint GPI + IPI historical pattern — INTERESTING, BUT EXPLORATORY
 
 The corrected non-overlapping joint event study still shows a notable post-2019 Treasury association:
 
@@ -156,36 +117,37 @@ Post-2019 exploratory Reflation minus Slowdown/Disinflation forward-20d spread:
 - ZN1!: **-1.18%**
 - TLT: **-2.03%**
 
-But this era is not untouched OOS, because the period had already been inspected before the joint hypothesis was selected.
-
-Therefore the raw joint pattern is retained only as an **exploratory association**.
+But this period had already been inspected before the joint hypothesis was selected. It is therefore retained only as an **exploratory historical association**, not untouched OOS validation.
 
 Evidence:
-- `issue-59-joint-holdout.md` (historical filename retained; interpretation corrected)
+- `issue-59-joint-holdout.md` — historical filename retained; interpretation corrected
+- `joint_holdout_validation.py` — generator now emits exploratory reused-era semantics
 
 ---
 
-## 8. Matched conditional incremental test — NO INCREMENTAL CLAIM EARNED
+## 6. Matched conditional incremental test — NO INCREMENTAL CLAIM EARNED
 
-To answer the central review question, the study fixes one de-overlapped anchor-event universe at a time and asks whether same-direction confirmation from the second axis improves the high-minus-low spread.
+The matched study fixes one de-overlapped anchor-event universe at a time and asks whether same-direction confirmation from the second axis improves the high-minus-low spread.
+
+The statistics below are synchronized to the actual script-generated evidence. Display values are rounded from `research/generated/issue-59-matched-incremental.generated.json`.
 
 ### GPI anchor; add IPI confirmation — post-2019 exploratory era
 
-| Outcome | GPI anchor-only | GPI + IPI confirmed | Confirmation lift | Lift 95% CI |
+| Outcome | Anchor-only | Confirmed | Confirmation lift | Generated 95% CI |
 |---|---:|---:|---:|---:|
-| US10Y | +11.10 bp | +12.48 bp | +1.38 bp | [-17.88, +22.49] |
-| US02Y | +11.62 bp | +8.05 bp | -3.58 bp | [-24.86, +18.47] |
-| ZN1! | -0.64% | -0.74% | -0.11% | [-1.33%, +1.04%] |
-| TLT | -1.20% | -1.01% | +0.18% | [-2.80%, +2.95%] |
+| US10Y | +11.10 bp | +12.48 bp | +1.38 bp | [-17.98, +23.78] |
+| US02Y | +11.62 bp | +8.05 bp | -3.58 bp | [-25.17, +18.80] |
+| ZN1! | -0.64% | -0.74% | -0.11% | [-1.40%, +1.08%] |
+| TLT | -1.20% | -1.01% | +0.18% | [-2.80%, +2.77%] |
 
 ### IPI anchor; add GPI confirmation — post-2019 exploratory era
 
-| Outcome | IPI anchor-only | IPI + GPI confirmed | Confirmation lift | Lift 95% CI |
+| Outcome | Anchor-only | Confirmed | Confirmation lift | Generated 95% CI |
 |---|---:|---:|---:|---:|
-| US10Y | +10.79 bp | +8.51 bp | -2.28 bp | [-22.19, +15.56] |
-| US02Y | +5.53 bp | +12.60 bp | +7.07 bp | [-12.43, +26.94] |
-| ZN1! | -0.59% | -0.61% | -0.02% | [-1.18%, +1.23%] |
-| TLT | -1.65% | -1.28% | +0.37% | [-2.62%, +3.62%] |
+| US10Y | +10.79 bp | +8.51 bp | -2.28 bp | [-22.50, +15.20] |
+| US02Y | +5.53 bp | +12.60 bp | +7.07 bp | [-11.67, +25.52] |
+| ZN1! | -0.59% | -0.61% | -0.02% | [-1.16%, +1.26%] |
+| TLT | -1.65% | -1.28% | +0.37% | [-2.65%, +3.64%] |
 
 The principal confirmation-lift confidence intervals also cross zero in the development sample.
 
@@ -193,11 +155,16 @@ The principal confirmation-lift confidence intervals also cross zero in the deve
 
 **Issue #59 does not demonstrate that adding the second axis provides incremental predictive information beyond the anchor axis.**
 
-Synchronized GPI+IPI movement may still identify a distinctive historical subset, but the predictive-incrementality claim is withdrawn.
+Synchronized GPI+IPI movement may identify a distinctive historical subset, but the predictive-incrementality claim is withdrawn.
+
+Evidence:
+- `issue-59-matched-incremental.md`
+- `issue-59-matched-incremental.json`
+- generated evidence under `research/generated/`
 
 ---
 
-## 9. Final KEEP / SIMPLIFY / RECALIBRATE decision
+## 7. Final KEEP / SIMPLIFY / RECALIBRATE decision
 
 ### KEEP
 
@@ -222,18 +189,17 @@ This is a UX / interpretation improvement, not evidence of predictive alpha.
 
 Do not optimize on Issue #59 data:
 
-- axis weights
-- component weights
-- +/-10 / +/-30 / +/-60 thresholds
-- 20 / 63 / 252 lookbacks
-- smoothing
-- regime boundaries
+- axis or component weights;
+- +/-10 / +/-30 / +/-60 thresholds;
+- 20 / 63 / 252 lookbacks;
+- smoothing;
+- regime boundaries.
 
 Any parameter redesign would turn this already-inspected sample into training data and requires a separately pre-registered future evaluation.
 
 ---
 
-## 10. Claims V6.6 has earned
+## 8. Claims V6.6 has earned
 
 V6.6 can defensibly be described as:
 
@@ -242,9 +208,7 @@ V6.6 can defensibly be described as:
 - a descriptive tool where changes / transitions often reveal more context than static labels;
 - a framework that generates interesting historical cross-asset patterns worth prospective study.
 
----
-
-## 11. Claims V6.6 has NOT earned
+## 9. Claims V6.6 has NOT earned
 
 Do not claim:
 
@@ -261,14 +225,14 @@ Do not claim:
 
 ---
 
-## 12. Recommendation after Issue #59
+## 10. Recommendation after Issue #59
 
-Issue #59 should close after PR #60 receives a clean review and lands on `main`.
+After PR #60 receives a clean review and lands on `main`, close Issue #59.
 
 Two separate follow-ups are appropriate:
 
 1. **Prospective OOS validation** — freeze the GPI+IPI confirmation hypothesis now and evaluate only genuinely unseen future observations after the current 2026-08-14 evidence cutoff.
-2. **V6.7 UI / interpretation redesign** — if desired, improve how transition velocity, regime context, and FCPI risk state are displayed, without claiming that the redesign creates predictive edge.
+2. **V6.7 UI / interpretation redesign** — if desired, improve how transition velocity, regime context, and FCPI risk state are displayed, without claiming the redesign creates predictive edge.
 
 Do not merge those two goals into one optimization exercise.
 
