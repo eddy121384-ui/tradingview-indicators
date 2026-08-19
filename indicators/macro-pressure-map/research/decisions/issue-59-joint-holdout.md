@@ -1,111 +1,91 @@
 # Issue #59 — Joint-axis walk-forward holdout
 
-Status: **JOINT-AXIS HOLDOUT COMPLETE**
+Status: **JOINT-AXIS HOLDOUT COMPLETE — NON-OVERLAPPING EVENTS**
 
-Purpose: test whether the frozen V6.6 **combination** adds information beyond the best individual axis, without retuning V6.6.
+Purpose: test whether the frozen V6.6 **GPI+IPI combination** adds information beyond either individual axis, without retuning V6.6 and without treating overlapping forward windows as independent evidence.
 
-## Design
+## Corrected design after review
 
-Training / threshold-definition period:
+Threshold-definition period:
 - 2008-06-02 through 2019-12-31
 
-Holdout:
-- 2020-01-01 through 2026-08-14
+Training outcome evaluation:
+- ends 2019-12-02
+- the final **20 trading rows of the threshold-definition period are purged** so no forward-20d training outcome can use 2020 holdout prices
 
-The 20-day axis-change extreme cuts are learned once from the training period and then frozen:
+Holdout:
+- 2020-01-02 through 2026-08-14
+
+Frozen training cuts:
 - GPI d20: low `-21.06`, high `+19.53`
 - IPI d20: low `-21.20`, high `+22.51`
 
-No threshold is re-estimated on the holdout.
-
-Two aligned joint transition states are compared:
-
+Joint states:
 - **Reflation impulse** = GPI d20 high AND IPI d20 high
 - **Slowdown / disinflation impulse** = GPI d20 low AND IPI d20 low
 
-Only the first bar entering each joint state is counted.
+True state entries are detected on the complete chronological frame before train/holdout slicing, so an already-active state at the boundary is not misclassified as a fresh holdout event.
 
-Event counts:
-- training: 42 reflation vs 57 slowdown/disinflation events
-- holdout: 28 reflation vs 23 slowdown/disinflation events
+A shared **20-trading-row embargo** is then applied across positive and negative entry events inside each evaluation period. Once one event is accepted, no event of either sign is accepted until its forward-20d window no longer overlaps.
 
-Primary statistic: mean forward-20d outcome of Reflation minus Slowdown/Disinflation.
+Non-overlapping joint event counts:
+- training: **23** reflation vs **33** slowdown/disinflation
+- holdout: **15** reflation vs **15** slowdown/disinflation
 
-## Main result — the GPI+IPI combination adds separation in Treasuries
+## Corrected result
 
-| 20d outcome | Training joint spread | Holdout joint spread | Holdout GPI-only | Holdout IPI-only |
-|---|---:|---:|---:|---:|
-| US10Y yield | **+7.57 bp** | **+15.90 bp** | +11.24 bp | +6.48 bp |
-| US02Y yield | **+4.77 bp** | **+16.63 bp** | — | — |
-| ZN1! | **-0.54%** | **-1.04%** | -0.70% | -0.31% |
-| TLT | -1.21% | -1.44% | -1.28% | -0.81% |
-| USDJPY | +0.14% | +1.19% | +0.40% | -0.12% |
-| EURUSD | -0.06% | +0.23% | ~0.00% | +0.84% |
+Reflation minus Slowdown/Disinflation forward-20d spread:
 
-Bootstrap 95% intervals for the joint contrast:
+| Outcome | Training joint | Training 95% CI | Holdout joint | Holdout 95% CI | Holdout GPI-only | Holdout IPI-only |
+|---|---:|---:|---:|---:|---:|---:|
+| US10Y yield | +5.87 bp | [-3.88, +15.69] | **+18.81 bp** | **[+2.19, +35.60]** | +11.10 bp | +10.79 bp |
+| US02Y yield | +3.30 bp | [-3.38, +10.11] | **+17.68 bp** | **[+2.80, +33.19]** | +11.62 bp | +5.53 bp |
+| ZN1! | -0.44% | [-1.11%, +0.24%] | **-1.18%** | **[-2.15%, -0.21%]** | -0.64% | -0.59% |
+| TLT | -1.35% | [-3.23%, +0.42%] | -2.03% | [-4.29%, +0.40%] | -1.20% | -1.65% |
+| USDJPY | +0.57% | [-0.92%, +2.17%] | +0.62% | [-1.30%, +2.59%] | +0.72% | +0.12% |
+| EURUSD | -0.25% | [-1.83%, +1.39%] | +0.31% | [-1.19%, +1.86%] | -0.40% | +0.66% |
 
-Training:
-- US10Y: **[+0.08, +15.14] bp**
-- US02Y: **[+0.18, +9.63] bp**
-- ZN1!: **[-1.05%, -0.06%]**
+## What changed from the first version
 
-Holdout:
-- US10Y: **[+3.79, +28.41] bp**
-- US02Y: **[+4.82, +28.10] bp**
-- ZN1!: **[-1.77%, -0.32%]**
+The earlier study counted first entries but did not prevent a state from clearing briefly and re-entering within the same 20-day outcome horizon. Those forward-return windows overlapped, so the simple bootstrap treated dependent observations as if they were independent.
 
-The Treasury result is both economically coherent and stronger in the 2020–2026 holdout than in training:
-- aligned growth+inflation acceleration is followed by higher nominal yields / weaker Treasury futures;
-- aligned growth+inflation deceleration is followed by lower yields / stronger Treasury futures.
+It also allowed training events in the final 20 trading rows of 2019 to use forward returns extending into the 2020 holdout.
 
-The joint GPI+IPI contrast is also larger than either individual axis on US10Y and ZN in the holdout.
+Both defects are now removed.
 
-## Important nuance
+Consequences:
 
-The joint improvement does **not** generalize cleanly to every asset:
-- EURUSD does not show stable joint-axis improvement;
-- USDJPY is stronger in holdout but not in training;
-- TLT direction is coherent, but its bootstrap interval overlaps zero.
+- event counts fall materially;
+- **training confidence intervals now cross zero** for US10Y, US02Y and ZN;
+- therefore the previous statement that Treasury intervals excluded zero in both training and holdout is withdrawn;
+- the **holdout result survives** the stricter methodology and is larger than either individual-axis contrast for US10Y, US02Y and ZN.
 
-The strongest evidence is specifically in **nominal Treasury rates / ZN**, which is valuable because these are not default-path V6.6 inputs.
+## Interpretation
 
-## FCPI as conditioning overlay
+The corrected evidence is narrower but cleaner.
 
-FCPI still does not earn a strong incremental-predictive claim.
+What is supported:
+- thresholds defined on 2008–2019 and frozen into 2020–2026 still identify a joint GPI+IPI transition contrast with meaningful holdout separation in nominal Treasury yields and ZN;
+- aligned growth+inflation acceleration is followed, in the holdout sample, by higher nominal yields / weaker ZN relative to aligned deceleration;
+- the joint contrast is larger than GPI-only and IPI-only in the holdout for the strongest Treasury outcomes.
 
-Exploratory conditioning of the joint events by FCPI level/change produced some interesting crisis-era splits, but the extra separation is not stable enough between training and holdout to freeze as a rule. Therefore:
+What is **not** supported:
+- a claim that the joint effect was statistically precise in the training sample after de-overlap;
+- a universal cross-asset rule;
+- a stable FX edge;
+- TLT statistical significance;
+- causal independence merely because forward windows no longer overlap.
 
-**Do not promote FCPI into a predictive filter based on Issue #59 results.**
+The simple bootstrap is retained only after the 20-row embargo and remains descriptive.
 
-Its current justified role remains:
-- summarize credit / rates-dollar / volatility stress;
-- provide a risk-condition overlay;
-- help describe whether a GPI/IPI macro impulse is occurring under stressed or normal financial conditions.
+## FCPI role
+
+Nothing in this correction upgrades FCPI. Its justified role remains financial-stress / risk context rather than a validated standalone predictive filter.
 
 ## Joint-axis verdict
 
-This is the first result in Issue #59 that clearly supports the **combined regime architecture**, rather than only the individual axes.
+**KEEP the GPI+IPI joint transition architecture, but narrow the claim to holdout-supported Treasury / ZN discrimination.**
 
-### Earned
+The main evidence is now the 2020–2026 frozen-threshold holdout, not a claim of significance in both training and holdout.
 
-- GPI + IPI joint transition alignment adds information beyond either axis alone for future Treasury-rate / ZN behavior.
-- The result survives a true era holdout with frozen training-period thresholds.
-- The useful object is again **transition / alignment**, not the static regime label by itself.
-
-### Not earned
-
-- no universal cross-asset trading rule;
-- no stable FX edge from the joint state;
-- no incremental predictive role for FCPI yet;
-- no justification to tune V6.6 thresholds or weights.
-
-## Implication for a future V6.7
-
-Do not redesign yet, but the research direction is now clearer:
-
-1. preserve GPI and IPI;
-2. emphasize **joint transition / alignment** in the UI and research language;
-3. keep FCPI as a conditioning / stress overlay unless future evidence proves more;
-4. avoid presenting static `Goldilocks / Reflation / Stagflation` labels as deterministic forecasts.
-
-Issue #59 should remain open until the final synthesis / KEEP-SIMPLIFY-RECALIBRATE verdict is written.
+This still supports emphasizing **transition / alignment** over static regime labels in a future V6.7, while keeping V6.6 frozen and avoiding parameter optimization on Issue #59 data.
