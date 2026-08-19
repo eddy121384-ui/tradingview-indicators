@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Issue #59 joint-axis walk-forward holdout for frozen Macro Pressure Map V6.6."""
+"""Issue #59 joint-axis reused-era exploratory study for frozen Macro Pressure Map V6.6.
+
+The post-2019 period is not an untouched holdout. Earlier Issue #59 diagnostics
+had already inspected 2020-2026 before the synchronized-transition hypothesis
+was selected. This script therefore preserves the historical split and frozen
+thresholds only as an exploratory reused-era analysis.
+"""
 from __future__ import annotations
 
 import argparse
@@ -18,7 +24,9 @@ from incremental_validation import (
 )
 
 TRAIN_END = "2019-12-31"
-TEST_START = "2020-01-01"
+POST_2019_START = "2020-01-01"
+# Backward-compatible import for matched_incremental_validation.py and old notebooks.
+TEST_START = POST_2019_START
 LOW_Q = 0.20
 HIGH_Q = 0.80
 HORIZON = 20
@@ -41,9 +49,9 @@ def embargo_pair(
 ) -> tuple[pd.Series, pd.Series]:
     """Keep chronologically first entries with non-overlapping forward windows.
 
-    The embargo is shared across positive and negative events.  An accepted event
+    The embargo is shared across positive and negative events. An accepted event
     suppresses any later candidate of either sign until at least `horizon`
-    trading rows have elapsed.  This prevents overlapping forward-return windows
+    trading rows have elapsed. This prevents overlapping forward-return windows
     from being treated as independent bootstrap observations.
     """
     pos = positive_entries.reindex(period_index, fill_value=False)
@@ -138,19 +146,19 @@ def build_patterns(frame: pd.DataFrame, cuts: dict[str, tuple[float, float]]) ->
 
 
 def evaluation_indices(frame: pd.DataFrame) -> tuple[pd.DatetimeIndex, pd.DatetimeIndex, pd.DataFrame]:
-    """Return leakage-safe train evaluation rows, holdout rows, and full train cut sample."""
+    """Return leakage-safe development rows, post-2019 exploratory rows, and cut sample."""
     train_for_cuts = frame.loc[:TRAIN_END].copy()
     if len(train_for_cuts) <= HORIZON:
         raise ValueError("training sample is too short for the forward-horizon purge")
-    train_eval_index = train_for_cuts.index[:-HORIZON]
-    holdout_index = frame.loc[TEST_START:].index
-    if holdout_index.empty:
-        raise ValueError("holdout sample is empty")
-    return train_eval_index, holdout_index, train_for_cuts
+    development_index = train_for_cuts.index[:-HORIZON]
+    post_2019_index = frame.loc[POST_2019_START:].index
+    if post_2019_index.empty:
+        raise ValueError("post-2019 exploratory sample is empty")
+    return development_index, post_2019_index, train_for_cuts
 
 
 def evaluate(frame: pd.DataFrame) -> dict:
-    train_eval_index, holdout_index, train_for_cuts = evaluation_indices(frame)
+    development_index, post_2019_index, train_for_cuts = evaluation_indices(frame)
 
     cuts = {
         "axis_gpi_change20": (
@@ -164,8 +172,8 @@ def evaluate(frame: pd.DataFrame) -> dict:
     }
 
     # Detect true entries on the complete chronological frame before splitting.
-    # This avoids treating a state already active on 2019-12-31 as a fresh
-    # holdout entry simply because the holdout slice starts on 2020-01-01.
+    # This avoids manufacturing a fresh post-2019 entry when a state was already
+    # active across the 2019/2020 boundary.
     full_patterns = build_patterns(frame, cuts)
     joint_reflation_entries = entry_events(full_patterns["reflation_impulse"])
     joint_slowdown_entries = entry_events(full_patterns["slowdown_disinflation_impulse"])
@@ -182,20 +190,24 @@ def evaluate(frame: pd.DataFrame) -> dict:
 
     report = {
         "design": {
-            "train_cut_start": train_for_cuts.index.min().date().isoformat(),
-            "train_cut_end": train_for_cuts.index.max().date().isoformat(),
-            "train_eval_end": train_eval_index.max().date().isoformat(),
-            "test_start": holdout_index.min().date().isoformat(),
-            "test_end": holdout_index.max().date().isoformat(),
+            "threshold_definition_start": train_for_cuts.index.min().date().isoformat(),
+            "threshold_definition_end": train_for_cuts.index.max().date().isoformat(),
+            "development_eval_end": development_index.max().date().isoformat(),
+            "post_2019_start": post_2019_index.min().date().isoformat(),
+            "post_2019_end": post_2019_index.max().date().isoformat(),
+            "post_2019_status": "exploratory_reused_era_not_untouched_holdout",
             "cuts": cuts,
             "horizon": HORIZON,
             "event_embargo_trading_rows": HORIZON,
-            "train_tail_purged_trading_rows": HORIZON,
+            "development_tail_purged_trading_rows": HORIZON,
         },
         "periods": {},
     }
 
-    for period_name, period_index in (("train", train_eval_index), ("holdout", holdout_index)):
+    for period_name, period_index in (
+        ("development", development_index),
+        ("post_2019_exploratory", post_2019_index),
+    ):
         sub = frame.loc[period_index]
         reflation, slowdown = embargo_pair(
             joint_reflation_entries, joint_slowdown_entries, period_index, HORIZON
@@ -239,42 +251,45 @@ def _fmt(value: float, digits: int = 2) -> str:
 def render_markdown(report: dict) -> str:
     d = report["design"]
     lines = [
-        "# Issue #59 — Joint-axis walk-forward holdout",
+        "# Issue #59 — Joint-axis post-2019 exploratory study",
         "",
-        "Status: **JOINT-AXIS HOLDOUT COMPLETE — NON-OVERLAPPING EVENTS**",
+        "Status: **JOINT-AXIS EXPLORATORY STUDY COMPLETE — NON-OVERLAPPING EVENTS**",
         "",
-        f"Threshold-definition sample: {d['train_cut_start']} to {d['train_cut_end']}.",
-        f"Training outcome sample ends {d['train_eval_end']} after purging the final {d['train_tail_purged_trading_rows']} trading rows so no 20d training outcome enters the holdout.",
-        f"Holdout: {d['test_start']} to {d['test_end']}.",
+        "Evidence boundary: the post-2019 era is reused historical evidence, not an untouched holdout, because earlier Issue #59 diagnostics had already inspected it before this joint hypothesis was selected.",
         "",
-        f"Frozen train GPI d20 cuts: {d['cuts']['axis_gpi_change20'][0]:.2f}, {d['cuts']['axis_gpi_change20'][1]:.2f}.",
-        f"Frozen train IPI d20 cuts: {d['cuts']['axis_ipi_change20'][0]:.2f}, {d['cuts']['axis_ipi_change20'][1]:.2f}.",
+        f"Threshold-definition sample: {d['threshold_definition_start']} to {d['threshold_definition_end']}.",
+        f"Development outcome sample ends {d['development_eval_end']} after purging the final {d['development_tail_purged_trading_rows']} trading rows so no 20d development outcome crosses into 2020.",
+        f"Post-2019 exploratory era: {d['post_2019_start']} to {d['post_2019_end']}.",
+        "",
+        f"Frozen GPI d20 cuts: {d['cuts']['axis_gpi_change20'][0]:.2f}, {d['cuts']['axis_gpi_change20'][1]:.2f}.",
+        f"Frozen IPI d20 cuts: {d['cuts']['axis_ipi_change20'][0]:.2f}, {d['cuts']['axis_ipi_change20'][1]:.2f}.",
         "",
         f"All event contrasts use a shared {d['event_embargo_trading_rows']}-trading-row embargo across positive and negative entries, so accepted forward-20d windows do not overlap.",
-        "True entry transitions are detected on the full chronological frame before train/holdout slicing.",
+        "True entry transitions are detected on the full chronological frame before period slicing.",
         "",
         "Joint contrast = non-overlapping Reflation impulse (GPI high + IPI high) minus Slowdown/Disinflation impulse (GPI low + IPI low).",
         "",
     ]
 
-    for period_name in ("train", "holdout"):
+    for period_name in ("development", "post_2019_exploratory"):
         counts = report["periods"][period_name]["event_counts"]
+        label = "Development" if period_name == "development" else "Post-2019 exploratory"
         lines.append(
-            f"{period_name.title()} non-overlapping joint events: "
+            f"{label} non-overlapping joint events: "
             f"{counts['reflation_impulse']} reflation vs {counts['slowdown_disinflation_impulse']} slowdown/disinflation."
         )
     lines += [
         "",
-        "| Outcome | Train joint | Train 95% CI | Holdout joint | Holdout 95% CI | Holdout GPI-only | Holdout IPI-only |",
+        "| Outcome | Development joint | Development 95% CI | Post-2019 exploratory joint | Exploratory 95% CI | Exploratory GPI-only | Exploratory IPI-only |",
         "|---|---:|---:|---:|---:|---:|---:|",
     ]
-    train = report["periods"]["train"]["outcomes"]
-    holdout = report["periods"]["holdout"]["outcomes"]
+    development = report["periods"]["development"]["outcomes"]
+    post_2019 = report["periods"]["post_2019_exploratory"]["outcomes"]
     for outcome in OUTCOMES:
-        t = train[outcome]["joint_reflation_minus_slowdown"]
-        h = holdout[outcome]["joint_reflation_minus_slowdown"]
-        g = holdout[outcome]["gpi_high_minus_low"]["spread"]
-        i = holdout[outcome]["ipi_high_minus_low"]["spread"]
+        t = development[outcome]["joint_reflation_minus_slowdown"]
+        h = post_2019[outcome]["joint_reflation_minus_slowdown"]
+        g = post_2019[outcome]["gpi_high_minus_low"]["spread"]
+        i = post_2019[outcome]["ipi_high_minus_low"]["spread"]
         unit = "bp" if outcome in {"us10y_tvc", "us02y_tvc"} else "%"
         lines.append(
             f"| {outcome} | {_fmt(t['spread'])} {unit} | "
@@ -287,9 +302,11 @@ def render_markdown(report: dict) -> str:
         "## Statistical interpretation",
         "",
         "- The 20-row embargo removes overlapping forward windows before the simple event bootstrap is applied.",
-        "- The training tail purge prevents any training forward outcome from using 2020 holdout prices.",
+        "- The development tail purge prevents any development forward outcome from using 2020 prices.",
+        "- The post-2019 sample is exploratory reused-era evidence and must not be described as an untouched holdout or decision-grade validation.",
+        "- Raw joint-vs-single spread differences do not establish incremental information; see `issue-59-matched-incremental.md` for the matched conditional test.",
         "- Confidence intervals remain descriptive; they do not prove causal independence or correct every form of market time-series dependence.",
-        "- No V6.6 weight, lookback, threshold, or production formula is changed by this repair.",
+        "- No V6.6 weight, lookback, threshold, or production formula is changed by this study.",
         "",
     ]
     return "\n".join(lines)
