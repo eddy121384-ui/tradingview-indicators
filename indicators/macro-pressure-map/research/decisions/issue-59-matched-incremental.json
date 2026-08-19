@@ -1,0 +1,36 @@
+{
+  "issue": 59,
+  "study": "matched conditional incremental test",
+  "post_2019_status": "exploratory_reused_era_not_untouched_holdout",
+  "horizon": 20,
+  "event_embargo_trading_rows": 20,
+  "development": {
+    "gpi_anchor_events": 93,
+    "gpi_aligned_events": 21,
+    "ipi_anchor_events": 79,
+    "ipi_aligned_events": 34
+  },
+  "post_2019_exploratory": {
+    "gpi_anchor_events": 45,
+    "gpi_aligned_events": 17,
+    "ipi_anchor_events": 51,
+    "ipi_aligned_events": 10,
+    "gpi_anchor_confirmation_lift": {
+      "us10y_bp": {"point": 1.3781, "ci95": [-17.8797, 22.4859]},
+      "us02y_bp": {"point": -3.5757, "ci95": [-24.8607, 18.4745]},
+      "zn1_pct": {"point": -0.1089, "ci95": [-1.3345, 1.0418]},
+      "tlt_pct": {"point": 0.1833, "ci95": [-2.8002, 2.9477]}
+    },
+    "ipi_anchor_confirmation_lift": {
+      "us10y_bp": {"point": -2.2766, "ci95": [-22.1921, 15.5595]},
+      "us02y_bp": {"point": 7.0735, "ci95": [-12.4306, 26.9440]},
+      "zn1_pct": {"point": -0.0249, "ci95": [-1.1844, 1.2305]},
+      "tlt_pct": {"point": 0.3654, "ci95": [-2.6196, 3.6236]}
+    }
+  },
+  "conclusion": {
+    "all_primary_confirmation_lift_intervals_cross_zero": true,
+    "gpi_plus_ipi_incremental_information_demonstrated": false,
+    "recommended_final_verdict": "descriptive_but_little_incremental_information"
+  }
+}
