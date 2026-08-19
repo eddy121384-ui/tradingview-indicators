@@ -1,14 +1,37 @@
 {
   "issue": 59,
   "study": "matched conditional incremental test",
+  "artifact_role": "curated summary synchronized to script-generated evidence",
+  "generated_source": {
+    "json": "research/generated/issue-59-matched-incremental.generated.json",
+    "markdown": "research/generated/issue-59-matched-incremental.generated.md"
+  },
   "post_2019_status": "exploratory_reused_era_not_untouched_holdout",
   "horizon": 20,
   "event_embargo_trading_rows": 20,
+  "thresholds": {
+    "gpi_d20_low": -21.058271663892008,
+    "gpi_d20_high": 19.53303993778439,
+    "ipi_d20_low": -21.204977822647415,
+    "ipi_d20_high": 22.507337931628893
+  },
   "development": {
     "gpi_anchor_events": 93,
     "gpi_aligned_events": 21,
     "ipi_anchor_events": 79,
-    "ipi_aligned_events": 34
+    "ipi_aligned_events": 34,
+    "gpi_anchor_confirmation_lift": {
+      "us10y_bp": {"point": 5.8463496743589795, "ci95": [-9.363727051888034, 20.849409340828894]},
+      "us02y_bp": {"point": 2.4090086165641893, "ci95": [-7.27775097729496, 12.274151520960897]},
+      "zn1_pct": {"point": -0.4903705936974162, "ci95": [-1.5619755880768589, 0.511463903793763]},
+      "tlt_pct": {"point": -1.7181077067012627, "ci95": [-3.9937265267079475, 0.5232846049660742]}
+    },
+    "ipi_anchor_confirmation_lift": {
+      "us10y_bp": {"point": 5.8815532101536765, "ci95": [-4.42230361701679, 16.336181172051446]},
+      "us02y_bp": {"point": 1.5766423233155183, "ci95": [-5.626011603559395, 8.664829977485268]},
+      "zn1_pct": {"point": -0.7287870874239431, "ci95": [-1.606582755611311, 0.07424347831448354]},
+      "tlt_pct": {"point": -0.2148988610137177, "ci95": [-2.3599814303441585, 1.739516984599954]}
+    }
   },
   "post_2019_exploratory": {
     "gpi_anchor_events": 45,
@@ -16,16 +39,16 @@
     "ipi_anchor_events": 51,
     "ipi_aligned_events": 10,
     "gpi_anchor_confirmation_lift": {
-      "us10y_bp": {"point": 1.3781, "ci95": [-17.8797, 22.4859]},
-      "us02y_bp": {"point": -3.5757, "ci95": [-24.8607, 18.4745]},
-      "zn1_pct": {"point": -0.1089, "ci95": [-1.3345, 1.0418]},
-      "tlt_pct": {"point": 0.1833, "ci95": [-2.8002, 2.9477]}
+      "us10y_bp": {"point": 1.378058857142865, "ci95": [-17.98464781746032, 23.78447887301586]},
+      "us02y_bp": {"point": -3.5757013968254088, "ci95": [-25.173926924503972, 18.804466036375664]},
+      "zn1_pct": {"point": -0.10885338856804783, "ci95": [-1.4017644874140315, 1.0776410064556396]},
+      "tlt_pct": {"point": 0.18327787728121447, "ci95": [-2.797554423203721, 2.766729147164738]}
     },
     "ipi_anchor_confirmation_lift": {
-      "us10y_bp": {"point": -2.2766, "ci95": [-22.1921, 15.5595]},
-      "us02y_bp": {"point": 7.0735, "ci95": [-12.4306, 26.9440]},
-      "zn1_pct": {"point": -0.0249, "ci95": [-1.1844, 1.2305]},
-      "tlt_pct": {"point": 0.3654, "ci95": [-2.6196, 3.6236]}
+      "us10y_bp": {"point": -2.276571319347318, "ci95": [-22.501801511990863, 15.20245305080797]},
+      "us02y_bp": {"point": 7.073533371237468, "ci95": [-11.669725927350442, 25.51711089477599]},
+      "zn1_pct": {"point": -0.024855598644216493, "ci95": [-1.1588737208176714, 1.2642824741609977]},
+      "tlt_pct": {"point": 0.3653670663621827, "ci95": [-2.653745391087875, 3.642078135667351]}
     }
   },
   "conclusion": {
