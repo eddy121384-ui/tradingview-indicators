@@ -103,9 +103,11 @@
   ],
   "verdict": {
     "project": "KEEP V6.6 frozen; do not tune weights or thresholds",
-    "GPI": "KEEP as state/transition axis; standalone OOC incremental prediction not demonstrated",
-    "IPI": "KEEP as inflation axis and joint-alignment input; standalone OOC incremental prediction not demonstrated",
+    "GPI": "KEEP as descriptive state/transition axis; standalone OOC incremental prediction not demonstrated",
+    "IPI": "KEEP as descriptive inflation axis; standalone OOC incremental prediction not demonstrated",
     "FCPI": "KEEP as stress/risk context; standalone incremental value not demonstrated",
-    "decision_grade_evidence": "use corrected joint-axis holdout, not single-axis OOC significance claims"
+    "joint_axis_status": "post-2019 joint Treasury/ZN association is exploratory reused-era evidence, not decision-grade validation",
+    "matched_incremental_status": "second-axis incremental predictive information is not demonstrated by the matched conditional test",
+    "recommended_final_verdict": "descriptive_but_little_incremental_information"
   }
 }
