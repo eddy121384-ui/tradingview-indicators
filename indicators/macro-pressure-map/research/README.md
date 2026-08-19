@@ -24,11 +24,11 @@ The Python code here is a research mirror, not a replacement for the TradingView
 - Risk Note and Risk Posture logic;
 - display-only EMA lines separately from raw regime axes.
 
-The initial parity target is the Pine default configuration: market proxy only, official FCI off, T5YIE off, industrial metals off, and KRE add-on off.
+The parity target is the Pine default configuration: market proxy only, official FCI off, T5YIE off, industrial metals off, and KRE add-on off.
 
 ## Input contract
 
-`compute_v66()` expects a date-indexed pandas DataFrame whose columns use these canonical names:
+`compute_v66()` expects a date-indexed pandas DataFrame whose columns use these canonical names.
 
 ### GPI market
 
@@ -50,28 +50,26 @@ The initial parity target is the Pine default configuration: market proxy only, 
 
 `pmi`, `cfnai`, `building_permits`, `initial_claims`, `unemployment`, `cpi`, `core_cpi`, `pce`, `core_pce`, `ppi`, `wage`
 
-Missing optional columns are treated as `NaN`. Supplied series are forward-filled on the aligned research calendar to approximate Pine `request.security(..., gaps=barmerge.gaps_off)` behavior. This is a parity hypothesis, not yet a proven fact; if TradingView evidence disagrees, document and fix the semantic mismatch before historical utility analysis.
+Missing optional columns are treated as `NaN`. Supplied series are forward-filled on the aligned research calendar to approximate Pine `request.security(..., gaps=barmerge.gaps_off)` behavior.
 
 ## Public-data research layer
 
 `public_data.py` makes the public-feed approximation explicit instead of hiding symbol substitutions inside analysis code.
 
-The default V6.6 market-only path currently maps:
+The default V6.6 market-only path maps:
 
 - ETFs directly through Yahoo (`SPY`, `IWM`, `RSP`, `XLY`, `XLP`, `XLI`, `XLU`, `DBC`, `HYG`, `IEF`);
 - TradingView continuous futures to Yahoo research proxies (`HG1! -> HG=F`, `GC1! -> GC=F`, `CL1! -> CL=F`, `RB1! -> RB=F`);
 - `TVC:DXY -> DX-Y.NYB`, `CBOE:VIX -> ^VIX`, `TVC:MOVE -> ^MOVE`;
 - FRED symbols such as `T10YIE`, `BAMLH0A0HYM2`, and `DFII10` through FRED CSV.
 
-Optional T5YIE, DBB, KRE, official FCI, and macro-confirmation mappings are also declared but remain off under the default parity target.
+Optional T5YIE, DBB, KRE, official FCI, and macro-confirmation mappings are declared but remain off under the default parity target.
 
 Every mapping is written into a generated manifest with provider, public symbol, TradingView/Pine symbol, coverage, and feed-risk notes. Public providers are **not** assumed to be TradingView-equivalent.
 
 ### Calendar semantics
 
-The first public-data build uses the SPY trading calendar as the daily research anchor. Other series are reindexed to those dates and forward-filled only after their first observation. Values are never backfilled into earlier history.
-
-This is intended to be a closer approximation to a TradingView daily chart than a union calendar, but it remains a Stage-2 parity hypothesis.
+The public-data build uses the SPY trading calendar as the daily research anchor. Source observations dated on weekends / anchor holidays are preserved on a union calendar before forward-filling, then projected onto SPY trading dates. Values are never backfilled before their first observation.
 
 ### Build a public history bundle
 
@@ -81,42 +79,64 @@ Install research dependencies, then from this folder run for example:
 python build_public_history.py --start 2007-01-01 --output-dir data/public-v6.6
 ```
 
-The builder emits:
-
-- `v6.6-public-sources.csv` — aligned public input series;
-- `v6.6-public-history.csv` — source series plus GPI / IPI / FCPI, plot lines, states, regime, and main FCPI subcomponents;
-- `v6.6-public-manifest.json` — mappings, coverage, V6.6 config, calendar rules, and parity warnings.
-
-These outputs are research inputs only. Do not treat them as TradingView parity evidence.
+The builder emits source history, calculated V6.6 history, and a manifest. These outputs are research inputs only and are not TradingView parity evidence.
 
 ## Important V6.6 semantic detail
 
-The dashboard states and Core Regime use **raw unsmoothed** `GPI`, `IPI`, and `FCPI`. The default EMA(5) is only used for the displayed plot lines. Do not classify regimes from `plot_GPI`, `plot_IPI`, or `plot_FCPI`.
+The dashboard states and Core Regime use **raw unsmoothed** `GPI`, `IPI`, and `FCPI`. The default EMA(5) is only used for displayed plot lines. Do not classify regimes from `plot_GPI`, `plot_IPI`, or `plot_FCPI`.
+
+## Validation tooling
+
+The research folder now includes:
+
+- Pine ↔ Python parity helpers / comparators;
+- first historical axis / regime diagnostics;
+- out-of-component baseline comparisons;
+- non-overlapping joint-event analysis;
+- `matched_incremental_validation.py`, which tests second-axis confirmation inside one fixed anchor-event universe rather than comparing unrelated event samples.
 
 ## Tests
 
 From this directory:
 
 ```bash
-python -m pytest -q test_v6_6_core.py test_public_data.py
+python -m pytest -q \
+  test_v6_6_core.py \
+  test_public_data.py \
+  test_incremental_validation.py \
+  test_joint_holdout_validation.py \
+  test_matched_incremental_validation.py
 ```
 
-Current tests cover:
+Coverage includes:
 
-- exact threshold boundary semantics;
-- all nine Core Regime cells;
-- weighted reallocation when a component is missing;
-- bounded end-to-end axis outputs on synthetic data;
-- no-lookahead behavior when future rows are appended;
-- default versus optional public source selection;
-- SPY-anchor calendar alignment;
-- forward-fill without pre-history backfill;
-- source-manifest mapping and coverage metadata.
+- threshold / Core Regime semantics;
+- Pine-compatible rolling / missing-value behavior;
+- public-data calendar causality;
+- horizon-length event embargoes;
+- training-tail purge before forward-outcome evaluation;
+- matched nested confirmation-lift calculation.
+
+## Final Issue #59 result
+
+Final verdict:
+
+**`descriptive_but_little_incremental_information`**
+
+The research established engineering-valid V6.6 parity and coherent macro-state compression, but after circularity controls, non-overlapping events, leakage repair, holdout-status audit, and a matched conditional test, it did **not** establish robust standalone or joint incremental predictive value.
+
+Durable evidence:
+
+- `decisions/issue-59-final-verdict.md`
+- `decisions/issue-59-tradingview-parity.md`
+- `decisions/issue-59-ooc-incremental.md`
+- `decisions/issue-59-joint-holdout.md` (historical filename; interpretation downgraded to exploratory)
+- `decisions/issue-59-matched-incremental.md`
 
 ## Next step
 
-Stage 1 now has an executable mirror plus a reproducible public-data mapping/build path. The next gate is Stage 2: Pine ↔ Python parity.
+Do not optimize V6.6 on the already-inspected Issue #59 sample.
 
-The preferred parity design should remove feed mismatch where possible by exporting TradingView source/diagnostic values and feeding the same rows into Python. Public-provider comparisons can then be analyzed separately as a feed-sensitivity question.
+If predictive value is still a goal, freeze the GPI+IPI confirmation hypothesis now and evaluate it prospectively only on genuinely unseen future observations after the current evidence cutoff.
 
-Do not interpret historical performance until parity is sufficiently established or its limitations are explicitly bounded.
+A separate V6.7 may improve UI / interpretation — for example clearer transition velocity and risk context — but such a redesign should not be described as predictive improvement without fresh OOS evidence.
