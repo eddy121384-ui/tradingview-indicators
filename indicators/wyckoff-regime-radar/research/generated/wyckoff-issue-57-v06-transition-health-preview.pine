@@ -1538,7 +1538,8 @@ flatActionChanged = enableFlatAction and flatActionLevel != flatActionLevel[1]
 
 // ===== Issue #57 v0.6 Transition Health｜frozen +3 OOS candidate =====
 groupTransitionHealth = "顯示｜Transition Health v0.6"
-showTransitionHealthLabels = input.bool(true, "顯示 Handoff / Healthy / Damaged 標記", group=groupTransitionHealth)
+showTransitionHealthOutcomeMarkers = input.bool(true, "顯示 Healthy / Damaged 結果標記", group=groupTransitionHealth)
+showTransitionHealthHandoff = input.bool(false, "顯示 Handoff 觀察起點", group=groupTransitionHealth)
 showTransitionHealthPanel = input.bool(true, "顯示 Transition Health 狀態框", group=groupTransitionHealth)
 transitionHealthParityLogs = input.bool(false, "Parity Logs（驗證用）", group=groupTransitionHealth)
 
@@ -1622,12 +1623,12 @@ string v06ThStateText = v06ThState == V06_TH_HANDOFF ? "Handoff｜等待 +3" : v
 string v06ThDirText = v06ThDisplayDir > 0 ? "Bull ↑" : v06ThDisplayDir < 0 ? "Bear ↓" : "—"
 color v06ThStateColor = v06ThState == V06_TH_HEALTHY ? colBreakout : v06ThState == V06_TH_DAMAGED ? colRed : v06ThState == V06_TH_HANDOFF ? colYellow : colNeutral
 
-// Minimal event-only markers: no repeated text strip on historical charts.
-if showTransitionHealthLabels and v06ThHandoffPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 7.0 : 93.0, "", style=label.style_circle, color=color.new(colYellow, 30), textcolor=colYellow, size=size.tiny)
-if showTransitionHealthLabels and v06ThHealthyPulse
+// Outcome markers are the default visual layer; Handoff is opt-in and deliberately faint.
+if showTransitionHealthHandoff and v06ThHandoffPulse
+    label.new(bar_index, v06ThWatchDir > 0 ? 7.0 : 93.0, "", style=label.style_circle, color=color.new(colYellow, 70), textcolor=color.new(colYellow, 70), size=size.tiny)
+if showTransitionHealthOutcomeMarkers and v06ThHealthyPulse
     label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=v06ThWatchDir > 0 ? label.style_triangleup : label.style_triangledown, color=color.new(colBreakout, 0), textcolor=colBreakout, size=size.small)
-if showTransitionHealthLabels and v06ThDamagedPulse
+if showTransitionHealthOutcomeMarkers and v06ThDamagedPulse
     label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=label.style_xcross, color=color.new(colRed, 0), textcolor=colRed, size=size.small)
 
 plot(float(v06ThState), "V06 Transition Health State｜0 none 1 handoff 2 healthy 3 damaged", display=display.data_window)
