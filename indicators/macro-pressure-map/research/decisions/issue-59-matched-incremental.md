@@ -6,11 +6,13 @@ This study was added after review identified that comparing independently embarg
 
 ## Reproducibility boundary
 
-`matched_incremental_validation.py` writes disposable local rerun outputs under `research/generated/` by default, but those files are **not committed repository evidence** in PR #60. The durable repository record is this curated memo plus `issue-59-matched-incremental.json`, which preserves the exact point estimates and confidence intervals from the verified rerun.
+`matched_incremental_validation.py` writes disposable local rerun outputs under `research/generated/` by default, but those files are **not committed repository evidence** in PR #60. The durable repository record is this curated memo plus `issue-59-matched-incremental.json`, which preserves the exact point estimates and confidence intervals for the durable recorded outcomes used in the final synthesis.
 
 The generator refuses to overwrite curated files under `research/decisions/`. See `research/REPRODUCIBILITY.md` for the input hashes and rerun/verification contract.
 
 The statistics below were synchronized to an actual rerun against the Issue #59 TradingView parity and OOC Pine Logs. Displayed confidence intervals are rounded from the committed curated JSON.
+
+Durable exact matched evidence in the committed JSON is intentionally limited to **US10Y, US02Y, ZN1!, and TLT**. Local generator output may contain additional outcomes, but PR #60 does not make a repository-level FX confidence-interval claim from uncommitted generated files.
 
 ## Evidence boundary
 
@@ -47,7 +49,7 @@ Event counts:
 - GPI anchor: **93** events, **21** with IPI same-direction confirmation.
 - IPI anchor: **79** events, **34** with GPI same-direction confirmation.
 
-For the principal Treasury outcomes, every confirmation-lift 95% interval crosses zero.
+For the durable recorded Treasury / duration outcomes, every confirmation-lift 95% interval crosses zero.
 
 | Anchor | Outcome | Confirmation lift | 95% CI |
 |---|---:|---:|---:|
@@ -87,18 +89,16 @@ Event counts:
 | ZN1! | -0.59% | -0.61% | **-0.02%** | **[-1.16%, +1.26%]** |
 | TLT | -1.65% | -1.28% | **+0.37%** | **[-2.65%, +3.64%]** |
 
-FX outcomes also fail to produce a confirmation-lift interval excluding zero.
-
 ## Verdict from the matched test
 
-**The second axis does not demonstrate incremental predictive information beyond the anchor axis in this sample.**
+**The second axis does not demonstrate incremental predictive information beyond the anchor axis in the durable recorded Treasury / duration evidence.**
 
 The earlier joint Reflation-vs-Slowdown Treasury contrast remains an interesting descriptive / exploratory association, but two stronger claims are withdrawn:
 
 1. 2020–2026 cannot be described as an untouched decision-grade holdout because the era had already been inspected before the joint hypothesis was selected.
-2. A larger raw joint spread cannot be interpreted as incremental information because the matched confirmation-lift test does not reject zero.
+2. A larger raw joint spread cannot be interpreted as incremental information because the matched confirmation-lift test for the durable recorded outcomes does not reject zero.
 
-This does not prove GPI+IPI interaction is useless. It means Issue #59 has **not earned** the claim that synchronized movement predicts external assets better than the individual axes.
+This does not prove GPI+IPI interaction is useless. It means Issue #59 has **not earned** the claim that synchronized movement provides robust incremental predictive information beyond the individual axes.
 
 ## Implication for the final Issue #59 verdict
 
