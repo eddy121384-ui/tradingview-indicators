@@ -1,11 +1,8 @@
 {
   "issue": 59,
   "study": "matched conditional incremental test",
-  "artifact_role": "curated summary synchronized to script-generated evidence",
-  "generated_source": {
-    "json": "research/generated/issue-59-matched-incremental.generated.json",
-    "markdown": "research/generated/issue-59-matched-incremental.generated.md"
-  },
+  "artifact_role": "durable curated repository summary synchronized to a verified local rerun",
+  "local_generator_outputs_committed": false,
   "post_2019_status": "exploratory_reused_era_not_untouched_holdout",
   "horizon": 20,
   "event_embargo_trading_rows": 20,
