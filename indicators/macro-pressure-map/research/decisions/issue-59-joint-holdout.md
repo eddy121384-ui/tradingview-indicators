@@ -55,21 +55,21 @@ The post-2019 Treasury association remains economically coherent, but it is reus
 
 The first interpretation compared the raw joint spread with separately embargoed GPI-only and IPI-only spreads. Those event sets use different dates and sample sizes, so a larger raw joint point estimate does **not** prove that the second axis adds information.
 
-A later matched conditional study fixes one anchor-event universe and tests the nested confirmation lift directly. The matched values below are synchronized to the actual script-generated evidence under `research/generated/`.
+A later matched conditional study fixes one anchor-event universe and tests the nested confirmation lift directly. The values below are rounded from the committed durable artifact `issue-59-matched-incremental.json`, which preserves exact anchor-only spreads, confirmed spreads, confirmation lifts, and confidence intervals for US10Y, US02Y, ZN1!, and TLT. Local files under `research/generated/` are disposable rerun products and are not repository evidence.
 
-| Anchor | Outcome | Anchor-only spread | Confirmed spread | Confirmation lift | Generated 95% CI |
+| Anchor | Outcome | Anchor-only spread | Confirmed spread | Confirmation lift | Durable 95% CI |
 |---|---:|---:|---:|---:|---:|
 | GPI | US10Y | +11.10 bp | +12.48 bp | +1.38 bp | [-17.98, +23.78] |
 | GPI | ZN1! | -0.64% | -0.74% | -0.11% | [-1.40%, +1.08%] |
 | IPI | US10Y | +10.79 bp | +8.51 bp | -2.28 bp | [-22.50, +15.20] |
 | IPI | ZN1! | -0.59% | -0.61% | -0.02% | [-1.16%, +1.26%] |
 
-All principal confirmation-lift intervals cross zero in both the development and post-2019 exploratory samples.
+All durable-recorded confirmation-lift intervals for **US10Y, US02Y, ZN1!, and TLT** cross zero in both the development and post-2019 exploratory samples.
 
 Evidence:
 - `issue-59-matched-incremental.md`
 - `issue-59-matched-incremental.json`
-- `../generated/issue-59-matched-incremental.generated.json`
+- `matched_incremental_validation.py` plus the Pine Log hashes in `../REPRODUCIBILITY.md` provide the rerun path; generated local outputs are not committed evidence
 
 ## Correct interpretation
 
