@@ -6,14 +6,11 @@ This study was added after review identified that comparing independently embarg
 
 ## Reproducibility boundary
 
-The script-generated source evidence is written separately from this curated synthesis:
+`matched_incremental_validation.py` writes disposable local rerun outputs under `research/generated/` by default, but those files are **not committed repository evidence** in PR #60. The durable repository record is this curated memo plus `issue-59-matched-incremental.json`, which preserves the exact point estimates and confidence intervals from the verified rerun.
 
-- `research/generated/issue-59-matched-incremental.generated.json`
-- `research/generated/issue-59-matched-incremental.generated.md`
+The generator refuses to overwrite curated files under `research/decisions/`. See `research/REPRODUCIBILITY.md` for the input hashes and rerun/verification contract.
 
-`matched_incremental_validation.py` refuses to overwrite this curated `research/decisions/` artifact. See `research/REPRODUCIBILITY.md` for the run contract and input hashes.
-
-The statistics below have been synchronized to an actual rerun of the generator against the Issue #59 TradingView parity and OOC Pine Logs. Displayed confidence intervals are rounded from the generated JSON.
+The statistics below were synchronized to an actual rerun against the Issue #59 TradingView parity and OOC Pine Logs. Displayed confidence intervals are rounded from the committed curated JSON.
 
 ## Evidence boundary
 
@@ -52,7 +49,7 @@ Event counts:
 
 For the principal Treasury outcomes, every confirmation-lift 95% interval crosses zero.
 
-| Anchor | Outcome | Confirmation lift | Generated 95% CI |
+| Anchor | Outcome | Confirmation lift | 95% CI |
 |---|---:|---:|---:|
 | GPI | US10Y | +5.85 bp | [-9.36, +20.85] |
 | GPI | US02Y | +2.41 bp | [-7.28, +12.27] |
@@ -74,7 +71,7 @@ Event counts:
 
 ### GPI anchor; add IPI confirmation
 
-| Outcome | GPI anchor-only | GPI + IPI confirmed | Confirmation lift | Generated 95% CI |
+| Outcome | GPI anchor-only | GPI + IPI confirmed | Confirmation lift | 95% CI |
 |---|---:|---:|---:|---:|
 | US10Y | +11.10 bp | +12.48 bp | **+1.38 bp** | **[-17.98, +23.78]** |
 | US02Y | +11.62 bp | +8.05 bp | **-3.58 bp** | **[-25.17, +18.80]** |
@@ -83,7 +80,7 @@ Event counts:
 
 ### IPI anchor; add GPI confirmation
 
-| Outcome | IPI anchor-only | IPI + GPI confirmed | Confirmation lift | Generated 95% CI |
+| Outcome | IPI anchor-only | IPI + GPI confirmed | Confirmation lift | 95% CI |
 |---|---:|---:|---:|---:|
 | US10Y | +10.79 bp | +8.51 bp | **-2.28 bp** | **[-22.50, +15.20]** |
 | US02Y | +5.53 bp | +12.60 bp | **+7.07 bp** | **[-11.67, +25.52]** |
