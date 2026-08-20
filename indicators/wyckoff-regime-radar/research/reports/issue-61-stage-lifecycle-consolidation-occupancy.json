@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "issue": 61,
+  "status": "PHASE_C_PRE_PNL_CONSOLIDATION_OCCUPANCY_AUDIT",
+  "pairs": {
+    "EURUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "lifecycle_entries": 23,
+      "long": {
+        "held_bars": 326,
+        "trend_stage_bars": 326,
+        "consolidation_stage_bars": 0,
+        "consolidation_share_of_held": 0.0,
+        "consolidation_runs": 0,
+        "median_consolidation_run_bars": null,
+        "max_consolidation_run_bars": null,
+        "transitions_into_consolidation": 0,
+        "transitions_from_trend_stage": 0
+      },
+      "short": {
+        "held_bars": 352,
+        "trend_stage_bars": 352,
+        "consolidation_stage_bars": 0,
+        "consolidation_share_of_held": 0.0,
+        "consolidation_runs": 0,
+        "median_consolidation_run_bars": null,
+        "max_consolidation_run_bars": null,
+        "transitions_into_consolidation": 0,
+        "transitions_from_trend_stage": 0
+      }
+    },
+    "USDJPY": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "lifecycle_entries": 30,
+      "long": {
+        "held_bars": 302,
+        "trend_stage_bars": 302,
+        "consolidation_stage_bars": 0,
+        "consolidation_share_of_held": 0.0,
+        "consolidation_runs": 0,
+        "median_consolidation_run_bars": null,
+        "max_consolidation_run_bars": null,
+        "transitions_into_consolidation": 0,
+        "transitions_from_trend_stage": 0
+      },
+      "short": {
+        "held_bars": 299,
+        "trend_stage_bars": 299,
+        "consolidation_stage_bars": 0,
+        "consolidation_share_of_held": 0.0,
+        "consolidation_runs": 0,
+        "median_consolidation_run_bars": null,
+        "max_consolidation_run_bars": null,
+        "transitions_into_consolidation": 0,
+        "transitions_from_trend_stage": 0
+      }
+    },
+    "GBPUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "lifecycle_entries": 30,
+      "long": {
+        "held_bars": 437,
+        "trend_stage_bars": 432,
+        "consolidation_stage_bars": 5,
+        "consolidation_share_of_held": 0.011441647597254004,
+        "consolidation_runs": 1,
+        "median_consolidation_run_bars": 5.0,
+        "max_consolidation_run_bars": 5,
+        "transitions_into_consolidation": 1,
+        "transitions_from_trend_stage": 1
+      },
+      "short": {
+        "held_bars": 320,
+        "trend_stage_bars": 320,
+        "consolidation_stage_bars": 0,
+        "consolidation_share_of_held": 0.0,
+        "consolidation_runs": 0,
+        "median_consolidation_run_bars": null,
+        "max_consolidation_run_bars": null,
+        "transitions_into_consolidation": 0,
+        "transitions_from_trend_stage": 0
+      }
+    },
+    "AUDUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "lifecycle_entries": 25,
+      "long": {
+        "held_bars": 344,
+        "trend_stage_bars": 344,
+        "consolidation_stage_bars": 0,
+        "consolidation_share_of_held": 0.0,
+        "consolidation_runs": 0,
+        "median_consolidation_run_bars": null,
+        "max_consolidation_run_bars": null,
+        "transitions_into_consolidation": 0,
+        "transitions_from_trend_stage": 0
+      },
+      "short": {
+        "held_bars": 407,
+        "trend_stage_bars": 407,
+        "consolidation_stage_bars": 0,
+        "consolidation_share_of_held": 0.0,
+        "consolidation_runs": 0,
+        "median_consolidation_run_bars": null,
+        "max_consolidation_run_bars": null,
+        "transitions_into_consolidation": 0,
+        "transitions_from_trend_stage": 0
+      }
+    }
+  },
+  "aggregate": {
+    "pair_count": 4,
+    "long_stage3": {
+      "held_bars": 1409,
+      "trend_stage_bars": 1404,
+      "consolidation_stage_bars": 5,
+      "consolidation_share_of_held": 0.0035486160397444995,
+      "consolidation_runs": 1,
+      "median_pair_median_consolidation_run_bars": 5.0,
+      "transitions_into_consolidation": 1,
+      "transitions_from_trend_stage": 1,
+      "pairs_with_any_consolidation_exposure": 1
+    },
+    "short_stage6": {
+      "held_bars": 1378,
+      "trend_stage_bars": 1378,
+      "consolidation_stage_bars": 0,
+      "consolidation_share_of_held": 0.0,
+      "consolidation_runs": 0,
+      "median_pair_median_consolidation_run_bars": null,
+      "transitions_into_consolidation": 0,
+      "transitions_from_trend_stage": 0,
+      "pairs_with_any_consolidation_exposure": 0
+    }
+  },
+  "boundary": "Counts and durations only. No return, Sharpe, drawdown, stop, target, or sizing outcome is computed."
+}
