@@ -1,0 +1,60 @@
+name: Wyckoff Issue 61 Range Management
+
+on:
+  push:
+    branches:
+      - research/issue-61-stage-aware-position-lifecycle
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_stage_lifecycle_range_management.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_stage_lifecycle_range_management.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-c-range-risk-freeze.md'
+      - '.github/workflows/wyckoff-issue61-range-management.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_stage_lifecycle_range_management.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_stage_lifecycle_range_management.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-c-range-risk-freeze.md'
+      - '.github/workflows/wyckoff-issue61-range-management.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  range-management:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile evaluator
+        run: |
+          python -m py_compile evaluate_stage_lifecycle_range_management.py
+          python -m py_compile test_evaluate_stage_lifecycle_range_management.py
+      - name: Run contract tests
+        run: python -m unittest -v test_evaluate_stage_lifecycle_range_management
+      - name: Evaluate frozen range-managed lifecycle
+        run: |
+          python evaluate_stage_lifecycle_range_management.py \
+            --json-output reports/issue-61-stage-lifecycle-range-management.json \
+            --md-output reports/issue-61-stage-lifecycle-range-management.md
+      - name: Commit report on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-61-stage-aware-position-lifecycle'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-range-management.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-range-management.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "research: record Issue #61 range-management result"
+            git push
+          fi
