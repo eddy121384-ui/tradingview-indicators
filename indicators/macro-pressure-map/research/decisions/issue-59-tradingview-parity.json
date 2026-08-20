@@ -1,0 +1,66 @@
+{
+  "issue": 59,
+  "date": "2026-08-17",
+  "status": "default_market_only_parity_pass",
+  "source": {
+    "kind": "TradingView Pine Logs CSV",
+    "file_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
+    "file_bytes": 1894288,
+    "log_rows": 4943,
+    "unique_daily_rows": 4935,
+    "first_date": "2007-01-03",
+    "last_date": "2026-08-14"
+  },
+  "configuration": {
+    "chart": "SPY 1D",
+    "macro_pressure_version": "V6.6",
+    "market_timeframe": "D",
+    "use_macro_data": false,
+    "use_official_fci": false,
+    "use_t5yie": false,
+    "use_industrial_metals_in_ipi": false,
+    "use_kre_stress_addon": false,
+    "use_smoothing": true,
+    "smooth_len": 5
+  },
+  "diagnosis": {
+    "initial_result": "GPI and IPI matched after startup, but FCPI diverged intermittently by as much as about 24.89 points.",
+    "root_cause": "The Python mirror used pandas fixed-bar rolling windows. Pine ta.sma/ta.stdev ignore na source observations and count the latest length valid observations. Real-yield ROC becomes na when its lagged denominator is zero; the old Python code therefore poisoned the momentum Z-score for 252 bars while Pine did not.",
+    "affected_path": "FCPI -> RatesDollarConstraint -> scoreRealYield -> momentum z-score",
+    "fix": "Use Pine-compatible rolling mean and biased standard deviation over the latest non-na observations."
+  },
+  "evaluation": {
+    "warmup_rows_excluded": 355,
+    "evaluation_first_date": "2008-06-02",
+    "evaluation_rows_per_axis": 4580,
+    "axes": {
+      "plot_GPI": {
+        "mean_abs_error": 2.707477943496101e-09,
+        "p99_abs_error": 5.083507805814236e-09,
+        "max_abs_error": 3.3447235581185453e-07
+      },
+      "plot_IPI": {
+        "mean_abs_error": 2.5651594699278895e-09,
+        "p99_abs_error": 4.965598279227379e-09,
+        "max_abs_error": 8.160777298371613e-08
+      },
+      "plot_FCPI": {
+        "mean_abs_error": 2.5528880368606653e-09,
+        "p99_abs_error": 4.953878729452299e-09,
+        "max_abs_error": 1.1280885203746038e-07
+      }
+    },
+    "gate": {
+      "minimum_comparable_rows_per_axis": 100,
+      "p99_abs_error_max_points": 0.1,
+      "max_abs_error_max_points": 0.5,
+      "pass": true
+    }
+  },
+  "interpretation": [
+    "This establishes engineering parity for the frozen V6.6 default market-only path when Python is fed the same TradingView source rows.",
+    "It does not validate optional macro, official-FCI, T5YIE, industrial-metals, or KRE paths.",
+    "It does not establish predictive value, regime quality, trading profitability, or public-feed parity.",
+    "The first 355 logged rows are excluded because the log starts in 2007 while the original Pine script can use earlier chart history."
+  ]
+}
