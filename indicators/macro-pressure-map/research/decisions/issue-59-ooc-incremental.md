@@ -121,7 +121,7 @@ The conservative conclusion is now:
 
 No individual axis has earned a robust general-purpose OOC predictive claim from this study.
 
-That makes the separate joint-axis holdout test more important: if the full architecture has incremental value, it must come from **cross-axis alignment / synchronized transition**, not from pretending one axis is a universal signal.
+The later joint-axis work should therefore be read only as a **separate exploratory hypothesis probe**. Its post-2019 Treasury / ZN pattern is reused historical evidence, not an untouched holdout, and the subsequent matched conditional test does **not** demonstrate reliable incremental lift from adding the second axis.
 
 ## Current project-level verdict
 
@@ -131,7 +131,12 @@ What this OOC study supports:
 - reducing circular self-validation by using external outcome markets;
 - retaining the axes as macro-state descriptors;
 - downgrading all standalone single-axis predictive claims;
-- using the corrected joint holdout as the main test of incremental architecture value.
+- motivating later exploratory joint-axis work, while deferring the incremental-value judgment to the matched conditional test.
+
+What the full Issue #59 evidence now says about architecture incrementality:
+- the post-2019 joint pattern is exploratory reused-era evidence only;
+- the matched conditional confirmation-lift intervals cross zero;
+- incremental predictive value from GPI+IPI synchronization is **not demonstrated**.
 
 What it does not support:
 - direct trading profitability;
