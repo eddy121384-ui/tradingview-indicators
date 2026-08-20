@@ -1,0 +1,1547 @@
+{
+  "schema_version": 1,
+  "issue": 61,
+  "status": "PHASE_A_TIMING_AUDIT_REUSED_DATA_NO_PNL",
+  "engine": "Issue #57 frozen v0.6 Phase-B six-stage core",
+  "fresh_break_definition": "existing 20-bar rangeBreakUp/rangeBreakDn pulse",
+  "horizon_bars": 20,
+  "checkpoints": [
+    0,
+    1,
+    3,
+    5,
+    20
+  ],
+  "pairs": {
+    "EURUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "warmup_bars": 755,
+      "eligible_start_date": "2015-11-02",
+      "formal_stage_occupancy": {
+        "bars": 1645,
+        "counts": {
+          "0": 371,
+          "1": 283,
+          "2": 359,
+          "3": 0,
+          "4": 160,
+          "5": 472,
+          "6": 0
+        },
+        "shares": {
+          "0": 0.225531914893617,
+          "1": 0.17203647416413373,
+          "2": 0.21823708206686931,
+          "3": 0.0,
+          "4": 0.0972644376899696,
+          "5": 0.28693009118541035,
+          "6": 0.0
+        }
+      },
+      "bull": {
+        "break_to_stage": {
+          "fresh_breaks": 66,
+          "already_target_before_break": 29,
+          "not_already_target_before_break": 37,
+          "confirmation_within": {
+            "0": 5,
+            "1": 6,
+            "3": 8,
+            "5": 8,
+            "20": 10
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 5,
+            "1": 1,
+            "2": 0,
+            "3": 2,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 1,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 1,
+            "19": 0,
+            "20": 0,
+            "none": 27
+          },
+          "matched_within_20": 10,
+          "median_confirmation_lag_if_matched": 0.5,
+          "previous_formal_stage_at_break": {
+            "0": 15,
+            "1": 13,
+            "2": 29,
+            "4": 3,
+            "5": 6
+          },
+          "current_formal_stage_at_break": {
+            "0": 14,
+            "1": 11,
+            "2": 34,
+            "4": 2,
+            "5": 5
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 10,
+          "previous_formal_stage": {
+            "0": 1,
+            "1": 3,
+            "4": 4,
+            "5": 2
+          },
+          "fresh_break_same_bar": 5,
+          "fresh_break_within_prior": {
+            "1": 6,
+            "3": 6,
+            "5": 6,
+            "20": 7
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 5,
+            "1": 1,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 1,
+            "19": 0,
+            "20": 0,
+            "none": 3
+          },
+          "initial_transition": {
+            "events": 3,
+            "fresh_break_same_bar": 2,
+            "fresh_break_within_prior": {
+              "1": 3,
+              "3": 3,
+              "5": 3,
+              "20": 3
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 2,
+              "1": 1,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          },
+          "renewal_transition": {
+            "events": 0,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 0,
+              "5": 0,
+              "20": 0
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      },
+      "bear": {
+        "break_to_stage": {
+          "fresh_breaks": 68,
+          "already_target_before_break": 25,
+          "not_already_target_before_break": 43,
+          "confirmation_within": {
+            "0": 5,
+            "1": 11,
+            "3": 16,
+            "5": 18,
+            "20": 22
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 5,
+            "1": 6,
+            "2": 3,
+            "3": 2,
+            "4": 0,
+            "5": 2,
+            "6": 1,
+            "7": 1,
+            "8": 0,
+            "9": 0,
+            "10": 1,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 1,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 21
+          },
+          "matched_within_20": 22,
+          "median_confirmation_lag_if_matched": 1.5,
+          "previous_formal_stage_at_break": {
+            "0": 19,
+            "1": 10,
+            "2": 6,
+            "4": 8,
+            "5": 25
+          },
+          "current_formal_stage_at_break": {
+            "0": 17,
+            "1": 8,
+            "2": 5,
+            "4": 8,
+            "5": 30
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 20,
+          "previous_formal_stage": {
+            "0": 6,
+            "1": 9,
+            "2": 2,
+            "4": 3
+          },
+          "fresh_break_same_bar": 5,
+          "fresh_break_within_prior": {
+            "1": 11,
+            "3": 16,
+            "5": 16,
+            "20": 19
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 5,
+            "1": 6,
+            "2": 3,
+            "3": 2,
+            "4": 0,
+            "5": 0,
+            "6": 1,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 1,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 1,
+            "none": 1
+          },
+          "initial_transition": {
+            "events": 3,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 1,
+              "3": 3,
+              "5": 3,
+              "20": 3
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 1,
+              "2": 1,
+              "3": 1,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          },
+          "renewal_transition": {
+            "events": 0,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 0,
+              "5": 0,
+              "20": 0
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      }
+    },
+    "USDJPY": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "warmup_bars": 755,
+      "eligible_start_date": "2015-11-02",
+      "formal_stage_occupancy": {
+        "bars": 1645,
+        "counts": {
+          "0": 422,
+          "1": 350,
+          "2": 413,
+          "3": 0,
+          "4": 96,
+          "5": 364,
+          "6": 0
+        },
+        "shares": {
+          "0": 0.25653495440729485,
+          "1": 0.2127659574468085,
+          "2": 0.251063829787234,
+          "3": 0.0,
+          "4": 0.05835866261398176,
+          "5": 0.22127659574468084,
+          "6": 0.0
+        }
+      },
+      "bull": {
+        "break_to_stage": {
+          "fresh_breaks": 75,
+          "already_target_before_break": 22,
+          "not_already_target_before_break": 53,
+          "confirmation_within": {
+            "0": 5,
+            "1": 9,
+            "3": 14,
+            "5": 17,
+            "20": 30
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 5,
+            "1": 4,
+            "2": 4,
+            "3": 1,
+            "4": 0,
+            "5": 3,
+            "6": 1,
+            "7": 2,
+            "8": 1,
+            "9": 1,
+            "10": 2,
+            "11": 0,
+            "12": 1,
+            "13": 0,
+            "14": 1,
+            "15": 1,
+            "16": 0,
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 0,
+            "none": 23
+          },
+          "matched_within_20": 30,
+          "median_confirmation_lag_if_matched": 5.0,
+          "previous_formal_stage_at_break": {
+            "0": 22,
+            "1": 21,
+            "2": 22,
+            "4": 7,
+            "5": 3
+          },
+          "current_formal_stage_at_break": {
+            "0": 21,
+            "1": 21,
+            "2": 26,
+            "4": 4,
+            "5": 3
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 21,
+          "previous_formal_stage": {
+            "0": 2,
+            "1": 9,
+            "4": 7,
+            "5": 3
+          },
+          "fresh_break_same_bar": 5,
+          "fresh_break_within_prior": {
+            "1": 9,
+            "3": 12,
+            "5": 12,
+            "20": 17
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 5,
+            "1": 4,
+            "2": 2,
+            "3": 1,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 1,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 1,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 2,
+            "20": 1,
+            "none": 4
+          },
+          "initial_transition": {
+            "events": 9,
+            "fresh_break_same_bar": 2,
+            "fresh_break_within_prior": {
+              "1": 5,
+              "3": 7,
+              "5": 7,
+              "20": 9
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 2,
+              "1": 3,
+              "2": 2,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 1,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 1,
+              "20": 0,
+              "none": 0
+            }
+          },
+          "renewal_transition": {
+            "events": 0,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 0,
+              "5": 0,
+              "20": 0
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      },
+      "bear": {
+        "break_to_stage": {
+          "fresh_breaks": 57,
+          "already_target_before_break": 14,
+          "not_already_target_before_break": 43,
+          "confirmation_within": {
+            "0": 9,
+            "1": 12,
+            "3": 17,
+            "5": 20,
+            "20": 23
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 9,
+            "1": 3,
+            "2": 3,
+            "3": 2,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 1,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 20
+          },
+          "matched_within_20": 23,
+          "median_confirmation_lag_if_matched": 1.0,
+          "previous_formal_stage_at_break": {
+            "0": 21,
+            "1": 10,
+            "2": 7,
+            "4": 5,
+            "5": 14
+          },
+          "current_formal_stage_at_break": {
+            "0": 18,
+            "1": 7,
+            "2": 5,
+            "4": 4,
+            "5": 23
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 19,
+          "previous_formal_stage": {
+            "0": 7,
+            "1": 6,
+            "2": 5,
+            "4": 1
+          },
+          "fresh_break_same_bar": 9,
+          "fresh_break_within_prior": {
+            "1": 12,
+            "3": 14,
+            "5": 15,
+            "20": 17
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 9,
+            "1": 3,
+            "2": 2,
+            "3": 0,
+            "4": 0,
+            "5": 1,
+            "6": 1,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 1,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 2
+          },
+          "initial_transition": {
+            "events": 1,
+            "fresh_break_same_bar": 1,
+            "fresh_break_within_prior": {
+              "1": 1,
+              "3": 1,
+              "5": 1,
+              "20": 1
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 1,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          },
+          "renewal_transition": {
+            "events": 0,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 0,
+              "5": 0,
+              "20": 0
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      }
+    },
+    "GBPUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "warmup_bars": 755,
+      "eligible_start_date": "2015-11-02",
+      "formal_stage_occupancy": {
+        "bars": 1645,
+        "counts": {
+          "0": 359,
+          "1": 200,
+          "2": 500,
+          "3": 11,
+          "4": 173,
+          "5": 402,
+          "6": 0
+        },
+        "shares": {
+          "0": 0.21823708206686931,
+          "1": 0.12158054711246201,
+          "2": 0.303951367781155,
+          "3": 0.006686930091185411,
+          "4": 0.10516717325227963,
+          "5": 0.24437689969604864,
+          "6": 0.0
+        }
+      },
+      "bull": {
+        "break_to_stage": {
+          "fresh_breaks": 71,
+          "already_target_before_break": 26,
+          "not_already_target_before_break": 45,
+          "confirmation_within": {
+            "0": 7,
+            "1": 9,
+            "3": 16,
+            "5": 18,
+            "20": 26
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 7,
+            "1": 2,
+            "2": 3,
+            "3": 4,
+            "4": 0,
+            "5": 2,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 0,
+            "10": 1,
+            "11": 0,
+            "12": 0,
+            "13": 1,
+            "14": 1,
+            "15": 1,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 1,
+            "20": 0,
+            "none": 19
+          },
+          "matched_within_20": 26,
+          "median_confirmation_lag_if_matched": 3.0,
+          "previous_formal_stage_at_break": {
+            "0": 13,
+            "1": 13,
+            "2": 26,
+            "4": 9,
+            "5": 10
+          },
+          "current_formal_stage_at_break": {
+            "0": 10,
+            "1": 15,
+            "2": 33,
+            "4": 5,
+            "5": 8
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 20,
+          "previous_formal_stage": {
+            "0": 5,
+            "1": 7,
+            "3": 1,
+            "4": 7
+          },
+          "fresh_break_same_bar": 7,
+          "fresh_break_within_prior": {
+            "1": 9,
+            "3": 14,
+            "5": 15,
+            "20": 18
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 7,
+            "1": 2,
+            "2": 2,
+            "3": 3,
+            "4": 0,
+            "5": 1,
+            "6": 0,
+            "7": 2,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 1,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 2
+          },
+          "initial_transition": {
+            "events": 7,
+            "fresh_break_same_bar": 1,
+            "fresh_break_within_prior": {
+              "1": 3,
+              "3": 5,
+              "5": 5,
+              "20": 6
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 1,
+              "1": 2,
+              "2": 2,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 1,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 1
+            }
+          },
+          "renewal_transition": {
+            "events": 1,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 0,
+              "5": 0,
+              "20": 1
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 1,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      },
+      "bear": {
+        "break_to_stage": {
+          "fresh_breaks": 76,
+          "already_target_before_break": 25,
+          "not_already_target_before_break": 51,
+          "confirmation_within": {
+            "0": 3,
+            "1": 7,
+            "3": 13,
+            "5": 16,
+            "20": 19
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 3,
+            "1": 4,
+            "2": 4,
+            "3": 2,
+            "4": 2,
+            "5": 1,
+            "6": 1,
+            "7": 0,
+            "8": 1,
+            "9": 0,
+            "10": 1,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 32
+          },
+          "matched_within_20": 19,
+          "median_confirmation_lag_if_matched": 2.0,
+          "previous_formal_stage_at_break": {
+            "0": 23,
+            "1": 7,
+            "2": 10,
+            "4": 11,
+            "5": 25
+          },
+          "current_formal_stage_at_break": {
+            "0": 22,
+            "1": 6,
+            "2": 8,
+            "4": 12,
+            "5": 28
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 19,
+          "previous_formal_stage": {
+            "0": 6,
+            "1": 7,
+            "2": 3,
+            "4": 3
+          },
+          "fresh_break_same_bar": 3,
+          "fresh_break_within_prior": {
+            "1": 7,
+            "3": 13,
+            "5": 14,
+            "20": 17
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 3,
+            "1": 4,
+            "2": 4,
+            "3": 2,
+            "4": 1,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 1,
+            "14": 0,
+            "15": 2,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 2
+          },
+          "initial_transition": {
+            "events": 3,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 1,
+              "3": 3,
+              "5": 3,
+              "20": 3
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 1,
+              "2": 1,
+              "3": 1,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          },
+          "renewal_transition": {
+            "events": 0,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 0,
+              "5": 0,
+              "20": 0
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      }
+    },
+    "AUDUSD": {
+      "rows": 2400,
+      "start_date": "2012-12-04",
+      "end_date": "2022-03-04",
+      "warmup_bars": 755,
+      "eligible_start_date": "2015-11-02",
+      "formal_stage_occupancy": {
+        "bars": 1645,
+        "counts": {
+          "0": 380,
+          "1": 207,
+          "2": 415,
+          "3": 5,
+          "4": 123,
+          "5": 515,
+          "6": 0
+        },
+        "shares": {
+          "0": 0.23100303951367782,
+          "1": 0.12583586626139817,
+          "2": 0.25227963525835867,
+          "3": 0.00303951367781155,
+          "4": 0.07477203647416414,
+          "5": 0.3130699088145897,
+          "6": 0.0
+        }
+      },
+      "bull": {
+        "break_to_stage": {
+          "fresh_breaks": 70,
+          "already_target_before_break": 27,
+          "not_already_target_before_break": 43,
+          "confirmation_within": {
+            "0": 3,
+            "1": 4,
+            "3": 9,
+            "5": 11,
+            "20": 16
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 3,
+            "1": 1,
+            "2": 2,
+            "3": 3,
+            "4": 1,
+            "5": 1,
+            "6": 0,
+            "7": 2,
+            "8": 1,
+            "9": 0,
+            "10": 1,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 1,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 27
+          },
+          "matched_within_20": 16,
+          "median_confirmation_lag_if_matched": 3.0,
+          "previous_formal_stage_at_break": {
+            "0": 16,
+            "1": 11,
+            "2": 27,
+            "3": 1,
+            "4": 6,
+            "5": 9
+          },
+          "current_formal_stage_at_break": {
+            "0": 15,
+            "1": 12,
+            "2": 30,
+            "3": 1,
+            "4": 5,
+            "5": 7
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 12,
+          "previous_formal_stage": {
+            "1": 3,
+            "3": 1,
+            "4": 6,
+            "5": 2
+          },
+          "fresh_break_same_bar": 3,
+          "fresh_break_within_prior": {
+            "1": 4,
+            "3": 8,
+            "5": 10,
+            "20": 11
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 3,
+            "1": 1,
+            "2": 2,
+            "3": 2,
+            "4": 1,
+            "5": 1,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 1,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 1
+          },
+          "initial_transition": {
+            "events": 3,
+            "fresh_break_same_bar": 1,
+            "fresh_break_within_prior": {
+              "1": 1,
+              "3": 1,
+              "5": 3,
+              "20": 3
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 1,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 1,
+              "5": 1,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          },
+          "renewal_transition": {
+            "events": 1,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 1,
+              "5": 1,
+              "20": 1
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 1,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      },
+      "bear": {
+        "break_to_stage": {
+          "fresh_breaks": 76,
+          "already_target_before_break": 30,
+          "not_already_target_before_break": 46,
+          "confirmation_within": {
+            "0": 8,
+            "1": 15,
+            "3": 21,
+            "5": 26,
+            "20": 31
+          },
+          "confirmation_lag_histogram_0_20": {
+            "0": 8,
+            "1": 7,
+            "2": 5,
+            "3": 1,
+            "4": 4,
+            "5": 1,
+            "6": 0,
+            "7": 0,
+            "8": 1,
+            "9": 1,
+            "10": 0,
+            "11": 1,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 1,
+            "17": 1,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 15
+          },
+          "matched_within_20": 31,
+          "median_confirmation_lag_if_matched": 2.0,
+          "previous_formal_stage_at_break": {
+            "0": 17,
+            "1": 11,
+            "2": 10,
+            "4": 8,
+            "5": 30
+          },
+          "current_formal_stage_at_break": {
+            "0": 13,
+            "1": 7,
+            "2": 10,
+            "4": 8,
+            "5": 38
+          }
+        },
+        "stage_onsets": {
+          "target_onsets": 23,
+          "previous_formal_stage": {
+            "0": 6,
+            "1": 9,
+            "2": 3,
+            "4": 5
+          },
+          "fresh_break_same_bar": 8,
+          "fresh_break_within_prior": {
+            "1": 15,
+            "3": 20,
+            "5": 21,
+            "20": 21
+          },
+          "last_break_age_histogram_0_20": {
+            "0": 8,
+            "1": 7,
+            "2": 4,
+            "3": 1,
+            "4": 1,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0,
+            "13": 0,
+            "14": 0,
+            "15": 0,
+            "16": 0,
+            "17": 0,
+            "18": 0,
+            "19": 0,
+            "20": 0,
+            "none": 2
+          },
+          "initial_transition": {
+            "events": 5,
+            "fresh_break_same_bar": 1,
+            "fresh_break_within_prior": {
+              "1": 2,
+              "3": 4,
+              "5": 5,
+              "20": 5
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 1,
+              "1": 1,
+              "2": 2,
+              "3": 0,
+              "4": 1,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          },
+          "renewal_transition": {
+            "events": 0,
+            "fresh_break_same_bar": 0,
+            "fresh_break_within_prior": {
+              "1": 0,
+              "3": 0,
+              "5": 0,
+              "20": 0
+            },
+            "last_break_age_histogram_0_20": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 0,
+              "4": 0,
+              "5": 0,
+              "6": 0,
+              "7": 0,
+              "8": 0,
+              "9": 0,
+              "10": 0,
+              "11": 0,
+              "12": 0,
+              "13": 0,
+              "14": 0,
+              "15": 0,
+              "16": 0,
+              "17": 0,
+              "18": 0,
+              "19": 0,
+              "20": 0,
+              "none": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "pair_count": 4,
+    "bull": {
+      "fresh_breaks": 282,
+      "already_target_before_break": 104,
+      "not_already_target_before_break": 178,
+      "confirmation_within": {
+        "0": 20,
+        "1": 28,
+        "3": 47,
+        "5": 54,
+        "20": 82
+      },
+      "confirmation_lag_histogram_0_20": {
+        "0": 20,
+        "1": 8,
+        "2": 9,
+        "3": 10,
+        "4": 1,
+        "5": 6,
+        "6": 2,
+        "7": 6,
+        "8": 3,
+        "9": 1,
+        "10": 4,
+        "11": 0,
+        "12": 1,
+        "13": 1,
+        "14": 2,
+        "15": 3,
+        "16": 0,
+        "17": 1,
+        "18": 2,
+        "19": 2,
+        "20": 0,
+        "none": 96
+      },
+      "target_onsets": 63,
+      "target_onsets_with_fresh_break_same_bar": 20,
+      "initial_transition": {
+        "events": 22,
+        "fresh_break_same_bar": 6,
+        "fresh_break_within_prior": {
+          "1": 12,
+          "3": 16,
+          "5": 18,
+          "20": 21
+        }
+      },
+      "renewal_transition": {
+        "events": 2,
+        "fresh_break_same_bar": 0,
+        "fresh_break_within_prior": {
+          "1": 0,
+          "3": 1,
+          "5": 1,
+          "20": 2
+        }
+      }
+    },
+    "bear": {
+      "fresh_breaks": 277,
+      "already_target_before_break": 94,
+      "not_already_target_before_break": 183,
+      "confirmation_within": {
+        "0": 25,
+        "1": 45,
+        "3": 67,
+        "5": 80,
+        "20": 95
+      },
+      "confirmation_lag_histogram_0_20": {
+        "0": 25,
+        "1": 20,
+        "2": 15,
+        "3": 7,
+        "4": 7,
+        "5": 6,
+        "6": 4,
+        "7": 1,
+        "8": 2,
+        "9": 1,
+        "10": 2,
+        "11": 1,
+        "12": 0,
+        "13": 0,
+        "14": 1,
+        "15": 0,
+        "16": 1,
+        "17": 2,
+        "18": 0,
+        "19": 0,
+        "20": 0,
+        "none": 88
+      },
+      "target_onsets": 81,
+      "target_onsets_with_fresh_break_same_bar": 25,
+      "initial_transition": {
+        "events": 12,
+        "fresh_break_same_bar": 2,
+        "fresh_break_within_prior": {
+          "1": 5,
+          "3": 11,
+          "5": 12,
+          "20": 12
+        }
+      },
+      "renewal_transition": {
+        "events": 0,
+        "fresh_break_same_bar": 0,
+        "fresh_break_within_prior": {
+          "1": 0,
+          "3": 0,
+          "5": 0,
+          "20": 0
+        }
+      }
+    }
+  },
+  "boundary": "Timing/state counts only. All fixtures are reused evidence. No PnL or independent validation claim."
+}
