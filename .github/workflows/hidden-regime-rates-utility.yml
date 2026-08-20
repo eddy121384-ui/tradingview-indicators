@@ -1,0 +1,306 @@
+name: Hidden Regime Rates Utility
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/hidden-regime-rates-utility.yml
+      - indicators/hidden-regime-map/requirements-research.txt
+      - indicators/hidden-regime-map/research/download_rates_data.py
+      - indicators/hidden-regime-map/research/evaluate_rates_utility.py
+      - indicators/hidden-regime-map/research/test_download_rates_data.py
+      - indicators/hidden-regime-map/research/test_evaluate_rates_utility.py
+      - indicators/hidden-regime-map/research/train_hmm.py
+      - indicators/hidden-regime-map/research/compare_state_counts.py
+      - indicators/hidden-regime-map/research/issue-50-rates-experiment-spec.md
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+      - indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026-manifest.json
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-status.json
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-key-metrics.csv
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-utility.md
+      - indicators/hidden-regime-map/research/decisions/issue-50-rates-static-fit-diagnosis.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-rates-utility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RESEARCH: indicators/hidden-regime-map/research
+      DECISIONS: indicators/hidden-regime-map/research/decisions
+      ARTIFACTS: artifacts/issue-50-rates
+      FROZEN_DATA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz
+      FROZEN_SHA: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256
+      FROZEN_MANIFEST: indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026-manifest.json
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Compile Issue 50 scripts
+        run: >-
+          python -m py_compile
+          "$RESEARCH/download_rates_data.py"
+          "$RESEARCH/evaluate_rates_utility.py"
+          "$RESEARCH/test_download_rates_data.py"
+          "$RESEARCH/test_evaluate_rates_utility.py"
+
+      - name: Run rates research tests
+        run: python -m unittest discover -s "$RESEARCH" -p 'test_*rates*.py'
+
+      - name: Acquire candidate frozen input
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') == '' }}
+        run: |
+          mkdir -p "$ARTIFACTS/input"
+          python "$RESEARCH/download_rates_data.py" \
+            --start 2007-01-01 \
+            --end 2026-07-31 \
+            --output "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
+            --manifest "$ARTIFACTS/input/issue-50-rates-manifest.json" \
+            2>&1 | tee "$ARTIFACTS/input/acquisition.log"
+          sha256sum "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
+            | awk '{print $1 "  issue-50-rates-2007-2026.csv"}' \
+            > "$ARTIFACTS/input/issue-50-rates-2007-2026.sha256"
+          gzip -n -c "$ARTIFACTS/input/issue-50-rates-2007-2026.csv" \
+            > "$ARTIFACTS/input/issue-50-rates-2007-2026.csv.gz"
+
+      - name: Verify committed frozen input and manifest
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') != '' }}
+        run: |
+          mkdir -p "$ARTIFACTS/result"
+          python - <<'PY'
+          import gzip
+          import hashlib
+          import json
+          from pathlib import Path
+
+          import pandas as pd
+
+          data = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz')
+          sha_file = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.sha256')
+          manifest_file = Path('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026-manifest.json')
+          expected = sha_file.read_text(encoding='utf-8').split()[0]
+          digest = hashlib.sha256()
+          with gzip.open(data, 'rb') as handle:
+              while chunk := handle.read(1024 * 1024):
+                  digest.update(chunk)
+          actual = digest.hexdigest()
+          if actual != expected:
+              raise SystemExit(f'frozen rates SHA mismatch: {expected} != {actual}')
+
+          frame = pd.read_csv(data)
+          manifest = json.loads(manifest_file.read_text(encoding='utf-8'))
+          expected_columns = [
+              'Date', 'DGS3MO', 'DGS2', 'DGS5', 'DGS10', 'DGS30',
+              'SHY', 'IEF', 'TLT',
+          ]
+          expected_start = '2007-01-01'
+          expected_end = '2026-07-31'
+          expected_series = ['DGS3MO', 'DGS2', 'DGS5', 'DGS10', 'DGS30']
+          expected_fred = {
+              series: (
+                  'https://fred.stlouisfed.org/graph/fredgraph.csv'
+                  f'?id={series}&cosd={expected_start}&coed={expected_end}'
+              )
+              for series in expected_series
+          }
+          expected_contract = {
+              'accepted_fred_date_columns': ['DATE', 'observation_date'],
+              'columns': expected_columns,
+              'contract': 'issue-50-rates-v1',
+              'end': expected_end,
+              'etf_source': 'yfinance auto_adjust=True',
+              'etf_tickers': ['SHY', 'IEF', 'TLT'],
+              'fred_series': expected_fred,
+              'join': 'inner common observed dates; no yield interpolation',
+              'start': expected_start,
+          }
+          for key, value in expected_contract.items():
+              if manifest.get(key) != value:
+                  raise SystemExit(
+                      f'frozen rates manifest contract mismatch for {key}: '
+                      f'{manifest.get(key)!r} != {value!r}'
+                  )
+          if list(frame.columns) != expected_columns:
+              raise SystemExit('frozen rates CSV column contract mismatch')
+          if manifest.get('rows') != len(frame):
+              raise SystemExit('frozen rates manifest row count mismatch')
+          if frame.empty:
+              raise SystemExit('frozen rates CSV is empty')
+          first_date = str(frame['Date'].iloc[0])
+          last_date = str(frame['Date'].iloc[-1])
+          if manifest.get('first_date') != first_date:
+              raise SystemExit('frozen rates manifest first date mismatch')
+          if manifest.get('last_date') != last_date:
+              raise SystemExit('frozen rates manifest last date mismatch')
+          parsed_dates = pd.to_datetime(frame['Date'], errors='raise')
+          if not parsed_dates.is_monotonic_increasing or parsed_dates.duplicated().any():
+              raise SystemExit('frozen rates CSV dates are not unique and chronological')
+          print(actual)
+          PY
+
+      - name: Evaluate frozen rates experiment
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/data/issue-50-rates-2007-2026.csv.gz') != '' }}
+        run: |
+          python "$RESEARCH/evaluate_rates_utility.py" \
+            --input "$FROZEN_DATA" \
+            --sha256-file "$FROZEN_SHA" \
+            --output-dir "$ARTIFACTS/result"
+          python -m json.tool "$ARTIFACTS/result/rates-utility-result.json" > /dev/null
+
+      - name: Verify committed rates evidence
+        if: ${{ hashFiles('indicators/hidden-regime-map/research/decisions/issue-50-rates-utility-status.json') != '' }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          import numpy as np
+          import pandas as pd
+
+          generated_root = Path('artifacts/issue-50-rates/result')
+          committed_root = Path('indicators/hidden-regime-map/research/decisions')
+          generated = json.loads(
+              (generated_root / 'rates-utility-result.json').read_text(encoding='utf-8')
+          )
+          committed = json.loads(
+              (committed_root / 'issue-50-rates-utility-status.json').read_text(encoding='utf-8')
+          )
+
+          def assert_nested_equal(left, right, path='root'):
+              if isinstance(left, dict):
+                  if not isinstance(right, dict) or set(left) != set(right):
+                      raise SystemExit(f'{path} key/type mismatch')
+                  for key in left:
+                      assert_nested_equal(left[key], right[key], f'{path}.{key}')
+                  return
+              if isinstance(left, list):
+                  if not isinstance(right, list) or len(left) != len(right):
+                      raise SystemExit(f'{path} list mismatch')
+                  for index, (left_value, right_value) in enumerate(zip(left, right)):
+                      assert_nested_equal(
+                          left_value, right_value, f'{path}[{index}]'
+                      )
+                  return
+              if isinstance(left, bool):
+                  if not isinstance(right, bool) or left is not right:
+                      raise SystemExit(f'{path} boolean mismatch: {left!r} != {right!r}')
+                  return
+              if left is None:
+                  if right is not None:
+                      raise SystemExit(f'{path} null mismatch: {right!r}')
+                  return
+              if isinstance(left, str):
+                  if not isinstance(right, str) or left != right:
+                      raise SystemExit(f'{path} string mismatch: {left!r} != {right!r}')
+                  return
+              if (
+                  isinstance(left, (int, float))
+                  and not isinstance(left, bool)
+                  and isinstance(right, (int, float))
+                  and not isinstance(right, bool)
+              ):
+                  if not np.isclose(
+                      float(left),
+                      float(right),
+                      rtol=0.0,
+                      atol=1e-9,
+                      equal_nan=True,
+                  ):
+                      raise SystemExit(
+                          f'{path} numeric mismatch: {left!r} != {right!r}'
+                      )
+                  return
+              if type(left) is not type(right) or left != right:
+                  raise SystemExit(f'{path} mismatch: {left!r} != {right!r}')
+
+          assert_nested_equal(generated, committed)
+
+          generated_csv = pd.read_csv(generated_root / 'rates-utility-key-metrics.csv')
+          committed_csv = pd.read_csv(
+              committed_root / 'issue-50-rates-utility-key-metrics.csv'
+          )
+          key_columns = ['period', 'variant']
+          expected_periods = {'exploratory_oos', 'final_oos'}
+          expected_variants = {
+              'tlt_buy_hold',
+              'equal_duration',
+              'inverse_vol_63',
+              'trend_duration_200',
+              'vol_target_tlt_20',
+              'hmm_k3_duration_blend',
+              'hmm_k4_duration_blend',
+          }
+          expected_keys = {
+              (period, variant)
+              for period in expected_periods
+              for variant in expected_variants
+          }
+          generated_keys = set(map(tuple, generated_csv[key_columns].to_numpy()))
+          committed_keys = set(map(tuple, committed_csv[key_columns].to_numpy()))
+          if generated_keys != expected_keys or committed_keys != expected_keys:
+              raise SystemExit('rates key-metric row set is incomplete')
+          if list(generated_csv.columns) != list(committed_csv.columns):
+              raise SystemExit('rates key-metric columns differ')
+
+          generated_csv = generated_csv.sort_values(key_columns).reset_index(drop=True)
+          committed_csv = committed_csv.sort_values(key_columns).reset_index(drop=True)
+          for column in generated_csv.columns:
+              if column in key_columns:
+                  if not generated_csv[column].equals(committed_csv[column]):
+                      raise SystemExit(f'rates key column mismatch: {column}')
+              else:
+                  left = generated_csv[column].to_numpy(dtype=float)
+                  right = committed_csv[column].to_numpy(dtype=float)
+                  if not np.allclose(left, right, rtol=0.0, atol=1e-9, equal_nan=True):
+                      diff = float(np.nanmax(np.abs(left - right)))
+                      raise SystemExit(f'rates metric mismatch: {column}; max diff={diff}')
+
+          generated_report = (generated_root / 'rates-utility-report.md').read_text(
+              encoding='utf-8'
+          )
+          committed_report = (
+              committed_root / 'issue-50-rates-utility.md'
+          ).read_text(encoding='utf-8')
+          if generated_report != committed_report:
+              raise SystemExit('committed rates Markdown report is stale')
+          print('committed Issue #50 rates evidence matches regenerated output')
+          PY
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          if [ -f "$ARTIFACTS/result/rates-utility-report.md" ]; then
+            cat "$ARTIFACTS/result/rates-utility-report.md" >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f "$ARTIFACTS/input/issue-50-rates-manifest.json" ]; then
+            {
+              echo '## Issue #50 rates input acquired'
+              echo
+              echo 'Formal evaluation did not run. Commit the candidate CSV.gz and SHA-256 first.'
+              echo
+              echo '```json'
+              cat "$ARTIFACTS/input/issue-50-rates-manifest.json"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue-50-rates-utility
+          path: artifacts/issue-50-rates
+          retention-days: 14
+          if-no-files-found: error
