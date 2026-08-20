@@ -1,0 +1,58 @@
+name: Wyckoff Issue 61 Candidate Consolidation
+
+on:
+  push:
+    branches:
+      - research/issue-61-stage-aware-position-lifecycle
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_stage_lifecycle_candidate_consolidation.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_stage_lifecycle_candidate_consolidation.py'
+      - '.github/workflows/wyckoff-issue61-candidate-consolidation.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_stage_lifecycle_candidate_consolidation.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_stage_lifecycle_candidate_consolidation.py'
+      - '.github/workflows/wyckoff-issue61-candidate-consolidation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  candidate-consolidation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile audit
+        run: |
+          python -m py_compile diagnose_stage_lifecycle_candidate_consolidation.py
+          python -m py_compile test_diagnose_stage_lifecycle_candidate_consolidation.py
+      - name: Run contract tests
+        run: python -m unittest -v test_diagnose_stage_lifecycle_candidate_consolidation
+      - name: Run candidate Stage 3/6 audit
+        run: |
+          python diagnose_stage_lifecycle_candidate_consolidation.py \
+            --json-output reports/issue-61-stage-lifecycle-candidate-consolidation.json \
+            --md-output reports/issue-61-stage-lifecycle-candidate-consolidation.md
+      - name: Commit report on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-61-stage-aware-position-lifecycle'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-candidate-consolidation.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-candidate-consolidation.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "research: record Issue #61 candidate Stage 3/6 audit"
+            git push
+          fi
