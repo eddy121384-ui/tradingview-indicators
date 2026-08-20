@@ -1,0 +1,1066 @@
+{
+  "schema_version": 1,
+  "issue": 57,
+  "status": "REUSED_DATA_COLOR_FIRST_TH_OVERLAY_DIAGNOSTIC_ONLY",
+  "formal_color_mapping": {
+    "bull": [
+      1,
+      2,
+      3
+    ],
+    "bear": [
+      4,
+      5,
+      6
+    ],
+    "flat": [
+      0
+    ]
+  },
+  "execution": "bar-close signal, applied to next bar close-to-close return",
+  "cost_sensitivity_per_unit_turnover": 0.0002,
+  "cohorts": {
+    "development_7fx": {
+      "pairs": {
+        "EURUSD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 40,
+          "matched_early_damage_events": 4,
+          "matched_healthy_events": 8,
+          "early_damage_blocks": 4,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.007204647845252765,
+              "gross_ann_vol": 0.04831756837502608,
+              "gross_sharpe": -0.12548695876845267,
+              "gross_max_drawdown": -0.18926447347501152,
+              "net_2bp_ann_return": -0.008852226627972581,
+              "net_2bp_sharpe": -0.15975682216547343,
+              "net_2bp_max_drawdown": -0.19379405453837217,
+              "annualized_turnover": 8.29845769070446,
+              "exposure_share": 0.5306377657357232
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.007495050184806562,
+              "gross_ann_vol": 0.04738605358489789,
+              "gross_sharpe": -0.13506300537763946,
+              "gross_max_drawdown": -0.20228223990618754,
+              "net_2bp_ann_return": -0.00914211011156918,
+              "net_2bp_sharpe": -0.17000260058746525,
+              "net_2bp_max_drawdown": -0.20705703032144396,
+              "annualized_turnover": 8.29845769070446,
+              "exposure_share": 0.5147978324301793
+            }
+          }
+        },
+        "USDJPY": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 49,
+          "matched_early_damage_events": 8,
+          "matched_healthy_events": 7,
+          "early_damage_blocks": 6,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.024211140718374158,
+              "gross_ann_vol": 0.050909701806122226,
+              "gross_sharpe": -0.455896605371366,
+              "gross_max_drawdown": -0.21919689923710672,
+              "net_2bp_ann_return": -0.02619755060507345,
+              "net_2bp_sharpe": -0.4959828971661975,
+              "net_2bp_max_drawdown": -0.2322011145609575,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.5093789078782827
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.018163151071373895,
+              "gross_ann_vol": 0.0478428773299318,
+              "gross_sharpe": -0.3591508929104189,
+              "gross_max_drawdown": -0.170420835797355,
+              "net_2bp_ann_return": -0.02016181303296416,
+              "net_2bp_sharpe": -0.4018003272494342,
+              "net_2bp_max_drawdown": -0.18323732720541708,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.45727386411004584
+            }
+          }
+        },
+        "GBPUSD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 49,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 6,
+          "early_damage_blocks": 7,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.017956434872937854,
+              "gross_ann_vol": 0.06191231741890378,
+              "gross_sharpe": -0.2617292006711491,
+              "gross_max_drawdown": -0.2104304262225738,
+              "net_2bp_ann_return": -0.019956158756517017,
+              "net_2bp_sharpe": -0.29461756942433864,
+              "net_2bp_max_drawdown": -0.21609717866944123,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.5356398499374739
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.015088639161509931,
+              "gross_ann_vol": 0.06018424885530263,
+              "gross_sharpe": -0.22254951643326493,
+              "gross_max_drawdown": -0.18655922191196295,
+              "net_2bp_ann_return": -0.017094152054172307,
+              "net_2bp_sharpe": -0.2563871217877515,
+              "net_2bp_max_drawdown": -0.19239715911118593,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.5072947061275531
+            }
+          }
+        },
+        "AUDUSD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 47,
+          "matched_early_damage_events": 6,
+          "matched_healthy_events": 12,
+          "early_damage_blocks": 6,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.030779408678987097,
+              "gross_ann_vol": 0.06538728518907795,
+              "gross_sharpe": -0.4454317688970081,
+              "gross_max_drawdown": -0.30196570922054,
+              "net_2bp_ann_return": -0.03267289110559568,
+              "net_2bp_sharpe": -0.47515380782965955,
+              "net_2bp_max_drawdown": -0.31266366244792443,
+              "annualized_turnover": 9.769070446019175,
+              "exposure_share": 0.5268862025844102
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.030580488442006892,
+              "gross_ann_vol": 0.0626028251011781,
+              "gross_sharpe": -0.464809940489881,
+              "gross_max_drawdown": -0.31468648215857353,
+              "net_2bp_ann_return": -0.03247449915078093,
+              "net_2bp_sharpe": -0.49582038380220983,
+              "net_2bp_max_drawdown": -0.3251893071823043,
+              "annualized_turnover": 9.769070446019175,
+              "exposure_share": 0.4768653605669029
+            }
+          }
+        },
+        "EURCHF": {
+          "rows": 2400,
+          "start_date": "2012-11-16",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 38,
+          "matched_early_damage_events": 5,
+          "matched_healthy_events": 9,
+          "early_damage_blocks": 5,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": 0.007659484792590154,
+              "gross_ann_vol": 0.03293970891047854,
+              "gross_sharpe": 0.24810365739251936,
+              "gross_max_drawdown": -0.0700164952492236,
+              "net_2bp_ann_return": 0.006073548867551182,
+              "net_2bp_sharpe": 0.20036133718045462,
+              "net_2bp_max_drawdown": -0.07298981637319069,
+              "annualized_turnover": 7.878282617757399,
+              "exposure_share": 0.5289704043351396
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": 0.011642869630049901,
+              "gross_ann_vol": 0.03196368528316998,
+              "gross_sharpe": 0.3781240839712308,
+              "gross_max_drawdown": -0.06722936648645239,
+              "net_2bp_ann_return": 0.010050705592912212,
+              "net_2bp_sharpe": 0.32899492321675383,
+              "net_2bp_max_drawdown": -0.07021152843549117,
+              "annualized_turnover": 7.878282617757399,
+              "exposure_share": 0.49854105877448934
+            }
+          }
+        },
+        "USDCAD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 36,
+          "matched_early_damage_events": 6,
+          "matched_healthy_events": 13,
+          "early_damage_blocks": 6,
+          "healthy_rerisks": 3,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": 0.0035174025361854877,
+              "gross_ann_vol": 0.05043575935806243,
+              "gross_sharpe": 0.09481788240027972,
+              "gross_max_drawdown": -0.09787375831644474,
+              "net_2bp_ann_return": 0.002020885697112673,
+              "net_2bp_sharpe": 0.06522348130747845,
+              "net_2bp_max_drawdown": -0.10470685649572098,
+              "annualized_turnover": 7.458107544810337,
+              "exposure_share": 0.531471446436015
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.0007439660277628324,
+              "gross_ann_vol": 0.048069874460891684,
+              "gross_sharpe": 0.008532449379253107,
+              "gross_max_drawdown": -0.1222297940978867,
+              "net_2bp_ann_return": -0.0023596211777557885,
+              "net_2bp_sharpe": -0.025114976864576807,
+              "net_2bp_max_drawdown": -0.12957336375298234,
+              "annualized_turnover": 8.08837015423093,
+              "exposure_share": 0.47269695706544396
+            }
+          }
+        },
+        "USDCHF": {
+          "rows": 2400,
+          "start_date": "2012-12-03",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 46,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 9,
+          "early_damage_blocks": 7,
+          "healthy_rerisks": 1,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.02425983490849426,
+              "gross_ann_vol": 0.04738610631910495,
+              "gross_sharpe": -0.4945400092615133,
+              "gross_max_drawdown": -0.21132593158235147,
+              "net_2bp_ann_return": -0.026124773441762783,
+              "net_2bp_sharpe": -0.5346178567201855,
+              "net_2bp_max_drawdown": -0.22540513409460483,
+              "annualized_turnover": 9.558982909545643,
+              "exposure_share": 0.5168820341809087
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.02345422899431404,
+              "gross_ann_vol": 0.04540274905141833,
+              "gross_sharpe": -0.49999386420198816,
+              "gross_max_drawdown": -0.205105168207097,
+              "net_2bp_ann_return": -0.02536160628147066,
+              "net_2bp_sharpe": -0.5427449683838156,
+              "net_2bp_max_drawdown": -0.2196072319039336,
+              "annualized_turnover": 9.769070446019175,
+              "exposure_share": 0.472280116715298
+            }
+          }
+        }
+      },
+      "aggregate": {
+        "pair_count": 7,
+        "color_entries": 305,
+        "early_damage_blocks": 41,
+        "healthy_rerisks": 4,
+        "variants": {
+          "color_only": {
+            "median_pair_gross_ann_return": -0.017956434872937854,
+            "median_pair_gross_ann_vol": 0.05043575935806243,
+            "median_pair_gross_sharpe": -0.2617292006711491,
+            "median_pair_gross_max_drawdown": -0.2104304262225738,
+            "median_pair_net_2bp_ann_return": -0.019956158756517017,
+            "median_pair_net_2bp_sharpe": -0.29461756942433864,
+            "median_pair_net_2bp_max_drawdown": -0.21609717866944123,
+            "median_pair_annualized_turnover": 9.558982909545643,
+            "median_pair_exposure_share": 0.5289704043351396
+          },
+          "color_plus_th_gate": {
+            "median_pair_gross_ann_return": -0.015088639161509931,
+            "median_pair_gross_ann_vol": 0.0478428773299318,
+            "median_pair_gross_sharpe": -0.22254951643326493,
+            "median_pair_gross_max_drawdown": -0.18655922191196295,
+            "median_pair_net_2bp_ann_return": -0.017094152054172307,
+            "median_pair_net_2bp_sharpe": -0.2563871217877515,
+            "median_pair_net_2bp_max_drawdown": -0.19239715911118593,
+            "median_pair_annualized_turnover": 9.769070446019175,
+            "median_pair_exposure_share": 0.4768653605669029
+          }
+        },
+        "wins": {
+          "comparable_pairs": 7,
+          "managed_gross_return_wins": 5,
+          "managed_gross_sharpe_wins": 3,
+          "managed_gross_drawdown_wins": 4,
+          "managed_net_2bp_return_wins": 5,
+          "managed_net_2bp_sharpe_wins": 3,
+          "managed_net_2bp_drawdown_wins": 4
+        }
+      }
+    },
+    "later_reused_5fx_2022_2026": {
+      "pairs": {
+        "NZDUSD": {
+          "rows": 2244,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 32,
+          "matched_early_damage_events": 10,
+          "matched_healthy_events": 7,
+          "early_damage_blocks": 10,
+          "healthy_rerisks": 1,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": -0.029571280057481886,
+              "gross_ann_vol": 0.09882957950353798,
+              "gross_sharpe": -0.25428449166029016,
+              "gross_max_drawdown": -0.2639637408688823,
+              "net_2bp_ann_return": -0.032142879429460924,
+              "net_2bp_sharpe": -0.2809389209108444,
+              "net_2bp_max_drawdown": -0.2692540850675563,
+              "annualized_turnover": 13.241034195162635,
+              "exposure_share": 0.9124270225187656
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": -0.013813229720328946,
+              "gross_ann_vol": 0.09049320439655778,
+              "gross_sharpe": -0.10842402227542375,
+              "gross_max_drawdown": -0.27054015679800525,
+              "net_2bp_ann_return": -0.016550982399034297,
+              "net_2bp_sharpe": -0.13898932480910284,
+              "net_2bp_max_drawdown": -0.275782488617057,
+              "annualized_turnover": 13.871559633027523,
+              "exposure_share": 0.7172643869891576
+            }
+          }
+        },
+        "EURGBP": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 42,
+          "matched_early_damage_events": 5,
+          "matched_healthy_events": 3,
+          "early_damage_blocks": 5,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": -0.05087635239214716,
+              "gross_ann_vol": 0.08858125251636965,
+              "gross_sharpe": -0.5453327906447429,
+              "gross_max_drawdown": -0.2613672908874495,
+              "net_2bp_ann_return": -0.05422126053622034,
+              "net_2bp_sharpe": -0.5852869835363449,
+              "net_2bp_max_drawdown": -0.2713459694691218,
+              "annualized_turnover": 17.654712260216847,
+              "exposure_share": 0.9441201000834029
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": -0.04595120259813923,
+              "gross_ann_vol": 0.08753025400519916,
+              "gross_sharpe": -0.4938156126757007,
+              "gross_max_drawdown": -0.2550588475415406,
+              "net_2bp_ann_return": -0.049313498801644595,
+              "net_2bp_sharpe": -0.5342351115943407,
+              "net_2bp_max_drawdown": -0.2651229338745781,
+              "annualized_turnover": 17.654712260216847,
+              "exposure_share": 0.8982485404503753
+            }
+          }
+        },
+        "GBPJPY": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 37,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 14,
+          "early_damage_blocks": 7,
+          "healthy_rerisks": 3,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": -0.042387051766431205,
+              "gross_ann_vol": 0.09418156779523139,
+              "gross_sharpe": -0.41266941573390103,
+              "gross_max_drawdown": -0.24970430646219932,
+              "net_2bp_ann_return": -0.045319509557603,
+              "net_2bp_sharpe": -0.44536535995587856,
+              "net_2bp_max_drawdown": -0.2533907989200692,
+              "annualized_turnover": 15.34278565471226,
+              "exposure_share": 0.9658048373644704
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": -0.02361319552046659,
+              "gross_ann_vol": 0.08943489097339144,
+              "gross_sharpe": -0.2224251240126696,
+              "gross_max_drawdown": -0.1741585483699879,
+              "net_2bp_ann_return": -0.026848450369756693,
+              "net_2bp_sharpe": -0.2596283575232124,
+              "net_2bp_max_drawdown": -0.17821632601706616,
+              "annualized_turnover": 16.603836530442035,
+              "exposure_share": 0.8940783986655546
+            }
+          }
+        },
+        "AUDJPY": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 30,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 9,
+          "early_damage_blocks": 5,
+          "healthy_rerisks": 2,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": 0.013597286527635255,
+              "gross_ann_vol": 0.10323099784468134,
+              "gross_sharpe": 0.1824618188882393,
+              "gross_max_drawdown": -0.20115637078575588,
+              "net_2bp_ann_return": 0.011087420328085074,
+              "net_2bp_sharpe": 0.1584482584012001,
+              "net_2bp_max_drawdown": -0.20751919262980656,
+              "annualized_turnover": 12.400333611342786,
+              "exposure_share": 0.939115929941618
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": 0.01545891773521868,
+              "gross_ann_vol": 0.09856329145696997,
+              "gross_sharpe": 0.20494497620792687,
+              "gross_max_drawdown": -0.20307162360726838,
+              "net_2bp_ann_return": 0.012774327984807154,
+              "net_2bp_sharpe": 0.1780932823390198,
+              "net_2bp_max_drawdown": -0.21005066252249016,
+              "annualized_turnover": 13.241034195162635,
+              "exposure_share": 0.7964970809007507
+            }
+          }
+        },
+        "CADJPY": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 30,
+          "matched_early_damage_events": 2,
+          "matched_healthy_events": 11,
+          "early_damage_blocks": 2,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": 0.0464915450712573,
+              "gross_ann_vol": 0.09513984233304942,
+              "gross_sharpe": 0.5252056136252927,
+              "gross_max_drawdown": -0.12316870056976847,
+              "net_2bp_ann_return": 0.043902308082424124,
+              "net_2bp_sharpe": 0.4992700973482338,
+              "net_2bp_max_drawdown": -0.12457063515495059,
+              "annualized_turnover": 12.400333611342786,
+              "exposure_share": 0.963302752293578
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": 0.04889574304696098,
+              "gross_ann_vol": 0.09491805564305052,
+              "gross_sharpe": 0.5503919895070338,
+              "gross_max_drawdown": -0.12316870056976947,
+              "net_2bp_ann_return": 0.046300269546599715,
+              "net_2bp_sharpe": 0.5243854351677715,
+              "net_2bp_max_drawdown": -0.12457063515494948,
+              "annualized_turnover": 12.400333611342786,
+              "exposure_share": 0.9591326105087573
+            }
+          }
+        }
+      },
+      "aggregate": {
+        "pair_count": 5,
+        "color_entries": 171,
+        "early_damage_blocks": 29,
+        "healthy_rerisks": 6,
+        "variants": {
+          "color_only": {
+            "median_pair_gross_ann_return": -0.029571280057481886,
+            "median_pair_gross_ann_vol": 0.09513984233304942,
+            "median_pair_gross_sharpe": -0.25428449166029016,
+            "median_pair_gross_max_drawdown": -0.24970430646219932,
+            "median_pair_net_2bp_ann_return": -0.032142879429460924,
+            "median_pair_net_2bp_sharpe": -0.2809389209108444,
+            "median_pair_net_2bp_max_drawdown": -0.2533907989200692,
+            "median_pair_annualized_turnover": 13.241034195162635,
+            "median_pair_exposure_share": 0.9441201000834029
+          },
+          "color_plus_th_gate": {
+            "median_pair_gross_ann_return": -0.013813229720328946,
+            "median_pair_gross_ann_vol": 0.09049320439655778,
+            "median_pair_gross_sharpe": -0.10842402227542375,
+            "median_pair_gross_max_drawdown": -0.20307162360726838,
+            "median_pair_net_2bp_ann_return": -0.016550982399034297,
+            "median_pair_net_2bp_sharpe": -0.13898932480910284,
+            "median_pair_net_2bp_max_drawdown": -0.21005066252249016,
+            "median_pair_annualized_turnover": 13.871559633027523,
+            "median_pair_exposure_share": 0.8940783986655546
+          }
+        },
+        "wins": {
+          "comparable_pairs": 5,
+          "managed_gross_return_wins": 5,
+          "managed_gross_sharpe_wins": 5,
+          "managed_gross_drawdown_wins": 2,
+          "managed_net_2bp_return_wins": 5,
+          "managed_net_2bp_sharpe_wins": 5,
+          "managed_net_2bp_drawdown_wins": 3
+        }
+      }
+    },
+    "combined_12fx": {
+      "pairs": {
+        "EURUSD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 40,
+          "matched_early_damage_events": 4,
+          "matched_healthy_events": 8,
+          "early_damage_blocks": 4,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.007204647845252765,
+              "gross_ann_vol": 0.04831756837502608,
+              "gross_sharpe": -0.12548695876845267,
+              "gross_max_drawdown": -0.18926447347501152,
+              "net_2bp_ann_return": -0.008852226627972581,
+              "net_2bp_sharpe": -0.15975682216547343,
+              "net_2bp_max_drawdown": -0.19379405453837217,
+              "annualized_turnover": 8.29845769070446,
+              "exposure_share": 0.5306377657357232
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.007495050184806562,
+              "gross_ann_vol": 0.04738605358489789,
+              "gross_sharpe": -0.13506300537763946,
+              "gross_max_drawdown": -0.20228223990618754,
+              "net_2bp_ann_return": -0.00914211011156918,
+              "net_2bp_sharpe": -0.17000260058746525,
+              "net_2bp_max_drawdown": -0.20705703032144396,
+              "annualized_turnover": 8.29845769070446,
+              "exposure_share": 0.5147978324301793
+            }
+          }
+        },
+        "USDJPY": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 49,
+          "matched_early_damage_events": 8,
+          "matched_healthy_events": 7,
+          "early_damage_blocks": 6,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.024211140718374158,
+              "gross_ann_vol": 0.050909701806122226,
+              "gross_sharpe": -0.455896605371366,
+              "gross_max_drawdown": -0.21919689923710672,
+              "net_2bp_ann_return": -0.02619755060507345,
+              "net_2bp_sharpe": -0.4959828971661975,
+              "net_2bp_max_drawdown": -0.2322011145609575,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.5093789078782827
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.018163151071373895,
+              "gross_ann_vol": 0.0478428773299318,
+              "gross_sharpe": -0.3591508929104189,
+              "gross_max_drawdown": -0.170420835797355,
+              "net_2bp_ann_return": -0.02016181303296416,
+              "net_2bp_sharpe": -0.4018003272494342,
+              "net_2bp_max_drawdown": -0.18323732720541708,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.45727386411004584
+            }
+          }
+        },
+        "GBPUSD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 49,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 6,
+          "early_damage_blocks": 7,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.017956434872937854,
+              "gross_ann_vol": 0.06191231741890378,
+              "gross_sharpe": -0.2617292006711491,
+              "gross_max_drawdown": -0.2104304262225738,
+              "net_2bp_ann_return": -0.019956158756517017,
+              "net_2bp_sharpe": -0.29461756942433864,
+              "net_2bp_max_drawdown": -0.21609717866944123,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.5356398499374739
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.015088639161509931,
+              "gross_ann_vol": 0.06018424885530263,
+              "gross_sharpe": -0.22254951643326493,
+              "gross_max_drawdown": -0.18655922191196295,
+              "net_2bp_ann_return": -0.017094152054172307,
+              "net_2bp_sharpe": -0.2563871217877515,
+              "net_2bp_max_drawdown": -0.19239715911118593,
+              "annualized_turnover": 10.189245518966235,
+              "exposure_share": 0.5072947061275531
+            }
+          }
+        },
+        "AUDUSD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 47,
+          "matched_early_damage_events": 6,
+          "matched_healthy_events": 12,
+          "early_damage_blocks": 6,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.030779408678987097,
+              "gross_ann_vol": 0.06538728518907795,
+              "gross_sharpe": -0.4454317688970081,
+              "gross_max_drawdown": -0.30196570922054,
+              "net_2bp_ann_return": -0.03267289110559568,
+              "net_2bp_sharpe": -0.47515380782965955,
+              "net_2bp_max_drawdown": -0.31266366244792443,
+              "annualized_turnover": 9.769070446019175,
+              "exposure_share": 0.5268862025844102
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.030580488442006892,
+              "gross_ann_vol": 0.0626028251011781,
+              "gross_sharpe": -0.464809940489881,
+              "gross_max_drawdown": -0.31468648215857353,
+              "net_2bp_ann_return": -0.03247449915078093,
+              "net_2bp_sharpe": -0.49582038380220983,
+              "net_2bp_max_drawdown": -0.3251893071823043,
+              "annualized_turnover": 9.769070446019175,
+              "exposure_share": 0.4768653605669029
+            }
+          }
+        },
+        "EURCHF": {
+          "rows": 2400,
+          "start_date": "2012-11-16",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 38,
+          "matched_early_damage_events": 5,
+          "matched_healthy_events": 9,
+          "early_damage_blocks": 5,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": 0.007659484792590154,
+              "gross_ann_vol": 0.03293970891047854,
+              "gross_sharpe": 0.24810365739251936,
+              "gross_max_drawdown": -0.0700164952492236,
+              "net_2bp_ann_return": 0.006073548867551182,
+              "net_2bp_sharpe": 0.20036133718045462,
+              "net_2bp_max_drawdown": -0.07298981637319069,
+              "annualized_turnover": 7.878282617757399,
+              "exposure_share": 0.5289704043351396
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": 0.011642869630049901,
+              "gross_ann_vol": 0.03196368528316998,
+              "gross_sharpe": 0.3781240839712308,
+              "gross_max_drawdown": -0.06722936648645239,
+              "net_2bp_ann_return": 0.010050705592912212,
+              "net_2bp_sharpe": 0.32899492321675383,
+              "net_2bp_max_drawdown": -0.07021152843549117,
+              "annualized_turnover": 7.878282617757399,
+              "exposure_share": 0.49854105877448934
+            }
+          }
+        },
+        "USDCAD": {
+          "rows": 2400,
+          "start_date": "2012-12-04",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 36,
+          "matched_early_damage_events": 6,
+          "matched_healthy_events": 13,
+          "early_damage_blocks": 6,
+          "healthy_rerisks": 3,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": 0.0035174025361854877,
+              "gross_ann_vol": 0.05043575935806243,
+              "gross_sharpe": 0.09481788240027972,
+              "gross_max_drawdown": -0.09787375831644474,
+              "net_2bp_ann_return": 0.002020885697112673,
+              "net_2bp_sharpe": 0.06522348130747845,
+              "net_2bp_max_drawdown": -0.10470685649572098,
+              "annualized_turnover": 7.458107544810337,
+              "exposure_share": 0.531471446436015
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.0007439660277628324,
+              "gross_ann_vol": 0.048069874460891684,
+              "gross_sharpe": 0.008532449379253107,
+              "gross_max_drawdown": -0.1222297940978867,
+              "net_2bp_ann_return": -0.0023596211777557885,
+              "net_2bp_sharpe": -0.025114976864576807,
+              "net_2bp_max_drawdown": -0.12957336375298234,
+              "annualized_turnover": 8.08837015423093,
+              "exposure_share": 0.47269695706544396
+            }
+          }
+        },
+        "USDCHF": {
+          "rows": 2400,
+          "start_date": "2012-12-03",
+          "end_date": "2022-03-04",
+          "score_start": null,
+          "score_end": null,
+          "color_entries": 46,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 9,
+          "early_damage_blocks": 7,
+          "healthy_rerisks": 1,
+          "variants": {
+            "color_only": {
+              "observations": 2399,
+              "gross_ann_return": -0.02425983490849426,
+              "gross_ann_vol": 0.04738610631910495,
+              "gross_sharpe": -0.4945400092615133,
+              "gross_max_drawdown": -0.21132593158235147,
+              "net_2bp_ann_return": -0.026124773441762783,
+              "net_2bp_sharpe": -0.5346178567201855,
+              "net_2bp_max_drawdown": -0.22540513409460483,
+              "annualized_turnover": 9.558982909545643,
+              "exposure_share": 0.5168820341809087
+            },
+            "color_plus_th_gate": {
+              "observations": 2399,
+              "gross_ann_return": -0.02345422899431404,
+              "gross_ann_vol": 0.04540274905141833,
+              "gross_sharpe": -0.49999386420198816,
+              "gross_max_drawdown": -0.205105168207097,
+              "net_2bp_ann_return": -0.02536160628147066,
+              "net_2bp_sharpe": -0.5427449683838156,
+              "net_2bp_max_drawdown": -0.2196072319039336,
+              "annualized_turnover": 9.769070446019175,
+              "exposure_share": 0.472280116715298
+            }
+          }
+        },
+        "NZDUSD": {
+          "rows": 2244,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 32,
+          "matched_early_damage_events": 10,
+          "matched_healthy_events": 7,
+          "early_damage_blocks": 10,
+          "healthy_rerisks": 1,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": -0.029571280057481886,
+              "gross_ann_vol": 0.09882957950353798,
+              "gross_sharpe": -0.25428449166029016,
+              "gross_max_drawdown": -0.2639637408688823,
+              "net_2bp_ann_return": -0.032142879429460924,
+              "net_2bp_sharpe": -0.2809389209108444,
+              "net_2bp_max_drawdown": -0.2692540850675563,
+              "annualized_turnover": 13.241034195162635,
+              "exposure_share": 0.9124270225187656
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": -0.013813229720328946,
+              "gross_ann_vol": 0.09049320439655778,
+              "gross_sharpe": -0.10842402227542375,
+              "gross_max_drawdown": -0.27054015679800525,
+              "net_2bp_ann_return": -0.016550982399034297,
+              "net_2bp_sharpe": -0.13898932480910284,
+              "net_2bp_max_drawdown": -0.275782488617057,
+              "annualized_turnover": 13.871559633027523,
+              "exposure_share": 0.7172643869891576
+            }
+          }
+        },
+        "EURGBP": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 42,
+          "matched_early_damage_events": 5,
+          "matched_healthy_events": 3,
+          "early_damage_blocks": 5,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": -0.05087635239214716,
+              "gross_ann_vol": 0.08858125251636965,
+              "gross_sharpe": -0.5453327906447429,
+              "gross_max_drawdown": -0.2613672908874495,
+              "net_2bp_ann_return": -0.05422126053622034,
+              "net_2bp_sharpe": -0.5852869835363449,
+              "net_2bp_max_drawdown": -0.2713459694691218,
+              "annualized_turnover": 17.654712260216847,
+              "exposure_share": 0.9441201000834029
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": -0.04595120259813923,
+              "gross_ann_vol": 0.08753025400519916,
+              "gross_sharpe": -0.4938156126757007,
+              "gross_max_drawdown": -0.2550588475415406,
+              "net_2bp_ann_return": -0.049313498801644595,
+              "net_2bp_sharpe": -0.5342351115943407,
+              "net_2bp_max_drawdown": -0.2651229338745781,
+              "annualized_turnover": 17.654712260216847,
+              "exposure_share": 0.8982485404503753
+            }
+          }
+        },
+        "GBPJPY": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 37,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 14,
+          "early_damage_blocks": 7,
+          "healthy_rerisks": 3,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": -0.042387051766431205,
+              "gross_ann_vol": 0.09418156779523139,
+              "gross_sharpe": -0.41266941573390103,
+              "gross_max_drawdown": -0.24970430646219932,
+              "net_2bp_ann_return": -0.045319509557603,
+              "net_2bp_sharpe": -0.44536535995587856,
+              "net_2bp_max_drawdown": -0.2533907989200692,
+              "annualized_turnover": 15.34278565471226,
+              "exposure_share": 0.9658048373644704
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": -0.02361319552046659,
+              "gross_ann_vol": 0.08943489097339144,
+              "gross_sharpe": -0.2224251240126696,
+              "gross_max_drawdown": -0.1741585483699879,
+              "net_2bp_ann_return": -0.026848450369756693,
+              "net_2bp_sharpe": -0.2596283575232124,
+              "net_2bp_max_drawdown": -0.17821632601706616,
+              "annualized_turnover": 16.603836530442035,
+              "exposure_share": 0.8940783986655546
+            }
+          }
+        },
+        "AUDJPY": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 30,
+          "matched_early_damage_events": 7,
+          "matched_healthy_events": 9,
+          "early_damage_blocks": 5,
+          "healthy_rerisks": 2,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": 0.013597286527635255,
+              "gross_ann_vol": 0.10323099784468134,
+              "gross_sharpe": 0.1824618188882393,
+              "gross_max_drawdown": -0.20115637078575588,
+              "net_2bp_ann_return": 0.011087420328085074,
+              "net_2bp_sharpe": 0.1584482584012001,
+              "net_2bp_max_drawdown": -0.20751919262980656,
+              "annualized_turnover": 12.400333611342786,
+              "exposure_share": 0.939115929941618
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": 0.01545891773521868,
+              "gross_ann_vol": 0.09856329145696997,
+              "gross_sharpe": 0.20494497620792687,
+              "gross_max_drawdown": -0.20307162360726838,
+              "net_2bp_ann_return": 0.012774327984807154,
+              "net_2bp_sharpe": 0.1780932823390198,
+              "net_2bp_max_drawdown": -0.21005066252249016,
+              "annualized_turnover": 13.241034195162635,
+              "exposure_share": 0.7964970809007507
+            }
+          }
+        },
+        "CADJPY": {
+          "rows": 2245,
+          "start_date": "2018-01-01",
+          "end_date": "2026-08-14",
+          "score_start": "2022-01-01",
+          "score_end": "2026-08-13",
+          "color_entries": 30,
+          "matched_early_damage_events": 2,
+          "matched_healthy_events": 11,
+          "early_damage_blocks": 2,
+          "healthy_rerisks": 0,
+          "variants": {
+            "color_only": {
+              "observations": 1199,
+              "gross_ann_return": 0.0464915450712573,
+              "gross_ann_vol": 0.09513984233304942,
+              "gross_sharpe": 0.5252056136252927,
+              "gross_max_drawdown": -0.12316870056976847,
+              "net_2bp_ann_return": 0.043902308082424124,
+              "net_2bp_sharpe": 0.4992700973482338,
+              "net_2bp_max_drawdown": -0.12457063515495059,
+              "annualized_turnover": 12.400333611342786,
+              "exposure_share": 0.963302752293578
+            },
+            "color_plus_th_gate": {
+              "observations": 1199,
+              "gross_ann_return": 0.04889574304696098,
+              "gross_ann_vol": 0.09491805564305052,
+              "gross_sharpe": 0.5503919895070338,
+              "gross_max_drawdown": -0.12316870056976947,
+              "net_2bp_ann_return": 0.046300269546599715,
+              "net_2bp_sharpe": 0.5243854351677715,
+              "net_2bp_max_drawdown": -0.12457063515494948,
+              "annualized_turnover": 12.400333611342786,
+              "exposure_share": 0.9591326105087573
+            }
+          }
+        }
+      },
+      "aggregate": {
+        "pair_count": 12,
+        "color_entries": 476,
+        "early_damage_blocks": 70,
+        "healthy_rerisks": 10,
+        "variants": {
+          "color_only": {
+            "median_pair_gross_ann_return": -0.021083787795656006,
+            "median_pair_gross_ann_vol": 0.06364980130399087,
+            "median_pair_gross_sharpe": -0.2580068461657196,
+            "median_pair_gross_max_drawdown": -0.21087817890246263,
+            "median_pair_net_2bp_ann_return": -0.0230404660991399,
+            "median_pair_net_2bp_sharpe": -0.28777824516759154,
+            "median_pair_net_2bp_max_drawdown": -0.22075115638202303,
+            "median_pair_annualized_turnover": 10.189245518966235,
+            "median_pair_exposure_share": 0.5335556481867445
+          },
+          "color_plus_th_gate": {
+            "median_pair_gross_ann_return": -0.014450934440919438,
+            "median_pair_gross_ann_vol": 0.06139353697824036,
+            "median_pair_gross_sharpe": -0.17874406469515453,
+            "median_pair_gross_max_drawdown": -0.19442073090907525,
+            "median_pair_net_2bp_ann_return": -0.016822567226603302,
+            "median_pair_net_2bp_sharpe": -0.2131948611876084,
+            "median_pair_net_2bp_max_drawdown": -0.19972709471631495,
+            "median_pair_annualized_turnover": 10.189245518966235,
+            "median_pair_exposure_share": 0.5110462692788662
+          }
+        },
+        "wins": {
+          "comparable_pairs": 12,
+          "managed_gross_return_wins": 10,
+          "managed_gross_sharpe_wins": 8,
+          "managed_gross_drawdown_wins": 6,
+          "managed_net_2bp_return_wins": 10,
+          "managed_net_2bp_sharpe_wins": 8,
+          "managed_net_2bp_drawdown_wins": 7
+        }
+      }
+    }
+  },
+  "boundary": "All observations are reused for this new overlay hypothesis. This is not independent OOS validation and does not justify production trading rules."
+}
