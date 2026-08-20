@@ -62,12 +62,12 @@ Corrections now in the research code:
 4. 2020–2026 is explicitly classified as **exploratory reused-era evidence**, not an untouched holdout;
 5. raw joint-vs-single spread comparisons are not interpreted as incremental information;
 6. matched conditional inference fixes one anchor-event universe at a time;
-7. machine-generated matched evidence is separated from curated decision memos so rerunning a script cannot silently overwrite the research interpretation.
+7. local script outputs are separated from curated decision memos so rerunning a script cannot silently overwrite the research interpretation.
 
 Reproducibility contract:
 - `research/REPRODUCIBILITY.md`
-- generated matched outputs default to `research/generated/issue-59-matched-incremental.generated.{json,md}`
-- curated synthesis remains under `research/decisions/`
+- local generated outputs under `research/generated/` are disposable rerun products and are **not committed repository evidence**
+- durable evidence lives under `research/decisions/`, with the curated matched JSON preserving the exact verified-rerun statistics
 
 No V6.6 production parameter changed.
 
@@ -129,11 +129,11 @@ Evidence:
 
 The matched study fixes one de-overlapped anchor-event universe at a time and asks whether same-direction confirmation from the second axis improves the high-minus-low spread.
 
-The statistics below are synchronized to the actual script-generated evidence. Display values are rounded from `research/generated/issue-59-matched-incremental.generated.json`.
+The statistics below were synchronized to an actual verified rerun of `matched_incremental_validation.py`. Exact durable values are committed in `issue-59-matched-incremental.json`; display values below are rounded from that curated repository artifact.
 
 ### GPI anchor; add IPI confirmation — post-2019 exploratory era
 
-| Outcome | Anchor-only | Confirmed | Confirmation lift | Generated 95% CI |
+| Outcome | Anchor-only | Confirmed | Confirmation lift | 95% CI |
 |---|---:|---:|---:|---:|
 | US10Y | +11.10 bp | +12.48 bp | +1.38 bp | [-17.98, +23.78] |
 | US02Y | +11.62 bp | +8.05 bp | -3.58 bp | [-25.17, +18.80] |
@@ -142,7 +142,7 @@ The statistics below are synchronized to the actual script-generated evidence. D
 
 ### IPI anchor; add GPI confirmation — post-2019 exploratory era
 
-| Outcome | Anchor-only | Confirmed | Confirmation lift | Generated 95% CI |
+| Outcome | Anchor-only | Confirmed | Confirmation lift | 95% CI |
 |---|---:|---:|---:|---:|
 | US10Y | +10.79 bp | +8.51 bp | -2.28 bp | [-22.50, +15.20] |
 | US02Y | +5.53 bp | +12.60 bp | +7.07 bp | [-11.67, +25.52] |
@@ -160,7 +160,7 @@ Synchronized GPI+IPI movement may identify a distinctive historical subset, but 
 Evidence:
 - `issue-59-matched-incremental.md`
 - `issue-59-matched-incremental.json`
-- generated evidence under `research/generated/`
+- `matched_incremental_validation.py` + the Pine Log hashes documented in `research/REPRODUCIBILITY.md` provide the rerun path
 
 ---
 
