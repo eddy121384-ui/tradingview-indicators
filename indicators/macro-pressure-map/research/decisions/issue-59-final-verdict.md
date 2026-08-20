@@ -129,7 +129,7 @@ Evidence:
 
 The matched study fixes one de-overlapped anchor-event universe at a time and asks whether same-direction confirmation from the second axis improves the high-minus-low spread.
 
-The statistics below were synchronized to an actual verified rerun of `matched_incremental_validation.py`. Exact durable values are committed in `issue-59-matched-incremental.json`; display values below are rounded from that curated repository artifact.
+The statistics below were synchronized to an actual verified rerun of `matched_incremental_validation.py`. The committed `issue-59-matched-incremental.json` now preserves the exact **anchor-only spread, confirmed spread, confirmation lift, and 95% interval** for every durable-recorded outcome; every displayed table value below is rounded from that committed artifact.
 
 ### GPI anchor; add IPI confirmation — post-2019 exploratory era
 
@@ -149,7 +149,7 @@ The statistics below were synchronized to an actual verified rerun of `matched_i
 | ZN1! | -0.59% | -0.61% | -0.02% | [-1.16%, +1.26%] |
 | TLT | -1.65% | -1.28% | +0.37% | [-2.65%, +3.64%] |
 
-The principal confirmation-lift confidence intervals also cross zero in the development sample.
+All durable-recorded confirmation-lift confidence intervals for **US10Y, US02Y, ZN1!, and TLT** also cross zero in the development sample.
 
 ### Decision
 
