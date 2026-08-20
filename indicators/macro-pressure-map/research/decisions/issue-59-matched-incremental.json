@@ -3,6 +3,7 @@
   "study": "matched conditional incremental test",
   "artifact_role": "durable curated repository summary synchronized to a verified local rerun",
   "local_generator_outputs_committed": false,
+  "durable_recorded_outcomes": ["us10y_bp", "us02y_bp", "zn1_pct", "tlt_pct"],
   "post_2019_status": "exploratory_reused_era_not_untouched_holdout",
   "horizon": 20,
   "event_embargo_trading_rows": 20,
@@ -49,7 +50,8 @@
     }
   },
   "conclusion": {
-    "all_primary_confirmation_lift_intervals_cross_zero": true,
+    "all_durable_recorded_confirmation_lift_intervals_cross_zero": true,
+    "fx_confirmation_lift_not_asserted_by_durable_repository_evidence": true,
     "gpi_plus_ipi_incremental_information_demonstrated": false,
     "recommended_final_verdict": "descriptive_but_little_incremental_information"
   }
