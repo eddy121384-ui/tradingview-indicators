@@ -11,9 +11,9 @@ This finalizer applies four parity/compile/UI-critical corrections:
    but the full visual source first calls those helpers earlier. Pine requires the
    function definitions to appear before that first use, so the helper block is
    relocated without changing any formula;
-4. dense text labels are reduced to event-only geometric markers, with Handoff
-   separated into an opt-in low-emphasis layer while Healthy/Damaged remain the
-   default visible outcome markers. State semantics and event timing are unchanged.
+4. outcome markers encode both transition direction and health while Handoff stays
+   opt-in and low-emphasis. Marker size is user-adjustable. State semantics and
+   event timing are unchanged.
 """
 from __future__ import annotations
 
@@ -39,7 +39,8 @@ NEW_STAGE_WEIGHT = """f_v06_stage_weight(int id) =>
 
 OLD_MARKER_INPUT = 'showTransitionHealthLabels = input.bool(true, "顯示 Handoff / Healthy / Damaged 標記", group=groupTransitionHealth)'
 NEW_MARKER_INPUT = '''showTransitionHealthOutcomeMarkers = input.bool(true, "顯示 Healthy / Damaged 結果標記", group=groupTransitionHealth)
-showTransitionHealthHandoff = input.bool(false, "顯示 Handoff 觀察起點", group=groupTransitionHealth)'''
+showTransitionHealthHandoff = input.bool(false, "顯示 Handoff 觀察起點", group=groupTransitionHealth)
+transitionHealthMarkerSize = input.string("Small", "Healthy / Damaged 標記大小", options=["Tiny", "Small", "Normal", "Large"], group=groupTransitionHealth)'''
 
 OLD_EVENT_MARKERS = """if showTransitionHealthLabels and v06ThHandoffPulse
     label.new(bar_index, v06ThWatchDir > 0 ? 8.0 : 92.0, v06ThWatchDir > 0 ? \"Handoff ↑\" : \"Handoff ↓\", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colYellow, 0), textcolor=colDarkText, size=size.tiny)
@@ -48,13 +49,14 @@ if showTransitionHealthLabels and v06ThHealthyPulse
 if showTransitionHealthLabels and v06ThDamagedPulse
     label.new(bar_index, v06ThWatchDir > 0 ? 18.0 : 82.0, v06ThWatchDir > 0 ? \"Damaged ↑\" : \"Damaged ↓\", style=v06ThWatchDir > 0 ? label.style_label_up : label.style_label_down, color=color.new(colRed, 0), textcolor=color.white, size=size.tiny)"""
 
-NEW_EVENT_MARKERS = """// Outcome markers are the default visual layer; Handoff is opt-in and deliberately faint.
+NEW_EVENT_MARKERS = """// Outcome markers encode direction + health; Handoff remains opt-in and faint.
+string v06ThMarkerSize = transitionHealthMarkerSize == \"Tiny\" ? size.tiny : transitionHealthMarkerSize == \"Normal\" ? size.normal : transitionHealthMarkerSize == \"Large\" ? size.large : size.small
 if showTransitionHealthHandoff and v06ThHandoffPulse
     label.new(bar_index, v06ThWatchDir > 0 ? 7.0 : 93.0, \"\", style=label.style_circle, color=color.new(colYellow, 70), textcolor=color.new(colYellow, 70), size=size.tiny)
 if showTransitionHealthOutcomeMarkers and v06ThHealthyPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, \"\", style=v06ThWatchDir > 0 ? label.style_triangleup : label.style_triangledown, color=color.new(colBreakout, 0), textcolor=colBreakout, size=size.small)
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, \"\", style=v06ThWatchDir > 0 ? label.style_triangleup : label.style_triangledown, color=v06ThWatchDir > 0 ? color.green : color.red, textcolor=v06ThWatchDir > 0 ? color.green : color.red, size=v06ThMarkerSize)
 if showTransitionHealthOutcomeMarkers and v06ThDamagedPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, \"\", style=label.style_xcross, color=color.new(colRed, 0), textcolor=colRed, size=size.small)"""
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, \"\", style=label.style_xcross, color=v06ThWatchDir > 0 ? color.green : color.red, textcolor=v06ThWatchDir > 0 ? color.green : color.red, size=v06ThMarkerSize)"""
 
 HELPER_START = "// ===== Issue #57 v0.6 research helpers (mechanically generated) ====="
 HELPER_END = "// ===== End Issue #57 helpers ====="
