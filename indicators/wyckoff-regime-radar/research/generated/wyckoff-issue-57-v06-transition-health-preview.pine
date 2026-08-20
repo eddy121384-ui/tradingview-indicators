@@ -1540,6 +1540,7 @@ flatActionChanged = enableFlatAction and flatActionLevel != flatActionLevel[1]
 groupTransitionHealth = "顯示｜Transition Health v0.6"
 showTransitionHealthOutcomeMarkers = input.bool(true, "顯示 Healthy / Damaged 結果標記", group=groupTransitionHealth)
 showTransitionHealthHandoff = input.bool(false, "顯示 Handoff 觀察起點", group=groupTransitionHealth)
+transitionHealthMarkerSize = input.string("Small", "Healthy / Damaged 標記大小", options=["Tiny", "Small", "Normal", "Large"], group=groupTransitionHealth)
 showTransitionHealthPanel = input.bool(true, "顯示 Transition Health 狀態框", group=groupTransitionHealth)
 transitionHealthParityLogs = input.bool(false, "Parity Logs（驗證用）", group=groupTransitionHealth)
 
@@ -1623,13 +1624,14 @@ string v06ThStateText = v06ThState == V06_TH_HANDOFF ? "Handoff｜等待 +3" : v
 string v06ThDirText = v06ThDisplayDir > 0 ? "Bull ↑" : v06ThDisplayDir < 0 ? "Bear ↓" : "—"
 color v06ThStateColor = v06ThState == V06_TH_HEALTHY ? colBreakout : v06ThState == V06_TH_DAMAGED ? colRed : v06ThState == V06_TH_HANDOFF ? colYellow : colNeutral
 
-// Outcome markers are the default visual layer; Handoff is opt-in and deliberately faint.
+// Outcome markers encode direction + health; Handoff remains opt-in and faint.
+string v06ThMarkerSize = transitionHealthMarkerSize == "Tiny" ? size.tiny : transitionHealthMarkerSize == "Normal" ? size.normal : transitionHealthMarkerSize == "Large" ? size.large : size.small
 if showTransitionHealthHandoff and v06ThHandoffPulse
     label.new(bar_index, v06ThWatchDir > 0 ? 7.0 : 93.0, "", style=label.style_circle, color=color.new(colYellow, 70), textcolor=color.new(colYellow, 70), size=size.tiny)
 if showTransitionHealthOutcomeMarkers and v06ThHealthyPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=v06ThWatchDir > 0 ? label.style_triangleup : label.style_triangledown, color=color.new(colBreakout, 0), textcolor=colBreakout, size=size.small)
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=v06ThWatchDir > 0 ? label.style_triangleup : label.style_triangledown, color=v06ThWatchDir > 0 ? color.green : color.red, textcolor=v06ThWatchDir > 0 ? color.green : color.red, size=v06ThMarkerSize)
 if showTransitionHealthOutcomeMarkers and v06ThDamagedPulse
-    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=label.style_xcross, color=color.new(colRed, 0), textcolor=colRed, size=size.small)
+    label.new(bar_index, v06ThWatchDir > 0 ? 17.0 : 83.0, "", style=label.style_xcross, color=v06ThWatchDir > 0 ? color.green : color.red, textcolor=v06ThWatchDir > 0 ? color.green : color.red, size=v06ThMarkerSize)
 
 plot(float(v06ThState), "V06 Transition Health State｜0 none 1 handoff 2 healthy 3 damaged", display=display.data_window)
 plot(float(v06ThDisplayDir), "V06 Transition Health Direction｜+1 bull -1 bear", display=display.data_window)
