@@ -1,0 +1,402 @@
+{
+  "schema_version": 1,
+  "issue": 61,
+  "status": "PHASE_E_EARLY_INVALIDATION_REUSED_DATA_DEVELOPMENT_ONLY",
+  "early_window_bars": 3,
+  "pairs": {
+    "EURUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 11,
+        "bear_setups_armed": 7,
+        "bull_setup_confirmed_entries": 2,
+        "bear_setup_confirmed_entries": 3,
+        "bull_direct_stage2_break_entries": 7,
+        "bear_direct_stage5_break_entries": 11,
+        "bull_setup_expired_or_cancelled": 9,
+        "bear_setup_expired_or_cancelled": 4,
+        "long_family_exits": 9,
+        "short_family_exits": 13,
+        "bull_continuation_break_candidates": 26,
+        "bear_continuation_break_candidates": 19
+      },
+      "always_stop_events": {
+        "long_invalidation_exits": 9,
+        "short_invalidation_exits": 16,
+        "long_reentries_after_invalidation": 4,
+        "short_reentries_after_invalidation": 6,
+        "entry_anchor_missing": 0
+      },
+      "early_stop_events": {
+        "long_early_invalidation_exits": 3,
+        "short_early_invalidation_exits": 9,
+        "long_reentries_after_early_invalidation": 2,
+        "short_reentries_after_early_invalidation": 3,
+        "windows_survived": 14,
+        "entry_anchor_missing": 0
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": 0.00402406824597068,
+          "gross_ann_vol": 0.044523548337052236,
+          "gross_sharpe": 0.11246169015482071,
+          "gross_max_drawdown": -0.13627398109829214,
+          "net_2bp_ann_return": 0.002670445387379372,
+          "net_2bp_sharpe": 0.08215633194122274,
+          "net_2bp_max_drawdown": -0.13868842569682638,
+          "annualized_turnover": 6.744525547445256,
+          "exposure_share": 0.4118004866180049,
+          "signal_entries": 23,
+          "signal_reversals": 2,
+          "holding_episodes": 23,
+          "median_holding_bars": 27.0
+        },
+        "stage_lifecycle_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": 0.007547314701483954,
+          "gross_ann_vol": 0.03544098587343127,
+          "gross_sharpe": 0.22986049717012422,
+          "gross_max_drawdown": -0.05877077062559766,
+          "net_2bp_ann_return": 0.005572300986188772,
+          "net_2bp_sharpe": 0.17448006290365056,
+          "net_2bp_max_drawdown": -0.0619659594766806,
+          "annualized_turnover": 9.81021897810219,
+          "exposure_share": 0.2718978102189781,
+          "signal_entries": 33,
+          "signal_reversals": 0,
+          "holding_episodes": 33,
+          "median_holding_bars": 3.0
+        },
+        "stage_lifecycle_early_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": 0.005007687220387247,
+          "gross_ann_vol": 0.04024868521294248,
+          "gross_sharpe": 0.14423334752964223,
+          "gross_max_drawdown": -0.10052595541852016,
+          "net_2bp_ann_return": 0.003345270285322721,
+          "net_2bp_sharpe": 0.10309917532228588,
+          "net_2bp_max_drawdown": -0.10142462470565305,
+          "annualized_turnover": 8.277372262773723,
+          "exposure_share": 0.33150851581508517,
+          "signal_entries": 28,
+          "signal_reversals": 2,
+          "holding_episodes": 28,
+          "median_holding_bars": 6.5
+        }
+      }
+    },
+    "USDJPY": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 21,
+        "bear_setups_armed": 4,
+        "bull_setup_confirmed_entries": 6,
+        "bear_setup_confirmed_entries": 1,
+        "bull_direct_stage2_break_entries": 10,
+        "bear_direct_stage5_break_entries": 13,
+        "bull_setup_expired_or_cancelled": 15,
+        "bear_setup_expired_or_cancelled": 3,
+        "long_family_exits": 15,
+        "short_family_exits": 14,
+        "bull_continuation_break_candidates": 15,
+        "bear_continuation_break_candidates": 9
+      },
+      "always_stop_events": {
+        "long_invalidation_exits": 16,
+        "short_invalidation_exits": 17,
+        "long_reentries_after_invalidation": 4,
+        "short_reentries_after_invalidation": 7,
+        "entry_anchor_missing": 0
+      },
+      "early_stop_events": {
+        "long_early_invalidation_exits": 8,
+        "short_early_invalidation_exits": 14,
+        "long_reentries_after_early_invalidation": 3,
+        "short_reentries_after_early_invalidation": 7,
+        "windows_survived": 16,
+        "entry_anchor_missing": 0
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": -0.030993021501478868,
+          "gross_ann_vol": 0.047378335897319886,
+          "gross_sharpe": -0.6407202087321613,
+          "gross_max_drawdown": -0.1875541906109761,
+          "net_2bp_ann_return": -0.03274432983904407,
+          "net_2bp_sharpe": -0.6789097977086016,
+          "net_2bp_max_drawdown": -0.19692461112806048,
+          "annualized_turnover": 9.043795620437956,
+          "exposure_share": 0.36496350364963503,
+          "signal_entries": 30,
+          "signal_reversals": 2,
+          "holding_episodes": 30,
+          "median_holding_bars": 16.5
+        },
+        "stage_lifecycle_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": -0.022777718866821117,
+          "gross_ann_vol": 0.03668057873603948,
+          "gross_sharpe": -0.6097280667836856,
+          "gross_max_drawdown": -0.14551910841183124,
+          "net_2bp_ann_return": -0.02523170690780485,
+          "net_2bp_sharpe": -0.6781535061047558,
+          "net_2bp_max_drawdown": -0.15790756291236785,
+          "annualized_turnover": 12.569343065693431,
+          "exposure_share": 0.1964720194647202,
+          "signal_entries": 41,
+          "signal_reversals": 0,
+          "holding_episodes": 41,
+          "median_holding_bars": 2.0
+        },
+        "stage_lifecycle_early_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": -0.030751898108522413,
+          "gross_ann_vol": 0.041874743442989984,
+          "gross_sharpe": -0.7248510877415519,
+          "gross_max_drawdown": -0.18892077654326733,
+          "net_2bp_ann_return": -0.03312674519304826,
+          "net_2bp_sharpe": -0.7832798399324121,
+          "net_2bp_max_drawdown": -0.2013195141273475,
+          "annualized_turnover": 12.262773722627738,
+          "exposure_share": 0.25364963503649635,
+          "signal_entries": 40,
+          "signal_reversals": 2,
+          "holding_episodes": 40,
+          "median_holding_bars": 2.0
+        }
+      }
+    },
+    "GBPUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 12,
+        "bear_setups_armed": 12,
+        "bull_setup_confirmed_entries": 5,
+        "bear_setup_confirmed_entries": 3,
+        "bull_direct_stage2_break_entries": 10,
+        "bear_direct_stage5_break_entries": 12,
+        "bull_setup_expired_or_cancelled": 7,
+        "bear_setup_expired_or_cancelled": 9,
+        "long_family_exits": 15,
+        "short_family_exits": 14,
+        "bull_continuation_break_candidates": 22,
+        "bear_continuation_break_candidates": 16
+      },
+      "always_stop_events": {
+        "long_invalidation_exits": 24,
+        "short_invalidation_exits": 17,
+        "long_reentries_after_invalidation": 12,
+        "short_reentries_after_invalidation": 6,
+        "entry_anchor_missing": 0
+      },
+      "early_stop_events": {
+        "long_early_invalidation_exits": 10,
+        "short_early_invalidation_exits": 7,
+        "long_reentries_after_early_invalidation": 3,
+        "short_reentries_after_early_invalidation": 4,
+        "windows_survived": 19,
+        "entry_anchor_missing": 0
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": -0.029038636013807295,
+          "gross_ann_vol": 0.056675307317560375,
+          "gross_sharpe": -0.4916177352768042,
+          "gross_max_drawdown": -0.19756807778581287,
+          "net_2bp_ann_return": -0.03076457861898796,
+          "net_2bp_sharpe": -0.5228571679085362,
+          "net_2bp_max_drawdown": -0.20396597501772373,
+          "annualized_turnover": 8.89051094890511,
+          "exposure_share": 0.45985401459854014,
+          "signal_entries": 30,
+          "signal_reversals": 0,
+          "holding_episodes": 30,
+          "median_holding_bars": 21.0
+        },
+        "stage_lifecycle_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": -0.028940465382365832,
+          "gross_ann_vol": 0.044486200266677885,
+          "gross_sharpe": -0.637895811173371,
+          "gross_max_drawdown": -0.1773789632648699,
+          "net_2bp_ann_return": -0.031735779751684845,
+          "net_2bp_sharpe": -0.7024452071345618,
+          "net_2bp_max_drawdown": -0.19254409602622846,
+          "annualized_turnover": 14.408759124087592,
+          "exposure_share": 0.23905109489051096,
+          "signal_entries": 48,
+          "signal_reversals": 0,
+          "holding_episodes": 48,
+          "median_holding_bars": 3.0
+        },
+        "stage_lifecycle_early_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": -0.02261373202967165,
+          "gross_ann_vol": 0.05327441175522576,
+          "gross_sharpe": -0.4027208567486225,
+          "gross_max_drawdown": -0.1604312101936014,
+          "net_2bp_ann_return": -0.024769114155578698,
+          "net_2bp_sharpe": -0.44412821056532636,
+          "net_2bp_max_drawdown": -0.1684519078771276,
+          "annualized_turnover": 11.036496350364963,
+          "exposure_share": 0.38077858880778587,
+          "signal_entries": 37,
+          "signal_reversals": 0,
+          "holding_episodes": 37,
+          "median_holding_bars": 12.0
+        }
+      }
+    },
+    "AUDUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 11,
+        "bear_setups_armed": 8,
+        "bull_setup_confirmed_entries": 0,
+        "bear_setup_confirmed_entries": 2,
+        "bull_direct_stage2_break_entries": 8,
+        "bear_direct_stage5_break_entries": 15,
+        "bull_setup_expired_or_cancelled": 10,
+        "bear_setup_expired_or_cancelled": 6,
+        "long_family_exits": 8,
+        "short_family_exits": 17,
+        "bull_continuation_break_candidates": 22,
+        "bear_continuation_break_candidates": 23
+      },
+      "always_stop_events": {
+        "long_invalidation_exits": 10,
+        "short_invalidation_exits": 23,
+        "long_reentries_after_invalidation": 6,
+        "short_reentries_after_invalidation": 8,
+        "entry_anchor_missing": 0
+      },
+      "early_stop_events": {
+        "long_early_invalidation_exits": 3,
+        "short_early_invalidation_exits": 14,
+        "long_reentries_after_early_invalidation": 2,
+        "short_reentries_after_early_invalidation": 5,
+        "windows_survived": 15,
+        "entry_anchor_missing": 0
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": -0.005383107854583957,
+          "gross_ann_vol": 0.06507632347989954,
+          "gross_sharpe": -0.05047202548670749,
+          "gross_max_drawdown": -0.14073743787654025,
+          "net_2bp_ann_return": -0.006906993100708636,
+          "net_2bp_sharpe": -0.07401921104784227,
+          "net_2bp_max_drawdown": -0.14450902641036178,
+          "annualized_turnover": 7.664233576642336,
+          "exposure_share": 0.45681265206812655,
+          "signal_entries": 25,
+          "signal_reversals": 1,
+          "holding_episodes": 25,
+          "median_holding_bars": 24.0
+        },
+        "stage_lifecycle_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": -0.0073271488771035065,
+          "gross_ann_vol": 0.05372647193700447,
+          "gross_sharpe": -0.11007588619730775,
+          "gross_max_drawdown": -0.1306296921206569,
+          "net_2bp_ann_return": -0.009698403703972902,
+          "net_2bp_sharpe": -0.15456839333966615,
+          "net_2bp_max_drawdown": -0.1316727128905938,
+          "annualized_turnover": 11.956204379562044,
+          "exposure_share": 0.25304136253041365,
+          "signal_entries": 39,
+          "signal_reversals": 1,
+          "holding_episodes": 39,
+          "median_holding_bars": 3.0
+        },
+        "stage_lifecycle_early_breakout_invalidation": {
+          "observations": 1644,
+          "gross_ann_return": -0.0005507575498392425,
+          "gross_ann_vol": 0.06023454975490841,
+          "gross_sharpe": 0.020900449170726223,
+          "gross_max_drawdown": -0.12593295928454473,
+          "net_2bp_ann_return": -0.0025101386600202558,
+          "net_2bp_sharpe": -0.011671895482792209,
+          "net_2bp_max_drawdown": -0.12628119604167742,
+          "annualized_turnover": 9.81021897810219,
+          "exposure_share": 0.35097323600973235,
+          "signal_entries": 32,
+          "signal_reversals": 1,
+          "holding_episodes": 32,
+          "median_holding_bars": 3.0
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "pair_count": 4,
+    "variants": {
+      "stage_lifecycle_base": {
+        "median_pair_gross_ann_return": -0.017210871934195626,
+        "median_pair_gross_ann_vol": 0.05202682160744013,
+        "median_pair_gross_sharpe": -0.27104488038175584,
+        "median_pair_gross_max_drawdown": -0.16414581424375818,
+        "median_pair_net_2bp_ann_return": -0.018835785859848297,
+        "median_pair_net_2bp_sharpe": -0.29843818947818923,
+        "median_pair_net_2bp_max_drawdown": -0.17071681876921113,
+        "median_pair_annualized_turnover": 8.277372262773723,
+        "median_pair_exposure_share": 0.4343065693430657,
+        "median_pair_median_holding_bars": 22.5,
+        "median_pair_signal_entries": 27.5
+      },
+      "stage_lifecycle_breakout_invalidation": {
+        "median_pair_gross_ann_return": -0.015052433871962312,
+        "median_pair_gross_ann_vol": 0.04058338950135868,
+        "median_pair_gross_sharpe": -0.3599019764904967,
+        "median_pair_gross_max_drawdown": -0.13807440026624407,
+        "median_pair_net_2bp_ann_return": -0.017465055305888877,
+        "median_pair_net_2bp_sharpe": -0.41636094972221094,
+        "median_pair_net_2bp_max_drawdown": -0.14479013790148082,
+        "median_pair_annualized_turnover": 12.262773722627738,
+        "median_pair_exposure_share": 0.2460462287104623,
+        "median_pair_median_holding_bars": 3.0,
+        "median_pair_signal_entries": 40.0
+      },
+      "stage_lifecycle_early_breakout_invalidation": {
+        "median_pair_gross_ann_return": -0.011582244789755447,
+        "median_pair_gross_ann_vol": 0.04757457759910787,
+        "median_pair_gross_sharpe": -0.19091020378894816,
+        "median_pair_gross_max_drawdown": -0.14318208473907307,
+        "median_pair_net_2bp_ann_return": -0.013639626407799477,
+        "median_pair_net_2bp_sharpe": -0.22790005302405927,
+        "median_pair_net_2bp_max_drawdown": -0.14736655195940251,
+        "median_pair_annualized_turnover": 10.423357664233578,
+        "median_pair_exposure_share": 0.34124087591240876,
+        "median_pair_median_holding_bars": 4.75,
+        "median_pair_signal_entries": 34.5
+      }
+    },
+    "wins": {
+      "comparable_pairs": 4,
+      "early_gross_return_wins_vs_base": 4,
+      "early_gross_sharpe_wins_vs_base": 3,
+      "early_gross_drawdown_wins_vs_base": 3,
+      "early_net_return_wins_vs_base": 3,
+      "early_net_sharpe_wins_vs_base": 3,
+      "early_net_drawdown_wins_vs_base": 3
+    },
+    "early_stop_events": {
+      "long_early_invalidation_exits": 24,
+      "short_early_invalidation_exits": 44,
+      "long_reentries_after_early_invalidation": 10,
+      "short_reentries_after_early_invalidation": 19,
+      "windows_survived": 64,
+      "entry_anchor_missing": 0
+    }
+  },
+  "boundary": "Existing confirmBars=3 only; reused development evidence; no buffer/ATR/target/sizing optimization."
+}
