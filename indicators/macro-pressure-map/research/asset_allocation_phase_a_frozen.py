@@ -36,6 +36,11 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _datetime_ns(values) -> pd.DatetimeIndex:
+    """Normalize date-only join keys to one explicit nanosecond dtype."""
+    return pd.DatetimeIndex(pd.to_datetime(values, errors="raise")).normalize().astype("datetime64[ns]")
+
+
 def load_frozen_transitions(path: Path = DEFAULT_TRANSITIONS) -> pd.DataFrame:
     actual_sha = sha256_file(path)
     if actual_sha != EXPECTED_TRANSITION_SHA256:
@@ -45,7 +50,7 @@ def load_frozen_transitions(path: Path = DEFAULT_TRANSITIONS) -> pd.DataFrame:
     frame = pd.read_csv(path)
     if list(frame.columns) != ["start_date", "regime_id"]:
         raise ValueError(f"unexpected transition columns: {list(frame.columns)}")
-    frame["start_date"] = pd.to_datetime(frame["start_date"], errors="raise").dt.normalize()
+    frame["start_date"] = _datetime_ns(frame["start_date"])
     frame["regime_id"] = pd.to_numeric(frame["regime_id"], errors="raise").astype(int)
     if frame.empty or frame["start_date"].duplicated().any() or not frame["start_date"].is_monotonic_increasing:
         raise ValueError("frozen transitions must contain unique, increasing dates")
@@ -62,19 +67,22 @@ def map_regimes_to_outcome_calendar(
     signal_last_date: pd.Timestamp = SIGNAL_LAST_DATE,
 ) -> pd.DataFrame:
     """Map known regimes to the outcome calendar without carrying them past signal cutoff."""
-    lookup = pd.DataFrame({"date": prices.index})
+    normalized_price_index = _datetime_ns(prices.index)
+    lookup = pd.DataFrame({"date": normalized_price_index})
+    right = transitions.copy()
+    right["start_date"] = _datetime_ns(right["start_date"])
     mapped = pd.merge_asof(
         lookup.sort_values("date"),
-        transitions.sort_values("start_date"),
+        right.sort_values("start_date"),
         left_on="date",
         right_on="start_date",
         direction="backward",
         allow_exact_matches=True,
     )
     mapped.index = pd.DatetimeIndex(mapped["date"])
-    history = pd.DataFrame(index=prices.index)
-    history["core_regime"] = mapped["regime_id"].map(REGIME_ID_MAP).reindex(prices.index)
-    history.loc[history.index > signal_last_date, "core_regime"] = pd.NA
+    history = pd.DataFrame(index=normalized_price_index)
+    history["core_regime"] = mapped["regime_id"].map(REGIME_ID_MAP).reindex(normalized_price_index)
+    history.loc[history.index > pd.Timestamp(signal_last_date), "core_regime"] = pd.NA
     return history
 
 
@@ -82,6 +90,7 @@ def run_phase_a_frozen(start: str, end: str | None, output_dir: Path) -> dict:
     transitions = load_frozen_transitions()
     source_manifest = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
     prices, price_manifest = build_outcome_prices(start, end)
+    prices.index = _datetime_ns(prices.index)
     history = map_regimes_to_outcome_calendar(prices, transitions)
     finite = history["core_regime"].isin(REGIMES)
     finite_history = history.loc[finite].copy()
