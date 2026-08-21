@@ -1,0 +1,52 @@
+name: Macro Pressure Map Asset Allocation Research
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/asset_allocation_phase_a.py"
+      - "indicators/macro-pressure-map/research/test_asset_allocation_phase_a.py"
+      - "indicators/macro-pressure-map/research/build_public_history.py"
+      - "indicators/macro-pressure-map/research/public_data.py"
+      - "indicators/macro-pressure-map/research/v6_6_core.py"
+      - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
+      - ".github/workflows/macro-pressure-map-asset-allocation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  phase-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install research dependencies
+        run: python -m pip install --upgrade pip pandas numpy yfinance pytest
+
+      - name: Run focused Issue 64 tests
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_asset_allocation_phase_a.py
+
+      - name: Generate Phase A evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python asset_allocation_phase_a.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-64-phase-a
+
+      - name: Validate generated manifest is strict JSON
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m json.tool generated/issue-64-phase-a/phase-a-manifest.json > /dev/null
+
+      - name: Upload Phase A research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-64-phase-a
+          path: indicators/macro-pressure-map/research/generated/issue-64-phase-a/
+          if-no-files-found: error
