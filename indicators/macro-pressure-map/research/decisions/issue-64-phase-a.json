@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "issue": 64,
+  "phase": "A",
+  "artifact_role": "durable curated Phase A decision evidence",
+  "interim_verdict": "cross_asset_structure_present_but_regime_specific_and_era_sensitive",
+  "production_v66_parameters_modified": false,
+  "allocation_mapping_selected": false,
+  "signal": {
+    "source": "Issue #59 TradingView Macro Pressure Map V6.6 parity log",
+    "source_log_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
+    "derived_transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+    "first_regime_date": "2007-01-04",
+    "last_regime_date": "2026-08-14",
+    "daily_regime_rows": 4934,
+    "transition_episodes": 739,
+    "regime_semantics": "frozen raw GPI x raw IPI 3x3 core regime",
+    "fcpi_role": "diagnostic only in Phase A"
+  },
+  "outcomes": {
+    "assets": ["SPY", "TLT", "GLD"],
+    "price_semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close",
+    "horizons_trading_rows": {"1M": 21, "3M": 63, "6M": 126},
+    "inference": "deterministic bootstrap 95% intervals on horizon-embargoed starts within each regime"
+  },
+  "latest_verified_workflow": {
+    "run_id": 32439125598,
+    "artifact_id": 9431783095,
+    "artifact_sha256": "4f5fe53b8dd8bec8d7ef862673d1296c6261b143150cc010e4fec5c1addd9df9",
+    "focused_tests_passed": 10,
+    "strict_json_validation_passed": true,
+    "artifact_upload_passed": true
+  },
+  "temporal_stability": {
+    "development_segment": "2007-01-04 through 2019-12-31; forward price panel truncated at 2019-12-31 so horizons cannot leak into 2020",
+    "post2019_segment": "2020-01-01 through the frozen signal cutoff; reused exploratory evidence, not untouched OOS",
+    "regime_horizon_leader_comparisons": 27,
+    "same_leader_pre2020_vs_post2019": 9,
+    "development_leader_counts": {"SPY": 12, "TLT": 8, "GLD": 7},
+    "post2019_leader_counts": {"SPY": 5, "TLT": 0, "GLD": 22},
+    "pairwise_regime_horizon_comparisons": 81,
+    "same_pairwise_point_sign": 39,
+    "both_segments_ci_excludes_zero_same_direction": 2,
+    "same_point_sign_by_regime": {
+      "Reflation / Inflation Rising": 8,
+      "Growth Slowdown / Stable Inflation": 6,
+      "Benign Expansion / Stable Inflation": 5,
+      "Stagflation Pressure": 5,
+      "Goldilocks / Disinflationary Expansion": 5,
+      "Slowdown / Disinflation": 4,
+      "Inflation Pressure without Growth Confirmation": 3,
+      "Disinflationary Drift": 2,
+      "Neutral / Range-bound Macro": 1
+    }
+  },
+  "strongest_stable_relationship": {
+    "regime": "Reflation / Inflation Rising",
+    "comparison": "SPY total return minus TLT total return",
+    "one_month": {
+      "development_mean_spread": 0.014053,
+      "development_ci95": [0.000054, 0.027435],
+      "development_n": 51,
+      "post2019_mean_spread": 0.023093,
+      "post2019_ci95": [0.007021, 0.040069],
+      "post2019_n": 22
+    },
+    "three_month": {
+      "development_mean_spread": 0.041736,
+      "development_ci95": [0.014074, 0.070244],
+      "development_n": 23,
+      "post2019_mean_spread": 0.064235,
+      "post2019_ci95": [0.027140, 0.103942],
+      "post2019_n": 11
+    },
+    "six_month": {
+      "development_mean_spread": 0.045824,
+      "development_ci95": [-0.041715, 0.123161],
+      "development_n": 15,
+      "post2019_mean_spread": 0.120022,
+      "post2019_ci95": [0.067457, 0.176062],
+      "post2019_n": 7
+    },
+    "interpretation": "Equity-over-duration preference is the clearest temporally stable allocation relationship; 1M and 3M intervals exclude zero in both eras, while 6M has the same point direction but wide development uncertainty."
+  },
+  "promising_but_not_confirmed_relationship": {
+    "regime": "Stagflation Pressure",
+    "comparison": "SPY total return minus GLD total return",
+    "one_month": {
+      "development_mean_spread": -0.014837,
+      "development_ci95": [-0.046350, 0.015751],
+      "post2019_mean_spread": -0.010466,
+      "post2019_ci95": [-0.035202, 0.014778]
+    },
+    "three_month": {
+      "development_mean_spread": -0.040398,
+      "development_ci95": [-0.116369, 0.027926],
+      "post2019_mean_spread": -0.041272,
+      "post2019_ci95": [-0.112746, 0.045605]
+    },
+    "six_month": {
+      "development_mean_spread": -0.060800,
+      "development_ci95": [-0.141956, 0.018090],
+      "post2019_mean_spread": -0.092087,
+      "post2019_ci95": [-0.172331, -0.017689]
+    },
+    "interpretation": "Gold-over-equity direction is coherent across both eras and all three horizons, but development intervals remain wide; treat as tentative rather than confirmed."
+  },
+  "important_instability_example": {
+    "regime": "Slowdown / Disinflation",
+    "comparison": "TLT total return minus GLD total return",
+    "one_month_development": 0.007817,
+    "one_month_post2019": -0.021949,
+    "three_month_development": 0.006023,
+    "three_month_post2019": -0.084950,
+    "six_month_development": -0.023453,
+    "six_month_post2019": -0.170503,
+    "interpretation": "The relative duration-versus-gold preference changes materially by era; neither 'slowdown means long duration' nor 'slowdown means gold' should be hard-coded from the full-history winner table."
+  },
+  "phase_a_decision": {
+    "nine_cell_historical_winner_mapping_rejected": true,
+    "reason": "Only 9 of 27 regime-horizon leaders match across eras, and post-2019 GLD dominates 22 of 27 cells versus only 7 development cells, showing large secular-era dependence.",
+    "can_proceed_to_constrained_phase_b": true,
+    "phase_b_boundary": "Use a small neutral-default template set and test only coarse, economically interpretable overrides. Do not optimize nine separate regime weights from the full history. Exact templates must be frozen before portfolio evaluation."
+  },
+  "evidence_boundary": "All Phase A historical signal evidence is reused/development/exploratory. The post-2019 segment is not newly untouched OOS."
+}
