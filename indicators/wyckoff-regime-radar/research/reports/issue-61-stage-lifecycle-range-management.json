@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "issue": 61,
+  "status": "PHASE_C_RANGE_MANAGEMENT_REUSED_DATA_DEVELOPMENT_ONLY",
+  "strong_range_threshold": 70.0,
+  "core_exposure": 0.5,
+  "execution": "close-observed desired exposure applied with one-bar lag",
+  "pairs": {
+    "EURUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 11,
+        "bear_setups_armed": 7,
+        "bull_setup_confirmed_entries": 2,
+        "bear_setup_confirmed_entries": 3,
+        "bull_direct_stage2_break_entries": 7,
+        "bear_direct_stage5_break_entries": 11,
+        "bull_setup_expired_or_cancelled": 9,
+        "bear_setup_expired_or_cancelled": 4,
+        "long_family_exits": 9,
+        "short_family_exits": 13,
+        "bull_continuation_break_candidates": 26,
+        "bear_continuation_break_candidates": 19
+      },
+      "management_events": {
+        "long_reductions": 2,
+        "short_reductions": 8,
+        "long_readds": 1,
+        "short_readds": 3,
+        "new_long_episodes": 9,
+        "new_short_episodes": 14
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": 0.00402406824597068,
+          "gross_ann_vol": 0.044523548337052236,
+          "gross_sharpe": 0.11246169015482071,
+          "gross_max_drawdown": -0.13627398109829214,
+          "net_2bp_ann_return": 0.002670445387379372,
+          "net_2bp_sharpe": 0.08215633194122274,
+          "net_2bp_max_drawdown": -0.13868842569682638,
+          "annualized_turnover": 6.744525547445256,
+          "nonzero_exposure_share": 0.4118004866180049,
+          "average_absolute_exposure": 0.4118004866180049,
+          "half_exposure_share": 0.0,
+          "full_exposure_share": 0.4118004866180049
+        },
+        "stage_lifecycle_range_managed": {
+          "observations": 1644,
+          "gross_ann_return": 0.0018401419575140299,
+          "gross_ann_vol": 0.04322499600692399,
+          "gross_sharpe": 0.06414624254308285,
+          "gross_max_drawdown": -0.15244682227636674,
+          "net_2bp_ann_return": 0.00036670578204756055,
+          "net_2bp_sharpe": 0.030098168069067514,
+          "net_2bp_max_drawdown": -0.1553230333610658,
+          "annualized_turnover": 7.357664233576642,
+          "nonzero_exposure_share": 0.4118004866180049,
+          "average_absolute_exposure": 0.38686131386861317,
+          "half_exposure_share": 0.049878345498783457,
+          "full_exposure_share": 0.3619221411192214
+        }
+      }
+    },
+    "USDJPY": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 21,
+        "bear_setups_armed": 4,
+        "bull_setup_confirmed_entries": 6,
+        "bear_setup_confirmed_entries": 1,
+        "bull_direct_stage2_break_entries": 10,
+        "bear_direct_stage5_break_entries": 13,
+        "bull_setup_expired_or_cancelled": 15,
+        "bear_setup_expired_or_cancelled": 3,
+        "long_family_exits": 15,
+        "short_family_exits": 14,
+        "bull_continuation_break_candidates": 15,
+        "bear_continuation_break_candidates": 9
+      },
+      "management_events": {
+        "long_reductions": 10,
+        "short_reductions": 7,
+        "long_readds": 3,
+        "short_readds": 2,
+        "new_long_episodes": 16,
+        "new_short_episodes": 14
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": -0.030993021501478868,
+          "gross_ann_vol": 0.047378335897319886,
+          "gross_sharpe": -0.6407202087321613,
+          "gross_max_drawdown": -0.1875541906109761,
+          "net_2bp_ann_return": -0.03274432983904407,
+          "net_2bp_sharpe": -0.6789097977086016,
+          "net_2bp_max_drawdown": -0.19692461112806048,
+          "annualized_turnover": 9.043795620437956,
+          "nonzero_exposure_share": 0.36496350364963503,
+          "average_absolute_exposure": 0.36496350364963503,
+          "half_exposure_share": 0.0,
+          "full_exposure_share": 0.36496350364963503
+        },
+        "stage_lifecycle_range_managed": {
+          "observations": 1644,
+          "gross_ann_return": -0.03498005036924723,
+          "gross_ann_vol": 0.04530636078076408,
+          "gross_sharpe": -0.7631280918410904,
+          "gross_max_drawdown": -0.20988909153537227,
+          "net_2bp_ann_return": -0.036886627089665946,
+          "net_2bp_sharpe": -0.8067850803713146,
+          "net_2bp_max_drawdown": -0.21978284363773903,
+          "annualized_turnover": 9.886861313868613,
+          "nonzero_exposure_share": 0.36496350364963503,
+          "average_absolute_exposure": 0.33242092457420924,
+          "half_exposure_share": 0.06508515815085159,
+          "full_exposure_share": 0.29987834549878345
+        }
+      }
+    },
+    "GBPUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 12,
+        "bear_setups_armed": 12,
+        "bull_setup_confirmed_entries": 5,
+        "bear_setup_confirmed_entries": 3,
+        "bull_direct_stage2_break_entries": 10,
+        "bear_direct_stage5_break_entries": 12,
+        "bull_setup_expired_or_cancelled": 7,
+        "bear_setup_expired_or_cancelled": 9,
+        "long_family_exits": 15,
+        "short_family_exits": 14,
+        "bull_continuation_break_candidates": 22,
+        "bear_continuation_break_candidates": 16
+      },
+      "management_events": {
+        "long_reductions": 11,
+        "short_reductions": 8,
+        "long_readds": 4,
+        "short_readds": 3,
+        "new_long_episodes": 15,
+        "new_short_episodes": 15
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": -0.029038636013807295,
+          "gross_ann_vol": 0.056675307317560375,
+          "gross_sharpe": -0.4916177352768042,
+          "gross_max_drawdown": -0.19756807778581287,
+          "net_2bp_ann_return": -0.03076457861898796,
+          "net_2bp_sharpe": -0.5228571679085362,
+          "net_2bp_max_drawdown": -0.20396597501772373,
+          "annualized_turnover": 8.89051094890511,
+          "nonzero_exposure_share": 0.45985401459854014,
+          "average_absolute_exposure": 0.45985401459854014,
+          "half_exposure_share": 0.0,
+          "full_exposure_share": 0.45985401459854014
+        },
+        "stage_lifecycle_range_managed": {
+          "observations": 1644,
+          "gross_ann_return": -0.03329668459109891,
+          "gross_ann_vol": 0.054238445935181956,
+          "gross_sharpe": -0.5972166353328334,
+          "gross_max_drawdown": -0.21613465999748716,
+          "net_2bp_ann_return": -0.03522204434437004,
+          "net_2bp_sharpe": -0.6338098745249011,
+          "net_2bp_max_drawdown": -0.22424997283102654,
+          "annualized_turnover": 9.963503649635037,
+          "nonzero_exposure_share": 0.45985401459854014,
+          "average_absolute_exposure": 0.4221411192214112,
+          "half_exposure_share": 0.07542579075425791,
+          "full_exposure_share": 0.3844282238442822
+        }
+      }
+    },
+    "AUDUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "base_events": {
+        "bull_setups_armed": 11,
+        "bear_setups_armed": 8,
+        "bull_setup_confirmed_entries": 0,
+        "bear_setup_confirmed_entries": 2,
+        "bull_direct_stage2_break_entries": 8,
+        "bear_direct_stage5_break_entries": 15,
+        "bull_setup_expired_or_cancelled": 10,
+        "bear_setup_expired_or_cancelled": 6,
+        "long_family_exits": 8,
+        "short_family_exits": 17,
+        "bull_continuation_break_candidates": 22,
+        "bear_continuation_break_candidates": 23
+      },
+      "management_events": {
+        "long_reductions": 2,
+        "short_reductions": 13,
+        "long_readds": 0,
+        "short_readds": 1,
+        "new_long_episodes": 8,
+        "new_short_episodes": 17
+      },
+      "variants": {
+        "stage_lifecycle_base": {
+          "observations": 1644,
+          "gross_ann_return": -0.005383107854583957,
+          "gross_ann_vol": 0.06507632347989954,
+          "gross_sharpe": -0.05047202548670749,
+          "gross_max_drawdown": -0.14073743787654025,
+          "net_2bp_ann_return": -0.006906993100708636,
+          "net_2bp_sharpe": -0.07401921104784227,
+          "net_2bp_max_drawdown": -0.14450902641036178,
+          "annualized_turnover": 7.664233576642336,
+          "nonzero_exposure_share": 0.45681265206812655,
+          "average_absolute_exposure": 0.45681265206812655,
+          "half_exposure_share": 0.0,
+          "full_exposure_share": 0.45681265206812655
+        },
+        "stage_lifecycle_range_managed": {
+          "observations": 1644,
+          "gross_ann_return": -0.00018692511997708827,
+          "gross_ann_vol": 0.06298126280550201,
+          "gross_sharpe": 0.02844997450218207,
+          "gross_max_drawdown": -0.13762399696023087,
+          "net_2bp_ann_return": -0.0017494150476985437,
+          "net_2bp_sharpe": 0.0036246219740807485,
+          "net_2bp_max_drawdown": -0.1415804702662563,
+          "annualized_turnover": 7.817518248175182,
+          "nonzero_exposure_share": 0.45681265206812655,
+          "average_absolute_exposure": 0.4257907542579075,
+          "half_exposure_share": 0.06204379562043796,
+          "full_exposure_share": 0.39476885644768855
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "pair_count": 4,
+    "variants": {
+      "stage_lifecycle_base": {
+        "median_pair_gross_ann_return": -0.017210871934195626,
+        "median_pair_gross_ann_vol": 0.05202682160744013,
+        "median_pair_gross_sharpe": -0.27104488038175584,
+        "median_pair_gross_max_drawdown": -0.16414581424375818,
+        "median_pair_net_2bp_ann_return": -0.018835785859848297,
+        "median_pair_net_2bp_sharpe": -0.29843818947818923,
+        "median_pair_net_2bp_max_drawdown": -0.17071681876921113,
+        "median_pair_annualized_turnover": 8.277372262773723,
+        "median_pair_nonzero_exposure_share": 0.4343065693430657,
+        "median_pair_average_absolute_exposure": 0.4343065693430657,
+        "median_pair_half_exposure_share": 0.0,
+        "median_pair_full_exposure_share": 0.4343065693430657
+      },
+      "stage_lifecycle_range_managed": {
+        "median_pair_gross_ann_return": -0.016741804855538,
+        "median_pair_gross_ann_vol": 0.04977240335797302,
+        "median_pair_gross_sharpe": -0.28438333041532565,
+        "median_pair_gross_max_drawdown": -0.1811679569058695,
+        "median_pair_net_2bp_ann_return": -0.018485729696034292,
+        "median_pair_net_2bp_sharpe": -0.3150926262754102,
+        "median_pair_net_2bp_max_drawdown": -0.1875529384994024,
+        "median_pair_annualized_turnover": 8.852189781021897,
+        "median_pair_nonzero_exposure_share": 0.4343065693430657,
+        "median_pair_average_absolute_exposure": 0.40450121654501214,
+        "median_pair_half_exposure_share": 0.06356447688564477,
+        "median_pair_full_exposure_share": 0.3731751824817518
+      }
+    },
+    "wins": {
+      "comparable_pairs": 4,
+      "managed_gross_return_wins": 1,
+      "managed_gross_sharpe_wins": 1,
+      "managed_gross_drawdown_wins": 1,
+      "managed_net_2bp_return_wins": 1,
+      "managed_net_2bp_sharpe_wins": 1,
+      "managed_net_2bp_drawdown_wins": 1
+    },
+    "management_events": {
+      "long_reductions": 25,
+      "short_reductions": 36,
+      "long_readds": 8,
+      "short_readds": 9,
+      "new_long_episodes": 48,
+      "new_short_episodes": 60
+    }
+  },
+  "boundary": "Frozen inherited rangeScore=70 and semantic 50/50 split. Reused development data only; no tuning or validation claim."
+}
