@@ -36,9 +36,22 @@ jobs:
       - name: Generate Phase A evidence
         working-directory: indicators/macro-pressure-map/research
         run: |
-          python asset_allocation_phase_a.py \
-            --start 2007-01-01 \
-            --output-dir generated/issue-64-phase-a
+          set +e
+          for attempt in 1 2 3; do
+            rm -rf generated/issue-64-phase-a
+            python asset_allocation_phase_a.py \
+              --start 2007-01-01 \
+              --output-dir generated/issue-64-phase-a
+            status=$?
+            if [ "$status" -eq 0 ]; then
+              exit 0
+            fi
+            echo "Phase A acquisition attempt ${attempt} failed with exit ${status}."
+            if [ "$attempt" -lt 3 ]; then
+              sleep $((attempt * 10))
+            fi
+          done
+          exit "$status"
 
       - name: Validate generated manifest is strict JSON
         working-directory: indicators/macro-pressure-map/research
