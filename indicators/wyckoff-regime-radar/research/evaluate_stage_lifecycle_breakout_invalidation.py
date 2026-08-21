@@ -105,8 +105,6 @@ def breakout_invalidation_signal(
 
         base_dir = int(base_signal[i])
 
-        # A base episode ended or changed direction: clear any stop latch and
-        # allow the new frozen base episode to establish its own entry anchor.
         if base_dir != previous_base:
             stopped_dir = 0
             if base_dir == 0:
@@ -127,8 +125,6 @@ def breakout_invalidation_signal(
                 if not np.isfinite(entry_level):
                     stats["entry_anchor_missing"] += 1
 
-        # Underlying base episode remains active but the overlay stopped it.
-        # Only a new direct fresh break in the matching trend stage can re-enter.
         elif base_dir != 0 and stopped_dir == base_dir:
             if _matching_fresh(base_dir, i, formal, fresh_up, fresh_down):
                 position = base_dir
@@ -143,14 +139,11 @@ def breakout_invalidation_signal(
             else:
                 position = 0
 
-        # If base remains flat, overlay must remain flat too.
         elif base_dir == 0:
             position = 0
             entry_level = float("nan")
             stopped_dir = 0
 
-        # Invalidation is evaluated only after a position already existed on a
-        # previous desired-signal bar.  This prevents same-entry-bar stop-outs.
         was_holding = i > warmup and int(out[i - 1]) == position and position != 0
         if was_holding and np.isfinite(entry_level) and np.isfinite(close[i]):
             invalidated = (
@@ -235,8 +228,8 @@ def aggregate_pairs(pairs: dict[str, dict[str, object]]) -> dict[str, object]:
         "net_2bp_max_drawdown",
         "annualized_turnover",
         "exposure_share",
-        "median_hold_bars",
-        "entries",
+        "median_holding_bars",
+        "signal_entries",
     )
     variants: dict[str, object] = {}
     for variant in ("stage_lifecycle_base", "stage_lifecycle_breakout_invalidation"):
@@ -329,7 +322,7 @@ def render_markdown(report: dict[str, object]) -> str:
             f"{pct(row['median_pair_gross_max_drawdown'])} | {pct(row['median_pair_net_2bp_ann_return'])} | "
             f"{num(row['median_pair_net_2bp_sharpe'])} | {pct(row['median_pair_net_2bp_max_drawdown'])} | "
             f"{pct(row['median_pair_exposure_share'])} | {num(row['median_pair_annualized_turnover'])} | "
-            f"{num(row['median_pair_median_hold_bars'])} | {num(row['median_pair_entries'])} |"
+            f"{num(row['median_pair_median_holding_bars'])} | {num(row['median_pair_signal_entries'])} |"
         )
 
     w = agg["wins"]
