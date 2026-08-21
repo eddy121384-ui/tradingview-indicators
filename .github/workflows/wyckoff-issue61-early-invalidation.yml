@@ -1,0 +1,60 @@
+name: Wyckoff Issue 61 Early Invalidation
+
+on:
+  push:
+    branches:
+      - research/issue-61-stage-aware-position-lifecycle
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_stage_lifecycle_early_invalidation.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_stage_lifecycle_early_invalidation.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-e-early-invalidation-freeze.md'
+      - '.github/workflows/wyckoff-issue61-early-invalidation.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_stage_lifecycle_early_invalidation.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_stage_lifecycle_early_invalidation.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-e-early-invalidation-freeze.md'
+      - '.github/workflows/wyckoff-issue61-early-invalidation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  early-invalidation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile evaluator
+        run: |
+          python -m py_compile evaluate_stage_lifecycle_early_invalidation.py
+          python -m py_compile test_evaluate_stage_lifecycle_early_invalidation.py
+      - name: Run contract tests
+        run: python -m unittest -v test_evaluate_stage_lifecycle_early_invalidation
+      - name: Evaluate frozen early-invalidation rule
+        run: |
+          python evaluate_stage_lifecycle_early_invalidation.py \
+            --json-output reports/issue-61-stage-lifecycle-early-invalidation.json \
+            --md-output reports/issue-61-stage-lifecycle-early-invalidation.md
+      - name: Commit report on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-61-stage-aware-position-lifecycle'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-early-invalidation.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-early-invalidation.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "research: record Issue #61 early-invalidation result"
+            git push
+          fi

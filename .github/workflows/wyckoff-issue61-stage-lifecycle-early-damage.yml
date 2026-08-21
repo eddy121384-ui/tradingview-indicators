@@ -1,0 +1,73 @@
+name: Wyckoff Issue 61 Stage Lifecycle Early Damage
+
+on:
+  push:
+    branches:
+      - research/issue-61-stage-aware-position-lifecycle
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_stage_lifecycle_early_damage.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_stage_lifecycle_early_damage.py'
+      - 'indicators/wyckoff-regime-radar/research/transition_health_online.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_bridge_formation_outcomes.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_consensus_formation_and_formal_lag.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_handoff_weight_behavior.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_transition_formation_and_regime_decay.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_v06_top2_directional_consensus.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-b-early-damage-overlay-freeze.md'
+      - '.github/workflows/wyckoff-issue61-stage-lifecycle-early-damage.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/evaluate_stage_lifecycle_early_damage.py'
+      - 'indicators/wyckoff-regime-radar/research/test_evaluate_stage_lifecycle_early_damage.py'
+      - 'indicators/wyckoff-regime-radar/research/transition_health_online.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_bridge_formation_outcomes.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_consensus_formation_and_formal_lag.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_handoff_weight_behavior.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_transition_formation_and_regime_decay.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_v06_top2_directional_consensus.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-b-early-damage-overlay-freeze.md'
+      - '.github/workflows/wyckoff-issue61-stage-lifecycle-early-damage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stage-lifecycle-early-damage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile overlay evaluator
+        run: |
+          python -m py_compile transition_health_online.py
+          python -m py_compile evaluate_stage_lifecycle_early_damage.py
+          python -m py_compile test_evaluate_stage_lifecycle_early_damage.py
+      - name: Run overlay contract tests
+        run: python -m unittest -v test_evaluate_stage_lifecycle_early_damage
+      - name: Evaluate frozen Early-Damaged overlay
+        run: |
+          python evaluate_stage_lifecycle_early_damage.py \
+            --json-output reports/issue-61-stage-lifecycle-early-damage.json \
+            --md-output reports/issue-61-stage-lifecycle-early-damage.md
+      - name: Commit overlay report on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-61-stage-aware-position-lifecycle'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-early-damage.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-early-damage.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "research: record Issue #61 Early-Damaged overlay result"
+            git push
+          fi

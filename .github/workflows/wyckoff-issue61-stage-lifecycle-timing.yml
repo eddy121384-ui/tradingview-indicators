@@ -1,0 +1,71 @@
+name: Wyckoff Issue 61 Stage Lifecycle Timing Audit
+
+on:
+  push:
+    branches:
+      - research/issue-61-stage-aware-position-lifecycle
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py'
+      - 'indicators/wyckoff-regime-radar/research/v06_boundary_scores.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_stage_lifecycle_break_timing.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_stage_lifecycle_break_timing.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-a-breakout-trigger-audit.md'
+      - '.github/workflows/wyckoff-issue61-stage-lifecycle-timing.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py'
+      - 'indicators/wyckoff-regime-radar/research/v06_boundary_scores.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_stage_lifecycle_break_timing.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_stage_lifecycle_break_timing.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-61-phase-a-breakout-trigger-audit.md'
+      - '.github/workflows/wyckoff-issue61-stage-lifecycle-timing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stage-lifecycle-timing:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile carried v0.6 core and timing diagnostic
+        run: |
+          python -m py_compile generate_v06_price_only_core.py
+          python -m py_compile generate_v06_phase_b_core.py
+          python -m py_compile v06_boundary_scores.py
+          python -m py_compile diagnose_stage_lifecycle_break_timing.py
+          python -m py_compile test_diagnose_stage_lifecycle_break_timing.py
+          python generate_v06_phase_b_core.py --output generated/wyckoff-v06-phase-b-core.py
+          python -m py_compile generated/wyckoff-v06-phase-b-core.py
+      - name: Run contract tests
+        run: python -m unittest -v test_diagnose_stage_lifecycle_break_timing
+      - name: Run Phase-A timing audit
+        run: |
+          python diagnose_stage_lifecycle_break_timing.py \
+            --json-output reports/issue-61-stage-lifecycle-break-timing.json \
+            --md-output reports/issue-61-stage-lifecycle-break-timing.md
+      - name: Commit timing report on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-61-stage-aware-position-lifecycle'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-break-timing.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-61-stage-lifecycle-break-timing.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "research: record Issue #61 fresh-break timing audit"
+            git push
+          fi

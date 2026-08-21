@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "issue": 61,
+  "status": "PRE_PNL_CANDIDATE_CONSOLIDATION_AUDIT",
+  "candidate_field": "candidate_display_id",
+  "pairs": {
+    "EURUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "long_candidate_stage3": {
+        "held_bars": 326,
+        "candidate_consolidation_bars": 0,
+        "candidate_consolidation_share_of_held": 0.0,
+        "candidate_inside_matching_formal_trend_bars": 0,
+        "candidate_runs": 0,
+        "median_candidate_run_bars": null,
+        "max_candidate_run_bars": null,
+        "candidate_onsets": 0,
+        "candidate_onsets_while_formal_trend": 0
+      },
+      "short_candidate_stage6": {
+        "held_bars": 352,
+        "candidate_consolidation_bars": 0,
+        "candidate_consolidation_share_of_held": 0.0,
+        "candidate_inside_matching_formal_trend_bars": 0,
+        "candidate_runs": 0,
+        "median_candidate_run_bars": null,
+        "max_candidate_run_bars": null,
+        "candidate_onsets": 0,
+        "candidate_onsets_while_formal_trend": 0
+      }
+    },
+    "USDJPY": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "long_candidate_stage3": {
+        "held_bars": 302,
+        "candidate_consolidation_bars": 0,
+        "candidate_consolidation_share_of_held": 0.0,
+        "candidate_inside_matching_formal_trend_bars": 0,
+        "candidate_runs": 0,
+        "median_candidate_run_bars": null,
+        "max_candidate_run_bars": null,
+        "candidate_onsets": 0,
+        "candidate_onsets_while_formal_trend": 0
+      },
+      "short_candidate_stage6": {
+        "held_bars": 299,
+        "candidate_consolidation_bars": 0,
+        "candidate_consolidation_share_of_held": 0.0,
+        "candidate_inside_matching_formal_trend_bars": 0,
+        "candidate_runs": 0,
+        "median_candidate_run_bars": null,
+        "max_candidate_run_bars": null,
+        "candidate_onsets": 0,
+        "candidate_onsets_while_formal_trend": 0
+      }
+    },
+    "GBPUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "long_candidate_stage3": {
+        "held_bars": 437,
+        "candidate_consolidation_bars": 5,
+        "candidate_consolidation_share_of_held": 0.011441647597254004,
+        "candidate_inside_matching_formal_trend_bars": 3,
+        "candidate_runs": 3,
+        "median_candidate_run_bars": 1.0,
+        "max_candidate_run_bars": 3,
+        "candidate_onsets": 3,
+        "candidate_onsets_while_formal_trend": 2
+      },
+      "short_candidate_stage6": {
+        "held_bars": 320,
+        "candidate_consolidation_bars": 0,
+        "candidate_consolidation_share_of_held": 0.0,
+        "candidate_inside_matching_formal_trend_bars": 0,
+        "candidate_runs": 0,
+        "median_candidate_run_bars": null,
+        "max_candidate_run_bars": null,
+        "candidate_onsets": 0,
+        "candidate_onsets_while_formal_trend": 0
+      }
+    },
+    "AUDUSD": {
+      "rows": 2400,
+      "warmup_bars": 755,
+      "long_candidate_stage3": {
+        "held_bars": 344,
+        "candidate_consolidation_bars": 1,
+        "candidate_consolidation_share_of_held": 0.0029069767441860465,
+        "candidate_inside_matching_formal_trend_bars": 1,
+        "candidate_runs": 1,
+        "median_candidate_run_bars": 1.0,
+        "max_candidate_run_bars": 1,
+        "candidate_onsets": 1,
+        "candidate_onsets_while_formal_trend": 1
+      },
+      "short_candidate_stage6": {
+        "held_bars": 407,
+        "candidate_consolidation_bars": 0,
+        "candidate_consolidation_share_of_held": 0.0,
+        "candidate_inside_matching_formal_trend_bars": 0,
+        "candidate_runs": 0,
+        "median_candidate_run_bars": null,
+        "max_candidate_run_bars": null,
+        "candidate_onsets": 0,
+        "candidate_onsets_while_formal_trend": 0
+      }
+    }
+  },
+  "aggregate": {
+    "pair_count": 4,
+    "long_candidate_stage3": {
+      "held_bars": 1409,
+      "candidate_consolidation_bars": 6,
+      "candidate_consolidation_share_of_held": 0.0042583392476933995,
+      "candidate_inside_matching_formal_trend_bars": 4,
+      "candidate_runs": 4,
+      "candidate_onsets": 4,
+      "candidate_onsets_while_formal_trend": 3,
+      "pairs_with_any_candidate_consolidation": 2,
+      "median_pair_median_candidate_run_bars": 1.0
+    },
+    "short_candidate_stage6": {
+      "held_bars": 1378,
+      "candidate_consolidation_bars": 0,
+      "candidate_consolidation_share_of_held": 0.0,
+      "candidate_inside_matching_formal_trend_bars": 0,
+      "candidate_runs": 0,
+      "candidate_onsets": 0,
+      "candidate_onsets_while_formal_trend": 0,
+      "pairs_with_any_candidate_consolidation": 0,
+      "median_pair_median_candidate_run_bars": null
+    }
+  },
+  "boundary": "Counts/durations only. No PnL. Candidate layer is existing v0.6 semantics; no new threshold is introduced."
+}
