@@ -19,6 +19,7 @@ from asset_allocation_phase_a import (
     summarize_next_day_risk,
     write_markdown_report,
 )
+from asset_allocation_relative import summarize_relative_returns
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_TRANSITIONS = HERE / "data" / "issue-64-frozen-regime-transitions.csv"
@@ -100,6 +101,7 @@ def run_phase_a_frozen(start: str, end: str | None, output_dir: Path) -> dict:
     episodes = regime_episode_rows(finite_history["core_regime"])
     episode_summary = summarize_episodes(finite_history["core_regime"])
     points, inference = summarize_forward_returns(history, prices)
+    relative = summarize_relative_returns(history, prices)
     risk, correlations = summarize_next_day_risk(history, prices)
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -107,11 +109,12 @@ def run_phase_a_frozen(start: str, end: str | None, output_dir: Path) -> dict:
     episodes.to_csv(output_dir / "phase-a-regime-episodes.csv", index=False, date_format="%Y-%m-%d")
     points.to_csv(output_dir / "phase-a-forward-returns.csv", index=False)
     inference.to_csv(output_dir / "phase-a-forward-inference.csv", index=False)
+    relative.to_csv(output_dir / "phase-a-relative-returns.csv", index=False)
     risk.to_csv(output_dir / "phase-a-next-day-risk.csv", index=False)
     correlations.to_csv(output_dir / "phase-a-correlations.csv", index=False)
 
     manifest = {
-        "schema_version": 2,
+        "schema_version": 3,
         "issue": 64,
         "phase": "A",
         "purpose": "descriptive regime-conditioned SPY/TLT/GLD asset-allocation diagnostics",
@@ -126,7 +129,9 @@ def run_phase_a_frozen(start: str, end: str | None, output_dir: Path) -> dict:
         "common_finite_regime_rows": int(finite.sum()),
         "inference_contract": (
             "All-observation means/ranks are descriptive. Bootstrap 95% intervals use deterministic "
-            "horizon-embargoed starts within each regime; overlapping forward windows are not treated as independent."
+            "horizon-embargoed starts within each regime; overlapping forward windows are not treated as independent. "
+            "Pairwise asset preference is tested directly on same-date return spreads, not by visually comparing "
+            "standalone asset confidence intervals."
         ),
         "evidence_status": "development_or_reused_exploratory; not newly untouched OOS",
         "allocation_mapping_selected": False,
