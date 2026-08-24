@@ -21,7 +21,6 @@ from asset_allocation_phase_b import (
     portfolio_metrics,
     segment_sim,
     simulate_portfolio,
-    summarize_strategies,
     weights_series,
 )
 
@@ -67,9 +66,23 @@ def reconstruct_asset_returns(daily: pd.DataFrame) -> tuple[pd.DataFrame, float]
     return pd.DataFrame(rows, index=index, columns=list(ASSETS)), max_residual
 
 
+def _as_ns_index(values: pd.Index | pd.Series) -> pd.DatetimeIndex:
+    """Normalize timestamps to ns precision before pandas merge_asof."""
+    parsed = pd.to_datetime(values, errors="raise")
+    if isinstance(parsed, pd.Series):
+        parsed = pd.DatetimeIndex(parsed.to_numpy())
+    else:
+        parsed = pd.DatetimeIndex(parsed)
+    return parsed.astype("datetime64[ns]")
+
+
 def lagged_reflation_status(index: pd.DatetimeIndex) -> pd.Series:
-    transitions = load_frozen_transitions().sort_values("start_date")
-    lookup = pd.DataFrame({"date": index})
+    """Map frozen transitions robustly across pandas datetime precisions."""
+    original_index = pd.DatetimeIndex(index)
+    lookup_dates = _as_ns_index(original_index)
+    transitions = load_frozen_transitions().sort_values("start_date").copy()
+    transitions["start_date"] = _as_ns_index(transitions["start_date"])
+    lookup = pd.DataFrame({"date": lookup_dates})
     mapped = pd.merge_asof(
         lookup,
         transitions,
@@ -78,7 +91,7 @@ def lagged_reflation_status(index: pd.DatetimeIndex) -> pd.Series:
         direction="backward",
         allow_exact_matches=True,
     )
-    regimes = pd.Series(mapped["regime_id"].to_numpy(), index=index)
+    regimes = pd.Series(mapped["regime_id"].to_numpy(), index=original_index)
     return regimes.shift(1).eq(REFLATION_REGIME_ID).fillna(False).astype(bool)
 
 
