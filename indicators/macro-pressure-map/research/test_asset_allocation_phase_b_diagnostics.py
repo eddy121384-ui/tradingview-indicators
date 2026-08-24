@@ -3,7 +3,11 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from asset_allocation_phase_b_diagnostics import matched_weights, reconstruct_asset_returns
+from asset_allocation_phase_b_diagnostics import (
+    lagged_reflation_status,
+    matched_weights,
+    reconstruct_asset_returns,
+)
 
 
 def test_matched_weights_preserve_gold_and_shift_only_spy_tlt() -> None:
@@ -35,3 +39,14 @@ def test_asset_return_reconstruction_recovers_known_returns() -> None:
     recovered, residual = reconstruct_asset_returns(pd.DataFrame(rows))
     assert residual < 1e-12
     assert np.allclose(recovered.iloc[0].to_numpy(float), true_returns)
+
+
+def test_lagged_reflation_status_accepts_microsecond_precision_index() -> None:
+    index = pd.DatetimeIndex(
+        np.asarray(["2007-01-04", "2007-01-05", "2007-01-08"], dtype="datetime64[us]")
+    )
+    assert str(index.dtype) == "datetime64[us]"
+    status = lagged_reflation_status(index)
+    assert status.index.equals(index)
+    assert status.dtype == bool
+    assert len(status) == len(index)
