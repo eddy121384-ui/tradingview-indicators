@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "issue": 64,
   "phase": "B",
   "artifact_role": "pre-registered portfolio accounting and allocation template contract",
@@ -36,21 +36,31 @@
     "weight_magnitude_sweep_allowed": false
   },
   "rebalance": {
-    "scheduled": "first common trading day of each calendar month",
-    "event_driven": "also rebalance when the one-bar-lagged target template changes between neutral and Reflation",
+    "scheduled": "first common trading day of each calendar month for the regime strategy and all fixed-weight benchmarks",
+    "event_driven": "the regime strategy additionally rebalances when the one-bar-lagged target template changes between neutral and Reflation",
     "non_reflation_to_non_reflation_transition_triggers_trade": false,
     "turnover_definition": "0.5 * sum(abs(target_weight - drifted_pretrade_weight))",
-    "weights_between_rebalances": "self-financing drift with adjusted close-to-close asset returns"
+    "weights_between_rebalances": "self-financing drift with adjusted close-to-close asset returns",
+    "initial_allocation": "initialize directly at the first target weight vector; initial entry is excluded from turnover and transaction-cost accounting"
   },
   "transaction_cost": {
     "primary_bps_per_one_way_turnover": 5.0,
     "sensitivity_bps_per_one_way_turnover": [0.0, 10.0],
-    "cost_application": "deduct turnover * bps / 10000 from portfolio value on each rebalance date"
+    "cost_application": "deduct turnover * bps / 10000 from portfolio value on each post-initial rebalance date"
   },
   "benchmarks": {
-    "fixed_60_40": {"SPY": 0.60, "TLT": 0.40, "GLD": 0.00},
-    "fixed_equal_weight": {"SPY": 0.3333333333333333, "TLT": 0.3333333333333333, "GLD": 0.3333333333333333},
-    "fixed_neutral_40_40_20": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
+    "fixed_60_40": {
+      "weights": {"SPY": 0.60, "TLT": 0.40, "GLD": 0.00},
+      "rebalance": "first common trading day of each calendar month"
+    },
+    "fixed_equal_weight": {
+      "weights": {"SPY": 0.3333333333333333, "TLT": 0.3333333333333333, "GLD": 0.3333333333333333},
+      "rebalance": "first common trading day of each calendar month"
+    },
+    "fixed_neutral_40_40_20": {
+      "weights": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
+      "rebalance": "first common trading day of each calendar month"
+    },
     "causal_inverse_volatility": {
       "lookback_trading_rows": 63,
       "minimum_observations": 63,
@@ -59,8 +69,14 @@
       "asset_floor_or_cap": null
     }
   },
+  "portfolio_accounting": {
+    "return_frequency": "common-date adjusted close-to-close daily returns",
+    "trade_timing": "target for date t uses only regime/volatility information available through t-1; rebalance occurs before applying date-t close-to-close return",
+    "cost_treatment": "cost is a proportional portfolio-value deduction and does not alter relative post-trade target weights",
+    "drift": "after date-t asset returns, weights are marked to market and become the next date's drifted pre-trade weights"
+  },
   "comparison_window": {
-    "common_start": "first date on or after 2007-01-04 for which the 63-row lagged inverse-volatility benchmark is finite for all three assets",
+    "common_start": "first date on or after 2007-01-04 for which the 63-row lagged inverse-volatility benchmark is finite for all three assets, the one-row-lagged regime is finite, and common asset returns are finite",
     "end": "2026-08-14",
     "same_dates_for_all_strategies": true,
     "development_segment": "common_start through 2019-12-31",
