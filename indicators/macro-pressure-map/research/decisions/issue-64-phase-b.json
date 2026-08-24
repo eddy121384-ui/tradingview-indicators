@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "issue": 64,
   "phase": "B",
   "artifact_role": "durable curated Phase B portfolio and attribution evidence",
@@ -52,32 +52,57 @@
     "neutral_CAGR_10bp": 0.0817547712396922,
     "interpretation": "The historical advantage versus fixed neutral survives the preregistered 10bp sensitivity."
   },
-  "posthoc_exposure_match": {
+  "posthoc_realized_exposure_match": {
     "noncausal_attribution_only": true,
-    "full_matched_weights": {"SPY": 0.4433997125846849, "TLT": 0.35660028741531513, "GLD": 0.20},
-    "full_history": {"delta_CAGR": 0.0050800949746725, "delta_Sharpe": 0.0558447244614174, "delta_Calmar": 0.0120784303896689},
-    "development_pre2020": {"delta_CAGR": 0.0080485506278004, "delta_Sharpe": 0.0979937788730946, "delta_Calmar": 0.0909479731814416},
-    "post2019_reused_exploratory": {"delta_CAGR": 0.0008260328553137, "delta_Sharpe": 0.0102932170846995, "delta_Calmar": -0.0034127957913143},
-    "interpretation": "After matching average equity/duration exposure, timing value remains substantial in development history but is near zero post-2019."
+    "matching_basis": "realized average invested_weight_* exposure after drift and rebalance, solved post-hoc on the realized return path",
+    "full_history": {
+      "control_target_weights": {"SPY": 0.4427640004871879, "TLT": 0.35734658880866893, "GLD": 0.1998894107041432},
+      "strategy_average_invested_weights": {"SPY": 0.4437590120975461, "TLT": 0.3557446534937853, "GLD": 0.20049633440866851},
+      "control_average_invested_weights": {"SPY": 0.4437590120975461, "TLT": 0.3557446534937854, "GLD": 0.2004963344086685},
+      "max_abs_invested_weight_mismatch": 1.1102230246251565e-16,
+      "delta_CAGR": 0.005142145213309135,
+      "delta_Sharpe": 0.055949343686955255,
+      "delta_Calmar": 0.012484129472139671
+    },
+    "development_pre2020": {
+      "control_target_weights": {"SPY": 0.44682020936002714, "TLT": 0.35342382686894236, "GLD": 0.1997559637710305},
+      "strategy_average_invested_weights": {"SPY": 0.44755704444287703, "TLT": 0.3524537337899581, "GLD": 0.1999892217671649},
+      "control_average_invested_weights": {"SPY": 0.4475570444426541, "TLT": 0.352453733790175, "GLD": 0.19998922176717102},
+      "max_abs_invested_weight_mismatch": 2.2293278334473143e-13,
+      "delta_CAGR": 0.008058282212547854,
+      "delta_Sharpe": 0.09737200021574133,
+      "delta_Calmar": 0.0902950201206083
+    },
+    "post2019_reused_exploratory": {
+      "control_target_weights": {"SPY": 0.43493289512411065, "TLT": 0.36493218815381945, "GLD": 0.2001349167220699},
+      "strategy_average_invested_weights": {"SPY": 0.43643244098280104, "TLT": 0.3620929820625632, "GLD": 0.20147457695463578},
+      "control_average_invested_weights": {"SPY": 0.4364324409828011, "TLT": 0.3620929820625633, "GLD": 0.20147457695463566},
+      "max_abs_invested_weight_mismatch": 1.6653345369377348e-16,
+      "delta_CAGR": 0.0009617028069599104,
+      "delta_Sharpe": 0.01109948790637505,
+      "delta_Calmar": -0.0027666938342016945
+    },
+    "interpretation": "After matching realized average invested exposure to effectively machine precision, timing value remains material in development history but is near zero post-2019."
   },
   "posthoc_episode_concentration": {
+    "control_basis": "era-piecewise realized-exposure-matched allocation",
     "development_pre2020": {
-      "total_active_log_return": 0.0942124163208431,
+      "total_active_log_return": 0.09432791902452678,
       "reflation_episodes": 49,
       "positive_reflation_episodes": 24,
       "largest_positive_episode": "2010-10-01 through 2011-05-03",
-      "largest_positive_episode_active_log": 0.0402776941973016,
-      "top1_share_of_positive_episode_contribution": 0.2706514073318842,
-      "active_log_after_removing_largest_positive_episode": 0.0539347221235414
+      "largest_positive_episode_active_log": 0.040485993808228864,
+      "top1_share_of_positive_episode_contribution": 0.27079147844266266,
+      "active_log_after_removing_largest_positive_episode": 0.053841925216297916
     },
     "post2019_reused_exploratory": {
-      "total_active_log_return": 0.0050080661802437,
+      "total_active_log_return": 0.005831101106354927,
       "reflation_episodes": 31,
       "positive_reflation_episodes": 12,
       "largest_positive_episode": "2020-11-23 through 2021-05-21",
-      "largest_positive_episode_active_log": 0.0506422857521539,
-      "top1_share_of_positive_episode_contribution": 0.6121930811776278,
-      "active_log_after_removing_largest_positive_episode": -0.0456342195719101
+      "largest_positive_episode_active_log": 0.05086981618475126,
+      "top1_share_of_positive_episode_contribution": 0.612071335002524,
+      "active_log_after_removing_largest_positive_episode": -0.04503871507839634
     },
     "interpretation": "Pre-2020 timing remains positive after removing its largest winning episode. Post-2019 timing is weak overall and becomes negative when the 2020-11 to 2021-05 episode is removed."
   },
@@ -89,10 +114,10 @@
     "recommended_next_step": "Treat Reflation override as exploratory/risk-context evidence, not a production allocator. If research continues, preregister a separate Stagflation gold-over-equity experiment rather than modifying the Reflation rule."
   },
   "latest_verified_workflow": {
-    "run_id": 32702615312,
-    "head_sha": "1b87cc3dac7ad0dd2cb80d6e8554ba5b030a6164",
-    "phase_b_artifact_id": 9511106011,
-    "phase_b_artifact_sha256": "92d8bcd03663597419e861b6ff147c9d5b9191693a0598db3ddd9101b1e4e2b2",
+    "run_id": 32713225168,
+    "head_sha": "18e957f4083bfbc661cd6ac65c18187a53cb6e70",
+    "phase_b_artifact_id": 9515038600,
+    "phase_b_artifact_sha256": "d711c261581b412e3c022e6296f705856c3f99194a8c3eaccbda529c9a577b33",
     "workflow_conclusion": "success"
   }
 }
