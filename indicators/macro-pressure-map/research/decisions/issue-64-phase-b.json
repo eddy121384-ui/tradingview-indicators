@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "issue": 64,
+  "phase": "B",
+  "artifact_role": "durable curated Phase B portfolio and attribution evidence",
+  "interim_verdict": "reflation_override_adds_historical_portfolio_value_but_recent_timing_is_weak_and_episode_concentrated",
+  "production_v66_parameters_modified": false,
+  "primary_strategy_modified_after_results": false,
+  "evidence_status": "development/reused exploratory history only; not untouched OOS",
+  "preregistered_rule": {
+    "default_weights": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
+    "reflation_weights": {"SPY": 0.60, "TLT": 0.20, "GLD": 0.20},
+    "execution_lag_trading_rows": 1,
+    "primary_cost_bps": 5.0,
+    "weight_sweep_performed": false,
+    "stagflation_override_included": false
+  },
+  "primary_full_history_result": {
+    "v66_reflation_override": {
+      "CAGR": 0.0906331733034633,
+      "Sharpe": 0.9421904676017993,
+      "maximum_drawdown": -0.2542998472319473,
+      "Calmar": 0.3564027831318225,
+      "annualized_turnover": 1.7825654327142146,
+      "rebalance_count": 386,
+      "transaction_cost_drag": 0.0170811654070192
+    },
+    "fixed_neutral_40_40_20": {
+      "CAGR": 0.0818402356270220,
+      "Sharpe": 0.8754688814622827,
+      "maximum_drawdown": -0.2542998472319479,
+      "Calmar": 0.3218257364990677
+    },
+    "incremental_vs_neutral": {
+      "delta_CAGR": 0.0087929376764412,
+      "delta_Sharpe": 0.0667215861395164,
+      "delta_maximum_drawdown": 5.551115123125784e-16,
+      "delta_Calmar": 0.0345770466327548
+    },
+    "causal_inverse_volatility_context": {
+      "CAGR": 0.0905841088767722,
+      "Sharpe": 0.9849425066530740,
+      "maximum_drawdown": -0.2246389838167029,
+      "Calmar": 0.4032430495264595
+    },
+    "interpretation": "The preregistered Reflation override beats the same fixed neutral allocation on return and Sharpe, but does not beat the causal inverse-volatility benchmark on risk-adjusted metrics."
+  },
+  "cost_sensitivity": {
+    "strategy_CAGR_0bp": 0.0916057144304238,
+    "strategy_CAGR_5bp": 0.0906331733034633,
+    "strategy_CAGR_10bp": 0.0896614081697271,
+    "neutral_CAGR_10bp": 0.0817547712396922,
+    "interpretation": "The historical advantage versus fixed neutral survives the preregistered 10bp sensitivity."
+  },
+  "posthoc_exposure_match": {
+    "noncausal_attribution_only": true,
+    "full_matched_weights": {"SPY": 0.4433997125846849, "TLT": 0.35660028741531513, "GLD": 0.20},
+    "full_history": {"delta_CAGR": 0.0050800949746725, "delta_Sharpe": 0.0558447244614174, "delta_Calmar": 0.0120784303896689},
+    "development_pre2020": {"delta_CAGR": 0.0080485506278004, "delta_Sharpe": 0.0979937788730946, "delta_Calmar": 0.0909479731814416},
+    "post2019_reused_exploratory": {"delta_CAGR": 0.0008260328553137, "delta_Sharpe": 0.0102932170846995, "delta_Calmar": -0.0034127957913143},
+    "interpretation": "After matching average equity/duration exposure, timing value remains substantial in development history but is near zero post-2019."
+  },
+  "posthoc_episode_concentration": {
+    "development_pre2020": {
+      "total_active_log_return": 0.0942124163208431,
+      "reflation_episodes": 49,
+      "positive_reflation_episodes": 24,
+      "largest_positive_episode": "2010-10-01 through 2011-05-03",
+      "largest_positive_episode_active_log": 0.0402776941973016,
+      "top1_share_of_positive_episode_contribution": 0.2706514073318842,
+      "active_log_after_removing_largest_positive_episode": 0.0539347221235414
+    },
+    "post2019_reused_exploratory": {
+      "total_active_log_return": 0.0050080661802437,
+      "reflation_episodes": 31,
+      "positive_reflation_episodes": 12,
+      "largest_positive_episode": "2020-11-23 through 2021-05-21",
+      "largest_positive_episode_active_log": 0.0506422857521539,
+      "top1_share_of_positive_episode_contribution": 0.6121930811776278,
+      "active_log_after_removing_largest_positive_episode": -0.0456342195719101
+    },
+    "interpretation": "Pre-2020 timing remains positive after removing its largest winning episode. Post-2019 timing is weak overall and becomes negative when the 2020-11 to 2021-05 episode is removed."
+  },
+  "decision": {
+    "reflation_rule_confirmed": false,
+    "historical_allocation_value_present": true,
+    "recent_timing_robustness_demonstrated": false,
+    "nine_regime_weight_optimization_allowed": false,
+    "recommended_next_step": "Treat Reflation override as exploratory/risk-context evidence, not a production allocator. If research continues, preregister a separate Stagflation gold-over-equity experiment rather than modifying the Reflation rule."
+  },
+  "latest_verified_workflow": {
+    "run_id": 32702615312,
+    "head_sha": "1b87cc3dac7ad0dd2cb80d6e8554ba5b030a6164",
+    "phase_b_artifact_id": 9511106011,
+    "phase_b_artifact_sha256": "92d8bcd03663597419e861b6ff147c9d5b9191693a0598db3ddd9101b1e4e2b2",
+    "workflow_conclusion": "success"
+  }
+}
