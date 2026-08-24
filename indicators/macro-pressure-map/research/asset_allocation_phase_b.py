@@ -199,7 +199,7 @@ def portfolio_metrics(sim: pd.DataFrame, *, annualization: int = 252) -> dict:
     ann_return = float(np.mean(r) * annualization)
     ann_vol = float(np.std(r, ddof=1) * math.sqrt(annualization)) if n > 1 else np.nan
     sharpe = ann_return / ann_vol if np.isfinite(ann_vol) and ann_vol > 0.0 else np.nan
-    wealth = np.cumprod(1.0 + r)
+    wealth = np.concatenate(([1.0], np.cumprod(1.0 + r)))
     drawdown = wealth / np.maximum.accumulate(wealth) - 1.0
     max_drawdown = float(np.min(drawdown))
     calmar = cagr / abs(max_drawdown) if np.isfinite(cagr) and max_drawdown < 0.0 else np.nan
