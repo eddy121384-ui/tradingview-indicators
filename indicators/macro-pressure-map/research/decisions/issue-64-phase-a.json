@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "issue": 64,
   "phase": "A",
   "artifact_role": "durable curated Phase A decision evidence",
@@ -10,12 +10,16 @@
     "source": "Issue #59 TradingView Macro Pressure Map V6.6 parity log",
     "source_log_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
     "derived_transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+    "axis_audit_sha256": "9021844c7ed0b927ce95ca3de117ac3749eb3c5541e5d6c46557aa5624fa08c1",
+    "axis_audit_rows": 51,
+    "axis_audit_sampling": "every 100th derived raw row plus final row",
+    "raw_axis_reproduction_script": "verify_issue_64_axis_reconstruction.py",
     "first_regime_date": "2007-01-04",
     "last_regime_date": "2026-08-14",
     "daily_regime_rows": 4934,
     "transition_episodes": 739,
     "regime_semantics": "frozen raw GPI x raw IPI 3x3 core regime",
-    "fcpi_role": "diagnostic only in Phase A"
+    "fcpi_role": "preserved in deterministic raw-axis audit and independent reconstruction check; not used to select Phase A regime cells"
   },
   "outcomes": {
     "assets": ["SPY", "TLT", "GLD"],
@@ -40,7 +44,7 @@
     "post2019_leader_counts": {"SPY": 5, "TLT": 0, "GLD": 22},
     "pairwise_regime_horizon_comparisons": 81,
     "same_pairwise_point_sign": 39,
-    "both_segments_ci_excludes_zero_same_direction": 2,
+    "both_segments_nominal_ci_excludes_zero_same_direction": 2,
     "same_point_sign_by_regime": {
       "Reflation / Inflation Rising": 8,
       "Growth Slowdown / Stable Inflation": 6,
@@ -53,89 +57,89 @@
       "Neutral / Range-bound Macro": 1
     }
   },
-  "strongest_stable_relationship": {
+  "selection_caveat": {
+    "reflation_hypothesis_selected_after_inspection": true,
+    "search_space_pairwise_regime_horizon_comparisons": 81,
+    "multiplicity_adjustment_applied": false,
+    "interpretation": "Nominal bootstrap intervals are hypothesis-generating only. They do not establish a confirmed discovery after post-selection/multiple-comparison search."
+  },
+  "selected_phase_b_hypothesis": {
     "regime": "Reflation / Inflation Rising",
     "comparison": "SPY total return minus TLT total return",
     "one_month": {
       "development_mean_spread": 0.01405305366111848,
-      "development_ci95": [5.358361085696646e-05, 0.027435164853313425],
+      "development_nominal_ci95": [5.358361085696646e-05, 0.027435164853313425],
       "development_n": 51,
       "post2019_mean_spread": 0.023093493423371695,
-      "post2019_ci95": [0.007021337945704043, 0.040068665298537254],
+      "post2019_nominal_ci95": [0.007021337945704043, 0.040068665298537254],
       "post2019_n": 22
     },
     "three_month": {
       "development_mean_spread": 0.04173639305153804,
-      "development_ci95": [0.014073789833590271, 0.07024357473065922],
+      "development_nominal_ci95": [0.014073789833590271, 0.07024357473065922],
       "development_n": 23,
       "post2019_mean_spread": 0.06423478252240605,
-      "post2019_ci95": [0.02714026725291399, 0.10394191193410188],
+      "post2019_nominal_ci95": [0.02714026725291399, 0.10394191193410188],
       "post2019_n": 11
     },
     "six_month": {
       "development_mean_spread": 0.0458236927758143,
-      "development_ci95": [-0.041714851479065854, 0.12316111507768338],
+      "development_nominal_ci95": [-0.041714851479065854, 0.12316111507768338],
       "development_n": 15,
       "post2019_mean_spread": 0.12002193184991951,
-      "post2019_ci95": [0.0674573957167012, 0.17606179989453322],
+      "post2019_nominal_ci95": [0.0674573957167012, 0.17606179989453322],
       "post2019_n": 7
     },
-    "interpretation": "Equity-over-duration preference is the clearest temporally stable allocation relationship; 1M and 3M intervals exclude zero in both eras, while 6M has the same point direction but wide development uncertainty."
+    "interpretation": "This is the most coherent candidate for an isolated Phase B equity-over-duration override, not a statistically confirmed relationship."
   },
-  "promising_but_not_confirmed_relationship": {
+  "secondary_exploratory_hypothesis": {
     "regime": "Stagflation Pressure",
     "comparison": "SPY total return minus GLD total return",
     "one_month": {
       "development_mean_spread": -0.014836734435053787,
-      "development_ci95": [-0.04634984855699989, 0.01575104452221532],
-      "development_n": 29,
+      "development_nominal_ci95": [-0.04634984855699989, 0.01575104452221532],
       "post2019_mean_spread": -0.010465591638455465,
-      "post2019_ci95": [-0.035202126577604374, 0.014778396047106344],
-      "post2019_n": 21
+      "post2019_nominal_ci95": [-0.035202126577604374, 0.014778396047106344]
     },
     "three_month": {
       "development_mean_spread": -0.04039757753566887,
-      "development_ci95": [-0.11636926567476712, 0.027926324786558446],
-      "development_n": 15,
+      "development_nominal_ci95": [-0.11636926567476712, 0.027926324786558446],
       "post2019_mean_spread": -0.041272189806833226,
-      "post2019_ci95": [-0.11274610148654726, 0.04560460064497046],
-      "post2019_n": 11
+      "post2019_nominal_ci95": [-0.11274610148654726, 0.04560460064497046]
     },
     "six_month": {
       "development_mean_spread": -0.060800158972846075,
-      "development_ci95": [-0.1419561408772138, 0.018090466504132048],
-      "development_n": 10,
+      "development_nominal_ci95": [-0.1419561408772138, 0.018090466504132048],
       "post2019_mean_spread": -0.09208739381314383,
-      "post2019_ci95": [-0.172331486403454, -0.01768908841015945],
-      "post2019_n": 7
+      "post2019_nominal_ci95": [-0.172331486403454, -0.01768908841015945]
     },
-    "interpretation": "Gold-over-equity direction is coherent across both eras and all three horizons, but development intervals remain wide; treat as tentative rather than confirmed."
+    "interpretation": "Gold-over-equity direction is coherent across both eras and all three horizons but remains exploratory and weaker than the selected Reflation candidate."
   },
   "important_instability_example": {
     "regime": "Slowdown / Disinflation",
     "comparison": "TLT total return minus GLD total return",
     "one_month": {
       "development_mean_spread": 0.007817107142967992,
-      "development_ci95": [-0.009608865365669211, 0.025597966847099668],
+      "development_nominal_ci95": [-0.009608865365669211, 0.025597966847099668],
       "development_n": 46,
       "post2019_mean_spread": -0.02194864431433932,
-      "post2019_ci95": [-0.0471353917584941, 0.0019949935151601585],
+      "post2019_nominal_ci95": [-0.0471353917584941, 0.0019949935151601585],
       "post2019_n": 25
     },
     "three_month": {
       "development_mean_spread": 0.00602276949672659,
-      "development_ci95": [-0.034306573673272944, 0.04654687100470743],
+      "development_nominal_ci95": [-0.034306573673272944, 0.04654687100470743],
       "development_n": 21,
       "post2019_mean_spread": -0.08495017093893946,
-      "post2019_ci95": [-0.13152168256371996, -0.036798651746716864],
+      "post2019_nominal_ci95": [-0.13152168256371996, -0.036798651746716864],
       "post2019_n": 14
     },
     "six_month": {
       "development_mean_spread": -0.023453478952004076,
-      "development_ci95": [-0.08428902438902776, 0.03470496620948832],
+      "development_nominal_ci95": [-0.08428902438902776, 0.03470496620948832],
       "development_n": 14,
       "post2019_mean_spread": -0.17050263492984874,
-      "post2019_ci95": [-0.26867544370477847, -0.08868818498753207],
+      "post2019_nominal_ci95": [-0.26867544370477847, -0.08868818498753207],
       "post2019_n": 8
     },
     "interpretation": "The relative duration-versus-gold preference changes materially by era; neither 'slowdown means long duration' nor 'slowdown means gold' should be hard-coded from the full-history winner table."
@@ -144,7 +148,7 @@
     "nine_cell_historical_winner_mapping_rejected": true,
     "reason": "Only 9 of 27 regime-horizon leaders match across eras, and post-2019 GLD dominates 22 of 27 cells versus only 7 development cells, showing large secular-era dependence.",
     "can_proceed_to_constrained_phase_b": true,
-    "phase_b_boundary": "Use a small neutral-default template set and test only coarse, economically interpretable overrides. Do not optimize nine separate regime weights from the full history. Exact templates must be frozen before portfolio evaluation."
+    "phase_b_boundary": "Use a small neutral-default template set and test one pre-frozen, economically interpretable Reflation equity-over-duration override first. Treat the result as exploratory reused-history evidence because the hypothesis was selected from Phase A. Do not optimize nine separate regime weights from the full history."
   },
-  "evidence_boundary": "All Phase A historical signal evidence is reused/development/exploratory. The post-2019 segment is not newly untouched OOS."
+  "evidence_boundary": "All Phase A historical signal evidence is reused/development/exploratory. The post-2019 segment is not newly untouched OOS. Nominal bootstrap intervals are not multiplicity-adjusted."
 }
