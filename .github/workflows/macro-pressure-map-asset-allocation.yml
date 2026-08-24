@@ -8,14 +8,20 @@ on:
       - "indicators/macro-pressure-map/research/asset_allocation_phase_a_frozen.py"
       - "indicators/macro-pressure-map/research/asset_allocation_relative.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_a_segments.py"
+      - "indicators/macro-pressure-map/research/asset_allocation_phase_b.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_a.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_a_frozen.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_relative.py"
+      - "indicators/macro-pressure-map/research/test_asset_allocation_phase_b.py"
       - "indicators/macro-pressure-map/research/build_issue_64_frozen_regimes.py"
       - "indicators/macro-pressure-map/research/verify_issue_64_axis_reconstruction.py"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-axis-audit.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions-manifest.json"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-a.json"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-a.md"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b-preregistered.json"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b-preregistered.md"
       - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
       - ".github/workflows/macro-pressure-map-asset-allocation.yml"
 
@@ -23,9 +29,9 @@ permissions:
   contents: read
 
 jobs:
-  phase-a:
+  issue-64:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -42,7 +48,8 @@ jobs:
           python -m pytest -q \
             test_asset_allocation_phase_a.py \
             test_asset_allocation_phase_a_frozen.py \
-            test_asset_allocation_relative.py
+            test_asset_allocation_relative.py \
+            test_asset_allocation_phase_b.py
 
       - name: Generate Phase A evidence
         working-directory: indicators/macro-pressure-map/research
@@ -69,9 +76,33 @@ jobs:
           done
           exit "$status"
 
-      - name: Validate generated manifest is strict JSON
+      - name: Validate Phase A manifest
         working-directory: indicators/macro-pressure-map/research
         run: python -m json.tool generated/issue-64-phase-a/phase-a-manifest.json > /dev/null
+
+      - name: Generate preregistered Phase B evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          set +e
+          for attempt in 1 2 3; do
+            rm -rf generated/issue-64-phase-b
+            python asset_allocation_phase_b.py \
+              --start 2007-01-01 \
+              --output-dir generated/issue-64-phase-b
+            status=$?
+            if [ "$status" -eq 0 ]; then
+              exit 0
+            fi
+            echo "Phase B outcome-data attempt ${attempt} failed with exit ${status}."
+            if [ "$attempt" -lt 3 ]; then
+              sleep $((attempt * 10))
+            fi
+          done
+          exit "$status"
+
+      - name: Validate Phase B manifest
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m json.tool generated/issue-64-phase-b/phase-b-manifest.json > /dev/null
 
       - name: Upload Phase A research artifact
         uses: actions/upload-artifact@v4
@@ -79,3 +110,12 @@ jobs:
           name: macro-pressure-map-issue-64-phase-a
           path: indicators/macro-pressure-map/research/generated/issue-64-phase-a/
           if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload Phase B research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-64-phase-b
+          path: indicators/macro-pressure-map/research/generated/issue-64-phase-b/
+          if-no-files-found: error
+          retention-days: 3
