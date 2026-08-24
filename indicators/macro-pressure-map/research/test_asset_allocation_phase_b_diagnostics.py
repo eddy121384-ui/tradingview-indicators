@@ -3,19 +3,15 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from asset_allocation_phase_b import month_start_mask, simulate_portfolio, weights_series
 from asset_allocation_phase_b_diagnostics import (
     lagged_reflation_status,
-    matched_weights,
+    mean_invested_weights,
     reconstruct_asset_returns,
+    solve_static_target_for_realized_average,
 )
 
-
-def test_matched_weights_preserve_gold_and_shift_only_spy_tlt() -> None:
-    weights = matched_weights(0.25)
-    assert np.isclose(weights["SPY"], 0.45)
-    assert np.isclose(weights["TLT"], 0.35)
-    assert np.isclose(weights["GLD"], 0.20)
-    assert np.isclose(sum(weights.values()), 1.0)
+ASSETS = ("SPY", "TLT", "GLD")
 
 
 def test_asset_return_reconstruction_recovers_known_returns() -> None:
@@ -50,3 +46,35 @@ def test_lagged_reflation_status_accepts_microsecond_precision_index() -> None:
     assert status.index.equals(index)
     assert status.dtype == bool
     assert len(status) == len(index)
+
+
+def test_realized_exposure_solver_matches_invested_weight_average() -> None:
+    index = pd.date_range("2020-01-02", periods=140, freq="B")
+    x = np.arange(len(index), dtype=float)
+    returns = pd.DataFrame(
+        {
+            "SPY": 0.0004 + 0.006 * np.sin(x / 11.0),
+            "TLT": 0.0002 + 0.004 * np.cos(x / 13.0),
+            "GLD": 0.0001 + 0.005 * np.sin(x / 17.0 + 0.4),
+        },
+        index=index,
+    )
+    known = {"SPY": 0.45, "TLT": 0.35, "GLD": 0.20}
+    known_sim = simulate_portfolio(
+        returns,
+        weights_series(known, index),
+        month_start_mask(index),
+        cost_bps=5.0,
+        name="known",
+    )
+    desired = mean_invested_weights(known_sim)
+    solved, solved_sim, meta = solve_static_target_for_realized_average(
+        returns,
+        desired,
+        cost_bps=5.0,
+        name="solved",
+    )
+    actual = mean_invested_weights(solved_sim)
+    assert np.allclose([solved[a] for a in ASSETS], [known[a] for a in ASSETS], atol=1e-9)
+    assert np.allclose([actual[a] for a in ASSETS], [desired[a] for a in ASSETS], atol=1e-10)
+    assert meta["max_abs_invested_weight_mismatch"] < 1e-10
