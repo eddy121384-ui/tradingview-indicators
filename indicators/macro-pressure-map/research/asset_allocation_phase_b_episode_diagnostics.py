@@ -2,7 +2,7 @@
 """Post-hoc episode concentration diagnostics for Issue #64 Phase B.
 
 This diagnostic does not alter the preregistered Reflation strategy. It asks
-whether timing attribution versus an era-frequency exposure-matched control is
+whether timing attribution versus an era realized-exposure-matched control is
 broadly distributed or concentrated in a few Reflation episodes.
 """
 from __future__ import annotations
@@ -14,10 +14,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from asset_allocation_phase_b import month_start_mask, simulate_portfolio
 from asset_allocation_phase_b_diagnostics import (
+    build_realized_exposure_matched_controls,
     lagged_reflation_status,
-    piecewise_era_matched_targets,
     reconstruct_asset_returns,
 )
 
@@ -103,15 +102,10 @@ def run_diagnostics(phase_b_dir: Path) -> dict:
 
     index = returns.index
     status = lagged_reflation_status(index)
-    targets, era_meta = piecewise_era_matched_targets(index, status)
-    monthly = month_start_mask(index)
-    target_changed = targets.ne(targets.shift(1)).any(axis=1)
-    control = simulate_portfolio(
+    _, control, match_meta = build_realized_exposure_matched_controls(
+        daily,
         returns,
-        targets,
-        (monthly | target_changed).astype(bool),
         cost_bps=float(manifest["primary_cost_bps"]),
-        name="posthoc_era_frequency_exposure_match",
     )
     strategy = (
         daily.loc[daily["strategy"].eq("v66_reflation_override")]
@@ -148,15 +142,15 @@ def run_diagnostics(phase_b_dir: Path) -> dict:
     )
 
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "issue": 64,
         "phase": "B-posthoc-timing-concentration",
         "preregistered_primary_result_modified": False,
         "purpose": "measure whether Reflation timing attribution is broad or dominated by a small number of episodes",
         "causal_investable_benchmark": False,
-        "control": "posthoc era-frequency exposure-matched allocation",
+        "control": "posthoc era realized-exposure-matched allocation",
         "asset_return_reconstruction_max_abs_residual": residual,
-        "era_matched_control": era_meta,
+        "realized_exposure_matching": match_meta,
         "summary_rows": summaries,
         "interpretation_boundary": "Post-hoc attribution only. Episode concentration cannot upgrade reused-history evidence to confirmation and must not be used to retune the strategy."
     }
