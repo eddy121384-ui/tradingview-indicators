@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "issue": 64,
-  "artifact_role": "durable derived signal transitions for Phase A/B asset-allocation research",
+  "artifact_role": "durable derived signal transitions and axis-audit evidence for Phase A/B asset-allocation research",
   "source": {
     "description": "operator-supplied TradingView Pine log from Macro Pressure Map V6.6 parity capture used in Issue #59",
     "filename": "pine-logs-MPM V6.6 PARITY SRC.csv",
@@ -50,7 +50,23 @@
       "IPI": 2.447142222194998e-08,
       "FCPI": 2.4872640835837956e-08
     },
-    "interpretation": "Differences are rounding noise from decimal precision in the TradingView log."
+    "interpretation": "Differences are rounding noise from decimal precision in the TradingView log.",
+    "reproduction_script": "indicators/macro-pressure-map/research/verify_issue_64_axis_reconstruction.py",
+    "reproduction_requirement": "Supply the operator-local Pine log whose SHA-256 matches the frozen source hash. The script independently recomputes V6.6 from logged source inputs and fails if any raw-axis maximum absolute discrepancy exceeds 5e-8."
+  },
+  "axis_audit_csv": {
+    "path": "indicators/macro-pressure-map/research/data/issue-64-frozen-axis-audit.csv",
+    "sha256": "9021844c7ed0b927ce95ca3de117ac3749eb3c5541e5d6c46557aa5624fa08c1",
+    "rows": 51,
+    "columns": [
+      "date",
+      "GPI",
+      "IPI",
+      "FCPI",
+      "regime_id"
+    ],
+    "sampling": "Deterministic audit checkpoints: derived raw rows at zero-based positions 0, 100, 200, ... plus the final row. Values are stored to 8 decimal places.",
+    "purpose": "Preserve inspectable raw GPI/IPI/FCPI checkpoints, including FCPI context, without committing the operator-local Pine log or claiming the sample is a substitute for the full local derivation."
   },
   "transition_csv": {
     "path": "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv",
@@ -63,5 +79,5 @@
     ],
     "mapping_semantics": "Assign each outcome trading date to the latest transition start_date at or before that date. The outcome calendar includes SPY, the same anchor market used by the Pine log."
   },
-  "evidence_boundary": "This is reused Issue #59 TradingView evidence, not newly untouched OOS data. V6.6 production parameters are unchanged."
+  "evidence_boundary": "This is reused Issue #59 TradingView evidence, not newly untouched OOS data. V6.6 production parameters are unchanged. The committed audit checkpoints make the recovered axes inspectable; the full daily reconstruction remains reproducible from the hash-frozen operator-local log."
 }
