@@ -33,32 +33,38 @@ The advantage survives the preregistered 10 bp cost sensitivity. However, the st
 
 A causal 63-day inverse-volatility benchmark is stronger on risk-adjusted metrics: CAGR 9.06%, Sharpe 0.985, max drawdown -22.46%, Calmar 0.403. Phase B therefore does not establish V6.6 as the best allocator among simple alternatives.
 
-## Exposure-matched attribution
+## Realized-exposure-matched attribution
 
-The Reflation strategy's realized average weights are roughly 44.4% SPY / 35.6% TLT / 20.0% GLD, so its improvement versus 40/40/20 cannot automatically be called timing alpha.
+The Reflation strategy's realized average invested weights are about 44.38% SPY / 35.57% TLT / 20.05% GLD over the full sample. Its improvement versus 40/40/20 therefore cannot automatically be called timing alpha.
 
-A post-hoc, noncausal exposure-matched diagnostic holds approximately the same average equity/duration mix without using regime timing.
+The post-hoc attribution control is deliberately noncausal. For the full sample and for each temporal segment separately, a static monthly-rebalanced target is solved on the realized return path so that the control's **actual average invested weights after drift and rebalance** match the V6.6 strategy's actual average invested weights. This addresses the review concern that matching only average target templates could leave residual exposure bias.
 
-Versus that control:
+The realized-weight mismatch is effectively zero:
 
-- full history: +0.51% CAGR, +0.056 Sharpe;
-- 2007–2019: +0.80% CAGR, +0.098 Sharpe, +0.091 Calmar;
-- 2020–2026: only +0.08% CAGR, +0.010 Sharpe, and Calmar is slightly worse.
+- full history max absolute mismatch: `1.11e-16`;
+- 2007–2019: `2.23e-13`;
+- post-2019: `1.67e-16`.
 
-This means the primary +0.88% CAGR improvement versus 40/40/20 mixes two effects: higher average equity exposure and regime timing. Timing itself looks meaningful in the older development era, but very weak in the post-2019 reused sample.
+Versus this stricter control:
+
+- full history: +0.51% CAGR, +0.056 Sharpe, +0.012 Calmar;
+- 2007–2019: +0.81% CAGR, +0.097 Sharpe, +0.090 Calmar;
+- post-2019 reused history: only +0.10% CAGR, +0.011 Sharpe, while Calmar is -0.003 lower.
+
+This means the primary +0.88% CAGR improvement versus 40/40/20 mixes two effects: higher average equity exposure and regime timing. After stripping out realized average exposure, timing still looks material in the older development era but is economically very small in the post-2019 reused sample.
 
 ## Episode concentration
 
-To check whether the timing result is merely one lucky macro episode, active log return versus the era-frequency exposure-matched control was decomposed by contiguous Reflation episodes.
+To check whether the residual timing result is merely one lucky macro episode, active log return versus the era-piecewise realized-exposure-matched control was decomposed by contiguous Reflation episodes.
 
 ### Development, 2007–2019
 
 - 49 Reflation episodes;
 - 24 positive timing-contribution episodes;
-- total active log return: +0.0942;
-- largest winner: 2010-10-01 through 2011-05-03, contribution +0.0403;
+- total active log return: +0.0943;
+- largest winner: 2010-10-01 through 2011-05-03, contribution +0.0405;
 - that episode is 27.1% of gross positive Reflation-episode contribution;
-- after removing that largest winner, cumulative active log return remains +0.0539.
+- after removing that largest winner, cumulative active log return remains +0.0538.
 
 The old-era result is concentrated, but not dependent on one single episode.
 
@@ -66,10 +72,10 @@ The old-era result is concentrated, but not dependent on one single episode.
 
 - 31 Reflation episodes;
 - 12 positive timing-contribution episodes;
-- total active log return: only +0.0050;
-- largest winner: 2020-11-23 through 2021-05-21, contribution +0.0506;
+- total active log return: only +0.0058;
+- largest winner: 2020-11-23 through 2021-05-21, contribution +0.0509;
 - that single episode is 61.2% of gross positive Reflation-episode contribution;
-- after removing it, cumulative active log return falls to -0.0456.
+- after removing it, cumulative active log return falls to -0.0450.
 
 Therefore the recent-history timing case is not robust. The small post-2019 net benefit is heavily dependent on the 2020–2021 reflation/reopening episode.
 
@@ -77,7 +83,7 @@ Therefore the recent-history timing case is not robust. The small post-2019 net 
 
 Phase B supports a narrower statement than "Macro Pressure Map is a validated production asset allocator":
 
-> The frozen V6.6 Reflation state contains historically useful equity-versus-duration allocation information, especially in pre-2020 data, but the incremental timing value weakens materially after 2019 and is highly episode-concentrated in the recent sample.
+> The frozen V6.6 Reflation state contains historically useful equity-versus-duration allocation information, especially in pre-2020 data, but its incremental timing value weakens materially after 2019 and is highly episode-concentrated in the recent sample.
 
 Do not retune the Reflation weights or build nine separately optimized portfolio recipes from this result.
 
@@ -85,8 +91,8 @@ If Issue #64 continues, the next clean experiment should be a **separately prere
 
 ## Reproducibility
 
-Latest verified workflow: `32702615312` on head `1b87cc3dac7ad0dd2cb80d6e8554ba5b030a6164`.
+Latest verified workflow: `32713225168` on head `18e957f4083bfbc661cd6ac65c18187a53cb6e70`.
 
-Phase B artifact: `9511106011`, digest `sha256:92d8bcd03663597419e861b6ff147c9d5b9191693a0598db3ddd9101b1e4e2b2`.
+Phase B artifact: `9515038600`, digest `sha256:d711c261581b412e3c022e6296f705856c3f99194a8c3eaccbda529c9a577b33`.
 
-The workflow completed tests, Phase A evidence, Phase B primary evidence, exposure-matched attribution, episode concentration diagnostics, strict JSON validation and artifact upload successfully.
+The workflow completed focused tests, Phase A evidence, Phase B primary evidence, realized-exposure-matched attribution, episode concentration diagnostics, strict JSON validation and artifact upload successfully.
