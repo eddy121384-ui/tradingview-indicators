@@ -43,10 +43,16 @@ jobs:
         run: |
           FILE=generated/wyckoff-issue-61-stage-lifecycle-strategy-preview.pine
           grep -F 'strategy("Chase Risk Radar v0.6｜Stage Lifecycle Strategy Preview"' "$FILE"
+          grep -F 'process_orders_on_close=false' "$FILE"
           grep -F 'strategy.entry("Long"' "$FILE"
           grep -F 'strategy.entry("Short"' "$FILE"
           grep -F 'issue61EarlyFailLong' "$FILE"
-          grep -F 'issue61RegimeExitLong' "$FILE"
+          grep -F 'issue61OppositeExitLong' "$FILE"
+          grep -F 'issue61AddLongCandidate' "$FILE"
+          if grep -Fq 'RE-LONG' "$FILE"; then
+            echo 'Unexpected automatic re-entry path remains' >&2
+            exit 1
+          fi
       - name: Commit generated preview on branch push
         if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-61-stage-aware-position-lifecycle'
         working-directory: .
