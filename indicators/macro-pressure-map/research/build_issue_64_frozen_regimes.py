@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Derive Issue #64 frozen 3x3 regime transitions from the Issue #59 Pine log.
+"""Derive Issue #64 frozen 3x3 regimes from the Issue #59 Pine log.
 
 The raw TradingView log is operator-local and is not committed. The expected
 SHA-256 is frozen here so this script can reproduce the committed transition
-artifact from exactly the evidence already used in Issue #59.
+artifact and deterministic raw-axis audit checkpoints from exactly the evidence
+already used in Issue #59.
 """
 from __future__ import annotations
 
@@ -15,6 +16,7 @@ import pandas as pd
 
 EXPECTED_SOURCE_SHA256 = "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d"
 EMA_ALPHA = 2.0 / (5.0 + 1.0)
+AUDIT_STRIDE = 100
 REGIME_NAMES = {
     1: "Goldilocks / Disinflationary Expansion",
     2: "Benign Expansion / Stable Inflation",
@@ -120,14 +122,25 @@ def derive_daily_regimes(log_path: Path) -> pd.DataFrame:
 def derive_transitions(daily: pd.DataFrame) -> pd.DataFrame:
     changed = daily["regime_id"].ne(daily["regime_id"].shift(1))
     transitions = daily.loc[changed, ["regime_id"]].reset_index()
-    transitions = transitions.rename(columns={"date": "start_date"})
-    return transitions
+    return transitions.rename(columns={"date": "start_date"})
+
+
+def derive_axis_audit(daily: pd.DataFrame, stride: int = AUDIT_STRIDE) -> pd.DataFrame:
+    """Persist deterministic raw-axis checkpoints without committing the local log."""
+    if stride < 1:
+        raise ValueError("audit stride must be positive")
+    positions = list(range(0, len(daily), stride))
+    if positions[-1] != len(daily) - 1:
+        positions.append(len(daily) - 1)
+    audit = daily.iloc[positions][["GPI", "IPI", "FCPI", "regime_id"]].reset_index()
+    return audit
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Derive Issue #64 regime transitions from frozen Pine log")
+    parser = argparse.ArgumentParser(description="Derive Issue #64 regimes from frozen Pine log")
     parser.add_argument("--pine-log", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True, help="transition CSV output")
+    parser.add_argument("--axis-audit-output", type=Path, default=None)
     return parser.parse_args()
 
 
@@ -137,6 +150,15 @@ def main() -> int:
     transitions = derive_transitions(daily)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     transitions.to_csv(args.output, index=False, date_format="%Y-%m-%d")
+    if args.axis_audit_output is not None:
+        audit = derive_axis_audit(daily)
+        args.axis_audit_output.parent.mkdir(parents=True, exist_ok=True)
+        audit.to_csv(
+            args.axis_audit_output,
+            index=False,
+            date_format="%Y-%m-%d",
+            float_format="%.8f",
+        )
     print(
         f"derived_rows={len(daily)} transitions={len(transitions)} "
         f"first={daily.index.min().date()} last={daily.index.max().date()}"
