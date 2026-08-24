@@ -7,13 +7,17 @@ on:
     paths:
       - 'indicators/wyckoff-regime-radar/research/pine/issue-61-v06-core-visual-source.pine'
       - 'indicators/wyckoff-regime-radar/research/generate_issue61_stage_lifecycle_strategy_preview.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue61_stage_lifecycle_performance_preview.py'
       - 'indicators/wyckoff-regime-radar/research/test_generate_issue61_stage_lifecycle_strategy_preview.py'
+      - 'indicators/wyckoff-regime-radar/research/test_generate_issue61_stage_lifecycle_performance_preview.py'
       - '.github/workflows/wyckoff-issue61-strategy-preview.yml'
   pull_request:
     paths:
       - 'indicators/wyckoff-regime-radar/research/pine/issue-61-v06-core-visual-source.pine'
       - 'indicators/wyckoff-regime-radar/research/generate_issue61_stage_lifecycle_strategy_preview.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue61_stage_lifecycle_performance_preview.py'
       - 'indicators/wyckoff-regime-radar/research/test_generate_issue61_stage_lifecycle_strategy_preview.py'
+      - 'indicators/wyckoff-regime-radar/research/test_generate_issue61_stage_lifecycle_performance_preview.py'
       - '.github/workflows/wyckoff-issue61-strategy-preview.yml'
   workflow_dispatch:
 
@@ -31,15 +35,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Compile generator and contract tests
+      - name: Compile generators and contract tests
         run: |
           python -m py_compile generate_issue61_stage_lifecycle_strategy_preview.py
+          python -m py_compile generate_issue61_stage_lifecycle_performance_preview.py
           python -m py_compile test_generate_issue61_stage_lifecycle_strategy_preview.py
+          python -m py_compile test_generate_issue61_stage_lifecycle_performance_preview.py
       - name: Run strategy-preview contract tests
-        run: python -m unittest -v test_generate_issue61_stage_lifecycle_strategy_preview
-      - name: Generate TradingView strategy preview
-        run: python generate_issue61_stage_lifecycle_strategy_preview.py
-      - name: Check generated strategy surface
+        run: |
+          python -m unittest -v test_generate_issue61_stage_lifecycle_strategy_preview
+          python -m unittest -v test_generate_issue61_stage_lifecycle_performance_preview
+      - name: Generate TradingView previews
+        run: |
+          python generate_issue61_stage_lifecycle_strategy_preview.py
+          python generate_issue61_stage_lifecycle_performance_preview.py
+      - name: Check generated visual strategy surface
         run: |
           FILE=generated/wyckoff-issue-61-stage-lifecycle-strategy-preview.pine
           grep -F 'strategy("Chase Risk Radar v0.6｜Stage Lifecycle Strategy Preview"' "$FILE"
@@ -53,16 +63,29 @@ jobs:
             echo 'Unexpected automatic re-entry path remains' >&2
             exit 1
           fi
-      - name: Commit generated preview on branch push
+      - name: Check generated performance strategy surface
+        run: |
+          FILE=generated/wyckoff-issue-61-stage-lifecycle-performance-preview.pine
+          grep -F 'strategy("Chase Risk Radar v0.6｜Stage Lifecycle Performance Preview"' "$FILE"
+          grep -F 'initial_capital=100000' "$FILE"
+          grep -F 'currency=currency.USD' "$FILE"
+          grep -F 'default_qty_type=strategy.percent_of_equity' "$FILE"
+          grep -F 'default_qty_value=50' "$FILE"
+          grep -F 'commission_value=0.02' "$FILE"
+          grep -F 'process_orders_on_close=false' "$FILE"
+          grep -F 'margin_long=100' "$FILE"
+          grep -F 'margin_short=100' "$FILE"
+      - name: Commit generated previews on branch push
         if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-61-stage-aware-position-lifecycle'
         working-directory: .
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-61-stage-lifecycle-strategy-preview.pine
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue-61-stage-lifecycle-performance-preview.pine
           if git diff --cached --quiet; then
             echo "No generated preview changes to commit"
           else
-            git commit -m "research: generate Issue #61 TradingView strategy preview"
+            git commit -m "research: generate Issue #61 TradingView previews"
             git push
           fi
