@@ -98,8 +98,11 @@ def causal_inverse_vol_targets(returns: pd.DataFrame, lookback: int) -> pd.DataF
 
 
 def template_change_mask(template: pd.Series) -> pd.Series:
-    valid = template.notna()
-    changed = template.ne(template.shift(1)) & valid & template.shift(1).notna()
+    """Return True only when two consecutive known target templates differ."""
+    previous = template.shift(1)
+    valid = template.notna() & previous.notna()
+    sentinel = "__missing_template__"
+    changed = template.fillna(sentinel).ne(previous.fillna(sentinel)) & valid
     return changed.astype(bool)
 
 
@@ -182,8 +185,7 @@ def simulate_portfolio(
             row[f"end_weight_{asset}"] = float(weight)
         rows.append(row)
 
-    result = pd.DataFrame(rows).set_index("date")
-    return result
+    return pd.DataFrame(rows).set_index("date")
 
 
 def portfolio_metrics(sim: pd.DataFrame, *, annualization: int = 252) -> dict:
@@ -305,8 +307,7 @@ def build_targets(
         "fixed_neutral_40_40_20": weights_series(contract["benchmarks"]["fixed_neutral_40_40_20"]["weights"], eval_index),
     }
     lookback = int(contract["benchmarks"]["causal_inverse_volatility"]["lookback_trading_rows"])
-    inv = causal_inverse_vol_targets(returns_all, lookback).loc[eval_index]
-    targets["causal_inverse_volatility"] = inv
+    targets["causal_inverse_volatility"] = causal_inverse_vol_targets(returns_all, lookback).loc[eval_index]
 
     rebalance = {
         "v66_reflation_override": strategy_rebalance,
@@ -380,11 +381,7 @@ def run_phase_b(start: str, output_dir: Path) -> dict:
     sensitivity = pd.DataFrame(sensitivity_rows)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    daily = pd.concat(
-        [sim.reset_index() for sim in simulations.values()],
-        axis=0,
-        ignore_index=True,
-    )
+    daily = pd.concat([sim.reset_index() for sim in simulations.values()], axis=0, ignore_index=True)
     daily.to_csv(output_dir / "phase-b-daily.csv", index=False, date_format="%Y-%m-%d")
     summary.to_csv(output_dir / "phase-b-summary.csv", index=False)
     incremental.to_csv(output_dir / "phase-b-incremental-vs-neutral.csv", index=False)
