@@ -7,6 +7,7 @@ from asset_allocation_phase_b import (
     build_reflation_targets,
     causal_inverse_vol_targets,
     month_start_mask,
+    portfolio_metrics,
     simulate_portfolio,
     template_change_mask,
 )
@@ -102,3 +103,22 @@ def test_template_change_occurs_only_when_lagged_reflation_status_changes() -> N
     _, template = build_reflation_targets(regimes, NEUTRAL, REFLATION, "Reflation / Inflation Rising")
     changed = template_change_mask(template)
     assert changed.tolist() == [False, False, True, False, True, False]
+
+
+def test_drawdown_includes_loss_from_segment_starting_wealth() -> None:
+    idx = pd.to_datetime(["2020-01-02", "2020-01-03"])
+    sim = pd.DataFrame(
+        {
+            "net_return": [-0.10, 0.05],
+            "turnover": [0.0, 0.0],
+            "cost_fraction": [0.0, 0.0],
+            "gross_asset_mix_return": [-0.10, 0.05],
+            "trade": [False, False],
+            "invested_weight_SPY": [0.4, 0.4],
+            "invested_weight_TLT": [0.4, 0.4],
+            "invested_weight_GLD": [0.2, 0.2],
+        },
+        index=idx,
+    )
+    metrics = portfolio_metrics(sim)
+    assert np.isclose(metrics["maximum_drawdown"], -0.10)
