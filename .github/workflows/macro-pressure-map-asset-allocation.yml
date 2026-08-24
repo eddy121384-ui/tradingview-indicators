@@ -12,6 +12,8 @@ on:
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_a_frozen.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_relative.py"
       - "indicators/macro-pressure-map/research/build_issue_64_frozen_regimes.py"
+      - "indicators/macro-pressure-map/research/verify_issue_64_axis_reconstruction.py"
+      - "indicators/macro-pressure-map/research/data/issue-64-frozen-axis-audit.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions-manifest.json"
       - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
