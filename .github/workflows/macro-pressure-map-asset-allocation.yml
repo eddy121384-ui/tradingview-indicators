@@ -26,6 +26,8 @@ on:
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-a.md"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b-preregistered.json"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b-preregistered.md"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b.json"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b.md"
       - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
       - ".github/workflows/macro-pressure-map-asset-allocation.yml"
 
