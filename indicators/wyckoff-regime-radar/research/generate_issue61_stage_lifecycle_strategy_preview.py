@@ -9,7 +9,7 @@ OUTPUT = HERE / "generated" / "wyckoff-issue-61-stage-lifecycle-strategy-preview
 CUT_MARKER = "// v0.3.8 Dashboard Label Semantics Layer"
 OLD_DECL_PREFIX = 'indicator("Chase Risk Radar v0.6｜Transition Health Preview"'
 
-STRATEGY_DECL = '''strategy("Chase Risk Radar v0.6｜Stage Lifecycle Strategy Preview", shorttitle="ChaseRisk v0.6 STRAT", overlay=true, precision=5, pyramiding=0, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.02, process_orders_on_close=true, max_labels_count=500, max_lines_count=500)'''
+STRATEGY_DECL = '''strategy("Chase Risk Radar v0.6｜Stage Lifecycle Strategy Preview", shorttitle="ChaseRisk v0.6 STRAT", overlay=true, precision=5, pyramiding=0, default_qty_type=strategy.fixed, default_qty_value=1, commission_type=strategy.commission.percent, commission_value=0.02, process_orders_on_close=true, max_labels_count=500, max_lines_count=500)'''
 
 STRATEGY_BLOCK = r'''
 
@@ -18,14 +18,16 @@ STRATEGY_BLOCK = r'''
 // This block mirrors the frozen Python research semantics. It is intentionally
 // NOT an optimized production strategy. Use it to inspect where the research
 // engine really enters, exits, arms, fails, and stays flat.
+// Clean-review defaults keep diagnostic clutter off; turn layers on only when
+// investigating a specific trade.
 // ============================================================================
 
 groupIssue61 = "Issue #61｜Strategy Preview"
 showIssue61StageBg = input.bool(true, "顯示 Formal Stage 背景", group=groupIssue61)
-showIssue61FreshBreaks = input.bool(true, "顯示 fresh breakout / breakdown", group=groupIssue61)
-showIssue61Arms = input.bool(true, "顯示 ARM 等待確認", group=groupIssue61)
-showIssue61TradeMarks = input.bool(true, "顯示進出場原因標記", group=groupIssue61)
-showIssue61Protection = input.bool(true, "顯示前三根突破失效保護線", group=groupIssue61)
+showIssue61FreshBreaks = input.bool(false, "顯示 fresh breakout / breakdown", group=groupIssue61)
+showIssue61Arms = input.bool(false, "顯示 ARM 等待確認", group=groupIssue61)
+showIssue61TradeMarks = input.bool(false, "顯示額外進出場原因標記", group=groupIssue61)
+showIssue61Protection = input.bool(false, "顯示前三根突破失效保護線", group=groupIssue61)
 
 issue61Ready = bar_index >= rankLen - 1
 
