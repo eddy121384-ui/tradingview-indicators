@@ -46,7 +46,9 @@ class Issue66PhaseD1TradingViewParityTests(unittest.TestCase):
         self.assertTrue(report["acceptance"]["pass"], json.dumps(report["acceptance"], indent=2))
         self.assertEqual(report["reference"], "accepted C-2 price-only Python core")
         self.assertAlmostEqual(report["comparisons"]["formal_id"]["agreement_rate"], 1.0)
-        self.assertLessEqual(report["comparisons"]["prob_markup"]["max_abs_error"], 1e-12)
+        # CSV decimal serialization introduces tiny (~1e-12) round-trip noise.
+        # This is a unit-test tolerance only; the preregistered runtime gate stays P99 <= 0.50 points.
+        self.assertLessEqual(report["comparisons"]["prob_markup"]["max_abs_error"], 1e-10)
         self.assertAlmostEqual(report["comparisons"]["stale_pressure_reason"]["agreement_rate"], 1.0)
 
     def test_formal_damage_fails_preregistered_gate(self) -> None:
