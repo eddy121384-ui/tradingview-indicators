@@ -6,6 +6,7 @@ on:
       - research/issue-66-wyckoff-directional-symmetry-repair
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_c_persistence_localization.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_c_persistence_localization_v2.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_c_persistence_localization.py'
       - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_b7_stage14_gate_core.py'
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_b7_stage14_gate.py'
@@ -15,6 +16,7 @@ on:
   pull_request:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_c_persistence_localization.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_c_persistence_localization_v2.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_c_persistence_localization.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-c-persistence-localization-plan.md'
       - '.github/workflows/wyckoff-issue66-symmetry-phase-c.yml'
@@ -39,6 +41,7 @@ jobs:
       - name: Compile Phase C diagnostic
         run: |
           python -m py_compile diagnose_issue66_phase_c_persistence_localization.py
+          python -m py_compile diagnose_issue66_phase_c_persistence_localization_v2.py
           python -m py_compile test_issue66_phase_c_persistence_localization.py
       - name: Reconfirm accepted Phase B7 contract
         run: python -m unittest -v test_issue66_phase_b7_stage14_gate
@@ -46,7 +49,7 @@ jobs:
         run: python -m unittest -v test_issue66_phase_c_persistence_localization
       - name: Run Phase C Candidate-to-Formal localization
         run: |
-          python diagnose_issue66_phase_c_persistence_localization.py \
+          python diagnose_issue66_phase_c_persistence_localization_v2.py \
             --json reports/issue-66-phase-c-persistence-localization.json \
             --markdown reports/issue-66-phase-c-persistence-localization.md
           cat reports/issue-66-phase-c-persistence-localization.md
