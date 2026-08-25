@@ -1,0 +1,794 @@
+{
+  "schema_version": 1,
+  "issue": 66,
+  "phase": "B-4-pre-audit",
+  "status": "RAW_STAGE_RESIDUAL_LOCALIZATION_REUSED_DATA_NO_PNL_NO_FORMULA_CHANGE",
+  "parent": "accepted B-3 core",
+  "raw_stage_vector_mae": 2.678344454879082,
+  "reconstructed_raw_stage_mae": 2.678344454879082,
+  "reconstruction_error": 0.0,
+  "reconstruction_pass": true,
+  "dominant_raw_stage_family": "stage_3_6",
+  "ranking": [
+    "stage_3_6",
+    "stage_1_4",
+    "stage_2_5"
+  ],
+  "families": {
+    "stage_1_4": {
+      "label": "Stage 1 Accumulation \u2194 Stage 4 Distribution",
+      "stage_raw": {
+        "valid_values": 11176,
+        "weighted_mae": 3.335228369000365,
+        "absolute_error_sum": 37274.51225194808,
+        "orientations": {
+          "acc_raw__to_inverse__dist_raw": {
+            "valid_bars": 5588,
+            "mae": 3.5669841766270762,
+            "absolute_error_sum": 19932.307578992102,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1397,
+                "mae": 3.6974503186778005,
+                "absolute_error_sum": 5165.3380951928875
+              },
+              "USDJPY": {
+                "valid_bars": 1397,
+                "mae": 3.252554726891237,
+                "absolute_error_sum": 4543.818953467058
+              },
+              "GBPUSD": {
+                "valid_bars": 1397,
+                "mae": 3.466187701277897,
+                "absolute_error_sum": 4842.264218685223
+              },
+              "AUDUSD": {
+                "valid_bars": 1397,
+                "mae": 3.8517439596613707,
+                "absolute_error_sum": 5380.886311646935
+              }
+            }
+          },
+          "dist_raw__to_inverse__acc_raw": {
+            "valid_bars": 5588,
+            "mae": 3.1034725613736542,
+            "absolute_error_sum": 17342.20467295598,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1397,
+                "mae": 3.036314029664938,
+                "absolute_error_sum": 4241.730699441919
+              },
+              "USDJPY": {
+                "valid_bars": 1397,
+                "mae": 3.577747972799351,
+                "absolute_error_sum": 4998.113918000693
+              },
+              "GBPUSD": {
+                "valid_bars": 1397,
+                "mae": 2.9813531232771444,
+                "absolute_error_sum": 4164.950313218171
+              },
+              "AUDUSD": {
+                "valid_bars": 1397,
+                "mae": 2.818475119753185,
+                "absolute_error_sum": 3937.4097422951995
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.41508581453798843
+      },
+      "stage_gates": {
+        "valid_values": 13160,
+        "weighted_mae": 0.05827165282968552,
+        "absolute_error_sum": 766.8549512386614,
+        "orientations": {
+          "acc_gate__to_inverse__dist_gate": {
+            "valid_bars": 6580,
+            "mae": 0.04800288149759467,
+            "absolute_error_sum": 315.8589602541729,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1645,
+                "mae": 0.037196324292386916,
+                "absolute_error_sum": 61.18795346097648
+              },
+              "USDJPY": {
+                "valid_bars": 1645,
+                "mae": 0.07555753493834937,
+                "absolute_error_sum": 124.29214497358471
+              },
+              "GBPUSD": {
+                "valid_bars": 1645,
+                "mae": 0.03767053135254969,
+                "absolute_error_sum": 61.96802407494424
+              },
+              "AUDUSD": {
+                "valid_bars": 1645,
+                "mae": 0.041587135407092704,
+                "absolute_error_sum": 68.4108377446675
+              }
+            }
+          },
+          "dist_gate__to_inverse__acc_gate": {
+            "valid_bars": 6580,
+            "mae": 0.06854042416177637,
+            "absolute_error_sum": 450.99599098448857,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1645,
+                "mae": 0.07545562750731064,
+                "absolute_error_sum": 124.12450724952599
+              },
+              "USDJPY": {
+                "valid_bars": 1645,
+                "mae": 0.07557016527261873,
+                "absolute_error_sum": 124.31292187345781
+              },
+              "GBPUSD": {
+                "valid_bars": 1645,
+                "mae": 0.06225706988366073,
+                "absolute_error_sum": 102.4128799586219
+              },
+              "AUDUSD": {
+                "valid_bars": 1645,
+                "mae": 0.06087883398351542,
+                "absolute_error_sum": 100.14568190288287
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.9646434180195298
+      },
+      "effective_weights": {
+        "valid_values": 11176,
+        "weighted_mae": 5.098811926086863,
+        "absolute_error_sum": 56984.32208594678,
+        "orientations": {
+          "acc_eff__to_inverse__dist_eff": {
+            "valid_bars": 5588,
+            "mae": 4.2887325051756156,
+            "absolute_error_sum": 23965.43723892134,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1397,
+                "mae": 3.574383627464871,
+                "absolute_error_sum": 4993.413927568425
+              },
+              "USDJPY": {
+                "valid_bars": 1397,
+                "mae": 6.799563562195851,
+                "absolute_error_sum": 9498.990296387603
+              },
+              "GBPUSD": {
+                "valid_bars": 1397,
+                "mae": 3.1283824812755494,
+                "absolute_error_sum": 4370.3503263419425
+              },
+              "AUDUSD": {
+                "valid_bars": 1397,
+                "mae": 3.652600349766192,
+                "absolute_error_sum": 5102.68268862337
+              }
+            }
+          },
+          "dist_eff__to_inverse__acc_eff": {
+            "valid_bars": 5588,
+            "mae": 5.90889134699811,
+            "absolute_error_sum": 33018.88484702544,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1397,
+                "mae": 6.440153073422718,
+                "absolute_error_sum": 8996.893843571537
+              },
+              "USDJPY": {
+                "valid_bars": 1397,
+                "mae": 6.565023273929362,
+                "absolute_error_sum": 9171.337513679318
+              },
+              "GBPUSD": {
+                "valid_bars": 1397,
+                "mae": 5.38784023363764,
+                "absolute_error_sum": 7526.812806391783
+              },
+              "AUDUSD": {
+                "valid_bars": 1397,
+                "mae": 5.242548807002719,
+                "absolute_error_sum": 7323.8406833827985
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.9539641773725198
+      },
+      "probability_weights": {
+        "valid_values": 10784,
+        "weighted_mae": 7.930602320614141,
+        "absolute_error_sum": 85523.6154255029,
+        "orientations": {
+          "prob_acc__to_inverse__prob_dist": {
+            "valid_bars": 5392,
+            "mae": 7.243641577994598,
+            "absolute_error_sum": 39057.71538854687,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 6.285890021409538,
+                "absolute_error_sum": 8473.379748860058
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 11.834601258597916,
+                "absolute_error_sum": 15953.042496589991
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 5.517606031069301,
+                "absolute_error_sum": 7437.7329298814175
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 5.336469000901636,
+                "absolute_error_sum": 7193.560213215405
+              }
+            }
+          },
+          "prob_dist__to_inverse__prob_acc": {
+            "valid_bars": 5392,
+            "mae": 8.617563063233684,
+            "absolute_error_sum": 46465.90003695602,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 8.488346042370573,
+                "absolute_error_sum": 11442.290465115531
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 10.655743517556678,
+                "absolute_error_sum": 14363.942261666401
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 8.123500323782938,
+                "absolute_error_sum": 10950.478436459402
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 7.202662369224545,
+                "absolute_error_sum": 9709.188873714687
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.7255898143991872
+      }
+    },
+    "stage_2_5": {
+      "label": "Stage 2 Markup \u2194 Stage 5 Markdown",
+      "stage_raw": {
+        "valid_values": 10784,
+        "weighted_mae": 0.35723982891008477,
+        "absolute_error_sum": 3852.474314966354,
+        "orientations": {
+          "markup_raw__to_inverse__markdown_raw": {
+            "valid_bars": 5392,
+            "mae": 0.375809057662816,
+            "absolute_error_sum": 2026.362438917904,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 0.38516277564243356,
+                "absolute_error_sum": 519.1994215660004
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 0.3642458056999443,
+                "absolute_error_sum": 491.00334608352495
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 0.3554826508969835,
+                "absolute_error_sum": 479.19061340913373
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 0.39834499841190285,
+                "absolute_error_sum": 536.969057859245
+              }
+            }
+          },
+          "markdown_raw__to_inverse__markup_raw": {
+            "valid_bars": 5392,
+            "mae": 0.3386706001573535,
+            "absolute_error_sum": 1826.11187604845,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 0.3297818766415458,
+                "absolute_error_sum": 444.54596971280375
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 0.35023531549245746,
+                "absolute_error_sum": 472.1172052838327
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 0.36524781791817235,
+                "absolute_error_sum": 492.35405855369635
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 0.30941739057723827,
+                "absolute_error_sum": 417.0946424981172
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.04290082800294493
+      },
+      "stage_gates": {
+        "valid_values": 13160,
+        "weighted_mae": 0.00037242424659959605,
+        "absolute_error_sum": 4.901103085250684,
+        "orientations": {
+          "markup_gate__to_inverse__markdown_gate": {
+            "valid_bars": 6580,
+            "mae": 0.0003535687886003412,
+            "absolute_error_sum": 2.326482628990245,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1645,
+                "mae": 0.00015279174266111538,
+                "absolute_error_sum": 0.2513424166775348
+              },
+              "USDJPY": {
+                "valid_bars": 1645,
+                "mae": 0.00022446440593608188,
+                "absolute_error_sum": 0.3692439477648547
+              },
+              "GBPUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0005568117348393091,
+                "absolute_error_sum": 0.9159553038106635
+              },
+              "AUDUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0004802072709648583,
+                "absolute_error_sum": 0.7899409607371919
+              }
+            }
+          },
+          "markdown_gate__to_inverse__markup_gate": {
+            "valid_bars": 6580,
+            "mae": 0.00039127970459885086,
+            "absolute_error_sum": 2.5746204562604387,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1645,
+                "mae": 0.00022606012547080656,
+                "absolute_error_sum": 0.3718689063994768
+              },
+              "USDJPY": {
+                "valid_bars": 1645,
+                "mae": 0.00019439824661764138,
+                "absolute_error_sum": 0.3197851156860201
+              },
+              "GBPUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0005920586513938127,
+                "absolute_error_sum": 0.9739364815428219
+              },
+              "AUDUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0005526017949131428,
+                "absolute_error_sum": 0.9090299526321199
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.006165203503720857
+      },
+      "effective_weights": {
+        "valid_values": 10784,
+        "weighted_mae": 0.09356715497099884,
+        "absolute_error_sum": 1009.0281992072514,
+        "orientations": {
+          "markup_eff__to_inverse__markdown_eff": {
+            "valid_bars": 5392,
+            "mae": 0.09627678162620554,
+            "absolute_error_sum": 519.1244065285002,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 0.08033406468547215,
+                "absolute_error_sum": 108.29031919601645
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 0.08871287701275704,
+                "absolute_error_sum": 119.58495821319649
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 0.10274883020613154,
+                "absolute_error_sum": 138.50542311786532
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 0.11331135460046145,
+                "absolute_error_sum": 152.74370600142203
+              }
+            }
+          },
+          "markdown_eff__to_inverse__markup_eff": {
+            "valid_bars": 5392,
+            "mae": 0.09085752831579214,
+            "absolute_error_sum": 489.9037926787512,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 0.08170011315549654,
+                "absolute_error_sum": 110.13175253360933
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 0.07876691904284719,
+                "absolute_error_sum": 106.17780686975802
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 0.08328073258933597,
+                "absolute_error_sum": 112.26242753042489
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 0.11968234847548886,
+                "absolute_error_sum": 161.33180574495898
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.016891957660751168
+      },
+      "probability_weights": {
+        "valid_values": 10784,
+        "weighted_mae": 2.7090889729853864,
+        "absolute_error_sum": 29214.815484674407,
+        "orientations": {
+          "prob_markup__to_inverse__prob_markdown": {
+            "valid_bars": 5392,
+            "mae": 1.8931576599135664,
+            "absolute_error_sum": 10207.90610225395,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 1.0246184431700731,
+                "absolute_error_sum": 1381.1856613932584
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 3.8121847289470403,
+                "absolute_error_sum": 5138.82501462061
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 1.425612155710902,
+                "absolute_error_sum": 1921.7251858982959
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 1.310215311826251,
+                "absolute_error_sum": 1766.1702403417862
+              }
+            }
+          },
+          "prob_markdown__to_inverse__prob_markup": {
+            "valid_bars": 5392,
+            "mae": 3.5250202860572064,
+            "absolute_error_sum": 19006.909382420457,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 3.7494409822213792,
+                "absolute_error_sum": 5054.246444034419
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 3.3687521450110025,
+                "absolute_error_sum": 4541.077891474832
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 3.5063512895029882,
+                "absolute_error_sum": 4726.561538250028
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 3.4755367274934565,
+                "absolute_error_sum": 4685.023508661179
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.24786104328922265
+      }
+    },
+    "stage_3_6": {
+      "label": "Stage 3 Re-accumulation \u2194 Stage 6 Re-distribution",
+      "stage_raw": {
+        "valid_values": 11568,
+        "weighted_mae": 4.207516106178374,
+        "absolute_error_sum": 48672.54631627143,
+        "orientations": {
+          "reacc_raw__to_inverse__redist_raw": {
+            "valid_bars": 5784,
+            "mae": 4.2065455425622424,
+            "absolute_error_sum": 24330.65941818001,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1446,
+                "mae": 4.162040992423964,
+                "absolute_error_sum": 6018.311275045052
+              },
+              "USDJPY": {
+                "valid_bars": 1446,
+                "mae": 4.062922661185509,
+                "absolute_error_sum": 5874.986168074247
+              },
+              "GBPUSD": {
+                "valid_bars": 1446,
+                "mae": 4.323680227434836,
+                "absolute_error_sum": 6252.0416088707725
+              },
+              "AUDUSD": {
+                "valid_bars": 1446,
+                "mae": 4.27753828920466,
+                "absolute_error_sum": 6185.320366189939
+              }
+            }
+          },
+          "redist_raw__to_inverse__reacc_raw": {
+            "valid_bars": 5784,
+            "mae": 4.208486669794506,
+            "absolute_error_sum": 24341.886898091423,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1446,
+                "mae": 4.159774546448882,
+                "absolute_error_sum": 6015.033994165084
+              },
+              "USDJPY": {
+                "valid_bars": 1446,
+                "mae": 4.069635308281886,
+                "absolute_error_sum": 5884.692655775607
+              },
+              "GBPUSD": {
+                "valid_bars": 1446,
+                "mae": 4.317823825114092,
+                "absolute_error_sum": 6243.573251114977
+              },
+              "AUDUSD": {
+                "valid_bars": 1446,
+                "mae": 4.286712999333164,
+                "absolute_error_sum": 6198.586997035755
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.5420133574590666
+      },
+      "stage_gates": {
+        "valid_values": 13160,
+        "weighted_mae": 0.0017633768503903836,
+        "absolute_error_sum": 23.20603935113745,
+        "orientations": {
+          "reacc_gate__to_inverse__redist_gate": {
+            "valid_bars": 6580,
+            "mae": 0.0023484845165063443,
+            "absolute_error_sum": 15.453028118611744,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0023658468711449648,
+                "absolute_error_sum": 3.891818103033467
+              },
+              "USDJPY": {
+                "valid_bars": 1645,
+                "mae": 0.0018902820531708406,
+                "absolute_error_sum": 3.1095139774660328
+              },
+              "GBPUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0032039098690356655,
+                "absolute_error_sum": 5.27043173456367
+              },
+              "AUDUSD": {
+                "valid_bars": 1645,
+                "mae": 0.001933899272673905,
+                "absolute_error_sum": 3.1812643035485735
+              }
+            }
+          },
+          "redist_gate__to_inverse__reacc_gate": {
+            "valid_bars": 6580,
+            "mae": 0.001178269184274423,
+            "absolute_error_sum": 7.7530112325257035,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0011382346164504654,
+                "absolute_error_sum": 1.8723959440610156
+              },
+              "USDJPY": {
+                "valid_bars": 1645,
+                "mae": 0.0015709389160134448,
+                "absolute_error_sum": 2.5841945168421168
+              },
+              "GBPUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0012038968567612098,
+                "absolute_error_sum": 1.9804103293721902
+              },
+              "AUDUSD": {
+                "valid_bars": 1645,
+                "mae": 0.0008000063478725718,
+                "absolute_error_sum": 1.3160104422503807
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.029191378476749356
+      },
+      "effective_weights": {
+        "valid_values": 11568,
+        "weighted_mae": 0.15049157431539015,
+        "absolute_error_sum": 1740.8865316804333,
+        "orientations": {
+          "reacc_eff__to_inverse__redist_eff": {
+            "valid_bars": 5784,
+            "mae": 0.1959034192011162,
+            "absolute_error_sum": 1133.105376659256,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1446,
+                "mae": 0.19258671707694908,
+                "absolute_error_sum": 278.48039289326834
+              },
+              "USDJPY": {
+                "valid_bars": 1446,
+                "mae": 0.1564267235783497,
+                "absolute_error_sum": 226.19304229429366
+              },
+              "GBPUSD": {
+                "valid_bars": 1446,
+                "mae": 0.26589675527887835,
+                "absolute_error_sum": 384.4867081332581
+              },
+              "AUDUSD": {
+                "valid_bars": 1446,
+                "mae": 0.16870348087028764,
+                "absolute_error_sum": 243.9452333384359
+              }
+            }
+          },
+          "redist_eff__to_inverse__reacc_eff": {
+            "valid_bars": 5784,
+            "mae": 0.10507972942966412,
+            "absolute_error_sum": 607.7811550211773,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1446,
+                "mae": 0.10526862923279391,
+                "absolute_error_sum": 152.21843787062
+              },
+              "USDJPY": {
+                "valid_bars": 1446,
+                "mae": 0.13495681532845497,
+                "absolute_error_sum": 195.14755496494587
+              },
+              "GBPUSD": {
+                "valid_bars": 1446,
+                "mae": 0.10068933193573487,
+                "absolute_error_sum": 145.59677397907262
+              },
+              "AUDUSD": {
+                "valid_bars": 1446,
+                "mae": 0.07940414122167275,
+                "absolute_error_sum": 114.8183882065388
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.029143864966728963
+      },
+      "probability_weights": {
+        "valid_values": 10784,
+        "weighted_mae": 0.2901786731956197,
+        "absolute_error_sum": 3129.286811741563,
+        "orientations": {
+          "prob_reacc__to_inverse__prob_redist": {
+            "valid_bars": 5392,
+            "mae": 0.35729130563986156,
+            "absolute_error_sum": 1926.5147200101335,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 0.31124553482685546,
+                "absolute_error_sum": 419.55898094660114
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 0.3250125028430732,
+                "absolute_error_sum": 438.11685383246265
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 0.5601969243052611,
+                "absolute_error_sum": 755.1454539634921
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 0.23271026058425653,
+                "absolute_error_sum": 313.6934312675778
+              }
+            }
+          },
+          "prob_redist__to_inverse__prob_reacc": {
+            "valid_bars": 5392,
+            "mae": 0.22306604075137781,
+            "absolute_error_sum": 1202.772091731429,
+            "per_fx": {
+              "EURUSD": {
+                "valid_bars": 1348,
+                "mae": 0.36405364213155805,
+                "absolute_error_sum": 490.74430959334023
+              },
+              "USDJPY": {
+                "valid_bars": 1348,
+                "mae": 0.18744558698432245,
+                "absolute_error_sum": 252.67665125486667
+              },
+              "GBPUSD": {
+                "valid_bars": 1348,
+                "mae": 0.2283673165196984,
+                "absolute_error_sum": 307.83914266855345
+              },
+              "AUDUSD": {
+                "valid_bars": 1348,
+                "mae": 0.11239761736993228,
+                "absolute_error_sum": 151.51198821466872
+              }
+            }
+          }
+        },
+        "absolute_error_share": 0.02654914231159017
+      }
+    }
+  },
+  "layer_totals": {
+    "stage_raw": {
+      "valid_values": 33528,
+      "absolute_error_sum": 89799.53288318586,
+      "reconstructed_weighted_mae": 2.678344454879082
+    },
+    "stage_gates": {
+      "valid_values": 39480,
+      "absolute_error_sum": 794.9620936750496,
+      "reconstructed_weighted_mae": 0.0201358179755585
+    },
+    "effective_weights": {
+      "valid_values": 33528,
+      "absolute_error_sum": 59734.23681683446,
+      "reconstructed_weighted_mae": 1.7816224295166565
+    },
+    "probability_weights": {
+      "valid_values": 32352,
+      "absolute_error_sum": 117867.71772191886,
+      "reconstructed_weighted_mae": 3.6432899889317154
+    }
+  }
+}
