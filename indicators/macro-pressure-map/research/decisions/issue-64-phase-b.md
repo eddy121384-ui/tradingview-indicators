@@ -41,9 +41,9 @@ The post-hoc attribution control is deliberately noncausal. For the full sample 
 
 The realized-weight mismatch is effectively zero:
 
-- full history max absolute mismatch: `1.11e-16`;
-- 2007–2019: `2.23e-13`;
-- post-2019: `1.67e-16`.
+- full history max absolute mismatch: `2.50e-16`;
+- 2007–2019: `2.54e-13`;
+- post-2019: `8.33e-17`.
 
 Versus this stricter control:
 
@@ -79,6 +79,10 @@ The old-era result is concentrated, but not dependent on one single episode.
 
 Therefore the recent-history timing case is not robust. The small post-2019 net benefit is heavily dependent on the 2020–2021 reflation/reopening episode.
 
+## Drawdown accounting correction
+
+Portfolio drawdown is now explicitly seeded with each evaluated segment's pre-return starting wealth of `1.0`. This prevents a negative first return in a segment from being omitted from the running peak. A focused regression test locks this behavior. The correction does not change CAGR, Sharpe, regime timing, exposure matching, or episode attribution, and it does not change the full-history primary max-drawdown / Calmar conclusion.
+
 ## Decision boundary
 
 Phase B supports a narrower statement than "Macro Pressure Map is a validated production asset allocator":
@@ -91,8 +95,8 @@ If Issue #64 continues, the next clean experiment should be a **separately prere
 
 ## Reproducibility
 
-Latest verified workflow: `32713225168` on head `18e957f4083bfbc661cd6ac65c18187a53cb6e70`.
+Latest verified workflow: `32714875298` on head `b6ae85e796f63dc1f0fc09ba793b1b9a33e451b0`.
 
-Phase B artifact: `9515038600`, digest `sha256:d711c261581b412e3c022e6296f705856c3f99194a8c3eaccbda529c9a577b33`.
+Phase B artifact: `9515620869`, digest `sha256:d0287640395fd114b24af08cb10fa0ac0f34579ce3f58a850f56176e7a1dedb0`.
 
 The workflow completed focused tests, Phase A evidence, Phase B primary evidence, realized-exposure-matched attribution, episode concentration diagnostics, strict JSON validation and artifact upload successfully.
