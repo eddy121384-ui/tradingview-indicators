@@ -1,0 +1,79 @@
+name: Wyckoff Issue 66 Symmetry Phase A
+
+on:
+  push:
+    branches:
+      - research/issue-66-wyckoff-directional-symmetry-repair
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_reciprocal_symmetry.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_issue66_reciprocal_symmetry.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py'
+      - 'indicators/wyckoff-regime-radar/research/v06_boundary_scores.py'
+      - 'indicators/wyckoff-regime-radar/research/price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/pine_math.py'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json'
+      - 'indicators/wyckoff-regime-radar/research/data/frozen/issue-55-*-static-d1.csv'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-directional-symmetry-repair-plan.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-a-nonisomorphism-inventory.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-a.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_reciprocal_symmetry.py'
+      - 'indicators/wyckoff-regime-radar/research/test_diagnose_issue66_reciprocal_symmetry.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py'
+      - 'indicators/wyckoff-regime-radar/research/v06_boundary_scores.py'
+      - 'indicators/wyckoff-regime-radar/research/price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/pine_math.py'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json'
+      - 'indicators/wyckoff-regime-radar/research/data/frozen/issue-55-*-static-d1.csv'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-directional-symmetry-repair-plan.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-a-nonisomorphism-inventory.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  phase-a-reciprocal-symmetry:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile Phase A diagnostic and tests
+        run: |
+          python -m py_compile diagnose_issue66_reciprocal_symmetry.py
+          python -m py_compile test_diagnose_issue66_reciprocal_symmetry.py
+          python -m py_compile generate_v06_price_only_core.py
+          python -m py_compile generate_v06_phase_b_core.py
+      - name: Run Phase A symmetry contract tests
+        run: python -m unittest -v test_diagnose_issue66_reciprocal_symmetry
+      - name: Run Phase A decomposition
+        run: |
+          python diagnose_issue66_reciprocal_symmetry.py \
+            --json reports/issue-66-phase-a-reciprocal-symmetry.json \
+            --markdown reports/issue-66-phase-a-reciprocal-symmetry.md
+          cat reports/issue-66-phase-a-reciprocal-symmetry.md
+      - name: Commit Phase A reports on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-66-wyckoff-directional-symmetry-repair'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-a-reciprocal-symmetry.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-a-reciprocal-symmetry.md
+          if git diff --cached --quiet; then
+            echo "No Issue 66 Phase A report changes to commit"
+          else
+            git commit -m "research: record Issue 66 Phase A symmetry decomposition"
+            git push
+          fi
