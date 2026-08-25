@@ -1,0 +1,77 @@
+name: Wyckoff Issue 66 Symmetry Phase B2
+
+on:
+  push:
+    branches:
+      - research/issue-66-wyckoff-directional-symmetry-repair
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_reciprocal_symmetry.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_b1_representation.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_b2_break_evidence.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_b1_representation.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_b2_break_evidence.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_b1_representation_core.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_b2_break_evidence_core.py'
+      - 'indicators/wyckoff-regime-radar/research/v06_boundary_scores.py'
+      - 'indicators/wyckoff-regime-radar/research/price_only_core.py'
+      - 'indicators/wyckoff-regime-radar/research/pine_math.py'
+      - 'indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json'
+      - 'indicators/wyckoff-regime-radar/research/data/frozen/issue-55-*-static-d1.csv'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-b2-break-evidence-plan.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-b2.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_b2_break_evidence.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_b2_break_evidence.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_b2_break_evidence_core.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-b2-break-evidence-plan.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-b2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  phase-b2-break-evidence:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile Phase B2 experiment
+        run: |
+          python -m py_compile diagnose_issue66_phase_b2_break_evidence.py
+          python -m py_compile test_issue66_phase_b2_break_evidence.py
+          python -m py_compile generate_issue66_phase_b2_break_evidence_core.py
+      - name: Reconfirm accepted Phase B1 contract
+        run: python -m unittest -v test_issue66_phase_b1_representation
+      - name: Run Phase B2 break-evidence contract
+        run: python -m unittest -v test_issue66_phase_b2_break_evidence
+      - name: Run Phase B2 A/B diagnostic
+        run: |
+          python diagnose_issue66_phase_b2_break_evidence.py \
+            --json reports/issue-66-phase-b2-break-evidence-ab.json \
+            --markdown reports/issue-66-phase-b2-break-evidence-ab.md
+          cat reports/issue-66-phase-b2-break-evidence-ab.md
+      - name: Commit Phase B2 reports on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-66-wyckoff-directional-symmetry-repair'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-b2-break-evidence-ab.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-b2-break-evidence-ab.md
+          if git diff --cached --quiet; then
+            echo "No Issue 66 Phase B2 report changes to commit"
+          else
+            git commit -m "research: record Issue 66 Phase B2 break evidence A/B [skip ci]"
+            git push
+          fi
