@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "issue": 64,
   "phase": "B",
   "artifact_role": "durable curated Phase B portfolio and attribution evidence",
@@ -14,6 +14,10 @@
     "primary_cost_bps": 5.0,
     "weight_sweep_performed": false,
     "stagflation_override_included": false
+  },
+  "drawdown_accounting": {
+    "segment_starting_wealth_seeded_at_one": true,
+    "interpretation": "Maximum drawdown is computed against a running peak initialized with the segment's pre-return wealth of 1.0, so a negative first row is not omitted."
   },
   "primary_full_history_result": {
     "v66_reflation_override": {
@@ -56,31 +60,34 @@
     "noncausal_attribution_only": true,
     "matching_basis": "realized average invested_weight_* exposure after drift and rebalance, solved post-hoc on the realized return path",
     "full_history": {
-      "control_target_weights": {"SPY": 0.4427640004871879, "TLT": 0.35734658880866893, "GLD": 0.1998894107041432},
-      "strategy_average_invested_weights": {"SPY": 0.4437590120975461, "TLT": 0.3557446534937853, "GLD": 0.20049633440866851},
-      "control_average_invested_weights": {"SPY": 0.4437590120975461, "TLT": 0.3557446534937854, "GLD": 0.2004963344086685},
-      "max_abs_invested_weight_mismatch": 1.1102230246251565e-16,
-      "delta_CAGR": 0.005142145213309135,
-      "delta_Sharpe": 0.055949343686955255,
-      "delta_Calmar": 0.012484129472139671
+      "control_target_weights": {"SPY": 0.44276400538426647, "TLT": 0.35734658235040484, "GLD": 0.1998894122653286},
+      "strategy_average_invested_weights": {"SPY": 0.443759008236063, "TLT": 0.35574465742917133, "GLD": 0.20049633433476574},
+      "control_average_invested_weights": {"SPY": 0.4437590082360631, "TLT": 0.35574465742917133, "GLD": 0.2004963343347655},
+      "max_abs_invested_weight_mismatch": 2.498001805406602e-16,
+      "delta_CAGR": 0.0051422329616983,
+      "delta_Sharpe": 0.0559501569594586,
+      "delta_maximum_drawdown": -0.0057206324426802,
+      "delta_Calmar": 0.0124844792817459
     },
     "development_pre2020": {
-      "control_target_weights": {"SPY": 0.44682020936002714, "TLT": 0.35342382686894236, "GLD": 0.1997559637710305},
-      "strategy_average_invested_weights": {"SPY": 0.44755704444287703, "TLT": 0.3524537337899581, "GLD": 0.1999892217671649},
-      "control_average_invested_weights": {"SPY": 0.4475570444426541, "TLT": 0.352453733790175, "GLD": 0.19998922176717102},
-      "max_abs_invested_weight_mismatch": 2.2293278334473143e-13,
-      "delta_CAGR": 0.008058282212547854,
-      "delta_Sharpe": 0.09737200021574133,
-      "delta_Calmar": 0.0902950201206083
+      "control_target_weights": {"SPY": 0.4468202160708973, "TLT": 0.353423818514062, "GLD": 0.1997559654150407},
+      "strategy_average_invested_weights": {"SPY": 0.44755704034100563, "TLT": 0.35245373673118346, "GLD": 0.19998922292781096},
+      "control_average_invested_weights": {"SPY": 0.44755704034079435, "TLT": 0.35245373673143704, "GLD": 0.1999892229277685},
+      "max_abs_invested_weight_mismatch": 2.53630449975617e-13,
+      "delta_CAGR": 0.008058325423895,
+      "delta_Sharpe": 0.0973723504321002,
+      "delta_maximum_drawdown": 0.0252047998151978,
+      "delta_Calmar": 0.0902948257289366
     },
     "post2019_reused_exploratory": {
-      "control_target_weights": {"SPY": 0.43493289512411065, "TLT": 0.36493218815381945, "GLD": 0.2001349167220699},
-      "strategy_average_invested_weights": {"SPY": 0.43643244098280104, "TLT": 0.3620929820625632, "GLD": 0.20147457695463578},
-      "control_average_invested_weights": {"SPY": 0.4364324409828011, "TLT": 0.3620929820625633, "GLD": 0.20147457695463566},
-      "max_abs_invested_weight_mismatch": 1.6653345369377348e-16,
-      "delta_CAGR": 0.0009617028069599104,
-      "delta_Sharpe": 0.01109948790637505,
-      "delta_Calmar": -0.0027666938342016945
+      "control_target_weights": {"SPY": 0.4349328965450859, "TLT": 0.36493218536313904, "GLD": 0.2001349180917752},
+      "strategy_average_invested_weights": {"SPY": 0.4364324375850372, "TLT": 0.3620929879157287, "GLD": 0.20147457449923412},
+      "control_average_invested_weights": {"SPY": 0.4364324375850372, "TLT": 0.3620929879157287, "GLD": 0.2014745744992342},
+      "max_abs_invested_weight_mismatch": 8.326672684688674e-17,
+      "delta_CAGR": 0.0009618736428957,
+      "delta_Sharpe": 0.0111009038398705,
+      "delta_maximum_drawdown": -0.004727999486678,
+      "delta_Calmar": -0.0027660235943954
     },
     "interpretation": "After matching realized average invested exposure to effectively machine precision, timing value remains material in development history but is near zero post-2019."
   },
@@ -92,7 +99,7 @@
       "positive_reflation_episodes": 24,
       "largest_positive_episode": "2010-10-01 through 2011-05-03",
       "largest_positive_episode_active_log": 0.040485993808228864,
-      "top1_share_of_positive_episode_contribution": 0.27079147844266266,
+      "top1_share_of_positive_episode_contribution": 0.270793,
       "active_log_after_removing_largest_positive_episode": 0.053841925216297916
     },
     "post2019_reused_exploratory": {
@@ -101,7 +108,7 @@
       "positive_reflation_episodes": 12,
       "largest_positive_episode": "2020-11-23 through 2021-05-21",
       "largest_positive_episode_active_log": 0.05086981618475126,
-      "top1_share_of_positive_episode_contribution": 0.612071335002524,
+      "top1_share_of_positive_episode_contribution": 0.612070,
       "active_log_after_removing_largest_positive_episode": -0.04503871507839634
     },
     "interpretation": "Pre-2020 timing remains positive after removing its largest winning episode. Post-2019 timing is weak overall and becomes negative when the 2020-11 to 2021-05 episode is removed."
@@ -114,10 +121,10 @@
     "recommended_next_step": "Treat Reflation override as exploratory/risk-context evidence, not a production allocator. If research continues, preregister a separate Stagflation gold-over-equity experiment rather than modifying the Reflation rule."
   },
   "latest_verified_workflow": {
-    "run_id": 32713225168,
-    "head_sha": "18e957f4083bfbc661cd6ac65c18187a53cb6e70",
-    "phase_b_artifact_id": 9515038600,
-    "phase_b_artifact_sha256": "d711c261581b412e3c022e6296f705856c3f99194a8c3eaccbda529c9a577b33",
+    "run_id": 32714875298,
+    "head_sha": "b6ae85e796f63dc1f0fc09ba793b1b9a33e451b0",
+    "phase_b_artifact_id": 9515620869,
+    "phase_b_artifact_sha256": "d0287640395fd114b24af08cb10fa0ac0f34579ce3f58a850f56176e7a1dedb0",
     "workflow_conclusion": "success"
   }
 }
