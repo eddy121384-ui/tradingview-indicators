@@ -29,6 +29,43 @@ class Issue66PhaseCPersistenceLocalizationTests(unittest.TestCase):
             right_variant = cdiag.v1.replay_formal(mirrored_stage, chaos, active, 3, **kwargs)
             self.assertTrue(np.array_equal(cdiag.v1.mirror_stage(left_variant), right_variant))
 
+    def test_stored_formal_replay_is_exact_per_fixture(self):
+        for pair, frame in cdiag.v1.phasea.load_frozen_pairs().items():
+            model, inverse, cfg, _warmup = cdiag.v1.load_pair(frame)
+            for side, result in (("original", model), ("inverse", inverse)):
+                top = cdiag.v1.arr_int(result, "top_id")
+                strong = cdiag.v1.arr_bool(result, "strong_candidate")
+                strong_stage = np.where(strong, top, 0).astype(int)
+                chaos = cdiag.v1.arr_bool(result, "chaos")
+                fast = cdiag.v1.arr_bool(result, "fast_switch")
+                active = np.where(fast, cfg.fast_switch_confirm_bars, cfg.confirm_bars).astype(int)
+                replay = cdiag.v1.replay_formal(strong_stage, chaos, active, int(cfg.confirm_bars))
+                formal = cdiag.v1.arr_int(result, "formal_id")
+                mismatch = np.flatnonzero(replay != formal)
+                if len(mismatch):
+                    i = int(mismatch[0])
+                    lo = max(0, i - 4)
+                    hi = min(len(formal), i + 3)
+                    candidate_id = cdiag.v1.arr_int(result, "candidate_id")
+                    candidate_bars = cdiag.v1.arr_int(result, "candidate_bars")
+                    detail = {
+                        "pair": pair,
+                        "side": side,
+                        "first_mismatch": i,
+                        "window": [lo, hi],
+                        "top": top[lo:hi].tolist(),
+                        "strong": strong[lo:hi].astype(int).tolist(),
+                        "strong_stage": strong_stage[lo:hi].tolist(),
+                        "chaos": chaos[lo:hi].astype(int).tolist(),
+                        "fast": fast[lo:hi].astype(int).tolist(),
+                        "active_confirm": active[lo:hi].tolist(),
+                        "candidate_id": candidate_id[lo:hi].tolist(),
+                        "candidate_bars": candidate_bars[lo:hi].tolist(),
+                        "stored_formal": formal[lo:hi].tolist(),
+                        "replay_formal": replay[lo:hi].tolist(),
+                    }
+                    self.fail(f"Stored formal replay diverged: {detail}")
+
     def test_phase_c_replay_and_attribution_contract(self):
         report = cdiag.build_report()
         self.assertEqual(
