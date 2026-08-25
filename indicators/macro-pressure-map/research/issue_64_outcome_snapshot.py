@@ -32,6 +32,15 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def display_path(path: Path) -> str:
+    """Prefer a repo-relative provenance path, but allow temp/test files."""
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(HERE))
+    except ValueError:
+        return str(resolved)
+
+
 def normalize_price_panel(frame: pd.DataFrame) -> pd.DataFrame:
     result = frame.copy()
     result.index = pd.DatetimeIndex(pd.to_datetime(result.index, errors="raise")).normalize().astype("datetime64[ns]")
@@ -103,8 +112,8 @@ def load_frozen_prices(
     runtime_manifest = {
         "provider": "frozen repository snapshot derived from Yahoo Finance",
         "source_mode": "committed_frozen_snapshot",
-        "snapshot_path": str(snapshot_path.relative_to(HERE)),
-        "snapshot_manifest_path": str(manifest_path.relative_to(HERE)),
+        "snapshot_path": display_path(snapshot_path),
+        "snapshot_manifest_path": display_path(manifest_path),
         "snapshot_sha256": actual,
         "snapshot_rows": int(len(prices)),
         "snapshot_first_date": prices.index.min().date().isoformat(),
