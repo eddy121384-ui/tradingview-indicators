@@ -6,11 +6,15 @@ on:
     paths:
       - "indicators/macro-pressure-map/research/asset_allocation_phase_a.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_a_frozen.py"
+      - "indicators/macro-pressure-map/research/asset_allocation_phase_a_snapshot.py"
       - "indicators/macro-pressure-map/research/asset_allocation_relative.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_a_segments.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_b.py"
+      - "indicators/macro-pressure-map/research/asset_allocation_phase_b_snapshot.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_b_diagnostics.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_b_episode_diagnostics.py"
+      - "indicators/macro-pressure-map/research/issue_64_outcome_snapshot.py"
+      - "indicators/macro-pressure-map/research/test_issue_64_outcome_snapshot.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_a.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_a_frozen.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_relative.py"
@@ -22,6 +26,8 @@ on:
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-axis-audit.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions-manifest.json"
+      - "indicators/macro-pressure-map/research/data/issue-64-outcome-prices.csv"
+      - "indicators/macro-pressure-map/research/data/issue-64-outcome-prices-manifest.json"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-a.json"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-a.md"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b-preregistered.json"
@@ -52,6 +58,7 @@ jobs:
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m pytest -q \
+            test_issue_64_outcome_snapshot.py \
             test_asset_allocation_phase_a.py \
             test_asset_allocation_phase_a_frozen.py \
             test_asset_allocation_relative.py \
@@ -65,7 +72,7 @@ jobs:
           set +e
           for attempt in 1 2 3; do
             rm -rf generated/issue-64-phase-a
-            python asset_allocation_phase_a_frozen.py \
+            python asset_allocation_phase_a_snapshot.py \
               --start 2007-01-01 \
               --output-dir generated/issue-64-phase-a
             status=$?
@@ -86,7 +93,9 @@ jobs:
 
       - name: Validate Phase A manifest
         working-directory: indicators/macro-pressure-map/research
-        run: python -m json.tool generated/issue-64-phase-a/phase-a-manifest.json > /dev/null
+        run: |
+          python -m json.tool generated/issue-64-phase-a/phase-a-manifest.json > /dev/null
+          python -m json.tool generated/issue-64-phase-a/phase-a-outcome-prices-manifest.json > /dev/null
 
       - name: Generate preregistered Phase B evidence
         working-directory: indicators/macro-pressure-map/research
@@ -94,7 +103,7 @@ jobs:
           set +e
           for attempt in 1 2 3; do
             rm -rf generated/issue-64-phase-b
-            python asset_allocation_phase_b.py \
+            python asset_allocation_phase_b_snapshot.py \
               --start 2007-01-01 \
               --output-dir generated/issue-64-phase-b
             status=$?
@@ -122,6 +131,7 @@ jobs:
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m json.tool generated/issue-64-phase-b/phase-b-manifest.json > /dev/null
+          python -m json.tool generated/issue-64-phase-b/phase-b-outcome-prices-manifest.json > /dev/null
           python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-exposure-match.json > /dev/null
           python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-timing-concentration.json > /dev/null
 
