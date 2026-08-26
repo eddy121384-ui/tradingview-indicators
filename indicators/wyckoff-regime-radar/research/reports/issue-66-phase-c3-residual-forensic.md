@@ -5,8 +5,8 @@ Status: **reused frozen data / no PnL / no formula change**
 C-2 persistence exact replay: **YES**
 
 Strong-stage mirror: **99.33%** (44 mismatch bars)  
-Formal mirror: **99.73%** (18 mismatch bars)  
-Candidate-display mirror: **99.65%**
+Formal mirror: **99.64%** (24 mismatch bars)  
+Candidate-display mirror: **99.64%**
 
 ## Residual strong-stage attribution
 
@@ -36,23 +36,23 @@ Threshold distance on predicate-mismatch bars (existing absorb threshold; descri
 
 | Margin | Median | P90 | Max |
 |---|---:|---:|---:|
-| Holding left | 3.815389 | 9.282194 | 10.751239 |
-| Holding inverse | 2.887674 | 9.312179 | 12.810648 |
-| Exhaustion left | 0.021322 | 0.021322 | 0.021322 |
-| Exhaustion inverse | 0.018384 | 0.018384 | 0.018384 |
+| Holding left | 3.802161 | 9.274676 | 10.751699 |
+| Holding inverse | 2.892262 | 9.306258 | 12.795640 |
+| Exhaustion left | 0.011643 | 0.011643 | 0.011643 |
+| Exhaustion inverse | 0.036816 | 0.036816 | 0.036816 |
 
 ## Formal residual by pair
 
 | Pair | Mismatch bars | Episodes | Max episode | State-carry share |
 |---|---:|---:|---:|---:|
 | EURUSD | 0 | 0 | 0 | 0.00% |
-| USDJPY | 9 | 3 | 4 | 66.67% |
+| USDJPY | 15 | 4 | 6 | 73.33% |
 | GBPUSD | 0 | 0 | 0 | 0.00% |
 | AUDUSD | 9 | 6 | 3 | 55.56% |
 
-Aggregate Formal state-carry share: **61.11%**  
-Stale-pressure reason mirror: **99.56%**  
-Stale-pressure bars mirror: **99.47%**
+Aggregate Formal state-carry share: **66.67%**  
+Stale-pressure reason mirror: **99.50%**  
+Stale-pressure bars mirror: **99.44%**
 
 ## Decision boundary
 

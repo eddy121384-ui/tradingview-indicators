@@ -5,30 +5,30 @@
   "status": "RESIDUAL_FORENSIC_REUSED_DATA_NO_PNL_NO_FORMULA_CHANGE",
   "c2_exact_persistence_replay": true,
   "agreements": {
-    "top_stage": 0.8173252279635258,
+    "top_stage": 0.8164133738601824,
     "has_sharp": 1.0,
     "dominant_threshold": 1.0,
-    "top_gap_threshold": 0.9969604863221885,
+    "top_gap_threshold": 0.9968085106382979,
     "evidence_threshold": 0.9998480243161094,
-    "candidate_conflict": 0.8930091185410335,
+    "candidate_conflict": 0.8933130699088145,
     "strong_candidate": 0.9933130699088146,
-    "weak_candidate": 0.9945288753799392,
+    "weak_candidate": 0.9943768996960486,
     "strong_stage": 0.9933130699088146,
-    "candidate_display": 0.9965045592705167,
+    "candidate_display": 0.9963525835866262,
     "chaos": 1.0,
-    "coexist": 0.9955927051671732,
+    "coexist": 0.9954407294832827,
     "fast_switch": 0.9987841945288753,
     "active_confirm_bars": 0.9987841945288753,
     "candidate_id": 0.9933130699088146,
-    "candidate_bars": 0.9770516717325228,
-    "formal": 0.9972644376899696,
-    "stale_pressure_reason": 0.9955927051671732,
-    "stale_pressure_bars": 0.9946808510638298
+    "candidate_bars": 0.9759878419452888,
+    "formal": 0.9963525835866262,
+    "stale_pressure_reason": 0.9949848024316109,
+    "stale_pressure_bars": 0.9943768996960486
   },
   "mismatch_bars": {
-    "candidate_display": 23,
+    "candidate_display": 24,
     "strong_stage": 44,
-    "formal": 18
+    "formal": 24
   },
   "strong_stage_mismatch_attribution": {
     "top_stage": {
@@ -76,31 +76,31 @@
     "inferred_continuation_override_only_bars": 0,
     "holding_left_threshold_distance": {
       "n": 27,
-      "mean": 4.43163232041329,
-      "median": 3.8153889515219888,
-      "max": 10.751239226098193,
-      "p90": 9.2821937580424
+      "mean": 4.433624396234161,
+      "median": 3.802161438294476,
+      "max": 10.751699123081266,
+      "p90": 9.274675537361926
     },
     "holding_right_threshold_distance": {
       "n": 27,
-      "mean": 4.1011975874047595,
-      "median": 2.8876737129843733,
-      "max": 12.810648156917878,
-      "p90": 9.312179244769274
+      "mean": 4.099046697070154,
+      "median": 2.892261732886965,
+      "max": 12.795640185370175,
+      "p90": 9.30625752361576
     },
     "exhaustion_left_threshold_distance": {
       "n": 1,
-      "mean": 0.02132182780768943,
-      "median": 0.02132182780768943,
-      "max": 0.02132182780768943,
-      "p90": 0.02132182780768943
+      "mean": 0.011642708630745346,
+      "median": 0.011642708630745346,
+      "max": 0.011642708630745346,
+      "p90": 0.011642708630745346
     },
     "exhaustion_right_threshold_distance": {
       "n": 1,
-      "mean": 0.01838426284044914,
-      "median": 0.01838426284044914,
-      "max": 0.01838426284044914,
-      "p90": 0.01838426284044914
+      "mean": 0.036816448752091446,
+      "median": 0.036816448752091446,
+      "max": 0.036816448752091446,
+      "p90": 0.036816448752091446
     }
   },
   "formal_residual": {
@@ -113,11 +113,11 @@
         "state_carry_share": 0.0
       },
       "USDJPY": {
-        "formal_mismatch_bars": 9,
-        "formal_mismatch_episodes": 3,
-        "formal_mean_episode_bars": 3.0,
-        "formal_max_episode_bars": 4,
-        "state_carry_share": 0.6666666666666666
+        "formal_mismatch_bars": 15,
+        "formal_mismatch_episodes": 4,
+        "formal_mean_episode_bars": 3.75,
+        "formal_max_episode_bars": 6,
+        "state_carry_share": 0.7333333333333333
       },
       "GBPUSD": {
         "formal_mismatch_bars": 0,
@@ -134,10 +134,10 @@
         "state_carry_share": 0.5555555555555556
       }
     },
-    "state_carry_formal_mismatch_bars": 11,
-    "state_carry_share_of_formal_mismatch": 0.6111111111111112,
-    "stale_pressure_reason_mirror": 0.9955927051671732,
-    "stale_pressure_bars_mirror": 0.9946808510638298
+    "state_carry_formal_mismatch_bars": 16,
+    "state_carry_share_of_formal_mismatch": 0.6666666666666666,
+    "stale_pressure_reason_mirror": 0.9949848024316109,
+    "stale_pressure_bars_mirror": 0.9943768996960486
   },
   "predicate_pairs": {
     "EURUSD": {
@@ -148,31 +148,31 @@
       "inferred_continuation_override_only_bars": 0,
       "holding_left_threshold_distance": {
         "n": 2,
-        "mean": 5.106632718488292,
-        "median": 5.106632718488292,
-        "max": 8.283282043286988,
-        "p90": 7.647952178327249
+        "mean": 5.107273289286152,
+        "median": 5.107273289286152,
+        "max": 8.278694023384404,
+        "p90": 7.644409876564753
       },
       "holding_right_threshold_distance": {
         "n": 2,
-        "mean": 6.075858005398526,
-        "median": 6.075858005398526,
-        "max": 9.26404229781268,
-        "p90": 8.626405439329849
+        "mean": 6.075217434600667,
+        "median": 6.075217434600667,
+        "max": 9.258173136314369,
+        "p90": 8.621581995971628
       },
       "exhaustion_left_threshold_distance": {
         "n": 1,
-        "mean": 0.02132182780768943,
-        "median": 0.02132182780768943,
-        "max": 0.02132182780768943,
-        "p90": 0.02132182780768943
+        "mean": 0.011642708630745346,
+        "median": 0.011642708630745346,
+        "max": 0.011642708630745346,
+        "p90": 0.011642708630745346
       },
       "exhaustion_right_threshold_distance": {
         "n": 1,
-        "mean": 0.01838426284044914,
-        "median": 0.01838426284044914,
-        "max": 0.01838426284044914,
-        "p90": 0.01838426284044914
+        "mean": 0.036816448752091446,
+        "median": 0.036816448752091446,
+        "max": 0.036816448752091446,
+        "p90": 0.036816448752091446
       }
     },
     "USDJPY": {
@@ -183,17 +183,17 @@
       "inferred_continuation_override_only_bars": 0,
       "holding_left_threshold_distance": {
         "n": 8,
-        "mean": 2.6516498022006765,
-        "median": 1.5173619220186865,
-        "max": 8.893661678051828,
-        "p90": 6.727354971554148
+        "mean": 2.6540738425489714,
+        "median": 1.5292863937941519,
+        "max": 8.904863454568172,
+        "p90": 6.724024003405294
       },
       "holding_right_threshold_distance": {
         "n": 8,
-        "mean": 3.0079437067727754,
-        "median": 1.2460893922585363,
-        "max": 8.299892636316372,
-        "p90": 7.9502366037071655
+        "mean": 3.0055196664244805,
+        "median": 1.2349916400597856,
+        "max": 8.287037420646584,
+        "p90": 7.937856614919897
       },
       "exhaustion_left_threshold_distance": {
         "n": 0,
@@ -218,17 +218,17 @@
       "inferred_continuation_override_only_bars": 0,
       "holding_left_threshold_distance": {
         "n": 8,
-        "mean": 5.099423302521563,
-        "median": 5.345341106634816,
-        "max": 10.751239226098193,
-        "p90": 9.560661133262869
+        "mean": 5.104078390734184,
+        "median": 5.353936800247066,
+        "max": 10.751699123081266,
+        "p90": 9.551133600763483
       },
       "holding_right_threshold_distance": {
         "n": 8,
-        "mean": 4.061126424794931,
-        "median": 2.390651248935324,
-        "max": 12.810648156917878,
-        "p90": 10.412263712718278
+        "mean": 4.055935337598461,
+        "median": 2.3999860626989395,
+        "max": 12.795640185370175,
+        "p90": 10.403560928808542
       },
       "exhaustion_left_threshold_distance": {
         "n": 0,
@@ -253,17 +253,17 @@
       "inferred_continuation_override_only_bars": 0,
       "holding_left_threshold_distance": {
         "n": 9,
-        "mean": 5.2702469307115924,
-        "median": 5.548136704949812,
-        "max": 10.739268146692964,
-        "p90": 9.851745090394687
+        "mean": 5.269788250387202,
+        "median": 5.538949715216461,
+        "max": 10.747973339586906,
+        "p90": 9.85501911891705
       },
       "holding_right_threshold_distance": {
         "n": 9,
-        "mean": 4.669784199621088,
-        "median": 4.7704315929655365,
-        "max": 9.601534936260094,
-        "p90": 9.329630043954415
+        "mean": 4.670242879945475,
+        "median": 4.78077927508474,
+        "max": 9.62008411457748,
+        "p90": 9.328679590189381
       },
       "exhaustion_left_threshold_distance": {
         "n": 0,
