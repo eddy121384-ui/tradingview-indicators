@@ -23,6 +23,8 @@ class Issue66PhaseD1BLogCaptureTests(unittest.TestCase):
         self.assertIn("Issue #66 Phase D-1B Pine Logs transport", transport)
         self.assertIn('input.int(1200, "D1B Pine Logs capture bars"', transport)
         self.assertIn("log.info(", transport)
+        self.assertIn('"D1B" + "|" + str.tostring(time)', transport)
+        self.assertNotIn('"D1B|" + "|" + str.tostring(time)', transport)
         self.assertEqual(len(FIELDS), 36)
 
     def test_parser_accepts_fixed_schema(self) -> None:
@@ -34,6 +36,16 @@ class Issue66PhaseD1BLogCaptureTests(unittest.TestCase):
         self.assertEqual(len(frame), 2)
         self.assertEqual(frame.iloc[0]["close"], 1.5)
         self.assertEqual(frame.iloc[1]["PARITY formal_id"], 133.0)
+
+    def test_parser_accepts_first_capture_double_delimiter_and_csv_wrapper(self) -> None:
+        values = ["1700000000000", "1", "2", "0.5", "1.5"] + [str(i) for i in range(36)]
+        # First real TradingView capture was a two-column Pine Logs CSV and the
+        # initial generator emitted D1B|| before the timestamp.
+        text = '日期,訊息\n2026-08-26T00:00:00+08:00,"D1B||' + "|".join(values) + '"\n'
+        frame = parse_text(text)
+        self.assertEqual(len(frame), 1)
+        self.assertEqual(frame.iloc[0]["time"], 1700000000000.0)
+        self.assertEqual(frame.iloc[0]["PARITY formal_id"], 33.0)
 
 
 if __name__ == "__main__":
