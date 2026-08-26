@@ -145,12 +145,14 @@ def compare(path: Path) -> dict:
     py = compute_c2(ohlc)
 
     comparisons: dict[str, dict] = {}
+    aligned: dict[str, tuple[np.ndarray, np.ndarray]] = {}
     common_mask = np.ones(len(raw), dtype=bool)
     for tv_name, py_name in TV_TO_PY.items():
         tv_values = pd.to_numeric(raw[mapping[tv_name]], errors="coerce").to_numpy(float)
         py_values = pd.to_numeric(py[py_name], errors="coerce").to_numpy(float)
         if py_name in PERCENT_GATE_FIELDS:
             py_values = py_values * 100.0
+        aligned[py_name] = (tv_values, py_values)
         valid = np.isfinite(tv_values) & np.isfinite(py_values)
         common_mask &= valid
         count = int(valid.sum())
@@ -174,9 +176,31 @@ def compare(path: Path) -> dict:
     first_common = int(common_indices[0]) if len(common_indices) else None
     last_common = int(common_indices[-1]) if len(common_indices) else None
 
-    formal = comparisons.get("formal_id", {})
-    candidate = comparisons.get("candidate_display_id", {})
-    core_p99 = [comparisons[field].get("p99_abs_error", np.inf) for field in CORE_FIELDS]
+    # Runtime-capture acceptance must use only rows where every parity field is
+    # simultaneously comparable. Pine has chart history before a Pine-Logs
+    # capture begins; Python starts at the first captured OHLC row. Scoring IDs
+    # before the Python warm-up has completed is therefore not a parity test.
+    common_comparisons: dict[str, dict] = {}
+    if len(common_indices):
+        for py_name, (tv_values, py_values) in aligned.items():
+            tv_common = tv_values[common_mask]
+            py_common = py_values[common_mask]
+            diff = np.abs(tv_common - py_common)
+            entry = {
+                "comparable_rows": int(len(common_indices)),
+                "max_abs_error": float(diff.max()),
+                "mean_abs_error": float(diff.mean()),
+                "p99_abs_error": float(np.quantile(diff, 0.99)),
+            }
+            if py_name in ID_FIELDS:
+                entry["agreement_rate"] = float(
+                    np.mean(np.rint(tv_common).astype(int) == np.rint(py_common).astype(int))
+                )
+            common_comparisons[py_name] = entry
+
+    formal = common_comparisons.get("formal_id", {})
+    candidate = common_comparisons.get("candidate_display_id", {})
+    core_p99 = [common_comparisons.get(field, {}).get("p99_abs_error", np.inf) for field in CORE_FIELDS]
     acceptance = {
         "formal_stage_agreement_at_least_99_5pct": formal.get("agreement_rate", 0.0) >= 0.995,
         "candidate_stage_agreement_at_least_99pct": candidate.get("agreement_rate", 0.0) >= 0.99,
@@ -190,13 +214,16 @@ def compare(path: Path) -> dict:
         "reference": "accepted C-2 price-only Python core",
         "source_csv": str(path),
         "rows": int(len(raw)),
+        "all_fields_comparable_rows": int(len(common_indices)),
         "first_all_fields_comparable_row_index": first_common,
         "last_all_fields_comparable_row_index": last_common,
         "column_mapping": mapping,
         "comparisons": comparisons,
+        "common_window_comparisons": common_comparisons,
         "acceptance": acceptance,
         "notes": [
             "TradingView OHLC is reused as Python input to remove feed mismatch.",
+            "Acceptance is scored only where every parity field is simultaneously comparable, excluding capture-start warm-up artifacts.",
             "This is an implementation-parity gate, not an economic-performance gate.",
             "Parity failures authorize implementation-semantic fixes only; C-2 classifier formulas and thresholds remain frozen.",
         ],
