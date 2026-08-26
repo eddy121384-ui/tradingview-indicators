@@ -56,7 +56,7 @@ FIELDS = [
 def _log_block() -> str:
     schema = "time|open|high|low|close|" + "|".join(name for name, _ in FIELDS)
     pieces = [
-        '"D1B|"',
+        '"D1B"',
         'str.tostring(time)',
         'f_d1bNum(open)',
         'f_d1bNum(high)',
