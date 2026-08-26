@@ -9,6 +9,8 @@ on:
       - "indicators/wyckoff-regime-radar/research/compare_issue66_phase_d1_tradingview_parity.py"
       - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_parity_pine.py"
       - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_tradingview_parity.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_c3_residual_forensic.py"
+      - "indicators/wyckoff-regime-radar/research/pine_math.py"
       - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_c2_stage14_conflict_core.py"
       - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b7_stage14_gate_core.py"
       - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b6_stage14_raw_core.py"
@@ -29,6 +31,8 @@ on:
       - "indicators/wyckoff-regime-radar/research/compare_issue66_phase_d1_tradingview_parity.py"
       - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_parity_pine.py"
       - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_tradingview_parity.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_c3_residual_forensic.py"
+      - "indicators/wyckoff-regime-radar/research/pine_math.py"
       - ".github/workflows/wyckoff-issue66-phase-d1-parity.yml"
 
 permissions:
