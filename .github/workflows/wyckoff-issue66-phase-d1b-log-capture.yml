@@ -8,16 +8,24 @@ on:
       - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_d1b_log_capture_pine.py'
       - 'indicators/wyckoff-regime-radar/research/parse_issue66_phase_d1b_pine_logs.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_d1b_log_capture.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_d1b_runtime_semantics.py'
+      - 'indicators/wyckoff-regime-radar/research/compare_issue66_phase_d1_tradingview_parity.py'
+      - 'indicators/wyckoff-regime-radar/research/pine_math.py'
       - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_d1_parity_pine.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-d1b-pine-log-capture-plan.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-d1b-runtime-parity-corrections.md'
       - '.github/workflows/wyckoff-issue66-phase-d1b-log-capture.yml'
   pull_request:
     paths:
       - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_d1b_log_capture_pine.py'
       - 'indicators/wyckoff-regime-radar/research/parse_issue66_phase_d1b_pine_logs.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_d1b_log_capture.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_d1b_runtime_semantics.py'
+      - 'indicators/wyckoff-regime-radar/research/compare_issue66_phase_d1_tradingview_parity.py'
+      - 'indicators/wyckoff-regime-radar/research/pine_math.py'
       - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_d1_parity_pine.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-d1b-pine-log-capture-plan.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-d1b-runtime-parity-corrections.md'
       - '.github/workflows/wyckoff-issue66-phase-d1b-log-capture.yml'
 
 permissions:
@@ -40,9 +48,15 @@ jobs:
         run: |
           python -m py_compile generate_issue66_phase_d1b_log_capture_pine.py
           python -m py_compile parse_issue66_phase_d1b_pine_logs.py
+          python -m py_compile compare_issue66_phase_d1_tradingview_parity.py
           python -m py_compile test_issue66_phase_d1b_log_capture.py
-      - name: Run D1B contract
+          python -m py_compile test_issue66_phase_d1b_runtime_semantics.py
+      - name: Run D1B transport contract
         run: python -m unittest -v test_issue66_phase_d1b_log_capture
+      - name: Run D1B runtime semantic contract
+        run: python -m unittest -v test_issue66_phase_d1b_runtime_semantics
+      - name: Reconfirm D1 comparator contract
+        run: python -m unittest -v test_issue66_phase_d1_tradingview_parity
       - name: Generate D1B Pine Logs harness
         run: |
           python generate_issue66_phase_d1b_log_capture_pine.py \
