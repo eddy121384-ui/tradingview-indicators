@@ -20,8 +20,17 @@ def parse_text(text: str) -> pd.DataFrame:
         pos = raw_line.find("D1B|")
         if pos < 0:
             continue
-        payload = raw_line[pos:].strip()
+        # TradingView may provide Pine Logs either as copied text or as a CSV
+        # whose message cell is quoted. Strip only the outer CSV quote here;
+        # D1B values themselves contain no quotes.
+        payload = raw_line[pos:].strip().strip('"')
         parts = payload.split("|")
+
+        # Backward compatibility with the first D-1B capture. The initial log
+        # generator accidentally emitted `D1B||time|...` (double delimiter).
+        if len(parts) == expected + 1 and parts[0] == "D1B" and parts[1] == "":
+            parts = [parts[0]] + parts[2:]
+
         if len(parts) != expected:
             raise ValueError(f"D1B record has {len(parts)} fields; expected {expected}: {payload[:160]}")
         rows.append(parts[1:])
