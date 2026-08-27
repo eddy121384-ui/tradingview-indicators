@@ -86,5 +86,9 @@ jobs:
             echo "Phase B/B2 Pine artifacts already current."
           else
             git commit -m "research: record Issue 68 Phase B/B2 lifecycle Pine artifacts [skip ci]"
+            # Another Issue #68 workflow may have committed a report while this
+            # job was running. Rebase the generated artifact commit instead of
+            # racing or force-pushing the research branch.
+            git pull --rebase origin "${TARGET_BRANCH}"
             git push origin "HEAD:${TARGET_BRANCH}"
           fi
