@@ -13,6 +13,7 @@ on:
       - "indicators/macro-pressure-map/research/asset_allocation_phase_b_snapshot.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_b_diagnostics.py"
       - "indicators/macro-pressure-map/research/asset_allocation_phase_b_episode_diagnostics.py"
+      - "indicators/macro-pressure-map/research/asset_allocation_phase_c.py"
       - "indicators/macro-pressure-map/research/issue_64_outcome_snapshot.py"
       - "indicators/macro-pressure-map/research/test_issue_64_outcome_snapshot.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_a.py"
@@ -21,6 +22,7 @@ on:
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_b.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_b_diagnostics.py"
       - "indicators/macro-pressure-map/research/test_asset_allocation_phase_b_episode_diagnostics.py"
+      - "indicators/macro-pressure-map/research/test_asset_allocation_phase_c.py"
       - "indicators/macro-pressure-map/research/build_issue_64_frozen_regimes.py"
       - "indicators/macro-pressure-map/research/verify_issue_64_axis_reconstruction.py"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-axis-audit.csv"
@@ -34,6 +36,8 @@ on:
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b-preregistered.md"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b.json"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b.md"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-c-preregistered.json"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-c-preregistered.md"
       - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
       - ".github/workflows/macro-pressure-map-asset-allocation.yml"
 
@@ -64,7 +68,8 @@ jobs:
             test_asset_allocation_relative.py \
             test_asset_allocation_phase_b.py \
             test_asset_allocation_phase_b_diagnostics.py \
-            test_asset_allocation_phase_b_episode_diagnostics.py
+            test_asset_allocation_phase_b_episode_diagnostics.py \
+            test_asset_allocation_phase_c.py
 
       - name: Generate Phase A evidence
         working-directory: indicators/macro-pressure-map/research
@@ -135,6 +140,18 @@ jobs:
           python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-exposure-match.json > /dev/null
           python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-timing-concentration.json > /dev/null
 
+      - name: Generate preregistered Phase C evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-64-phase-c
+          python asset_allocation_phase_c.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-64-phase-c
+
+      - name: Validate Phase C evidence JSON
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m json.tool generated/issue-64-phase-c/phase-c-manifest.json > /dev/null
+
       - name: Upload Phase A research artifact
         uses: actions/upload-artifact@v4
         with:
@@ -148,5 +165,13 @@ jobs:
         with:
           name: macro-pressure-map-issue-64-phase-b
           path: indicators/macro-pressure-map/research/generated/issue-64-phase-b/
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload Phase C research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-64-phase-c
+          path: indicators/macro-pressure-map/research/generated/issue-64-phase-c/
           if-no-files-found: error
           retention-days: 3
