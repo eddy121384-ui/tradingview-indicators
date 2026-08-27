@@ -119,7 +119,7 @@ def generate(source: Path) -> str:
         raise RuntimeError("expected exactly one D1 parity export marker")
     core = d1_text.split(phase_b.D1_EXPORT_MARKER, 1)[0].rstrip()
     core = replace_once(core, phase_b.D1_INDICATOR_DECL, AUDIT_DECL)
-    out = core + "\n\n" + V3_BODY + "\n"
+    out = core + "\n\n// Issue #66 C-2 runtime-validated price-only lineage.\n" + V3_BODY + "\n"
 
     required = (
         "Issue #66 C-2",
