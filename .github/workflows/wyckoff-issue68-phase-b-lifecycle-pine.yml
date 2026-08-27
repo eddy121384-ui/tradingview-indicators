@@ -7,6 +7,8 @@ on:
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b_lifecycle_pine.py"
       - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b_lifecycle_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b2_lifecycle_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b2_lifecycle_audit_pine.py"
       - "indicators/wyckoff-regime-radar/research/issue68_lifecycle_v2.py"
       - "indicators/wyckoff-regime-radar/research/test_issue68_phase_a_lifecycle_transplant.py"
       - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_d1_parity_pine.py"
@@ -19,6 +21,8 @@ on:
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b_lifecycle_pine.py"
       - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b_lifecycle_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b2_lifecycle_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b2_lifecycle_audit_pine.py"
       - ".github/workflows/wyckoff-issue68-phase-b-lifecycle-pine.yml"
 
 permissions:
@@ -41,19 +45,28 @@ jobs:
         run: |
           python -m py_compile generate_issue68_phase_b_lifecycle_pine.py
           python -m py_compile test_issue68_phase_b_lifecycle_pine.py
+          python -m py_compile generate_issue68_phase_b2_lifecycle_audit_pine.py
+          python -m py_compile test_issue68_phase_b2_lifecycle_audit_pine.py
       - name: Reconfirm Phase A lifecycle contract
         run: python -m unittest -v test_issue68_phase_a_lifecycle_transplant
       - name: Run Phase B one-body Pine contract
         run: python -m unittest -v test_issue68_phase_b_lifecycle_pine
-      - name: Generate visual and performance previews
+      - name: Run Phase B2 semantic-audit transport contract
+        run: python -m unittest -v test_issue68_phase_b2_lifecycle_audit_pine
+      - name: Generate Phase B strategy previews and Phase B2 audit indicator
         run: |
           python generate_issue68_phase_b_lifecycle_pine.py \
             --visual-output generated/wyckoff-issue68-phase-b-lifecycle-visual-preview.pine \
             --performance-output generated/wyckoff-issue68-phase-b-lifecycle-performance-preview.pine
+          python generate_issue68_phase_b2_lifecycle_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
           test -s generated/wyckoff-issue68-phase-b-lifecycle-visual-preview.pine
           test -s generated/wyckoff-issue68-phase-b-lifecycle-performance-preview.pine
+          test -s generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
           grep -q 'Issue #68 Lifecycle Visual Review' generated/wyckoff-issue68-phase-b-lifecycle-visual-preview.pine
           grep -q 'Issue #68 Lifecycle Performance Preview' generated/wyckoff-issue68-phase-b-lifecycle-performance-preview.pine
+          grep -q 'Issue #68 Lifecycle Semantic Audit' generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
       - name: Commit generated Phase B Pine on branch push
         if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
         working-directory: .
@@ -62,9 +75,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b-lifecycle-visual-preview.pine
           git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b-lifecycle-performance-preview.pine
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
           if git diff --cached --quiet; then
             echo "Phase B Pine previews already current."
           else
-            git commit -m "research: record Issue 68 Phase B lifecycle Pine previews [skip ci]"
+            git commit -m "research: record Issue 68 Phase B/B2 lifecycle Pine artifacts [skip ci]"
             git push
           fi
