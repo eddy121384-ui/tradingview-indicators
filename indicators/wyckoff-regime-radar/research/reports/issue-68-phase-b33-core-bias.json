@@ -1,0 +1,207 @@
+{
+  "aggregate": {
+    "b3_position_transitions": 220,
+    "core_bias_mirror_agreement": 1.0,
+    "core_bias_mirror_gate": 0.99,
+    "core_bias_mismatch_bars": 0,
+    "core_bias_transitions": 62,
+    "mean_pair_unknown_bias_share": 0.18130699088145896,
+    "transition_churn_reduction": 158
+  },
+  "boundary": "Core bias is regime memory, not executable exposure. No return, PnL, Sharpe, drawdown, hit-rate, cost, sizing, stop, target, or Strategy Tester metric is computed.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "b3_nonzero_episodes": 32,
+      "b3_position_transitions": 58,
+      "core_bias_flip_events": 14,
+      "core_bias_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "core_bias_transitions": 15,
+      "core_bias_unknown_share": 0.18115501519756838,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 326,
+            "mirror_agreement": 0.9877300613496932
+          },
+          "1": {
+            "bars": 182,
+            "mirror_agreement": 0.9945054945054945
+          },
+          "2": {
+            "bars": 409,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 134,
+            "mirror_agreement": 0.9776119402985075
+          },
+          "5": {
+            "bars": 594,
+            "mirror_agreement": 0.9983164983164983
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9945288753799392,
+        "mismatch_bars": 9
+      }
+    },
+    "EURUSD": {
+      "b3_nonzero_episodes": 29,
+      "b3_position_transitions": 50,
+      "core_bias_flip_events": 12,
+      "core_bias_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "core_bias_transitions": 13,
+      "core_bias_unknown_share": 0.18115501519756838,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 309,
+            "mirror_agreement": 1.0
+          },
+          "1": {
+            "bars": 278,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 375,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 168,
+            "mirror_agreement": 1.0
+          },
+          "5": {
+            "bars": 515,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      }
+    },
+    "GBPUSD": {
+      "b3_nonzero_episodes": 33,
+      "b3_position_transitions": 60,
+      "core_bias_flip_events": 16,
+      "core_bias_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "core_bias_transitions": 17,
+      "core_bias_unknown_share": 0.1817629179331307,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 342,
+            "mirror_agreement": 1.0
+          },
+          "1": {
+            "bars": 181,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 504,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 3,
+            "mirror_agreement": 1.0
+          },
+          "4": {
+            "bars": 232,
+            "mirror_agreement": 1.0
+          },
+          "5": {
+            "bars": 383,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      }
+    },
+    "USDJPY": {
+      "b3_nonzero_episodes": 30,
+      "b3_position_transitions": 52,
+      "core_bias_flip_events": 16,
+      "core_bias_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "core_bias_transitions": 17,
+      "core_bias_unknown_share": 0.18115501519756838,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 347,
+            "mirror_agreement": 0.9884726224783862
+          },
+          "1": {
+            "bars": 273,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 426,
+            "mirror_agreement": 0.9859154929577465
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 204,
+            "mirror_agreement": 0.9754901960784313
+          },
+          "5": {
+            "bars": 395,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9908814589665653,
+        "mismatch_bars": 15
+      }
+    }
+  },
+  "phase": "B3.3",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "CORE_BIAS_MEMORY_DIAGNOSTIC_NO_PNL_NOT_EXPOSURE"
+}
