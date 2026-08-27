@@ -1,0 +1,394 @@
+{
+  "aggregate": {
+    "mean_pair_flat_share_v3": 0.4372340425531915,
+    "mean_pair_flat_share_v32": 0.40820668693009116,
+    "median_of_pair_median_holding_v3": 23.0,
+    "median_of_pair_median_holding_v32": 27.5,
+    "stage14_washout_exits_suppressed": 6,
+    "v32_confirmed_range_grace_exits": 90,
+    "v32_position_mirror_agreement": 0.9969604863221885,
+    "v32_position_mirror_gate": 0.99,
+    "v32_position_mismatch_bars": 20,
+    "v3_immediate_stage14_exit_bars": 96
+  },
+  "boundary": "Semantic lifecycle diagnostic only. No return, PnL, Sharpe, drawdown, hit-rate, cost, sizing, stop, target, or Strategy Tester metric is computed.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "confirm_bars": 3,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 326,
+            "mirror_agreement": 0.9877300613496932
+          },
+          "1": {
+            "bars": 182,
+            "mirror_agreement": 0.9945054945054945
+          },
+          "2": {
+            "bars": 409,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 134,
+            "mirror_agreement": 0.9776119402985075
+          },
+          "5": {
+            "bars": 594,
+            "mirror_agreement": 0.9983164983164983
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9945288753799392,
+        "mismatch_bars": 9
+      },
+      "rows": 2400,
+      "v3": {
+        "holding": {
+          "episodes": 32,
+          "max_bars": 83,
+          "mean_bars": 32.0625,
+          "median_bars": 28.0
+        },
+        "immediate_stage14_exit_bars": 26,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 619,
+          "flat_share": 0.3762917933130699,
+          "long_bars": 415,
+          "long_share": 0.25227963525835867,
+          "short_bars": 611,
+          "short_share": 0.37142857142857144
+        }
+      },
+      "v32": {
+        "event_counts": {
+          "enter_long": 11,
+          "enter_short": 20,
+          "exit_long": 11,
+          "exit_short": 20,
+          "flip_long_to_short": 3,
+          "flip_short_to_long": 3,
+          "range_grace_active_long": 18,
+          "range_grace_active_short": 34,
+          "range_grace_exit_long": 8,
+          "range_grace_exit_short": 17
+        },
+        "holding": {
+          "episodes": 31,
+          "max_bars": 97,
+          "mean_bars": 34.774193548387096,
+          "median_bars": 30.0
+        },
+        "max_range_grace_bars": 2,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 567,
+          "flat_share": 0.3446808510638298,
+          "long_bars": 433,
+          "long_share": 0.2632218844984802,
+          "short_bars": 645,
+          "short_share": 0.39209726443769
+        }
+      },
+      "v32_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9969604863221885,
+        "mismatch_bars": 5
+      },
+      "warmup_bars": 755
+    },
+    "EURUSD": {
+      "confirm_bars": 3,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 309,
+            "mirror_agreement": 1.0
+          },
+          "1": {
+            "bars": 278,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 375,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 168,
+            "mirror_agreement": 1.0
+          },
+          "5": {
+            "bars": 515,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "rows": 2400,
+      "v3": {
+        "holding": {
+          "episodes": 29,
+          "max_bars": 84,
+          "mean_bars": 31.06896551724138,
+          "median_bars": 25.0
+        },
+        "immediate_stage14_exit_bars": 21,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 744,
+          "flat_share": 0.4522796352583587,
+          "long_bars": 375,
+          "long_share": 0.22796352583586627,
+          "short_bars": 526,
+          "short_share": 0.31975683890577505
+        }
+      },
+      "v32": {
+        "event_counts": {
+          "enter_long": 8,
+          "enter_short": 19,
+          "exit_long": 8,
+          "exit_short": 18,
+          "flip_long_to_short": 3,
+          "flip_short_to_long": 4,
+          "range_grace_active_long": 12,
+          "range_grace_active_short": 29,
+          "range_grace_exit_long": 5,
+          "range_grace_exit_short": 14
+        },
+        "holding": {
+          "episodes": 27,
+          "max_bars": 84,
+          "mean_bars": 34.888888888888886,
+          "median_bars": 28.0
+        },
+        "max_range_grace_bars": 2,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 703,
+          "flat_share": 0.42735562310030395,
+          "long_bars": 387,
+          "long_share": 0.235258358662614,
+          "short_bars": 555,
+          "short_share": 0.3373860182370821
+        }
+      },
+      "v32_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "warmup_bars": 755
+    },
+    "GBPUSD": {
+      "confirm_bars": 3,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 342,
+            "mirror_agreement": 1.0
+          },
+          "1": {
+            "bars": 181,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 504,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 3,
+            "mirror_agreement": 1.0
+          },
+          "4": {
+            "bars": 232,
+            "mirror_agreement": 1.0
+          },
+          "5": {
+            "bars": 383,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "rows": 2400,
+      "v3": {
+        "holding": {
+          "episodes": 33,
+          "max_bars": 135,
+          "mean_bars": 27.606060606060606,
+          "median_bars": 21.0
+        },
+        "immediate_stage14_exit_bars": 27,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 734,
+          "flat_share": 0.4462006079027356,
+          "long_bars": 514,
+          "long_share": 0.31246200607902735,
+          "short_bars": 397,
+          "short_share": 0.2413373860182371
+        }
+      },
+      "v32": {
+        "event_counts": {
+          "enter_long": 15,
+          "enter_short": 16,
+          "exit_long": 15,
+          "exit_short": 15,
+          "flip_long_to_short": 3,
+          "flip_short_to_long": 3,
+          "range_grace_active_long": 28,
+          "range_grace_active_short": 26,
+          "range_grace_exit_long": 12,
+          "range_grace_exit_short": 12
+        },
+        "holding": {
+          "episodes": 31,
+          "max_bars": 152,
+          "mean_bars": 31.129032258064516,
+          "median_bars": 27.0
+        },
+        "max_range_grace_bars": 2,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 680,
+          "flat_share": 0.4133738601823708,
+          "long_bars": 542,
+          "long_share": 0.32948328267477206,
+          "short_bars": 423,
+          "short_share": 0.2571428571428571
+        }
+      },
+      "v32_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "warmup_bars": 755
+    },
+    "USDJPY": {
+      "confirm_bars": 3,
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 347,
+            "mirror_agreement": 0.9884726224783862
+          },
+          "1": {
+            "bars": 273,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 426,
+            "mirror_agreement": 0.9859154929577465
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 204,
+            "mirror_agreement": 0.9754901960784313
+          },
+          "5": {
+            "bars": 395,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9908814589665653,
+        "mismatch_bars": 15
+      },
+      "rows": 2400,
+      "v3": {
+        "holding": {
+          "episodes": 30,
+          "max_bars": 132,
+          "mean_bars": 28.833333333333332,
+          "median_bars": 20.0
+        },
+        "immediate_stage14_exit_bars": 22,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 780,
+          "flat_share": 0.47416413373860183,
+          "long_bars": 450,
+          "long_share": 0.2735562310030395,
+          "short_bars": 415,
+          "short_share": 0.25227963525835867
+        }
+      },
+      "v32": {
+        "event_counts": {
+          "enter_long": 20,
+          "enter_short": 10,
+          "exit_long": 19,
+          "exit_short": 10,
+          "flip_long_to_short": 4,
+          "flip_short_to_long": 3,
+          "range_grace_active_long": 30,
+          "range_grace_active_short": 14,
+          "range_grace_exit_long": 15,
+          "range_grace_exit_short": 7
+        },
+        "holding": {
+          "episodes": 30,
+          "max_bars": 134,
+          "mean_bars": 30.3,
+          "median_bars": 21.0
+        },
+        "max_range_grace_bars": 2,
+        "occupancy": {
+          "bars": 1645,
+          "flat_bars": 736,
+          "flat_share": 0.4474164133738602,
+          "long_bars": 480,
+          "long_share": 0.2917933130699088,
+          "short_bars": 429,
+          "short_share": 0.260790273556231
+        }
+      },
+      "v32_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9908814589665653,
+        "mismatch_bars": 15
+      },
+      "warmup_bars": 755
+    }
+  },
+  "phase": "B3.2",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "RANGE_GRACE_HOLD_DIAGNOSTIC_NO_PNL"
+}
