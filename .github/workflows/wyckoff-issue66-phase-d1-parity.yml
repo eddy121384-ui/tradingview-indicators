@@ -1,0 +1,86 @@
+name: Wyckoff Issue 66 Phase D1 Parity
+
+on:
+  push:
+    branches:
+      - research/issue-66-wyckoff-directional-symmetry-repair
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_d1_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/compare_issue66_phase_d1_tradingview_parity.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_tradingview_parity.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_c3_residual_forensic.py"
+      - "indicators/wyckoff-regime-radar/research/pine_math.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_c2_stage14_conflict_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b7_stage14_gate_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b6_stage14_raw_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b5_stage36_raw_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b3_trend_entry_gate_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b2_break_evidence_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b1_representation_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_v06_phase_b_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_v06_price_only_core.py"
+      - "indicators/wyckoff-regime-radar/research/v06_boundary_scores.py"
+      - "indicators/wyckoff-regime-radar/research/generate_price_only_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-v0.5.2.1.pine"
+      - ".github/workflows/wyckoff-issue66-phase-d1-parity.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_d1_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/compare_issue66_phase_d1_tradingview_parity.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_parity_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_d1_tradingview_parity.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue66_phase_c3_residual_forensic.py"
+      - "indicators/wyckoff-regime-radar/research/pine_math.py"
+      - ".github/workflows/wyckoff-issue66-phase-d1-parity.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  phase-d1-parity-contract:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile D1 parity tooling
+        run: |
+          python -m py_compile generate_issue66_phase_d1_parity_pine.py
+          python -m py_compile compare_issue66_phase_d1_tradingview_parity.py
+          python -m py_compile test_issue66_phase_d1_parity_pine.py
+          python -m py_compile test_issue66_phase_d1_tradingview_parity.py
+      - name: Reconfirm Phase C closeout parent
+        run: python -m unittest -v test_issue66_phase_c3_residual_forensic
+      - name: Run D1 Pine generator contract
+        run: python -m unittest -v test_issue66_phase_d1_parity_pine
+      - name: Run D1 comparator contract
+        run: python -m unittest -v test_issue66_phase_d1_tradingview_parity
+      - name: Generate Issue 66 C2 parity Pine
+        run: |
+          python generate_issue66_phase_d1_parity_pine.py \
+            --output generated/wyckoff-issue66-phase-d1-c2-parity.pine
+          test -s generated/wyckoff-issue66-phase-d1-c2-parity.pine
+          grep -q 'Issue #66 C-2 Parity' generated/wyckoff-issue66-phase-d1-c2-parity.pine
+          grep -q 'PARITY formal_id' generated/wyckoff-issue66-phase-d1-c2-parity.pine
+          grep -q 'stalePressureBars' generated/wyckoff-issue66-phase-d1-c2-parity.pine
+      - name: Commit generated harness on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-66-wyckoff-directional-symmetry-repair'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue66-phase-d1-c2-parity.pine
+          if git diff --cached --quiet; then
+            echo "Generated parity harness already current."
+          else
+            git commit -m "research: record Issue 66 Phase D1 C2 parity harness [skip ci]"
+            git push
+          fi

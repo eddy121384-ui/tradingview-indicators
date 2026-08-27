@@ -1,0 +1,69 @@
+name: Wyckoff Issue 66 Symmetry Phase B5
+
+on:
+  push:
+    branches:
+      - research/issue-66-wyckoff-directional-symmetry-repair
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_b5_stage36_raw_core.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_b5_stage36_raw.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_b5_stage36_raw.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_b3_trend_entry_gate_core.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_b3_trend_entry_gate.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_b3_trend_entry_gate.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-b5-stage36-raw-plan.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-b5.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/generate_issue66_phase_b5_stage36_raw_core.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_b5_stage36_raw.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_b5_stage36_raw.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-b5-stage36-raw-plan.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-b5.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  phase-b5-stage36-raw:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile Phase B5 experiment
+        run: |
+          python -m py_compile generate_issue66_phase_b5_stage36_raw_core.py
+          python -m py_compile diagnose_issue66_phase_b5_stage36_raw.py
+          python -m py_compile test_issue66_phase_b5_stage36_raw.py
+      - name: Reconfirm accepted Phase B3 contract
+        run: python -m unittest -v test_issue66_phase_b3_trend_entry_gate
+      - name: Run Phase B5 Stage3-6 raw contract
+        run: python -m unittest -v test_issue66_phase_b5_stage36_raw
+      - name: Run Phase B5 A/B diagnostic
+        run: |
+          python diagnose_issue66_phase_b5_stage36_raw.py \
+            --json reports/issue-66-phase-b5-stage36-raw-ab.json \
+            --markdown reports/issue-66-phase-b5-stage36-raw-ab.md
+          cat reports/issue-66-phase-b5-stage36-raw-ab.md
+      - name: Commit Phase B5 reports on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-66-wyckoff-directional-symmetry-repair'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-b5-stage36-raw-ab.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-b5-stage36-raw-ab.md
+          if git diff --cached --quiet; then
+            echo "No Issue 66 Phase B5 report changes to commit"
+          else
+            git commit -m "research: record Issue 66 Phase B5 Stage3-6 raw A/B [skip ci]"
+            git push
+          fi

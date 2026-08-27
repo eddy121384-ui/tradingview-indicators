@@ -154,24 +154,25 @@ def slope_z(values, length: int, vol):
 
 
 def percentrank(values, length: int):
-    """Rolling ta.percentrank approximation for parity work.
+    """Mirror TradingView ``ta.percentrank()`` for the Wyckoff parity path.
 
-    TradingView describes ta.percentrank() as the percentage of past values in
-    the lookback that are below the current value, with the extrema mapping to
-    0 and 100. We therefore compare the current observation against the prior
-    ``length-1`` observations. Fixed TradingView checkpoints will determine
-    whether tie handling needs refinement before utility testing.
+    TradingView runtime checkpoints from Issue #66 D-1B show that the current
+    observation is ranked against the *previous* ``length`` observations, not a
+    ``length``-bar window that includes the current bar. Therefore the rank step
+    is ``100 / length`` and the endpoints can map to 0 and 100.
+
+    Tie handling remains strict ``<`` as in the original research mirror. The
+    first D-1B capture had no tie case that distinguished ``<`` from ``<=``.
     """
     arr = np.asarray(values, dtype=float)
     out = np.full(arr.shape, np.nan, dtype=float)
-    if length <= 1:
+    if length <= 0:
         return out
-    for i in range(length - 1, len(arr)):
-        window = arr[i - length + 1 : i + 1]
-        current = window[-1]
-        history = window[:-1]
+    for i in range(length, len(arr)):
+        current = arr[i]
+        history = arr[i - length : i]
         if np.isfinite(current) and np.isfinite(history).all():
-            out[i] = np.count_nonzero(history < current) / (length - 1) * 100.0
+            out[i] = np.count_nonzero(history < current) / length * 100.0
     return out
 
 

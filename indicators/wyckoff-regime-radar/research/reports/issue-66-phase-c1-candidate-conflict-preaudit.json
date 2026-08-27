@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "issue": 66,
+  "phase": "C-1",
+  "status": "CANDIDATE_CONFLICT_PREAUDIT_REUSED_DATA_NO_PNL_NO_FORMULA_CHANGE",
+  "total_conflict_mismatch_bars": 1660,
+  "attributable_conflict_mismatch_bars": 933,
+  "conflict_mismatch_with_top_not_mirrored": 727,
+  "families": {
+    "stage1_4": {
+      "label": "Stage 1 Accumulation \u2194 Stage 4 Distribution",
+      "eligible_top_mirrored_bars": 2171,
+      "conflict_mismatch_bars": 933,
+      "share_of_attributable_conflict_mismatch": 1.0
+    },
+    "stage2_5": {
+      "label": "Stage 2 Markup \u2194 Stage 5 Markdown",
+      "eligible_top_mirrored_bars": 3197,
+      "conflict_mismatch_bars": 0,
+      "share_of_attributable_conflict_mismatch": 0.0
+    },
+    "stage3_6": {
+      "label": "Stage 3 Re-accumulation \u2194 Stage 6 Re-distribution",
+      "eligible_top_mirrored_bars": 10,
+      "conflict_mismatch_bars": 0,
+      "share_of_attributable_conflict_mismatch": 0.0
+    }
+  },
+  "ranked_families": [
+    "stage1_4",
+    "stage2_5",
+    "stage3_6"
+  ],
+  "dominant_family": "stage1_4",
+  "dominant_share": 1.0,
+  "preregistered_dominance_gate_pass": true,
+  "pairs": {
+    "EURUSD": {
+      "bars": 1645,
+      "top_mirrored_bars": 1344,
+      "conflict_mismatch_bars": 427,
+      "attributable_conflict_mismatch_bars": 238,
+      "conflict_mismatch_with_top_not_mirrored": 189,
+      "family_bars": {
+        "stage1_4": 534,
+        "stage2_5": 807,
+        "stage3_6": 3
+      },
+      "family_mismatch_counts": {
+        "stage1_4": 238,
+        "stage2_5": 0,
+        "stage3_6": 0
+      }
+    },
+    "USDJPY": {
+      "bars": 1645,
+      "top_mirrored_bars": 1344,
+      "conflict_mismatch_bars": 458,
+      "attributable_conflict_mismatch_bars": 261,
+      "conflict_mismatch_with_top_not_mirrored": 197,
+      "family_bars": {
+        "stage1_4": 608,
+        "stage2_5": 736,
+        "stage3_6": 0
+      },
+      "family_mismatch_counts": {
+        "stage1_4": 261,
+        "stage2_5": 0,
+        "stage3_6": 0
+      }
+    },
+    "GBPUSD": {
+      "bars": 1645,
+      "top_mirrored_bars": 1343,
+      "conflict_mismatch_bars": 417,
+      "attributable_conflict_mismatch_bars": 251,
+      "conflict_mismatch_with_top_not_mirrored": 166,
+      "family_bars": {
+        "stage1_4": 569,
+        "stage2_5": 769,
+        "stage3_6": 5
+      },
+      "family_mismatch_counts": {
+        "stage1_4": 251,
+        "stage2_5": 0,
+        "stage3_6": 0
+      }
+    },
+    "AUDUSD": {
+      "bars": 1645,
+      "top_mirrored_bars": 1347,
+      "conflict_mismatch_bars": 358,
+      "attributable_conflict_mismatch_bars": 183,
+      "conflict_mismatch_with_top_not_mirrored": 175,
+      "family_bars": {
+        "stage1_4": 460,
+        "stage2_5": 885,
+        "stage3_6": 2
+      },
+      "family_mismatch_counts": {
+        "stage1_4": 183,
+        "stage2_5": 0,
+        "stage3_6": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+name: Wyckoff Issue 66 Symmetry Phase C1
+
+on:
+  push:
+    branches:
+      - research/issue-66-wyckoff-directional-symmetry-repair
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_c1_candidate_conflict_preaudit.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_c1_candidate_conflict_preaudit.py'
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_c_persistence_localization_v3.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_c_persistence_localization.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-c1-candidate-conflict-preaudit-plan.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-c1.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue66_phase_c1_candidate_conflict_preaudit.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue66_phase_c1_candidate_conflict_preaudit.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-66-phase-c1-candidate-conflict-preaudit-plan.md'
+      - '.github/workflows/wyckoff-issue66-symmetry-phase-c1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  phase-c1-conflict-preaudit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile Phase C1 pre-audit
+        run: |
+          python -m py_compile diagnose_issue66_phase_c1_candidate_conflict_preaudit.py
+          python -m py_compile test_issue66_phase_c1_candidate_conflict_preaudit.py
+      - name: Reconfirm accepted Phase C persistence contract
+        run: python -m unittest -v test_issue66_phase_c_persistence_localization
+      - name: Run Phase C1 attribution contract
+        run: python -m unittest -v test_issue66_phase_c1_candidate_conflict_preaudit
+      - name: Run Phase C1 candidate-conflict pre-audit
+        run: |
+          python diagnose_issue66_phase_c1_candidate_conflict_preaudit.py \
+            --json reports/issue-66-phase-c1-candidate-conflict-preaudit.json \
+            --markdown reports/issue-66-phase-c1-candidate-conflict-preaudit.md
+          cat reports/issue-66-phase-c1-candidate-conflict-preaudit.md
+      - name: Commit Phase C1 reports on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-66-wyckoff-directional-symmetry-repair'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-c1-candidate-conflict-preaudit.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-66-phase-c1-candidate-conflict-preaudit.md
+          if git diff --cached --quiet; then
+            echo "No Issue 66 Phase C1 report changes to commit"
+          else
+            git commit -m "research: record Issue 66 Phase C1 conflict pre-audit [skip ci]"
+            git push
+          fi
