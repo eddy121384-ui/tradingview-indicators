@@ -56,7 +56,30 @@ jobs:
             --md-output reports/issue-68-phase-a-lifecycle-transplant.md
       - name: Assert no performance payload entered Phase A report
         run: |
-          ! grep -Eiq 'gross_ann_return|net_2bp|sharpe|max_drawdown|profit_factor|strategy_metrics' reports/issue-68-phase-a-lifecycle-transplant.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("reports/issue-68-phase-a-lifecycle-transplant.json").read_text())
+          forbidden = {
+              "gross_ann_return", "net_2bp_ann_return", "gross_sharpe", "net_2bp_sharpe",
+              "gross_max_drawdown", "net_2bp_max_drawdown", "profit_factor", "strategy_metrics",
+          }
+
+          def keys(node):
+              if isinstance(node, dict):
+                  for key, value in node.items():
+                      yield str(key)
+                      yield from keys(value)
+              elif isinstance(node, list):
+                  for value in node:
+                      yield from keys(value)
+
+          found = forbidden.intersection(keys(payload))
+          if found:
+              raise SystemExit(f"Forbidden Phase-A performance keys: {sorted(found)}")
+          print("No performance metric keys found in Phase-A JSON payload.")
+          PY
       - name: Commit Phase A reports on branch push
         if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
         working-directory: .
