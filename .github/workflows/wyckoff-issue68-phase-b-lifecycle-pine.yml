@@ -36,6 +36,10 @@ jobs:
         working-directory: indicators/wyckoff-regime-radar/research
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Human-review artifacts must be written to the actual research branch,
+          # not the detached synthetic pull-request merge ref.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -67,9 +71,11 @@ jobs:
           grep -q 'Issue #68 Lifecycle Performance Preview' generated/wyckoff-issue68-phase-b-lifecycle-performance-preview.pine
           grep -q 'Issue #68 Lifecycle Semantic Audit' generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
           ! grep -q 'strategy\.' generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
-      - name: Commit generated Phase B Pine on branch push
-        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+      - name: Commit generated Phase B/B2 Pine to research branch
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         working-directory: .
+        env:
+          TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -77,8 +83,8 @@ jobs:
           git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b-lifecycle-performance-preview.pine
           git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b2-lifecycle-semantic-audit.pine
           if git diff --cached --quiet; then
-            echo "Phase B Pine previews already current."
+            echo "Phase B/B2 Pine artifacts already current."
           else
             git commit -m "research: record Issue 68 Phase B/B2 lifecycle Pine artifacts [skip ci]"
-            git push
+            git push origin "HEAD:${TARGET_BRANCH}"
           fi
