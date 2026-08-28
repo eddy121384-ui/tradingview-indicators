@@ -1,0 +1,270 @@
+{
+  "aggregate": {
+    "blocked": 261,
+    "blocker_share_of_blocked": {
+      "conflict": 0.6053639846743295,
+      "dominance": 0.0,
+      "evidence": 0.011494252873563218,
+      "gap": 0.45977011494252873,
+      "no_sharp": 0.0,
+      "unexplained": 0.0
+    },
+    "conflict": 158,
+    "dominance": 0,
+    "evidence": 3,
+    "gap": 120,
+    "multi_blocker_bars": 19,
+    "no_sharp": 0,
+    "strong_trend": 2951,
+    "top_trend": 3212,
+    "unexplained": 0
+  },
+  "boundary": "Attribution only. Existing C-2 thresholds are read, never changed. No strategy performance metric is computed.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "blocked_shares": {
+        "conflict": 0.6567164179104478,
+        "dominance": 0.0,
+        "evidence": 0.029850746268656716,
+        "gap": 0.373134328358209,
+        "no_sharp": 0.0,
+        "unexplained": 0.0
+      },
+      "blocker_mirror": {
+        "conflict": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "dominance": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "evidence": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "gap": {
+          "bars": 1645,
+          "mirror_agreement": 0.9975683890577508,
+          "mismatch_bars": 4
+        },
+        "no_sharp": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        }
+      },
+      "counts": {
+        "blocked": 67,
+        "conflict": 44,
+        "dominance": 0,
+        "evidence": 2,
+        "gap": 25,
+        "no_sharp": 0,
+        "strong_trend": 819,
+        "top_trend": 886,
+        "unexplained": 0
+      },
+      "multi_blocker_bars": 4,
+      "strong_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9993920972644377,
+        "mismatch_bars": 1
+      },
+      "top_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9987841945288753,
+        "mismatch_bars": 2
+      },
+      "warmup": 755
+    },
+    "EURUSD": {
+      "blocked_shares": {
+        "conflict": 0.5614035087719298,
+        "dominance": 0.0,
+        "evidence": 0.0,
+        "gap": 0.543859649122807,
+        "no_sharp": 0.0,
+        "unexplained": 0.0
+      },
+      "blocker_mirror": {
+        "conflict": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "dominance": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "evidence": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "gap": {
+          "bars": 1645,
+          "mirror_agreement": 0.998176291793313,
+          "mismatch_bars": 3
+        },
+        "no_sharp": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        }
+      },
+      "counts": {
+        "blocked": 57,
+        "conflict": 32,
+        "dominance": 0,
+        "evidence": 0,
+        "gap": 31,
+        "no_sharp": 0,
+        "strong_trend": 756,
+        "top_trend": 813,
+        "unexplained": 0
+      },
+      "multi_blocker_bars": 6,
+      "strong_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9993920972644377,
+        "mismatch_bars": 1
+      },
+      "top_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9975683890577508,
+        "mismatch_bars": 4
+      },
+      "warmup": 755
+    },
+    "GBPUSD": {
+      "blocked_shares": {
+        "conflict": 0.6376811594202898,
+        "dominance": 0.0,
+        "evidence": 0.0,
+        "gap": 0.43478260869565216,
+        "no_sharp": 0.0,
+        "unexplained": 0.0
+      },
+      "blocker_mirror": {
+        "conflict": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "dominance": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "evidence": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "gap": {
+          "bars": 1645,
+          "mirror_agreement": 0.9963525835866262,
+          "mismatch_bars": 6
+        },
+        "no_sharp": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        }
+      },
+      "counts": {
+        "blocked": 69,
+        "conflict": 44,
+        "dominance": 0,
+        "evidence": 0,
+        "gap": 30,
+        "no_sharp": 0,
+        "strong_trend": 708,
+        "top_trend": 777,
+        "unexplained": 0
+      },
+      "multi_blocker_bars": 5,
+      "strong_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9987841945288753,
+        "mismatch_bars": 2
+      },
+      "top_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.998176291793313,
+        "mismatch_bars": 3
+      },
+      "warmup": 755
+    },
+    "USDJPY": {
+      "blocked_shares": {
+        "conflict": 0.5588235294117647,
+        "dominance": 0.0,
+        "evidence": 0.014705882352941176,
+        "gap": 0.5,
+        "no_sharp": 0.0,
+        "unexplained": 0.0
+      },
+      "blocker_mirror": {
+        "conflict": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "dominance": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "evidence": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "gap": {
+          "bars": 1645,
+          "mirror_agreement": 0.9987841945288753,
+          "mismatch_bars": 2
+        },
+        "no_sharp": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        }
+      },
+      "counts": {
+        "blocked": 68,
+        "conflict": 38,
+        "dominance": 0,
+        "evidence": 1,
+        "gap": 34,
+        "no_sharp": 0,
+        "strong_trend": 668,
+        "top_trend": 736,
+        "unexplained": 0
+      },
+      "multi_blocker_bars": 4,
+      "strong_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9993920972644377,
+        "mismatch_bars": 1
+      },
+      "top_direction_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9993920972644377,
+        "mismatch_bars": 1
+      },
+      "warmup": 755
+    }
+  },
+  "phase": "B3.6",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "STRONG_FORMATION_BLOCKAGE_AUDIT_NO_PERFORMANCE"
+}
