@@ -19,14 +19,17 @@ B34_BODY = r'''
 // Core Bias is frozen B3.3 regime memory. Exposure candidates are NO-PNL.
 // A = Formal trend family; B = Flat Action authorization;
 // C = Flat Action entry + mirrored Pace defensive-flat state machine.
+// Human-readable audit UI only: band rendering does not change A/B/C semantics.
 // ============================================================================
 
 groupIssue68B34 = "Issue #68｜Exposure B3.4 Bakeoff"
-showIssue68B34StageBg = input.bool(true, "顯示 Formal Stage 背景", group=groupIssue68B34)
-showIssue68B34Bias = input.bool(true, "顯示 Core Bias lane", group=groupIssue68B34)
+showIssue68B34StageBg = input.bool(false, "輔助｜顯示極淡 Formal Stage 背景", group=groupIssue68B34)
+showIssue68B34Bias = input.bool(true, "顯示 CORE｜大方向記憶", group=groupIssue68B34)
 showIssue68B34A = input.bool(true, "顯示 A｜Formal trend-family", group=groupIssue68B34)
 showIssue68B34B = input.bool(true, "顯示 B｜Flat Action authorization", group=groupIssue68B34)
 showIssue68B34C = input.bool(true, "顯示 C｜Flat Action + Pace stateful", group=groupIssue68B34)
+showIssue68B34Marks = input.bool(false, "輔助｜顯示 L/S/F 切換標記", group=groupIssue68B34)
+showIssue68B34Legend = input.bool(true, "顯示右上角狀態表", group=groupIssue68B34)
 
 issue68B34Ready = bar_index >= rankLen - 1
 
@@ -120,21 +123,77 @@ if issue68B34Ready
         issue68B34TransitionsB += issue68B34B != issue68B34B[1] ? 1 : 0
         issue68B34TransitionsC += issue68B34C != issue68B34C[1] ? 1 : 0
 
+// ============================================================================
+// Human-readable audit rendering.
+// Green = Long / bullish bias, gray = Flat / Observe, red = Short / bearish bias.
+// Lane y-levels are layout coordinates only and have no financial meaning.
+// ============================================================================
 f_issue68B34Color(int x) => x == 1 ? colGreen : x == -1 ? colRed : colNeutral
-f_issue68B34Lane(float center, int x) => center + float(x) * 0.32
+f_issue68B34StateText(int x) => x == 1 ? "LONG" : x == -1 ? "SHORT" : "FLAT"
+f_issue68B34BandColor(int x) => color.new(f_issue68B34Color(x), x == 0 ? 68 : 18)
+
+float issue68B34LaneHalf = 0.34
+float issue68B34CoreCenter = 3.0
+float issue68B34ACenter = 2.0
+float issue68B34BCenter = 1.0
+float issue68B34CCenter = 0.0
 
 color issue68B34StageColor = formalId == 1 ? colAcc : formalId == 2 ? colMarkup : formalId == 3 ? colReacc : formalId == 4 ? colDist : formalId == 5 ? colMarkdown : formalId == 6 ? colRedist : colNeutral
-bgcolor(showIssue68B34StageBg and issue68B34Ready ? color.new(issue68B34StageColor, 92) : na, title="Issue68 B34 Formal Stage")
+bgcolor(showIssue68B34StageBg and issue68B34Ready ? color.new(issue68B34StageColor, 96) : na, title="Issue68 B34 Formal Stage")
 
-hline(3.0, "Core Bias lane center", color=color.new(colNeutral, 80), linestyle=hline.style_dotted)
-hline(2.0, "A lane center", color=color.new(colNeutral, 80), linestyle=hline.style_dotted)
-hline(1.0, "B lane center", color=color.new(colNeutral, 80), linestyle=hline.style_dotted)
-hline(0.0, "C lane center", color=color.new(colNeutral, 80), linestyle=hline.style_dotted)
+// Invisible band boundaries. The fills are the primary audit visualization.
+issue68B34CoreTop = plot(showIssue68B34Bias and issue68B34Ready ? issue68B34CoreCenter + issue68B34LaneHalf : na, "CORE band top", color=color.new(colNeutral, 100), display=display.pane)
+issue68B34CoreBottom = plot(showIssue68B34Bias and issue68B34Ready ? issue68B34CoreCenter - issue68B34LaneHalf : na, "CORE band bottom", color=color.new(colNeutral, 100), display=display.pane)
+issue68B34ATop = plot(showIssue68B34A and issue68B34Ready ? issue68B34ACenter + issue68B34LaneHalf : na, "A band top", color=color.new(colNeutral, 100), display=display.pane)
+issue68B34ABottom = plot(showIssue68B34A and issue68B34Ready ? issue68B34ACenter - issue68B34LaneHalf : na, "A band bottom", color=color.new(colNeutral, 100), display=display.pane)
+issue68B34BTop = plot(showIssue68B34B and issue68B34Ready ? issue68B34BCenter + issue68B34LaneHalf : na, "B band top", color=color.new(colNeutral, 100), display=display.pane)
+issue68B34BBottom = plot(showIssue68B34B and issue68B34Ready ? issue68B34BCenter - issue68B34LaneHalf : na, "B band bottom", color=color.new(colNeutral, 100), display=display.pane)
+issue68B34CTop = plot(showIssue68B34C and issue68B34Ready ? issue68B34CCenter + issue68B34LaneHalf : na, "C band top", color=color.new(colNeutral, 100), display=display.pane)
+issue68B34CBottom = plot(showIssue68B34C and issue68B34Ready ? issue68B34CCenter - issue68B34LaneHalf : na, "C band bottom", color=color.new(colNeutral, 100), display=display.pane)
 
-plot(showIssue68B34Bias and issue68B34Ready ? f_issue68B34Lane(3.0, issue68B34Bias) : na, "B3.3 Core Bias lane", color=f_issue68B34Color(issue68B34Bias), linewidth=4, style=plot.style_stepline)
-plot(showIssue68B34A and issue68B34Ready ? f_issue68B34Lane(2.0, issue68B34A) : na, "A Formal-family exposure", color=f_issue68B34Color(issue68B34A), linewidth=4, style=plot.style_stepline)
-plot(showIssue68B34B and issue68B34Ready ? f_issue68B34Lane(1.0, issue68B34B) : na, "B Flat-Action exposure", color=f_issue68B34Color(issue68B34B), linewidth=4, style=plot.style_stepline)
-plot(showIssue68B34C and issue68B34Ready ? f_issue68B34Lane(0.0, issue68B34C) : na, "C Stateful exposure", color=f_issue68B34Color(issue68B34C), linewidth=4, style=plot.style_stepline)
+fill(issue68B34CoreTop, issue68B34CoreBottom, color=showIssue68B34Bias and issue68B34Ready ? f_issue68B34BandColor(issue68B34Bias) : na, title="CORE Bias band")
+fill(issue68B34ATop, issue68B34ABottom, color=showIssue68B34A and issue68B34Ready ? f_issue68B34BandColor(issue68B34A) : na, title="A Formal-family exposure")
+fill(issue68B34BTop, issue68B34BBottom, color=showIssue68B34B and issue68B34Ready ? f_issue68B34BandColor(issue68B34B) : na, title="B Flat-Action exposure")
+fill(issue68B34CTop, issue68B34CBottom, color=showIssue68B34C and issue68B34Ready ? f_issue68B34BandColor(issue68B34C) : na, title="C Stateful exposure")
+
+// Optional transition marks. Off by default so the first-look audit remains clean.
+bool issue68B34BiasChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34Bias != issue68B34Bias[1]
+bool issue68B34AChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34A != issue68B34A[1]
+bool issue68B34BChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34B != issue68B34B[1]
+bool issue68B34CChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34C != issue68B34C[1]
+
+plotshape(showIssue68B34Marks and showIssue68B34Bias and issue68B34BiasChanged and issue68B34Bias == 1 ? issue68B34CoreCenter : na, "CORE -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34Bias and issue68B34BiasChanged and issue68B34Bias == -1 ? issue68B34CoreCenter : na, "CORE -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34Bias and issue68B34BiasChanged and issue68B34Bias == 0 ? issue68B34CoreCenter : na, "CORE -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
+
+plotshape(showIssue68B34Marks and showIssue68B34A and issue68B34AChanged and issue68B34A == 1 ? issue68B34ACenter : na, "A -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34A and issue68B34AChanged and issue68B34A == -1 ? issue68B34ACenter : na, "A -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34A and issue68B34AChanged and issue68B34A == 0 ? issue68B34ACenter : na, "A -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
+
+plotshape(showIssue68B34Marks and showIssue68B34B and issue68B34BChanged and issue68B34B == 1 ? issue68B34BCenter : na, "B -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34B and issue68B34BChanged and issue68B34B == -1 ? issue68B34BCenter : na, "B -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34B and issue68B34BChanged and issue68B34B == 0 ? issue68B34BCenter : na, "B -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
+
+plotshape(showIssue68B34Marks and showIssue68B34C and issue68B34CChanged and issue68B34C == 1 ? issue68B34CCenter : na, "C -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34C and issue68B34CChanged and issue68B34C == -1 ? issue68B34CCenter : na, "C -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
+plotshape(showIssue68B34Marks and showIssue68B34C and issue68B34CChanged and issue68B34C == 0 ? issue68B34CCenter : na, "C -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
+
+// Compact current-state legend. Historical reading comes from the four color bands.
+var table issue68B34Legend = table.new(position.top_right, 2, 5, border_width=1)
+if barstate.islast
+    if showIssue68B34Legend
+        table.cell(issue68B34Legend, 0, 0, "LANE", text_color=color.white, bgcolor=color.new(colNeutral, 15), text_size=size.small)
+        table.cell(issue68B34Legend, 1, 0, "NOW", text_color=color.white, bgcolor=color.new(colNeutral, 15), text_size=size.small)
+        table.cell(issue68B34Legend, 0, 1, "CORE｜方向記憶", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
+        table.cell(issue68B34Legend, 1, 1, f_issue68B34StateText(issue68B34Bias), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34Bias), text_size=size.small)
+        table.cell(issue68B34Legend, 0, 2, "A｜Formal", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
+        table.cell(issue68B34Legend, 1, 2, f_issue68B34StateText(issue68B34A), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34A), text_size=size.small)
+        table.cell(issue68B34Legend, 0, 3, "B｜Flat Action", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
+        table.cell(issue68B34Legend, 1, 3, f_issue68B34StateText(issue68B34B), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34B), text_size=size.small)
+        table.cell(issue68B34Legend, 0, 4, "C｜Stateful", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
+        table.cell(issue68B34Legend, 1, 4, f_issue68B34StateText(issue68B34C), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34C), text_size=size.small)
+    else
+        table.clear(issue68B34Legend, 0, 0, 1, 4)
 
 plot(float(formalId), "B34 Formal Stage ID", display=display.data_window)
 plot(float(issue68B34Bias), "B34 Core Bias", display=display.data_window)
@@ -175,6 +234,11 @@ def generate(source: Path) -> str:
         "C Stateful exposure",
         "no direct executable flip",
         "issue68B34ViolationC",
+        "Human-readable audit rendering",
+        "CORE Bias band",
+        "showIssue68B34Marks = input.bool(false",
+        "showIssue68B34StageBg = input.bool(false",
+        "table.new(position.top_right, 2, 5",
     )
     for token in required:
         if token not in out:
@@ -187,10 +251,11 @@ def generate(source: Path) -> str:
         "LONG SETUP",
         "SHORT SETUP",
         "D1B|",
+        "plot.style_stepline",
     )
     for token in forbidden:
         if token in out:
-            raise RuntimeError(f"forbidden legacy/strategy/parity token leaked into B3.4 audit: {token}")
+            raise RuntimeError(f"forbidden legacy/strategy/parity/UI token leaked into B3.4 audit: {token}")
     return out
 
 
