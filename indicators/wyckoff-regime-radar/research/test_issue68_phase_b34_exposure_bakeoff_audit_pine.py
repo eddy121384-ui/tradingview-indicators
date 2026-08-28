@@ -50,12 +50,33 @@ class Issue68B34ExposureBakeoffPineTests(unittest.TestCase):
         for token in ("strategy.", "issue68ArmedDir", "issue68EarlyFail", "LONG SETUP", "SHORT SETUP", "D1B|"):
             self.assertNotIn(token, self.text)
 
-    def test_three_lanes_and_data_window_are_present(self):
+    def test_human_readable_ui_is_default(self):
+        self.assertIn("Human-readable audit rendering", self.text)
+        self.assertIn('showIssue68B34StageBg = input.bool(false', self.text)
+        self.assertIn('showIssue68B34Marks = input.bool(false', self.text)
+        self.assertIn('showIssue68B34Legend = input.bool(true', self.text)
+        self.assertIn('table.new(position.top_right, 2, 5', self.text)
+        self.assertIn('CORE Bias band', self.text)
+        self.assertIn('A Formal-family exposure', self.text)
+        self.assertIn('B Flat-Action exposure', self.text)
+        self.assertIn('C Stateful exposure', self.text)
+        self.assertNotIn('plot.style_stepline', self.text)
+        self.assertNotIn('Core Bias lane center', self.text)
+        self.assertNotIn('A lane center', self.text)
+
+    def test_transition_marks_are_optional_and_small(self):
         for token in (
-            "B3.3 Core Bias lane",
-            "A Formal-family exposure",
-            "B Flat-Action exposure",
-            "C Stateful exposure",
+            '"CORE -> LONG"',
+            '"CORE -> SHORT"',
+            '"A -> FLAT"',
+            '"B -> FLAT"',
+            '"C -> FLAT"',
+            'size=size.tiny',
+        ):
+            self.assertIn(token, self.text)
+
+    def test_data_window_semantic_counters_are_preserved(self):
+        for token in (
             "B34 A Flat share %",
             "B34 B Flat share %",
             "B34 C Flat share %",
