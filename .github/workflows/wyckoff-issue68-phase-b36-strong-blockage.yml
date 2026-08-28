@@ -1,0 +1,98 @@
+name: Wyckoff Issue 68 Phase B3.6 Strong Blockage
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b36_strong_blockage.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b36_strong_blockage_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b36_strong_blockage.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b36-strong-formation-blockage-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-phase-b36-strong-blockage.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b36_strong_blockage.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b36_strong_blockage_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b36_strong_blockage.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b36-strong-formation-blockage-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-phase-b36-strong-blockage.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  strong-blockage-forensic:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile B3.6 tooling
+        run: |
+          python -m py_compile diagnose_issue68_phase_b36_strong_blockage.py
+          python -m py_compile generate_issue68_phase_b36_strong_blockage_audit_pine.py
+          python -m py_compile test_issue68_phase_b36_strong_blockage.py
+      - name: Run B3.6 contracts
+        run: python -m unittest -v test_issue68_phase_b36_strong_blockage
+      - name: Run burned-data blockage forensic
+        run: |
+          python diagnose_issue68_phase_b36_strong_blockage.py \
+            --json reports/issue-68-phase-b36-strong-blockage.json \
+            --md reports/issue-68-phase-b36-strong-blockage.md
+      - name: Enforce no performance metric keys
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('reports/issue-68-phase-b36-strong-blockage.json').read_text())
+          forbidden = ('pnl', 'return', 'sharpe', 'drawdown', 'hit_rate', 'transaction_cost', 'profit')
+          bad=[]
+          def walk(x,path=''):
+              if isinstance(x,dict):
+                  for k,v in x.items():
+                      if any(t in str(k).lower() for t in forbidden): bad.append(path+'/'+str(k))
+                      walk(v,path+'/'+str(k))
+              elif isinstance(x,list):
+                  for i,v in enumerate(x): walk(v,path+f'/{i}')
+          walk(data)
+          if bad: raise SystemExit('forbidden performance keys: '+', '.join(bad))
+          PY
+      - name: Generate B3.6 TradingView audit Pine
+        run: |
+          python generate_issue68_phase_b36_strong_blockage_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b36-strong-blockage-audit.pine
+          test -s generated/wyckoff-issue68-phase-b36-strong-blockage-audit.pine
+          grep -q 'Issue #68 B3.6 Strong Blockage' generated/wyckoff-issue68-phase-b36-strong-blockage-audit.pine
+          grep -q 'EVIDENCE gate band' generated/wyckoff-issue68-phase-b36-strong-blockage-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-phase-b36-strong-blockage-audit.pine
+      - name: Commit B3.6 report and audit artifact on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b36-strong-blockage.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b36-strong-blockage.md
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b36-strong-blockage-audit.pine
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "research: record Issue 68 B3.6 blockage artifacts [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
