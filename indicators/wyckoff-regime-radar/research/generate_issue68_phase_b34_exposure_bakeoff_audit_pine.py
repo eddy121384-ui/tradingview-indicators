@@ -14,6 +14,7 @@ AUDIT_DECL = 'indicator("Chase Risk Radar｜Issue #68 Exposure B3.4 Bakeoff", sh
 B34_BODY = r'''
 
 // ============================================================================
+// Issue #66 C-2 runtime-validated price-only lineage.
 // Issue #68 Phase B3.4 preregistered Exposure Policy Bakeoff.
 // Core Bias is frozen B3.3 regime memory. Exposure candidates are NO-PNL.
 // A = Formal trend family; B = Flat Action authorization;
