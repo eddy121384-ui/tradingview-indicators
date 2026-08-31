@@ -1,0 +1,116 @@
+{
+  "max_mae_by_component": {
+    "break": 0.059394883940352514,
+    "continuation": 0.026143424002941923,
+    "extension": 5.520526365916171e-16,
+    "heat": 1.0058603518706048e-15,
+    "structure": 0.0,
+    "trace": 0.021801225975603262
+  },
+  "per_pair": {
+    "AUDUSD": {
+      "break": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.0469636210306762
+      },
+      "continuation": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 0.016576831834128482
+      },
+      "extension": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 5.395026025308132e-16
+      },
+      "heat": {
+        "bars": 1584,
+        "mae_to_negative_inverse": 9.258517073097225e-16
+      },
+      "structure": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.0
+      },
+      "trace": {
+        "bars": 1347,
+        "mae_to_negative_inverse": 0.01691722314002796
+      }
+    },
+    "EURUSD": {
+      "break": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.02625954018004591
+      },
+      "continuation": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 0.006774101102896348
+      },
+      "extension": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 5.317977891959903e-16
+      },
+      "heat": {
+        "bars": 1584,
+        "mae_to_negative_inverse": 9.210516486006276e-16
+      },
+      "structure": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.0
+      },
+      "trace": {
+        "bars": 1347,
+        "mae_to_negative_inverse": 0.015187871522114219
+      }
+    },
+    "GBPUSD": {
+      "break": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.059394883940352514
+      },
+      "continuation": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 0.026143424002941923
+      },
+      "extension": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 4.83422413979408e-16
+      },
+      "heat": {
+        "bars": 1584,
+        "mae_to_negative_inverse": 9.294087665584427e-16
+      },
+      "structure": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.0
+      },
+      "trace": {
+        "bars": 1347,
+        "mae_to_negative_inverse": 0.021801225975603262
+      }
+    },
+    "USDJPY": {
+      "break": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.02521773637824747
+      },
+      "continuation": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 0.011115575088108502
+      },
+      "extension": {
+        "bars": 1445,
+        "mae_to_negative_inverse": 5.520526365916171e-16
+      },
+      "heat": {
+        "bars": 1584,
+        "mae_to_negative_inverse": 1.0058603518706048e-15
+      },
+      "structure": {
+        "bars": 1645,
+        "mae_to_negative_inverse": 0.0
+      },
+      "trace": {
+        "bars": 1347,
+        "mae_to_negative_inverse": 0.014984875526554926
+      }
+    }
+  }
+}
