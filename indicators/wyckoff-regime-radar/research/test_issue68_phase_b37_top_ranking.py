@@ -29,7 +29,7 @@ class TestIssue68B37TopRanking(unittest.TestCase):
             "dist_gate": [1, 1, 1, 1],
             "markdown_gate": [1, 1, 1, 1],
             "redist_gate": [1, 1, 1, 1],
-            "top_id": [1, 1, 2, 5],
+            "top_id": [1, 4, 2, 5],
         })
         out = b37.direction_audit(model, 1, warmup=0)
         self.assertEqual(out["target_top_loss_bars"], 3)
