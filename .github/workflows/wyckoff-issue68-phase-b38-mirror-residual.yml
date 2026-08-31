@@ -1,0 +1,27 @@
+name: Wyckoff Issue 68 Phase B3.8 Mirror Residual
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b38_component_mirror_residual.py"
+      - ".github/workflows/wyckoff-issue68-phase-b38-mirror-residual.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  mirror-residual:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue-68-lifecycle-retest-symmetry-repaired
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Print B3.8 per-component reciprocal residuals
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python diagnose_issue68_phase_b38_component_mirror_residual.py
