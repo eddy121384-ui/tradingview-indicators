@@ -1,0 +1,23 @@
+{
+  "schema_version": 2,
+  "issue": 64,
+  "role": "durable frozen SPY/TLT/GLD adjusted-price input snapshot",
+  "storage": "gzip-compressed deterministic CSV",
+  "columns": ["date", "SPY", "TLT", "GLD"],
+  "rows": 4941,
+  "first_date": "2007-01-03",
+  "last_date": "2026-08-24",
+  "csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+  "archive_sha256": "1f052dbbc671017fc77748f5694c32db905f86cdfe107c73978718237d7e019b",
+  "git_blob_sha": "7d70272912735786be183794c0a25fdf8816b759",
+  "source": {
+    "provider": "Yahoo Finance via yfinance",
+    "acquisition_mode": "Issue #64 bootstrap run subsequently frozen for durable reproducibility",
+    "source_artifact_run": 32794998567,
+    "source_phase_a_artifact": 9544547838,
+    "price_semantics": "auto_adjust=True adjusted Close; dividend/split-adjusted investable price proxy",
+    "calendar_semantics": "strict intersection of finite SPY, TLT and GLD observation dates; no outcome forward-fill"
+  },
+  "price_semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close; strict common finite SPY/TLT/GLD calendar",
+  "interpretation_boundary": "This snapshot freezes Issue #64 research inputs for reproducibility; it is not a production market-data source and does not convert reused history into untouched OOS evidence."
+}
