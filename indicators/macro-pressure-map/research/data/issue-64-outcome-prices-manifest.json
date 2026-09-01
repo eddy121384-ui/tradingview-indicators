@@ -8,7 +8,7 @@
   "first_date": "2007-01-03",
   "last_date": "2026-08-24",
   "csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
-  "archive_sha256": "1f052dbbc671017fc77748f5694c32db905f86cdfe107c73978718237d7e019b",
+  "archive_sha256": "5b9acaed1ca5338dab63877d695e3c92f3cdaf43b3ca266bc812483c1b1e4245",
   "git_blob_sha": "7d70272912735786be183794c0a25fdf8816b759",
   "source": {
     "provider": "Yahoo Finance via yfinance",
