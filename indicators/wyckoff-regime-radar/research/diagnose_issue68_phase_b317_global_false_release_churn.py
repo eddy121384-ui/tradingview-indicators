@@ -151,6 +151,25 @@ def audit_direction(model: pd.DataFrame, direction: int, warmup: int) -> dict[st
     }
 
 
+def _episode_outcome_labels(x: dict[str, Any], n: int) -> np.ndarray:
+    """Per-bar outcome label on advance bars: 1=followed, -1=false, 0=not advance.
+
+    Comparing labels on common advance bars is intentionally boundary-robust: a one-bar
+    reciprocal boundary shift is already charged to raw-advance agreement and should not
+    turn the entire episode into a mismatch a second time.
+    """
+    labels = np.zeros(n, dtype=np.int8)
+    for e in x["episodes"]:
+        value = 1 if e["outcome"] == "followed_handoff" else -1
+        labels[int(e["start"]):int(e["end"])] = value
+    return labels
+
+
+def _count_agreement(a: int, b: int) -> float:
+    den = max(abs(int(a)), abs(int(b)), 1)
+    return float(1.0 - abs(int(a) - int(b)) / den)
+
+
 def mirror_compare(a: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
     ea = np.asarray(a["_eligible"], bool)
     eb = np.asarray(b["_eligible"], bool)
@@ -162,24 +181,27 @@ def mirror_compare(a: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
     elig_agree = float(np.mean(ea == eb)) if len(ea) else 1.0
     adv_agree = float(np.mean(aa == ab)) if len(aa) else 1.0
 
-    amap = {(e["start"], e["end"]): e["outcome"] for e in a["episodes"]}
-    bmap = {(e["start"], e["end"]): e["outcome"] for e in b["episodes"]}
-    keys = sorted(set(amap) | set(bmap))
-    ep_match = sum(amap.get(k) == bmap.get(k) for k in keys)
-    ep_agree = float(ep_match / len(keys)) if keys else 1.0
+    la = _episode_outcome_labels(a, len(aa))
+    lb = _episode_outcome_labels(b, len(ab))
+    common_advance = aa & ab
+    ep_total = int(np.sum(common_advance))
+    ep_match = int(np.sum(la[common_advance] == lb[common_advance])) if ep_total else 0
+    ep_agree = float(ep_match / ep_total) if ep_total else 1.0
 
-    ta = (a["observed_raw_transition_count"], a["shadow_raw_transition_count"])
-    tb = (b["observed_raw_transition_count"], b["shadow_raw_transition_count"])
-    trans_agree = 1.0 if ta == tb else 0.0
+    obs_agree = _count_agreement(a["observed_raw_transition_count"], b["observed_raw_transition_count"])
+    shadow_agree = _count_agreement(a["shadow_raw_transition_count"], b["shadow_raw_transition_count"])
+    trans_agree = min(obs_agree, shadow_agree)
     return {
         "eligibility_agreement": elig_agree,
         "advance_agreement": adv_agree,
         "episode_outcome_agreement": ep_agree,
-        "episode_union": int(len(keys)),
-        "episode_matches": int(ep_match),
+        "episode_common_advance_bars": ep_total,
+        "episode_outcome_matches": ep_match,
         "transition_count_agreement": trans_agree,
-        "transition_counts_a": list(ta),
-        "transition_counts_b": list(tb),
+        "observed_transition_count_agreement": obs_agree,
+        "shadow_transition_count_agreement": shadow_agree,
+        "transition_counts_a": [a["observed_raw_transition_count"], a["shadow_raw_transition_count"]],
+        "transition_counts_b": [b["observed_raw_transition_count"], b["shadow_raw_transition_count"]],
     }
 
 
@@ -341,7 +363,7 @@ def render_markdown(r: dict[str, Any]) -> str:
         f"- max Break / observed / shadow reconstruction error: **{a['max_break_reconstruction_error']:.3e} / {a['max_observed_reconstruction_error']:.3e} / {a['max_shadow_reconstruction_error']:.3e}**",
         f"- minimum reciprocal eligibility agreement: **{100*a['minimum_eligibility_mirror_agreement']:.3f}%**",
         f"- minimum reciprocal raw-advance agreement: **{100*a['minimum_advance_mirror_agreement']:.3f}%**",
-        f"- minimum reciprocal episode-outcome agreement: **{100*a['minimum_episode_outcome_mirror_agreement']:.3f}%**",
+        f"- minimum reciprocal episode-outcome agreement on common advance bars: **{100*a['minimum_episode_outcome_mirror_agreement']:.3f}%**",
         f"- minimum reciprocal transition-count agreement: **{100*a['minimum_transition_count_mirror_agreement']:.3f}%**",
         f"- unexplained episode accounting: **{a['unexplained_episode_accounting']}**",
         "",
