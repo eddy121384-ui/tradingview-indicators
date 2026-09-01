@@ -1,0 +1,263 @@
+{
+  "issue": 68,
+  "phase": "B3.13",
+  "status": "CONTINUOUS_STRUCTURE_SHADOW_NO_PERFORMANCE",
+  "primary_gate_pass": true,
+  "aggregate": {
+    "original_handoffs": 373,
+    "handoff_accounted": 373,
+    "shadow_target_positive_t_minus_1": 53,
+    "shadow_target_positive_at_handoff": 319,
+    "shadow_delayed_at_original_handoff": 54,
+    "old_target_side_transitions": 746,
+    "shadow_target_side_transitions": 698,
+    "shadow_only_target_entries": 83,
+    "max_old_reconstruction_error": 2.842170943040401e-14,
+    "minimum_shadow_target_side_mirror_agreement": 0.9992576095025983,
+    "minimum_continuous_structure_side_mirror_agreement": 0.9992576095025983,
+    "minimum_original_handoff_mirror_agreement": 0.9977728285077951,
+    "shadow_target_positive_t_minus_1_share": 0.14209115281501342,
+    "shadow_target_positive_at_handoff_share": 0.8552278820375335,
+    "transition_ratio_shadow_over_old": 0.935656836461126,
+    "unexplained_handoff_accounting": 0
+  },
+  "pairs": {
+    "EURUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "usable_bars": 1347,
+        "original_handoffs": 54,
+        "handoff_accounted": 54,
+        "shadow_target_positive_t_minus_1": 10,
+        "shadow_target_positive_t_minus_1_share": 0.18518518518518517,
+        "shadow_target_positive_at_handoff": 47,
+        "shadow_target_positive_at_handoff_share": 0.8703703703703703,
+        "shadow_delayed_at_original_handoff": 7,
+        "stable_lead_bars": {
+          "n": 47,
+          "median": 0.0,
+          "p90": 1.0,
+          "max": 2.0
+        },
+        "old_target_side_transitions": 108,
+        "shadow_target_side_transitions": 96,
+        "shadow_only_target_entries": 11,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "usable_bars": 1347,
+        "original_handoffs": 54,
+        "handoff_accounted": 54,
+        "shadow_target_positive_t_minus_1": 5,
+        "shadow_target_positive_t_minus_1_share": 0.09259259259259259,
+        "shadow_target_positive_at_handoff": 42,
+        "shadow_target_positive_at_handoff_share": 0.7777777777777778,
+        "shadow_delayed_at_original_handoff": 12,
+        "stable_lead_bars": {
+          "n": 42,
+          "median": 0.0,
+          "p90": 0.8999999999999986,
+          "max": 2.0
+        },
+        "old_target_side_transitions": 108,
+        "shadow_target_side_transitions": 96,
+        "shadow_only_target_entries": 11,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 1.0,
+          "continuous_structure_side_agreement": 0.9992576095025983,
+          "original_handoff_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 1.0,
+          "continuous_structure_side_agreement": 0.9992576095025983,
+          "original_handoff_agreement": 1.0
+        }
+      }
+    },
+    "USDJPY": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "usable_bars": 1347,
+        "original_handoffs": 49,
+        "handoff_accounted": 49,
+        "shadow_target_positive_t_minus_1": 10,
+        "shadow_target_positive_t_minus_1_share": 0.20408163265306123,
+        "shadow_target_positive_at_handoff": 45,
+        "shadow_target_positive_at_handoff_share": 0.9183673469387755,
+        "shadow_delayed_at_original_handoff": 4,
+        "stable_lead_bars": {
+          "n": 45,
+          "median": 0.0,
+          "p90": 1.0,
+          "max": 3.0
+        },
+        "old_target_side_transitions": 98,
+        "shadow_target_side_transitions": 86,
+        "shadow_only_target_entries": 8,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "usable_bars": 1347,
+        "original_handoffs": 49,
+        "handoff_accounted": 49,
+        "shadow_target_positive_t_minus_1": 6,
+        "shadow_target_positive_t_minus_1_share": 0.12244897959183673,
+        "shadow_target_positive_at_handoff": 38,
+        "shadow_target_positive_at_handoff_share": 0.7755102040816326,
+        "shadow_delayed_at_original_handoff": 11,
+        "stable_lead_bars": {
+          "n": 38,
+          "median": 0.0,
+          "p90": 1.0,
+          "max": 1.0
+        },
+        "old_target_side_transitions": 98,
+        "shadow_target_side_transitions": 86,
+        "shadow_only_target_entries": 11,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 1.0,
+          "continuous_structure_side_agreement": 1.0,
+          "original_handoff_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 1.0,
+          "continuous_structure_side_agreement": 1.0,
+          "original_handoff_agreement": 1.0
+        }
+      }
+    },
+    "GBPUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "usable_bars": 1347,
+        "original_handoffs": 41,
+        "handoff_accounted": 41,
+        "shadow_target_positive_t_minus_1": 9,
+        "shadow_target_positive_t_minus_1_share": 0.21951219512195122,
+        "shadow_target_positive_at_handoff": 41,
+        "shadow_target_positive_at_handoff_share": 1.0,
+        "shadow_delayed_at_original_handoff": 0,
+        "stable_lead_bars": {
+          "n": 41,
+          "median": 0.0,
+          "p90": 1.0,
+          "max": 5.0
+        },
+        "old_target_side_transitions": 82,
+        "shadow_target_side_transitions": 86,
+        "shadow_only_target_entries": 11,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "usable_bars": 1347,
+        "original_handoffs": 41,
+        "handoff_accounted": 41,
+        "shadow_target_positive_t_minus_1": 4,
+        "shadow_target_positive_t_minus_1_share": 0.0975609756097561,
+        "shadow_target_positive_at_handoff": 34,
+        "shadow_target_positive_at_handoff_share": 0.8292682926829268,
+        "shadow_delayed_at_original_handoff": 7,
+        "stable_lead_bars": {
+          "n": 34,
+          "median": 0.0,
+          "p90": 0.6999999999999993,
+          "max": 2.0
+        },
+        "old_target_side_transitions": 82,
+        "shadow_target_side_transitions": 86,
+        "shadow_only_target_entries": 13,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 1.0,
+          "continuous_structure_side_agreement": 1.0,
+          "original_handoff_agreement": 0.9992576095025983
+        },
+        "bear_vs_inverse_bull": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 1.0,
+          "continuous_structure_side_agreement": 1.0,
+          "original_handoff_agreement": 0.9992576095025983
+        }
+      }
+    },
+    "AUDUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "usable_bars": 1347,
+        "original_handoffs": 43,
+        "handoff_accounted": 43,
+        "shadow_target_positive_t_minus_1": 7,
+        "shadow_target_positive_t_minus_1_share": 0.16279069767441862,
+        "shadow_target_positive_at_handoff": 38,
+        "shadow_target_positive_at_handoff_share": 0.8837209302325582,
+        "shadow_delayed_at_original_handoff": 5,
+        "stable_lead_bars": {
+          "n": 38,
+          "median": 0.0,
+          "p90": 1.0,
+          "max": 2.0
+        },
+        "old_target_side_transitions": 85,
+        "shadow_target_side_transitions": 81,
+        "shadow_only_target_entries": 10,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "usable_bars": 1347,
+        "original_handoffs": 42,
+        "handoff_accounted": 42,
+        "shadow_target_positive_t_minus_1": 2,
+        "shadow_target_positive_t_minus_1_share": 0.047619047619047616,
+        "shadow_target_positive_at_handoff": 34,
+        "shadow_target_positive_at_handoff_share": 0.8095238095238095,
+        "shadow_delayed_at_original_handoff": 8,
+        "stable_lead_bars": {
+          "n": 34,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 1.0
+        },
+        "old_target_side_transitions": 85,
+        "shadow_target_side_transitions": 81,
+        "shadow_only_target_entries": 8,
+        "max_old_reconstruction_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 0.9992576095025983,
+          "continuous_structure_side_agreement": 0.9992576095025983,
+          "original_handoff_agreement": 0.9977728285077951
+        },
+        "bear_vs_inverse_bull": {
+          "bars": 1347,
+          "shadow_target_side_agreement": 0.9992576095025983,
+          "continuous_structure_side_agreement": 0.9992576095025983,
+          "original_handoff_agreement": 0.9992576095025983
+        }
+      }
+    }
+  },
+  "boundary": "Single locked continuous Structure shadow only; C-2, weights, MA lengths, thresholds, lifecycle and performance rules are unchanged."
+}
