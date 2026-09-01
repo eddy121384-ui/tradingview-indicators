@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "issue": 64,
+  "phase": "C",
+  "purpose": "Stagflation gold-over-equity override robustness checkpoint",
+  "evidence_status": "reused/development exploratory history; not untouched OOS confirmation",
+  "production_v66_parameters_modified": false,
+  "weight_magnitude_sweep_performed": false,
+  "preregistered_templates": {
+    "neutral": {"SPY": 0.4, "TLT": 0.4, "GLD": 0.2},
+    "reflation": {"SPY": 0.6, "TLT": 0.2, "GLD": 0.2},
+    "stagflation": {"SPY": 0.2, "TLT": 0.4, "GLD": 0.4}
+  },
+  "primary_full_history_incremental_vs_phase_b": {
+    "delta_CAGR": 0.002414,
+    "delta_Sharpe": 0.020261,
+    "delta_maximum_drawdown": 0.023567,
+    "delta_Calmar": 0.046867,
+    "delta_annualized_turnover": 1.358147
+  },
+  "realized_exposure_matched_attribution": {
+    "full_reused_history": {
+      "delta_CAGR": 0.0026082324363878584,
+      "delta_Sharpe": 0.018147943933739308,
+      "delta_maximum_drawdown": 0.02145989160740136,
+      "delta_Calmar": 0.044657795027860436,
+      "delta_annualized_turnover": 1.3559543778446095
+    },
+    "development_pre2020": {
+      "delta_CAGR": 0.0015048718508030579,
+      "delta_Sharpe": 0.0019615589884043327,
+      "delta_maximum_drawdown": -0.022617917218107464,
+      "delta_Calmar": -0.04294872981383341,
+      "delta_annualized_turnover": 1.3601205220796009
+    },
+    "post2019_reused_exploratory": {
+      "delta_CAGR": 0.004541130159844142,
+      "delta_Sharpe": 0.03598554387794728,
+      "delta_maximum_drawdown": 0.020826134523374673,
+      "delta_Calmar": 0.0516872623941908,
+      "delta_annualized_turnover": 1.3499976818596067
+    },
+    "interpretation": "The Stagflation override retains positive timing value after matching realized average exposure, especially after 2019. This is post-hoc attribution on reused history, not confirmatory evidence."
+  },
+  "episode_concentration": {
+    "development_pre2020": {
+      "largest_winning_episode_start": "2007-09-17",
+      "largest_winning_episode_end": "2008-01-17",
+      "screening_active_log_contribution_including_exit_day": 0.06115568154083986,
+      "normal_active_log_return": 0.0132471691152789,
+      "active_log_return_after_leaveout": -0.048354054512697475,
+      "delta_CAGR_after_leaveout_vs_phase_b": -0.004138267792862971,
+      "delta_Sharpe_after_leaveout_vs_phase_b": -0.04909250194089321
+    },
+    "post2019_reused_exploratory": {
+      "largest_winning_episode_start": "2021-12-29",
+      "largest_winning_episode_end": "2022-06-06",
+      "screening_active_log_contribution_including_exit_day": 0.03261713516851017,
+      "normal_active_log_return": 0.029494304330633714,
+      "active_log_return_after_leaveout": -0.0031929142037914193,
+      "delta_CAGR_after_leaveout_vs_phase_b": -0.0005267013012895116,
+      "delta_Sharpe_after_leaveout_vs_phase_b": -0.0039110751958379986
+    }
+  },
+  "cost_sensitivity_full_history": {
+    "zero_bps": {
+      "phase_c_CAGR": 0.094765,
+      "phase_b_CAGR": 0.091606,
+      "phase_c_Sharpe": 0.978661,
+      "phase_b_Sharpe": 0.951403
+    },
+    "five_bps": {
+      "phase_c_CAGR": 0.093047,
+      "phase_b_CAGR": 0.090633,
+      "phase_c_Sharpe": 0.962452,
+      "phase_b_Sharpe": 0.942191
+    },
+    "ten_bps": {
+      "phase_c_CAGR": 0.091332,
+      "phase_b_CAGR": 0.089661,
+      "phase_c_Sharpe": 0.946231,
+      "phase_b_Sharpe": 0.932971
+    }
+  },
+  "replay_provenance": {
+    "source_phase_c_artifact_run": 33038153870,
+    "source_phase_c_artifact_id": 9632868973,
+    "source_phase_c_artifact_digest": "sha256:ee0d592cd15f646718337ff26bbf2208a79a21cc9ee372892cda5d3eae7aa1b1",
+    "current_head_robustness_run": 33038423000,
+    "current_head": "1dbc8453e8f35cd076cc554c3430c78f12111c7b",
+    "current_head_run_conclusion": "success",
+    "local_replay_max_abs_net_return_error": 6.7e-16,
+    "note": "The current-head robustness artifact expired under the three-day retention policy. The official Phase C daily artifact was replayed with current-head accounting logic at machine precision to recover the diagnostics."
+  },
+  "verdict": "stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated",
+  "decision": {
+    "production_allocator_validated": false,
+    "retain_as_exploratory_risk_overlay_candidate": true,
+    "do_not_tune_weights_to_rescue_result": true,
+    "reason": "Exposure-matched timing remains positive, but removing the single largest winning Stagflation episode turns active performance negative in both pre-2020 and post-2019 slices."
+  }
+}
