@@ -1,0 +1,625 @@
+{
+  "issue": 68,
+  "phase": "B3.14",
+  "status": "BREAK_EVIDENCE_MEMORY_NO_PERFORMANCE",
+  "primary_gate_pass": true,
+  "aggregate": {
+    "break_final_blocker_events": 106,
+    "expected_break_final_blocker_events": 106,
+    "event_reproduction_abs_delta": 0,
+    "label_counts": {
+      "old_memory_active": 105,
+      "old_range_memory_active": 101,
+      "old_ma_memory_active": 76,
+      "old_mode_active": 1,
+      "new_range_present": 5,
+      "new_ma_present": 50,
+      "new_mode_active": 0,
+      "current_ma_target_side": 20,
+      "current_ma_target_side_and_old_memory": 20
+    },
+    "target_sources": {
+      "none": 56,
+      "ma": 48,
+      "range": 2
+    },
+    "old_sources": {
+      "range": 95,
+      "ma": 10,
+      "mode": 1
+    },
+    "source_pairs": {
+      "none->range": 45,
+      "ma->range": 48,
+      "none->ma": 10,
+      "range->range": 2,
+      "none->mode": 1
+    },
+    "minimum_boolean_mirror_agreement": 1.0,
+    "pooled_source_matches": 106,
+    "pooled_source_comparable": 106,
+    "label_shares": {
+      "old_memory_active": 0.9905660377358491,
+      "old_range_memory_active": 0.9528301886792453,
+      "old_ma_memory_active": 0.7169811320754716,
+      "old_mode_active": 0.009433962264150943,
+      "new_range_present": 0.04716981132075472,
+      "new_ma_present": 0.4716981132075472,
+      "new_mode_active": 0.0,
+      "current_ma_target_side": 0.18867924528301888,
+      "current_ma_target_side_and_old_memory": 0.18867924528301888
+    },
+    "pooled_source_agreement": 1.0
+  },
+  "pairs": {
+    "EURUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "break_final_blocker_events": 16,
+        "expected_break_final_blocker_events": 16,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 16,
+            "share": 1.0
+          },
+          "old_range_memory_active": {
+            "count": 16,
+            "share": 1.0
+          },
+          "old_ma_memory_active": {
+            "count": 13,
+            "share": 0.8125
+          },
+          "old_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_range_present": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_ma_present": {
+            "count": 10,
+            "share": 0.625
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 3,
+            "share": 0.1875
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 3,
+            "share": 0.1875
+          }
+        },
+        "target_source_counts": {
+          "none": 6,
+          "ma": 10
+        },
+        "old_source_counts": {
+          "range": 15,
+          "ma": 1
+        },
+        "source_pair_counts": {
+          "none->range": 5,
+          "ma->range": 10,
+          "none->ma": 1
+        }
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "break_final_blocker_events": 14,
+        "expected_break_final_blocker_events": 14,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 14,
+            "share": 1.0
+          },
+          "old_range_memory_active": {
+            "count": 13,
+            "share": 0.9285714285714286
+          },
+          "old_ma_memory_active": {
+            "count": 13,
+            "share": 0.9285714285714286
+          },
+          "old_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_range_present": {
+            "count": 3,
+            "share": 0.21428571428571427
+          },
+          "new_ma_present": {
+            "count": 8,
+            "share": 0.5714285714285714
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 1,
+            "share": 0.07142857142857142
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 1,
+            "share": 0.07142857142857142
+          }
+        },
+        "target_source_counts": {
+          "none": 6,
+          "ma": 7,
+          "range": 1
+        },
+        "old_source_counts": {
+          "range": 11,
+          "ma": 3
+        },
+        "source_pair_counts": {
+          "none->range": 3,
+          "ma->range": 7,
+          "none->ma": 3,
+          "range->range": 1
+        }
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "events_a": 16,
+          "events_b": 16,
+          "comparable_events": 16,
+          "boolean_matches": 144,
+          "boolean_total": 144,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 16,
+          "source_matches": 16,
+          "source_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "events_a": 14,
+          "events_b": 14,
+          "comparable_events": 14,
+          "boolean_matches": 126,
+          "boolean_total": 126,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 14,
+          "source_matches": 14,
+          "source_agreement": 1.0
+        }
+      }
+    },
+    "USDJPY": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "break_final_blocker_events": 12,
+        "expected_break_final_blocker_events": 12,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 12,
+            "share": 1.0
+          },
+          "old_range_memory_active": {
+            "count": 11,
+            "share": 0.9166666666666666
+          },
+          "old_ma_memory_active": {
+            "count": 9,
+            "share": 0.75
+          },
+          "old_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_range_present": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_ma_present": {
+            "count": 6,
+            "share": 0.5
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 3,
+            "share": 0.25
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 3,
+            "share": 0.25
+          }
+        },
+        "target_source_counts": {
+          "none": 6,
+          "ma": 6
+        },
+        "old_source_counts": {
+          "range": 11,
+          "ma": 1
+        },
+        "source_pair_counts": {
+          "none->range": 5,
+          "ma->range": 6,
+          "none->ma": 1
+        }
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "break_final_blocker_events": 9,
+        "expected_break_final_blocker_events": 9,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 9,
+            "share": 1.0
+          },
+          "old_range_memory_active": {
+            "count": 9,
+            "share": 1.0
+          },
+          "old_ma_memory_active": {
+            "count": 5,
+            "share": 0.5555555555555556
+          },
+          "old_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_range_present": {
+            "count": 1,
+            "share": 0.1111111111111111
+          },
+          "new_ma_present": {
+            "count": 4,
+            "share": 0.4444444444444444
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 3,
+            "share": 0.3333333333333333
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 3,
+            "share": 0.3333333333333333
+          }
+        },
+        "target_source_counts": {
+          "none": 5,
+          "ma": 3,
+          "range": 1
+        },
+        "old_source_counts": {
+          "range": 8,
+          "ma": 1
+        },
+        "source_pair_counts": {
+          "none->range": 4,
+          "none->ma": 1,
+          "ma->range": 3,
+          "range->range": 1
+        }
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "events_a": 12,
+          "events_b": 12,
+          "comparable_events": 12,
+          "boolean_matches": 108,
+          "boolean_total": 108,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 12,
+          "source_matches": 12,
+          "source_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "events_a": 9,
+          "events_b": 9,
+          "comparable_events": 9,
+          "boolean_matches": 81,
+          "boolean_total": 81,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 9,
+          "source_matches": 9,
+          "source_agreement": 1.0
+        }
+      }
+    },
+    "GBPUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "break_final_blocker_events": 16,
+        "expected_break_final_blocker_events": 16,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 16,
+            "share": 1.0
+          },
+          "old_range_memory_active": {
+            "count": 15,
+            "share": 0.9375
+          },
+          "old_ma_memory_active": {
+            "count": 11,
+            "share": 0.6875
+          },
+          "old_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_range_present": {
+            "count": 1,
+            "share": 0.0625
+          },
+          "new_ma_present": {
+            "count": 6,
+            "share": 0.375
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 3,
+            "share": 0.1875
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 3,
+            "share": 0.1875
+          }
+        },
+        "target_source_counts": {
+          "none": 10,
+          "ma": 6
+        },
+        "old_source_counts": {
+          "range": 14,
+          "ma": 2
+        },
+        "source_pair_counts": {
+          "none->range": 8,
+          "ma->range": 6,
+          "none->ma": 2
+        }
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "break_final_blocker_events": 13,
+        "expected_break_final_blocker_events": 13,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 12,
+            "share": 0.9230769230769231
+          },
+          "old_range_memory_active": {
+            "count": 12,
+            "share": 0.9230769230769231
+          },
+          "old_ma_memory_active": {
+            "count": 8,
+            "share": 0.6153846153846154
+          },
+          "old_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_range_present": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_ma_present": {
+            "count": 5,
+            "share": 0.38461538461538464
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 1,
+            "share": 0.07692307692307693
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 1,
+            "share": 0.07692307692307693
+          }
+        },
+        "target_source_counts": {
+          "none": 8,
+          "ma": 5
+        },
+        "old_source_counts": {
+          "ma": 1,
+          "range": 12
+        },
+        "source_pair_counts": {
+          "none->ma": 1,
+          "none->range": 7,
+          "ma->range": 5
+        }
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "events_a": 16,
+          "events_b": 16,
+          "comparable_events": 16,
+          "boolean_matches": 144,
+          "boolean_total": 144,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 16,
+          "source_matches": 16,
+          "source_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "events_a": 13,
+          "events_b": 14,
+          "comparable_events": 13,
+          "boolean_matches": 117,
+          "boolean_total": 117,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 13,
+          "source_matches": 13,
+          "source_agreement": 1.0
+        }
+      }
+    },
+    "AUDUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "break_final_blocker_events": 11,
+        "expected_break_final_blocker_events": 11,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 11,
+            "share": 1.0
+          },
+          "old_range_memory_active": {
+            "count": 10,
+            "share": 0.9090909090909091
+          },
+          "old_ma_memory_active": {
+            "count": 6,
+            "share": 0.5454545454545454
+          },
+          "old_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_range_present": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_ma_present": {
+            "count": 3,
+            "share": 0.2727272727272727
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 3,
+            "share": 0.2727272727272727
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 3,
+            "share": 0.2727272727272727
+          }
+        },
+        "target_source_counts": {
+          "none": 8,
+          "ma": 3
+        },
+        "old_source_counts": {
+          "range": 10,
+          "ma": 1
+        },
+        "source_pair_counts": {
+          "none->range": 7,
+          "none->ma": 1,
+          "ma->range": 3
+        }
+      },
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "break_final_blocker_events": 15,
+        "expected_break_final_blocker_events": 15,
+        "event_reproduction_delta": 0,
+        "labels": {
+          "old_memory_active": {
+            "count": 15,
+            "share": 1.0
+          },
+          "old_range_memory_active": {
+            "count": 15,
+            "share": 1.0
+          },
+          "old_ma_memory_active": {
+            "count": 11,
+            "share": 0.7333333333333333
+          },
+          "old_mode_active": {
+            "count": 1,
+            "share": 0.06666666666666667
+          },
+          "new_range_present": {
+            "count": 0,
+            "share": 0.0
+          },
+          "new_ma_present": {
+            "count": 8,
+            "share": 0.5333333333333333
+          },
+          "new_mode_active": {
+            "count": 0,
+            "share": 0.0
+          },
+          "current_ma_target_side": {
+            "count": 3,
+            "share": 0.2
+          },
+          "current_ma_target_side_and_old_memory": {
+            "count": 3,
+            "share": 0.2
+          }
+        },
+        "target_source_counts": {
+          "ma": 8,
+          "none": 7
+        },
+        "old_source_counts": {
+          "range": 14,
+          "mode": 1
+        },
+        "source_pair_counts": {
+          "ma->range": 8,
+          "none->range": 6,
+          "none->mode": 1
+        }
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "events_a": 11,
+          "events_b": 12,
+          "comparable_events": 11,
+          "boolean_matches": 99,
+          "boolean_total": 99,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 11,
+          "source_matches": 11,
+          "source_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "events_a": 15,
+          "events_b": 15,
+          "comparable_events": 15,
+          "boolean_matches": 135,
+          "boolean_total": 135,
+          "boolean_agreement": 1.0,
+          "source_comparable_non_tie": 15,
+          "source_matches": 15,
+          "source_agreement": 1.0
+        }
+      }
+    }
+  },
+  "boundary": "Break source/memory attribution only; no C-2 or performance rule changed."
+}
