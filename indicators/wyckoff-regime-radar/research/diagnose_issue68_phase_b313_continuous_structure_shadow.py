@@ -50,8 +50,6 @@ def f(model: pd.DataFrame, key: str) -> np.ndarray:
 
 
 def continuous_structure_edge(model: pd.DataFrame) -> np.ndarray:
-    # Locked preregistered shadow: same two MA-displacement percentile ranks,
-    # same overall [-100,+100] scale, same 0.17 fresh-trend Structure weight.
     delta = (f(model, "b313_dist_rank") - 50.0) + (f(model, "b313_maturity_dist_rank") - 50.0)
     return 0.17 * delta
 
@@ -146,7 +144,7 @@ def audit_direction(model: pd.DataFrame, direction: int, warmup: int) -> dict[st
         shadow_entry[1:] = scored[1:] & scored[:-1] & shadow_side[1:] & ~shadow_side[:-1]
     shadow_only_entries = int(np.sum(shadow_entry & ~handoff))
 
-    recon = np.asarray(fresh["reconstructed"], dtype=float)
+    recon = np.asarray(arrays["reconstructed"], dtype=float)
     direct = np.asarray(arrays["direct"], dtype=float)
     recon_finite = np.isfinite(recon) & np.isfinite(direct)
     recon_error = float(np.nanmax(np.abs(recon[recon_finite] - direct[recon_finite]))) if np.any(recon_finite) else 0.0
@@ -239,7 +237,6 @@ def build_report() -> dict[str, Any]:
         "minimum_continuous_structure_side_mirror_agreement": 1.0,
         "minimum_original_handoff_mirror_agreement": 1.0,
     }
-    all_leads: list[int] = []
     for p in pairs.values():
         for side in ("bull", "bear"):
             x = p[side]
@@ -255,9 +252,6 @@ def build_report() -> dict[str, Any]:
             ):
                 agg[key] += int(x[key])
             agg["max_old_reconstruction_error"] = max(agg["max_old_reconstruction_error"], float(x["max_old_reconstruction_error"]))
-            # Pair summaries do not retain raw lead samples, so reconstruct aggregate distribution
-            # from pair median is intentionally avoided; aggregate lead distribution is reported via
-            # pooled counts/shares while per-pair distributions remain authoritative.
         for m in p["mirror"].values():
             agg["minimum_shadow_target_side_mirror_agreement"] = min(
                 agg["minimum_shadow_target_side_mirror_agreement"], m["shadow_target_side_agreement"]
