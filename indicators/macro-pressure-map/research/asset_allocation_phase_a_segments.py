@@ -8,13 +8,26 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from asset_allocation_phase_a import REGIMES, build_outcome_prices, summarize_forward_returns
+from asset_allocation_phase_a import REGIMES, summarize_forward_returns
 from asset_allocation_phase_a_frozen import load_frozen_transitions, map_regimes_to_outcome_calendar
 from asset_allocation_relative import PAIRS, summarize_relative_returns
+from issue_64_outcome_snapshot import load_frozen_prices
 
 DEVELOPMENT_START = pd.Timestamp("2007-01-04")
 DEVELOPMENT_END = pd.Timestamp("2019-12-31")
 EXPLORATORY_START = pd.Timestamp("2020-01-01")
+
+
+def load_segment_prices(end: str | None = None) -> pd.DataFrame:
+    """Load only the committed hash-verified Issue #64 outcome panel.
+
+    Phase A segment evidence is durable evidence, so it must never silently fall
+    back to a fresh Yahoo download on a later workflow rerun.
+    """
+    prices, manifest = load_frozen_prices("2007-01-01", end)
+    if manifest.get("source_mode") != "committed_frozen_snapshot":
+        raise RuntimeError("Phase A segment evidence requires the committed frozen outcome snapshot")
+    return prices
 
 
 def add_segment(frame: pd.DataFrame, name: str) -> pd.DataFrame:
@@ -92,7 +105,7 @@ def build_relative_stability(relative: pd.DataFrame) -> pd.DataFrame:
 
 
 def run(output_dir: Path, end: str | None = None) -> None:
-    prices, _ = build_outcome_prices("2007-01-01", end)
+    prices = load_segment_prices(end)
     prices.index = pd.DatetimeIndex(prices.index).astype("datetime64[ns]")
     history = map_regimes_to_outcome_calendar(prices, load_frozen_transitions())
 
