@@ -5,12 +5,14 @@ on:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b312_structure_step_ma_cross.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b312_structure_step_ma_cross.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b312_structure_step_audit_pine.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b312-structure-step-ma-cross-preregistration.md'
       - '.github/workflows/wyckoff-issue68-phase-b312-structure-step.yml'
   pull_request:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b312_structure_step_ma_cross.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b312_structure_step_ma_cross.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b312_structure_step_audit_pine.py'
       - '.github/workflows/wyckoff-issue68-phase-b312-structure-step.yml'
 permissions: {contents: write}
 jobs:
@@ -24,7 +26,7 @@ jobs:
       - name: Compile and synthetic contracts
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
-          python -m py_compile diagnose_issue68_phase_b312_structure_step_ma_cross.py test_issue68_phase_b312_structure_step_ma_cross.py
+          python -m py_compile diagnose_issue68_phase_b312_structure_step_ma_cross.py test_issue68_phase_b312_structure_step_ma_cross.py generate_issue68_phase_b312_structure_step_audit_pine.py
           python test_issue68_phase_b312_structure_step_ma_cross.py
       - name: Frozen-FX Structure step forensic
         working-directory: indicators/wyckoff-regime-radar/research
@@ -32,6 +34,14 @@ jobs:
           python diagnose_issue68_phase_b312_structure_step_ma_cross.py \
             --report-json reports/issue-68-phase-b312-structure-step-ma-cross.json \
             --report-md reports/issue-68-phase-b312-structure-step-ma-cross.md
+      - name: Generate TradingView visual audit
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python generate_issue68_phase_b312_structure_step_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b312-structure-step-audit.pine
+          grep -q 'B312 MA50 band' generated/wyckoff-issue68-phase-b312-structure-step-audit.pine
+          grep -q 'B312 HANDOFF band' generated/wyckoff-issue68-phase-b312-structure-step-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-phase-b312-structure-step-audit.pine
       - name: Diagnostic-only guard
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
@@ -42,10 +52,11 @@ jobs:
           assert not bad,bad
           print('B3.12 diagnostic-only boundary PASS')
           PY
-      - name: Commit report
+      - name: Commit refreshed B3.12 artifacts
         if: github.event_name == 'push'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b312-structure-step-ma-cross.*
-          git diff --cached --quiet || (git commit -m 'research(issue-68): refresh B3.12 structure step report' && git push)
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b312-structure-step-audit.pine
+          git diff --cached --quiet || (git commit -m 'research(issue-68): refresh B3.12 structure artifacts' && git push)
