@@ -42,3 +42,31 @@ Primary engineering gate: **PASS**
 ## Boundary
 
 Event-window timing attribution only; frozen C-2 and all classifier parameters remain unchanged.
+
+## Preregistered population split
+
+### Primary causal population — MA already target-side at blocker
+
+- events: **20**
+- event-related MA flip found / censored: **20 / 0**
+- old range-memory survival: **median=11.0, p75=15.0, max=16, uncensored=7, censored=13**
+- target range-evidence delay: **median=1.0, p75=2.0, max=5, uncensored=14, censored=6**
+- Break release delay: **median=11.0, p75=15.0, max=16, uncensored=7, censored=13**
+- stale-overlap bars: **166**
+- Break old-negative during overlap: **105 / 166 (63.3%)**
+- Break target-positive during overlap: **4**; zero: **57**
+- target range before old memory clears: **7 / 7 (100.0%)**
+- interpretation boundary: eligible evidence for stale memory after the market has already moved to the new MA side.
+
+### Context population — blocker occurs before MA flip
+
+- events: **86**
+- event-related MA flip found / censored: **83 / 3**
+- old range-memory survival: **median=3.0, p75=9.0, max=15, uncensored=29, censored=54**
+- target range-evidence delay: **median=0.0, p75=1.0, max=10, uncensored=40, censored=43**
+- Break release delay: **median=4.5, p75=7.0, max=15, uncensored=26, censored=57**
+- stale-overlap bars: **286**
+- Break old-negative during overlap: **150 / 286 (52.4%)**
+- Break target-positive during overlap: **36**; zero: **100**
+- target range before old memory clears: **17 / 23 (73.9%)**
+- interpretation boundary: timing context only; these events cannot by themselves prove stale memory after an MA turn.

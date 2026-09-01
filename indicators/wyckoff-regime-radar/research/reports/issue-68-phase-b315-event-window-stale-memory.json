@@ -47,7 +47,75 @@
     "minimum_population_mirror_agreement": 1.0,
     "timing_mirror_matches": 122,
     "timing_mirror_comparable": 122,
-    "timing_mirror_agreement": 1.0
+    "timing_mirror_agreement": 1.0,
+    "primary_ma_target_at_blocker_summary": {
+      "events": 20,
+      "event_related_ma_flip_found": 20,
+      "event_related_ma_flip_censored": 0,
+      "old_range_survival": {
+        "uncensored": 7,
+        "censored": 13,
+        "median": 11.0,
+        "p75": 15.0,
+        "max": 16
+      },
+      "new_range_delay": {
+        "uncensored": 14,
+        "censored": 6,
+        "median": 1.0,
+        "p75": 2.0,
+        "max": 5
+      },
+      "break_release_delay": {
+        "uncensored": 7,
+        "censored": 13,
+        "median": 11.0,
+        "p75": 15.0,
+        "max": 16
+      },
+      "stale_overlap_bars": 166,
+      "break_old_overlap_bars": 105,
+      "break_target_overlap_bars": 4,
+      "break_zero_overlap_bars": 57,
+      "break_old_overlap_share": 0.6325301204819277,
+      "new_range_before_old_clear_comparable": 7,
+      "new_range_before_old_clear": 7,
+      "new_range_before_old_clear_share": 1.0
+    },
+    "pre_ma_flip_context_summary": {
+      "events": 86,
+      "event_related_ma_flip_found": 83,
+      "event_related_ma_flip_censored": 3,
+      "old_range_survival": {
+        "uncensored": 29,
+        "censored": 54,
+        "median": 3.0,
+        "p75": 9.0,
+        "max": 15
+      },
+      "new_range_delay": {
+        "uncensored": 40,
+        "censored": 43,
+        "median": 0.0,
+        "p75": 1.0,
+        "max": 10
+      },
+      "break_release_delay": {
+        "uncensored": 26,
+        "censored": 57,
+        "median": 4.5,
+        "p75": 7.0,
+        "max": 15
+      },
+      "stale_overlap_bars": 286,
+      "break_old_overlap_bars": 150,
+      "break_target_overlap_bars": 36,
+      "break_zero_overlap_bars": 100,
+      "break_old_overlap_share": 0.5244755244755245,
+      "new_range_before_old_clear_comparable": 23,
+      "new_range_before_old_clear": 17,
+      "new_range_before_old_clear_share": 0.7391304347826086
+    }
   },
   "per_pair": {
     "EURUSD": {
