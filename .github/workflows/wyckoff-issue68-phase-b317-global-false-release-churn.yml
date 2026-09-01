@@ -45,9 +45,13 @@ jobs:
           p='generated/wyckoff-issue68-phase-b317-global-false-release-churn-audit.pine'
           s=open(p,encoding='utf-8').read()
           assert 'strategy.' not in s
-          for token in ('B316 RAW ADVANCE band','B317 OBS HANDOFF band','B317 FALSE RELEASE CONFIRM band','B317 FLIPFLOP START band'):
+          for token in ('B316 OBS RAW band','B316 SHADOW RAW band','B316 STALE OVERLAP band','B316 RAW ADVANCE band','"B317 OBS HANDOFF"','"B317 FALSE RELEASE CONFIRM"','"B317 FLIPFLOP START"'):
               assert token in s,token
-          print('B3.17 Pine safety contract PASS')
+          for removed in ('B316 OBS BREAK band','B316 SHADOW BREAK band','B316 NEW RANGE band','B316 BREAK RELEASE band','B316 BREAK FINAL BLOCKER band'):
+              assert removed not in s,removed
+          budget=s.count('plot(')+s.count('plotshape(')+s.count('plotchar(')+s.count('fill(')
+          assert budget <= 58,budget
+          print(f'B3.17 lean Pine safety contract PASS; source plot budget={budget}')
           PY
       - name: Diagnostic-only guard
         working-directory: indicators/wyckoff-regime-radar/research
