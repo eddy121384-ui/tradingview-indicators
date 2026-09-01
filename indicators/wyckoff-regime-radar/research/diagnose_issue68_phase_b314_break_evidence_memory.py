@@ -103,6 +103,7 @@ def audit_direction(model: pd.DataFrame, direction: int, warmup: int) -> dict[st
     hand = duel["_arrays"]["handoff"]
     blocker = duel["_arrays"]["final_blocker_id"]
     events = np.flatnonzero(hand & (blocker == BREAK_ID))
+    expected_events = int(duel["final_blocker_counts"]["break"])
     sides = side_arrays(model, direction)
     logp = f(model, "b314_log_price")
     malog = f(model, "b314_ma_log")
@@ -160,6 +161,8 @@ def audit_direction(model: pd.DataFrame, direction: int, warmup: int) -> dict[st
     return {
         "direction": "bull_s5_to_s2" if direction == 1 else "bear_s2_to_s5",
         "break_final_blocker_events": n,
+        "expected_break_final_blocker_events": expected_events,
+        "event_reproduction_delta": int(n - expected_events),
         "labels": {k: {"count": v, "share": (v / n if n else 0.0)} for k, v in labels.items()},
         "target_source_counts": dict(target_sources),
         "old_source_counts": dict(old_sources),
@@ -180,8 +183,15 @@ def compare_events(a: dict[str, Any], c: dict[str, Any]) -> dict[str, Any]:
     ]
     boolean_total = len(common) * len(bool_keys)
     boolean_matches = sum(int(amap[i][k] == cmap[i][k]) for i in common for k in bool_keys)
-    non_tie = [i for i in common if amap[i]["target_source"] != "tie" and amap[i]["old_source"] != "tie" and cmap[i]["target_source"] != "tie" and cmap[i]["old_source"] != "tie"]
-    source_matches = sum(int(amap[i]["target_source"] == cmap[i]["target_source"] and amap[i]["old_source"] == cmap[i]["old_source"]) for i in non_tie)
+    non_tie = [
+        i for i in common
+        if amap[i]["target_source"] != "tie" and amap[i]["old_source"] != "tie"
+        and cmap[i]["target_source"] != "tie" and cmap[i]["old_source"] != "tie"
+    ]
+    source_matches = sum(
+        int(amap[i]["target_source"] == cmap[i]["target_source"] and amap[i]["old_source"] == cmap[i]["old_source"])
+        for i in non_tie
+    )
     return {
         "events_a": len(amap),
         "events_b": len(cmap),
@@ -225,6 +235,8 @@ def build_report() -> dict[str, Any]:
     pairs = {name: analyze_pair(frame) for name, frame in phasea.load_frozen_pairs().items()}
     agg: dict[str, Any] = {
         "break_final_blocker_events": 0,
+        "expected_break_final_blocker_events": 0,
+        "event_reproduction_abs_delta": 0,
         "label_counts": Counter(),
         "target_sources": Counter(),
         "old_sources": Counter(),
@@ -238,13 +250,17 @@ def build_report() -> dict[str, Any]:
             x = p[side]
             n = int(x["break_final_blocker_events"])
             agg["break_final_blocker_events"] += n
+            agg["expected_break_final_blocker_events"] += int(x["expected_break_final_blocker_events"])
+            agg["event_reproduction_abs_delta"] += abs(int(x["event_reproduction_delta"]))
             for k, v in x["labels"].items():
                 agg["label_counts"][k] += int(v["count"])
             agg["target_sources"].update(x["target_source_counts"])
             agg["old_sources"].update(x["old_source_counts"])
             agg["source_pairs"].update(x["source_pair_counts"])
         for m in p["mirror"].values():
-            agg["minimum_boolean_mirror_agreement"] = min(agg["minimum_boolean_mirror_agreement"], float(m["boolean_agreement"]))
+            agg["minimum_boolean_mirror_agreement"] = min(
+                agg["minimum_boolean_mirror_agreement"], float(m["boolean_agreement"])
+            )
             agg["pooled_source_matches"] += int(m["source_matches"])
             agg["pooled_source_comparable"] += int(m["source_comparable_non_tie"])
 
@@ -257,9 +273,8 @@ def build_report() -> dict[str, Any]:
     agg["source_pairs"] = dict(agg["source_pairs"])
     c = int(agg["pooled_source_comparable"])
     agg["pooled_source_agreement"] = agg["pooled_source_matches"] / c if c else 1.0
-    expected = 106
     primary = (
-        n == expected
+        agg["event_reproduction_abs_delta"] == 0
         and agg["minimum_boolean_mirror_agreement"] >= GATE
         and agg["pooled_source_agreement"] >= GATE
     )
@@ -281,6 +296,8 @@ def render_markdown(r: dict[str, Any]) -> str:
         "Status: **diagnostic only / frozen C-2 / no performance use**", "",
         f"Primary engineering gate: **{'PASS' if r['primary_gate_pass'] else 'FAIL'}**",
         f"- Break final-blocker events: **{a['break_final_blocker_events']}**",
+        f"- B3.10 mechanically expected Break blockers: **{a['expected_break_final_blocker_events']}**",
+        f"- event reproduction absolute delta: **{a['event_reproduction_abs_delta']}**",
         f"- minimum reciprocal boolean attribution: **{100*a['minimum_boolean_mirror_agreement']:.3f}%**",
         f"- pooled source-family reciprocal agreement: **{100*a['pooled_source_agreement']:.3f}%** ({a['pooled_source_matches']}/{a['pooled_source_comparable']})",
         "", "## Event labels", "",
