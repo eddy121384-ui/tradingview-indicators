@@ -5,12 +5,14 @@ on:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b313_continuous_structure_shadow.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b313_continuous_structure_shadow.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b313_continuous_structure_shadow_audit_pine.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b313-continuous-structure-shadow-preregistration.md'
       - '.github/workflows/wyckoff-issue68-phase-b313-continuous-structure-shadow.yml'
   pull_request:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b313_continuous_structure_shadow.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b313_continuous_structure_shadow.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b313_continuous_structure_shadow_audit_pine.py'
       - '.github/workflows/wyckoff-issue68-phase-b313-continuous-structure-shadow.yml'
 permissions: {contents: write}
 jobs:
@@ -24,7 +26,7 @@ jobs:
       - name: Compile and synthetic contracts
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
-          python -m py_compile diagnose_issue68_phase_b313_continuous_structure_shadow.py test_issue68_phase_b313_continuous_structure_shadow.py
+          python -m py_compile diagnose_issue68_phase_b313_continuous_structure_shadow.py test_issue68_phase_b313_continuous_structure_shadow.py generate_issue68_phase_b313_continuous_structure_shadow_audit_pine.py
           python test_issue68_phase_b313_continuous_structure_shadow.py
       - name: Frozen-FX continuous Structure shadow forensic
         working-directory: indicators/wyckoff-regime-radar/research
@@ -32,6 +34,11 @@ jobs:
           python diagnose_issue68_phase_b313_continuous_structure_shadow.py \
             --report-json reports/issue-68-phase-b313-continuous-structure-shadow.json \
             --report-md reports/issue-68-phase-b313-continuous-structure-shadow.md
+      - name: Generate TradingView shadow visual audit
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python generate_issue68_phase_b313_continuous_structure_shadow_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b313-continuous-structure-shadow-audit.pine
       - name: Diagnostic-only guard
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
@@ -41,12 +48,15 @@ jobs:
           text=json.dumps(data).lower()
           bad=[x for x in ('sharpe','sortino','profit_factor','net_profit','strategy_return') if x in text]
           assert not bad,bad
+          pine=open('generated/wyckoff-issue68-phase-b313-continuous-structure-shadow-audit.pine').read().lower()
+          assert 'strategy.' not in pine
           print('B3.13 diagnostic-only boundary PASS')
           PY
-      - name: Commit refreshed B3.13 report
+      - name: Commit refreshed B3.13 artifacts
         if: github.event_name == 'push'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b313-continuous-structure-shadow.*
-          git diff --cached --quiet || (git commit -m 'research(issue-68): refresh B3.13 continuous Structure report' && git push)
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b313-continuous-structure-shadow.* \
+                  indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b313-continuous-structure-shadow-audit.pine
+          git diff --cached --quiet || (git commit -m 'research(issue-68): refresh B3.13 shadow artifacts' && git push)
