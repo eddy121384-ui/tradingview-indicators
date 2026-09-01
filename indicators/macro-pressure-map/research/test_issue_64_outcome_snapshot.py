@@ -59,3 +59,14 @@ def test_snapshot_hash_mismatch_fails_closed(tmp_path: Path) -> None:
             snapshot_path=csv_path,
             manifest_path=manifest_path,
         )
+
+
+def test_committed_shards_reassemble_exact_frozen_panel() -> None:
+    loaded, runtime = load_frozen_prices("2007-01-01", None)
+    assert len(loaded) == 4941
+    assert loaded.index.min() == pd.Timestamp("2007-01-03")
+    assert loaded.index.max() == pd.Timestamp("2026-08-24")
+    assert runtime["source_mode"] == "committed_frozen_snapshot"
+    assert runtime["snapshot_csv_sha256"] == "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57"
+    assert runtime["snapshot_archive_sha256"] == "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240"
+    assert len(runtime["snapshot_shards"]) == 10
