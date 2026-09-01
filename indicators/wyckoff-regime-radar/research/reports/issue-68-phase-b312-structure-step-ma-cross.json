@@ -1,0 +1,478 @@
+{
+  "issue": 68,
+  "phase": "B3.12",
+  "primary_gate_pass": true,
+  "aggregate": {
+    "handoffs": 373,
+    "structure_improves": 308,
+    "ma50_only": 280,
+    "ma200_only": 14,
+    "both": 14,
+    "neither": 65,
+    "break_pos_prev": 83,
+    "break_pos_structure_not_prev": 83,
+    "unexplained": 0,
+    "recon_error": 2.842170943040401e-14,
+    "min_event_agreement": 0.998176291793313,
+    "comp": 370,
+    "improve_matches": 370,
+    "ma50_matches": 370,
+    "ma200_matches": 370,
+    "structure_improve_share": 0.8257372654155496,
+    "break_pos_prev_share": 0.2225201072386059,
+    "break_pos_structure_not_prev_share": 0.2225201072386059,
+    "transitions": {
+      "-1->-1": 0,
+      "-1->0": 140,
+      "-1->1": 14,
+      "0->-1": 0,
+      "0->0": 65,
+      "0->1": 154,
+      "1->-1": 0,
+      "1->0": 0,
+      "1->1": 0
+    },
+    "improve_agreement": 1.0,
+    "ma50_agreement": 1.0,
+    "ma200_agreement": 1.0
+  },
+  "pairs": {
+    "EURUSD": {
+      "warmup": 755,
+      "bull": {
+        "handoffs": 54,
+        "structure_improves": 44,
+        "structure_improve_share": 0.8148148148148148,
+        "cross": {
+          "ma50_only": 41,
+          "ma200_only": 3,
+          "both": 0,
+          "neither": 10
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 27,
+          "-1->1": 0,
+          "0->-1": 0,
+          "0->0": 10,
+          "0->1": 17,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 11,
+        "break_pos_now": 17,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 17,
+        "break_pos_structure_not_prev": 11,
+        "break_pos_structure_not_prev_share": 0.2037037037037037,
+        "break_run_prev": {
+          "n": 54,
+          "median": 0.0,
+          "p90": 11.700000000000003,
+          "max": 27.0
+        },
+        "structure_run_prev": {
+          "n": 54,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "handoffs": 54,
+        "structure_improves": 45,
+        "structure_improve_share": 0.8333333333333334,
+        "cross": {
+          "ma50_only": 43,
+          "ma200_only": 1,
+          "both": 1,
+          "neither": 9
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 15,
+          "-1->1": 1,
+          "0->-1": 0,
+          "0->0": 9,
+          "0->1": 29,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 14,
+        "break_pos_now": 19,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 30,
+        "break_pos_structure_not_prev": 14,
+        "break_pos_structure_not_prev_share": 0.25925925925925924,
+        "break_run_prev": {
+          "n": 54,
+          "median": 0.0,
+          "p90": 15.0,
+          "max": 29.0
+        },
+        "structure_run_prev": {
+          "n": 54,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_inverse_bear": {
+          "event_agreement": 1.0,
+          "comparable": 54,
+          "improve_matches": 54,
+          "improve_agreement": 1.0,
+          "ma50_matches": 54,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 54,
+          "ma200_agreement": 1.0
+        },
+        "bear_inverse_bull": {
+          "event_agreement": 1.0,
+          "comparable": 54,
+          "improve_matches": 54,
+          "improve_agreement": 1.0,
+          "ma50_matches": 54,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 54,
+          "ma200_agreement": 1.0
+        }
+      }
+    },
+    "USDJPY": {
+      "warmup": 755,
+      "bull": {
+        "handoffs": 49,
+        "structure_improves": 41,
+        "structure_improve_share": 0.8367346938775511,
+        "cross": {
+          "ma50_only": 35,
+          "ma200_only": 2,
+          "both": 4,
+          "neither": 8
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 11,
+          "-1->1": 4,
+          "0->-1": 0,
+          "0->0": 8,
+          "0->1": 26,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 13,
+        "break_pos_now": 14,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 30,
+        "break_pos_structure_not_prev": 13,
+        "break_pos_structure_not_prev_share": 0.2653061224489796,
+        "break_run_prev": {
+          "n": 49,
+          "median": 0.0,
+          "p90": 16.60000000000001,
+          "max": 29.0
+        },
+        "structure_run_prev": {
+          "n": 49,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "handoffs": 49,
+        "structure_improves": 38,
+        "structure_improve_share": 0.7755102040816326,
+        "cross": {
+          "ma50_only": 30,
+          "ma200_only": 5,
+          "both": 3,
+          "neither": 11
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 20,
+          "-1->1": 3,
+          "0->-1": 0,
+          "0->0": 11,
+          "0->1": 15,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 7,
+        "break_pos_now": 11,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 18,
+        "break_pos_structure_not_prev": 7,
+        "break_pos_structure_not_prev_share": 0.14285714285714285,
+        "break_run_prev": {
+          "n": 49,
+          "median": 0.0,
+          "p90": 6.0,
+          "max": 65.0
+        },
+        "structure_run_prev": {
+          "n": 49,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_inverse_bear": {
+          "event_agreement": 1.0,
+          "comparable": 49,
+          "improve_matches": 49,
+          "improve_agreement": 1.0,
+          "ma50_matches": 49,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 49,
+          "ma200_agreement": 1.0
+        },
+        "bear_inverse_bull": {
+          "event_agreement": 1.0,
+          "comparable": 49,
+          "improve_matches": 49,
+          "improve_agreement": 1.0,
+          "ma50_matches": 49,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 49,
+          "ma200_agreement": 1.0
+        }
+      }
+    },
+    "GBPUSD": {
+      "warmup": 755,
+      "bull": {
+        "handoffs": 41,
+        "structure_improves": 33,
+        "structure_improve_share": 0.8048780487804879,
+        "cross": {
+          "ma50_only": 30,
+          "ma200_only": 1,
+          "both": 2,
+          "neither": 8
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 15,
+          "-1->1": 2,
+          "0->-1": 0,
+          "0->0": 8,
+          "0->1": 16,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 8,
+        "break_pos_now": 11,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 18,
+        "break_pos_structure_not_prev": 8,
+        "break_pos_structure_not_prev_share": 0.1951219512195122,
+        "break_run_prev": {
+          "n": 41,
+          "median": 0.0,
+          "p90": 9.0,
+          "max": 24.0
+        },
+        "structure_run_prev": {
+          "n": 41,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "handoffs": 41,
+        "structure_improves": 35,
+        "structure_improve_share": 0.8536585365853658,
+        "cross": {
+          "ma50_only": 31,
+          "ma200_only": 2,
+          "both": 2,
+          "neither": 6
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 16,
+          "-1->1": 2,
+          "0->-1": 0,
+          "0->0": 6,
+          "0->1": 17,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 10,
+        "break_pos_now": 13,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 19,
+        "break_pos_structure_not_prev": 10,
+        "break_pos_structure_not_prev_share": 0.24390243902439024,
+        "break_run_prev": {
+          "n": 41,
+          "median": 0.0,
+          "p90": 11.0,
+          "max": 23.0
+        },
+        "structure_run_prev": {
+          "n": 41,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_inverse_bear": {
+          "event_agreement": 0.9993920972644377,
+          "comparable": 41,
+          "improve_matches": 41,
+          "improve_agreement": 1.0,
+          "ma50_matches": 41,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 41,
+          "ma200_agreement": 1.0
+        },
+        "bear_inverse_bull": {
+          "event_agreement": 0.9993920972644377,
+          "comparable": 41,
+          "improve_matches": 41,
+          "improve_agreement": 1.0,
+          "ma50_matches": 41,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 41,
+          "ma200_agreement": 1.0
+        }
+      }
+    },
+    "AUDUSD": {
+      "warmup": 755,
+      "bull": {
+        "handoffs": 43,
+        "structure_improves": 36,
+        "structure_improve_share": 0.8372093023255814,
+        "cross": {
+          "ma50_only": 35,
+          "ma200_only": 0,
+          "both": 1,
+          "neither": 7
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 27,
+          "-1->1": 1,
+          "0->-1": 0,
+          "0->0": 7,
+          "0->1": 8,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 12,
+        "break_pos_now": 18,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 9,
+        "break_pos_structure_not_prev": 12,
+        "break_pos_structure_not_prev_share": 0.27906976744186046,
+        "break_run_prev": {
+          "n": 43,
+          "median": 0.0,
+          "p90": 13.800000000000004,
+          "max": 20.0
+        },
+        "structure_run_prev": {
+          "n": 43,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "bear": {
+        "handoffs": 42,
+        "structure_improves": 36,
+        "structure_improve_share": 0.8571428571428571,
+        "cross": {
+          "ma50_only": 35,
+          "ma200_only": 0,
+          "both": 1,
+          "neither": 6
+        },
+        "transitions": {
+          "-1->-1": 0,
+          "-1->0": 9,
+          "-1->1": 1,
+          "0->-1": 0,
+          "0->0": 6,
+          "0->1": 26,
+          "1->-1": 0,
+          "1->0": 0,
+          "1->1": 0
+        },
+        "break_pos_prev": 8,
+        "break_pos_now": 11,
+        "structure_pos_prev": 0,
+        "structure_pos_now": 27,
+        "break_pos_structure_not_prev": 8,
+        "break_pos_structure_not_prev_share": 0.19047619047619047,
+        "break_run_prev": {
+          "n": 42,
+          "median": 0.0,
+          "p90": 17.29999999999999,
+          "max": 54.0
+        },
+        "structure_run_prev": {
+          "n": 42,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "unexplained_improvements": 0,
+        "recon_error": 2.842170943040401e-14
+      },
+      "mirror": {
+        "bull_inverse_bear": {
+          "event_agreement": 0.998176291793313,
+          "comparable": 41,
+          "improve_matches": 41,
+          "improve_agreement": 1.0,
+          "ma50_matches": 41,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 41,
+          "ma200_agreement": 1.0
+        },
+        "bear_inverse_bull": {
+          "event_agreement": 0.9993920972644377,
+          "comparable": 41,
+          "improve_matches": 41,
+          "improve_agreement": 1.0,
+          "ma50_matches": 41,
+          "ma50_agreement": 1.0,
+          "ma200_matches": 41,
+          "ma200_agreement": 1.0
+        }
+      }
+    }
+  },
+  "boundary": "Frozen Structure/MA timing diagnostic only; no model or performance change."
+}
