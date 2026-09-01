@@ -39,32 +39,18 @@ jobs:
             test_asset_allocation_phase_b_diagnostics.py \
             test_asset_allocation_phase_b_episode_diagnostics.py \
             test_asset_allocation_phase_c.py \
-            test_asset_allocation_phase_c_diagnostics.py
+            test_asset_allocation_phase_c_diagnostics.py \
+            test_asset_allocation_contribution_diagnostics.py
 
       - name: Generate Phase A evidence
         working-directory: indicators/macro-pressure-map/research
         run: |
-          set +e
-          for attempt in 1 2 3; do
-            rm -rf generated/issue-64-phase-a
-            python asset_allocation_phase_a_snapshot.py \
-              --start 2007-01-01 \
-              --output-dir generated/issue-64-phase-a
-            status=$?
-            if [ "$status" -eq 0 ]; then
-              python asset_allocation_phase_a_segments.py \
-                --output-dir generated/issue-64-phase-a
-              status=$?
-            fi
-            if [ "$status" -eq 0 ]; then
-              exit 0
-            fi
-            echo "Phase A outcome-data attempt ${attempt} failed with exit ${status}."
-            if [ "$attempt" -lt 3 ]; then
-              sleep $((attempt * 10))
-            fi
-          done
-          exit "$status"
+          rm -rf generated/issue-64-phase-a
+          python asset_allocation_phase_a_snapshot.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-64-phase-a
+          python asset_allocation_phase_a_segments.py \
+            --output-dir generated/issue-64-phase-a
 
       - name: Validate Phase A manifest
         working-directory: indicators/macro-pressure-map/research
@@ -75,32 +61,17 @@ jobs:
       - name: Generate preregistered Phase B evidence
         working-directory: indicators/macro-pressure-map/research
         run: |
-          set +e
-          for attempt in 1 2 3; do
-            rm -rf generated/issue-64-phase-b
-            python asset_allocation_phase_b_snapshot.py \
-              --start 2007-01-01 \
-              --output-dir generated/issue-64-phase-b
-            status=$?
-            if [ "$status" -eq 0 ]; then
-              python asset_allocation_phase_b_diagnostics.py \
-                --phase-b-dir generated/issue-64-phase-b
-              status=$?
-            fi
-            if [ "$status" -eq 0 ]; then
-              python asset_allocation_phase_b_episode_diagnostics.py \
-                --phase-b-dir generated/issue-64-phase-b
-              status=$?
-            fi
-            if [ "$status" -eq 0 ]; then
-              exit 0
-            fi
-            echo "Phase B outcome-data/diagnostic attempt ${attempt} failed with exit ${status}."
-            if [ "$attempt" -lt 3 ]; then
-              sleep $((attempt * 10))
-            fi
-          done
-          exit "$status"
+          rm -rf generated/issue-64-phase-b
+          python asset_allocation_phase_b_snapshot.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-64-phase-b
+          python asset_allocation_phase_b_diagnostics.py \
+            --phase-b-dir generated/issue-64-phase-b
+          python asset_allocation_phase_b_episode_diagnostics.py \
+            --phase-b-dir generated/issue-64-phase-b
+          python asset_allocation_contribution_diagnostics.py \
+            --phase-dir generated/issue-64-phase-b \
+            --phase-prefix phase-b
 
       - name: Validate Phase B evidence JSON
         working-directory: indicators/macro-pressure-map/research
@@ -109,6 +80,10 @@ jobs:
           python -m json.tool generated/issue-64-phase-b/phase-b-outcome-prices-manifest.json > /dev/null
           python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-exposure-match.json > /dev/null
           python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-timing-concentration.json > /dev/null
+          python -m json.tool generated/issue-64-phase-b/phase-b-contribution-manifest.json > /dev/null
+          test -s generated/issue-64-phase-b/phase-b-asset-contribution.csv
+          test -s generated/issue-64-phase-b/phase-b-regime-allocation-contribution.csv
+          test -s generated/issue-64-phase-b/phase-b-contribution-reconciliation.csv
 
       - name: Generate preregistered Phase C evidence
         working-directory: indicators/macro-pressure-map/research
@@ -120,12 +95,19 @@ jobs:
           python asset_allocation_phase_c_diagnostics.py \
             --phase-b-dir generated/issue-64-phase-b \
             --phase-c-dir generated/issue-64-phase-c
+          python asset_allocation_contribution_diagnostics.py \
+            --phase-dir generated/issue-64-phase-c \
+            --phase-prefix phase-c
 
       - name: Validate Phase C evidence JSON
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m json.tool generated/issue-64-phase-c/phase-c-manifest.json > /dev/null
           python -m json.tool generated/issue-64-phase-c/phase-c-posthoc-diagnostics.json > /dev/null
+          python -m json.tool generated/issue-64-phase-c/phase-c-contribution-manifest.json > /dev/null
+          test -s generated/issue-64-phase-c/phase-c-asset-contribution.csv
+          test -s generated/issue-64-phase-c/phase-c-regime-allocation-contribution.csv
+          test -s generated/issue-64-phase-c/phase-c-contribution-reconciliation.csv
 
       - name: Upload Phase A research artifact
         uses: actions/upload-artifact@v4
