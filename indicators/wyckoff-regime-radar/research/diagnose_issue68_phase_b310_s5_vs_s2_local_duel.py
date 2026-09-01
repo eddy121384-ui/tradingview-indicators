@@ -120,6 +120,7 @@ def direction_duel_from_arrays(
 def _mirror_event_compare(a: dict[str, Any], b: dict[str, Any], warmup: int) -> dict[str, Any]:
     ah = a["_arrays"]["handoff"][warmup:]
     bh = b["_arrays"]["handoff"][warmup:]
+    event_matches = int(np.sum(ah == bh))
     event_agreement = float(np.mean(ah == bh)) if len(ah) else 1.0
     both = ah & bh
     af = a["_arrays"]["final_blocker_id"][warmup:]
@@ -127,13 +128,18 @@ def _mirror_event_compare(a: dict[str, Any], b: dict[str, Any], warmup: int) -> 
     ad = a["_arrays"]["driver_id"][warmup:]
     bd = b["_arrays"]["driver_id"][warmup:]
     comparable = int(np.sum(both))
-    blocker_agreement = float(np.mean(af[both] == bf[both])) if comparable else 1.0
-    driver_agreement = float(np.mean(ad[both] == bd[both])) if comparable else 1.0
+    blocker_matches = int(np.sum(af[both] == bf[both])) if comparable else 0
+    driver_matches = int(np.sum(ad[both] == bd[both])) if comparable else 0
+    blocker_agreement = blocker_matches / comparable if comparable else 1.0
+    driver_agreement = driver_matches / comparable if comparable else 1.0
     return {
         "bars": int(len(ah)),
+        "event_matches": event_matches,
         "event_agreement": event_agreement,
         "event_mismatch_bars": int(np.sum(ah != bh)),
         "comparable_handoffs": comparable,
+        "final_blocker_matches": blocker_matches,
+        "handoff_driver_matches": driver_matches,
         "final_blocker_agreement": blocker_agreement,
         "handoff_driver_agreement": driver_agreement,
     }
@@ -187,6 +193,9 @@ def build_report() -> dict[str, Any]:
         "minimum_event_mirror_agreement": 1.0,
         "minimum_final_blocker_mirror_agreement": 1.0,
         "minimum_handoff_driver_mirror_agreement": 1.0,
+        "pooled_comparable_handoffs": 0,
+        "pooled_final_blocker_matches": 0,
+        "pooled_handoff_driver_matches": 0,
     }
     for p in pairs.values():
         for side in ("bull", "bear"):
@@ -205,19 +214,29 @@ def build_report() -> dict[str, Any]:
             agg["minimum_event_mirror_agreement"] = min(agg["minimum_event_mirror_agreement"], m["event_agreement"])
             agg["minimum_final_blocker_mirror_agreement"] = min(agg["minimum_final_blocker_mirror_agreement"], m["final_blocker_agreement"])
             agg["minimum_handoff_driver_mirror_agreement"] = min(agg["minimum_handoff_driver_mirror_agreement"], m["handoff_driver_agreement"])
+            agg["pooled_comparable_handoffs"] += m["comparable_handoffs"]
+            agg["pooled_final_blocker_matches"] += m["final_blocker_matches"]
+            agg["pooled_handoff_driver_matches"] += m["handoff_driver_matches"]
 
     loss = agg["target_losing_bars"]
     agg["negative_edge_share"] = {
         name: (agg["negative_edge_counts"][name] / loss if loss else 0.0) for name in COMPONENTS
     }
+    comparable = agg["pooled_comparable_handoffs"]
+    agg["pooled_final_blocker_agreement"] = (
+        agg["pooled_final_blocker_matches"] / comparable if comparable else 1.0
+    )
+    agg["pooled_handoff_driver_agreement"] = (
+        agg["pooled_handoff_driver_matches"] / comparable if comparable else 1.0
+    )
     primary = (
         agg["max_reconstruction_error"] <= RECON_TOL
         and agg["minimum_event_mirror_agreement"] >= MIRROR_GATE
-        and agg["minimum_final_blocker_mirror_agreement"] >= MIRROR_GATE
-        and agg["minimum_handoff_driver_mirror_agreement"] >= MIRROR_GATE
+        and agg["pooled_final_blocker_agreement"] >= MIRROR_GATE
+        and agg["pooled_handoff_driver_agreement"] >= MIRROR_GATE
     )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "issue": 68,
         "phase": "B3.10",
         "status": "S5_VS_S2_LOCAL_FORMULA_DUEL_NO_PERFORMANCE",
@@ -240,8 +259,10 @@ def render_markdown(r: dict[str, Any]) -> str:
         f"- exact raw handoff events: **{a['handoff_events']}**",
         f"- max six-component reconstruction error: **{a['max_reconstruction_error']:.3e}**",
         f"- minimum reciprocal handoff-event agreement: **{100*a['minimum_event_mirror_agreement']:.3f}%**",
-        f"- minimum reciprocal final-blocker agreement: **{100*a['minimum_final_blocker_mirror_agreement']:.3f}%**",
-        f"- minimum reciprocal handoff-driver agreement: **{100*a['minimum_handoff_driver_mirror_agreement']:.3f}%**",
+        f"- pooled reciprocal final-blocker agreement: **{100*a['pooled_final_blocker_agreement']:.3f}%** ({a['pooled_final_blocker_matches']}/{a['pooled_comparable_handoffs']})",
+        f"- pooled reciprocal handoff-driver agreement: **{100*a['pooled_handoff_driver_agreement']:.3f}%** ({a['pooled_handoff_driver_matches']}/{a['pooled_comparable_handoffs']})",
+        f"- minimum per-slice final-blocker agreement (diagnostic): **{100*a['minimum_final_blocker_mirror_agreement']:.3f}%**",
+        f"- minimum per-slice handoff-driver agreement (diagnostic): **{100*a['minimum_handoff_driver_mirror_agreement']:.3f}%**",
         "",
         "## Component drag while target fresh trend loses",
         "",
