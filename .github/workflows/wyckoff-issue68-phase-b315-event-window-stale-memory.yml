@@ -4,6 +4,7 @@ on:
     branches: [research/issue-68-lifecycle-retest-symmetry-repaired]
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b315_event_window_stale_memory.py'
+      - 'indicators/wyckoff-regime-radar/research/refine_issue68_phase_b315_population_split.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b315_event_window_stale_memory.py'
       - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b315_event_window_stale_memory_audit_pine.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b315-event-window-stale-memory-preregistration.md'
@@ -11,6 +12,7 @@ on:
   pull_request:
     paths:
       - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b315_event_window_stale_memory.py'
+      - 'indicators/wyckoff-regime-radar/research/refine_issue68_phase_b315_population_split.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b315_event_window_stale_memory.py'
       - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b315_event_window_stale_memory_audit_pine.py'
       - '.github/workflows/wyckoff-issue68-phase-b315-event-window-stale-memory.yml'
@@ -26,12 +28,15 @@ jobs:
       - name: Compile and synthetic contracts
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
-          python -m py_compile diagnose_issue68_phase_b315_event_window_stale_memory.py test_issue68_phase_b315_event_window_stale_memory.py generate_issue68_phase_b315_event_window_stale_memory_audit_pine.py
+          python -m py_compile diagnose_issue68_phase_b315_event_window_stale_memory.py refine_issue68_phase_b315_population_split.py test_issue68_phase_b315_event_window_stale_memory.py generate_issue68_phase_b315_event_window_stale_memory_audit_pine.py
           python test_issue68_phase_b315_event_window_stale_memory.py
       - name: Frozen-FX stale-memory event-window forensic
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
           python diagnose_issue68_phase_b315_event_window_stale_memory.py \
+            --report-json reports/issue-68-phase-b315-event-window-stale-memory.json \
+            --report-md reports/issue-68-phase-b315-event-window-stale-memory.md
+          python refine_issue68_phase_b315_population_split.py \
             --report-json reports/issue-68-phase-b315-event-window-stale-memory.json \
             --report-md reports/issue-68-phase-b315-event-window-stale-memory.md
       - name: Generate TradingView stale-memory visual audit
@@ -58,7 +63,9 @@ jobs:
           text=json.dumps(data).lower()
           bad=[x for x in ('sharpe','sortino','profit_factor','net_profit','strategy_return') if x in text]
           assert not bad,bad
-          print('B3.15 diagnostic-only boundary PASS')
+          assert 'primary_ma_target_at_blocker_summary' in data['aggregate']
+          assert 'pre_ma_flip_context_summary' in data['aggregate']
+          print('B3.15 diagnostic-only + population-split boundary PASS')
           PY
       - name: Commit refreshed B3.15 artifacts
         if: github.event_name == 'push'
