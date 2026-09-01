@@ -30,7 +30,7 @@ on:
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-axis-audit.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions-manifest.json"
-      - "indicators/macro-pressure-map/research/data/issue-64-outcome-prices.csv"
+      - "indicators/macro-pressure-map/research/data/issue-64-outcome-prices.csv.gz"
       - "indicators/macro-pressure-map/research/data/issue-64-outcome-prices-manifest.json"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-a.json"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-a.md"
@@ -40,6 +40,8 @@ on:
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-b.md"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-c-preregistered.json"
       - "indicators/macro-pressure-map/research/decisions/issue-64-phase-c-preregistered.md"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-c.json"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-phase-c.md"
       - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
       - ".github/workflows/macro-pressure-map-asset-allocation.yml"
 
