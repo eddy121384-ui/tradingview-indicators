@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from asset_allocation_phase_a_segments import load_segment_prices
 from issue_64_outcome_snapshot import load_frozen_prices, write_price_snapshot
 
 
@@ -70,3 +71,10 @@ def test_committed_shards_reassemble_exact_frozen_panel() -> None:
     assert runtime["snapshot_csv_sha256"] == "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57"
     assert runtime["snapshot_archive_sha256"] == "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240"
     assert len(runtime["snapshot_shards"]) == 10
+
+
+def test_phase_a_segment_loader_uses_committed_snapshot_only() -> None:
+    loaded = load_segment_prices("2020-01-07")
+    assert loaded.index.min() == pd.Timestamp("2007-01-03")
+    assert loaded.index.max() == pd.Timestamp("2020-01-06")
+    assert len(loaded) > 3000
