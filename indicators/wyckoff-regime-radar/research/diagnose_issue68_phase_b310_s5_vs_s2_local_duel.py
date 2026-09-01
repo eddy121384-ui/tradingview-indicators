@@ -271,14 +271,14 @@ def main() -> int:
     ap.add_argument("--md", type=Path)
     args = ap.parse_args()
     report = build_report()
+    rendered = render_markdown(report)
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     if args.md:
         args.md.parent.mkdir(parents=True, exist_ok=True)
-        args.md.write_text(render_markdown(report), encoding="utf-8")
-    if not args.json and not args.md:
-        print(render_markdown(report))
+        args.md.write_text(rendered, encoding="utf-8")
+    print(rendered)
     return 0 if report["primary_gate_pass"] else 1
 
 
