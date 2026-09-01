@@ -151,6 +151,8 @@ def load_frozen_prices(
         "source_mode": "committed_frozen_snapshot",
         "snapshot_path": display_path(snapshot_path),
         "snapshot_manifest_path": display_path(manifest_path),
+        # Backward-compatible alias used by the original snapshot wrappers/tests.
+        "snapshot_sha256": actual_csv,
         "snapshot_csv_sha256": actual_csv,
         "snapshot_archive_sha256": actual_archive,
         "snapshot_rows": int(len(prices)),
