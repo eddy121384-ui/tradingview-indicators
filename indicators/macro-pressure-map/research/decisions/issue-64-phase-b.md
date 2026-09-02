@@ -33,6 +33,24 @@ The advantage survives the preregistered 10 bp cost sensitivity. However, the st
 
 A causal 63-day inverse-volatility benchmark is stronger on risk-adjusted metrics: CAGR 9.06%, Sharpe 0.985, max drawdown -22.46%, Calmar 0.403. Phase B therefore does not establish V6.6 as the best allocator among simple alternatives.
 
+## Portfolio contribution audit
+
+The required Issue #64 allocation/contribution diagnostics are now generated from the exact daily portfolio evidence using the committed frozen outcome-price snapshot. Asset return contribution is `invested_weight × asset_return`; transaction cost and the cost/return interaction are retained as a separate residual. Regime attribution uses the prior-bar V6.6 regime available to the portfolio on that return row, not the future-known same-day state.
+
+For the full reused history, the V6.6 Reflation strategy's annualized arithmetic contribution is:
+
+- SPY: +5.55 percentage points;
+- TLT: +1.54 percentage points;
+- GLD: +2.15 percentage points;
+- transaction-cost residual: -0.09 percentage points;
+- total annualized arithmetic net return: +9.15%.
+
+Within executed Reflation / Inflation Rising rows, realized average allocation is approximately 60.34% SPY / 19.70% TLT / 19.96% GLD. That regime contributes about +2.58 percentage points per year to the strategy's full-history arithmetic net return, versus about +1.71 percentage points for fixed 40/40/20 on the same regime rows. The largest positive regime contribution overall is Slowdown / Disinflation at about +4.04 percentage points per year.
+
+The contribution accounting reconciles exactly up to floating-point precision: maximum absolute asset-plus-cost reconciliation error and regime reconciliation error are both `2.78e-17` across the full/pre-2020/post-2019 segments and all Phase B comparison strategies.
+
+These diagnostics increase attribution transparency but do not change the Phase B verdict. They show that the historical Reflation advantage is genuinely concentrated in the intended Reflation rows, while the separate exposure-matched and episode tests still limit how strongly that historical advantage can be generalized.
+
 ## Realized-exposure-matched attribution
 
 The Reflation strategy's realized average invested weights are about 44.38% SPY / 35.57% TLT / 20.05% GLD over the full sample. Its improvement versus 40/40/20 therefore cannot automatically be called timing alpha.
@@ -91,12 +109,12 @@ Phase B supports a narrower statement than "Macro Pressure Map is a validated pr
 
 Do not retune the Reflation weights or build nine separately optimized portfolio recipes from this result.
 
-If Issue #64 continues, the next clean experiment should be a **separately preregistered Stagflation gold-over-equity override**, because that is a different Phase A hypothesis. It must be evaluated incrementally and must not be retroactively folded into the Reflation primary test to rescue it.
+Phase C was therefore tested as a separately preregistered Stagflation gold-over-equity override rather than being retroactively folded into Phase B.
 
 ## Reproducibility
 
-Latest verified workflow: `32714875298` on head `b6ae85e796f63dc1f0fc09ba793b1b9a33e451b0`.
+Contribution-audit source workflow: `33492086706` on code head `51a9998ac0b370bdda8e2ccb5dc6e0e5e79e8b0e`, conclusion `success`.
 
-Phase B artifact: `9515620869`, digest `sha256:d0287640395fd114b24af08cb10fa0ac0f34579ce3f58a850f56176e7a1dedb0`.
+Phase B artifact: `9794325559`, digest `sha256:cd381e633323c620f1c5c51bebe823711199212f7f166eea2bcfe6610f839712`.
 
-The workflow completed focused tests, Phase A evidence, Phase B primary evidence, realized-exposure-matched attribution, episode concentration diagnostics, strict JSON validation and artifact upload successfully.
+The artifact contains `phase-b-asset-contribution.csv`, `phase-b-regime-allocation-contribution.csv`, `phase-b-contribution-reconciliation.csv`, and `phase-b-contribution-manifest.json` in addition to the existing Phase B evidence. The contribution manifest confirms `committed_frozen_snapshot`, frozen CSV SHA-256 `3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57`, and maximum reconciliation error `2.78e-17`.
