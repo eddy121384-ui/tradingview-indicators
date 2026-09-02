@@ -1530,20 +1530,14 @@ flatActionChanged = enableFlatAction and flatActionLevel != flatActionLevel[1]
 // Human-readable audit UI only: band rendering does not change A/B/C semantics.
 // ============================================================================
 
-// ============================================================================
-// Issue #68 Core Semantic Validity Gate wrapper.
-// Exposure lanes remain mechanically present but are hidden by default.
-// The gate judges frozen B3.3 Core only; no classifier or lifecycle semantics change.
-// ============================================================================
-
 groupIssue68B34 = "Issue #68｜Exposure B3.4 Bakeoff"
 showIssue68B34StageBg = input.bool(false, "輔助｜顯示極淡 Formal Stage 背景", group=groupIssue68B34)
 showIssue68B34Bias = input.bool(true, "顯示 CORE｜大方向記憶", group=groupIssue68B34)
-showIssue68B34A = input.bool(false, "顯示 A｜Formal trend-family（Core Gate 預設隱藏）", group=groupIssue68B34)
-showIssue68B34B = input.bool(false, "顯示 B｜Flat Action authorization（Core Gate 預設隱藏）", group=groupIssue68B34)
-showIssue68B34C = input.bool(false, "顯示 C｜Flat Action + Pace stateful（Core Gate 預設隱藏）", group=groupIssue68B34)
+showIssue68B34A = input.bool(true, "顯示 A｜Formal trend-family", group=groupIssue68B34)
+showIssue68B34B = input.bool(true, "顯示 B｜Flat Action authorization", group=groupIssue68B34)
+showIssue68B34C = input.bool(true, "顯示 C｜Flat Action + Pace stateful", group=groupIssue68B34)
 showIssue68B34Marks = input.bool(false, "輔助｜顯示 L/S/F 切換標記", group=groupIssue68B34)
-showIssue68B34Legend = input.bool(false, "顯示舊 B3.4 狀態表（Core Gate 預設隱藏）", group=groupIssue68B34)
+showIssue68B34Legend = input.bool(true, "顯示右上角狀態表", group=groupIssue68B34)
 
 issue68B34Ready = bar_index >= rankLen - 1
 
@@ -1568,167 +1562,9 @@ if issue68B34Ready
 else
     issue68B34Bias := 0
 
-// --- Candidate A: Formal trend-family exposure ---
-int issue68B34A = 0
-if issue68B34Ready
-    if issue68B34Bias == 1 and (formalId == 2 or formalId == 3)
-        issue68B34A := 1
-    else if issue68B34Bias == -1 and (formalId == 5 or formalId == 6)
-        issue68B34A := -1
-
-// --- Candidate B: existing Flat Action authorization only ---
-int issue68B34B = 0
-if issue68B34Ready
-    if issue68B34Bias == 1 and (flatActionLevel == 2 or flatActionLevel == 3)
-        issue68B34B := 1
-    else if issue68B34Bias == -1 and (flatActionLevel == 4 or flatActionLevel == 5)
-        issue68B34B := -1
-
-// --- Candidate C: Flat Action entry/re-entry + mirrored Pace defensive flat ---
-bool issue68B34LongDefensive = paceCode == 0 or paceCode == 40 or paceCode == 70 or paceCode == 71 or paceCode == 75
-bool issue68B34ShortDefensive = paceCode == 0 or paceCode == 15 or paceCode == 70 or paceCode == 71 or paceCode == 74
-bool issue68B34LongEntryOk = flatActionLevel == 2 or flatActionLevel == 3
-bool issue68B34ShortEntryOk = flatActionLevel == 4 or flatActionLevel == 5
-
-var int issue68B34C = 0
-int issue68B34CBefore = issue68B34C
-int issue68B34CAfter = issue68B34CBefore
-if issue68B34Ready
-    if issue68B34Bias == 0
-        issue68B34CAfter := 0
-    else if issue68B34CBefore != 0 and issue68B34CBefore != issue68B34Bias
-        // Bias reversal forces an observation bar; no direct executable flip.
-        issue68B34CAfter := 0
-    else if issue68B34CBefore == 0
-        if issue68B34Bias == 1 and issue68B34LongEntryOk
-            issue68B34CAfter := 1
-        else if issue68B34Bias == -1 and issue68B34ShortEntryOk
-            issue68B34CAfter := -1
-        else
-            issue68B34CAfter := 0
-    else if issue68B34CBefore == 1
-        issue68B34CAfter := issue68B34LongDefensive ? 0 : 1
-    else if issue68B34CBefore == -1
-        issue68B34CAfter := issue68B34ShortDefensive ? 0 : -1
-    issue68B34C := issue68B34CAfter
-else
-    issue68B34C := 0
-
-// Hard directional invariants: no candidate may oppose frozen Core Bias.
-bool issue68B34ViolationA = (issue68B34A == 1 and issue68B34Bias != 1) or (issue68B34A == -1 and issue68B34Bias != -1)
-bool issue68B34ViolationB = (issue68B34B == 1 and issue68B34Bias != 1) or (issue68B34B == -1 and issue68B34Bias != -1)
-bool issue68B34ViolationC = (issue68B34C == 1 and issue68B34Bias != 1) or (issue68B34C == -1 and issue68B34Bias != -1)
-
-// Cumulative semantic counters for Data Window only; not performance metrics.
-var int issue68B34Bars = 0
-var int issue68B34FlatA = 0
-var int issue68B34FlatB = 0
-var int issue68B34FlatC = 0
-var int issue68B34TransitionsA = 0
-var int issue68B34TransitionsB = 0
-var int issue68B34TransitionsC = 0
-if issue68B34Ready
-    issue68B34Bars += 1
-    issue68B34FlatA += issue68B34A == 0 ? 1 : 0
-    issue68B34FlatB += issue68B34B == 0 ? 1 : 0
-    issue68B34FlatC += issue68B34C == 0 ? 1 : 0
-    if issue68B34Ready[1]
-        issue68B34TransitionsA += issue68B34A != issue68B34A[1] ? 1 : 0
-        issue68B34TransitionsB += issue68B34B != issue68B34B[1] ? 1 : 0
-        issue68B34TransitionsC += issue68B34C != issue68B34C[1] ? 1 : 0
 
 // ============================================================================
-// Human-readable audit rendering.
-// Green = Long / bullish bias, gray = Flat / Observe, red = Short / bearish bias.
-// Lane y-levels are layout coordinates only and have no financial meaning.
-// ============================================================================
-f_issue68B34Color(int x) => x == 1 ? colGreen : x == -1 ? colRed : colNeutral
-f_issue68B34StateText(int x) => x == 1 ? "LONG" : x == -1 ? "SHORT" : "FLAT"
-f_issue68B34BandColor(int x) => color.new(f_issue68B34Color(x), x == 0 ? 68 : 18)
-
-float issue68B34LaneHalf = 0.34
-float issue68B34CoreCenter = 3.0
-float issue68B34ACenter = 2.0
-float issue68B34BCenter = 1.0
-float issue68B34CCenter = 0.0
-
-color issue68B34StageColor = formalId == 1 ? colAcc : formalId == 2 ? colMarkup : formalId == 3 ? colReacc : formalId == 4 ? colDist : formalId == 5 ? colMarkdown : formalId == 6 ? colRedist : colNeutral
-bgcolor(showIssue68B34StageBg and issue68B34Ready ? color.new(issue68B34StageColor, 96) : na, title="Issue68 B34 Formal Stage")
-
-// Invisible band boundaries. The fills are the primary audit visualization.
-issue68B34CoreTop = plot(showIssue68B34Bias and issue68B34Ready ? issue68B34CoreCenter + issue68B34LaneHalf : na, "CORE band top", color=color.new(colNeutral, 100), display=display.pane)
-issue68B34CoreBottom = plot(showIssue68B34Bias and issue68B34Ready ? issue68B34CoreCenter - issue68B34LaneHalf : na, "CORE band bottom", color=color.new(colNeutral, 100), display=display.pane)
-issue68B34ATop = plot(showIssue68B34A and issue68B34Ready ? issue68B34ACenter + issue68B34LaneHalf : na, "A band top", color=color.new(colNeutral, 100), display=display.pane)
-issue68B34ABottom = plot(showIssue68B34A and issue68B34Ready ? issue68B34ACenter - issue68B34LaneHalf : na, "A band bottom", color=color.new(colNeutral, 100), display=display.pane)
-issue68B34BTop = plot(showIssue68B34B and issue68B34Ready ? issue68B34BCenter + issue68B34LaneHalf : na, "B band top", color=color.new(colNeutral, 100), display=display.pane)
-issue68B34BBottom = plot(showIssue68B34B and issue68B34Ready ? issue68B34BCenter - issue68B34LaneHalf : na, "B band bottom", color=color.new(colNeutral, 100), display=display.pane)
-issue68B34CTop = plot(showIssue68B34C and issue68B34Ready ? issue68B34CCenter + issue68B34LaneHalf : na, "C band top", color=color.new(colNeutral, 100), display=display.pane)
-issue68B34CBottom = plot(showIssue68B34C and issue68B34Ready ? issue68B34CCenter - issue68B34LaneHalf : na, "C band bottom", color=color.new(colNeutral, 100), display=display.pane)
-
-fill(issue68B34CoreTop, issue68B34CoreBottom, color=showIssue68B34Bias and issue68B34Ready ? f_issue68B34BandColor(issue68B34Bias) : na, title="CORE Bias band")
-fill(issue68B34ATop, issue68B34ABottom, color=showIssue68B34A and issue68B34Ready ? f_issue68B34BandColor(issue68B34A) : na, title="A Formal-family exposure")
-fill(issue68B34BTop, issue68B34BBottom, color=showIssue68B34B and issue68B34Ready ? f_issue68B34BandColor(issue68B34B) : na, title="B Flat-Action exposure")
-fill(issue68B34CTop, issue68B34CBottom, color=showIssue68B34C and issue68B34Ready ? f_issue68B34BandColor(issue68B34C) : na, title="C Stateful exposure")
-
-// Optional transition marks. Off by default so the first-look audit remains clean.
-bool issue68B34BiasChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34Bias != issue68B34Bias[1]
-bool issue68B34AChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34A != issue68B34A[1]
-bool issue68B34BChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34B != issue68B34B[1]
-bool issue68B34CChanged = issue68B34Ready and issue68B34Ready[1] and issue68B34C != issue68B34C[1]
-
-plotshape(showIssue68B34Marks and showIssue68B34Bias and issue68B34BiasChanged and issue68B34Bias == 1 ? issue68B34CoreCenter : na, "CORE -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34Bias and issue68B34BiasChanged and issue68B34Bias == -1 ? issue68B34CoreCenter : na, "CORE -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34Bias and issue68B34BiasChanged and issue68B34Bias == 0 ? issue68B34CoreCenter : na, "CORE -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
-
-plotshape(showIssue68B34Marks and showIssue68B34A and issue68B34AChanged and issue68B34A == 1 ? issue68B34ACenter : na, "A -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34A and issue68B34AChanged and issue68B34A == -1 ? issue68B34ACenter : na, "A -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34A and issue68B34AChanged and issue68B34A == 0 ? issue68B34ACenter : na, "A -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
-
-plotshape(showIssue68B34Marks and showIssue68B34B and issue68B34BChanged and issue68B34B == 1 ? issue68B34BCenter : na, "B -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34B and issue68B34BChanged and issue68B34B == -1 ? issue68B34BCenter : na, "B -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34B and issue68B34BChanged and issue68B34B == 0 ? issue68B34BCenter : na, "B -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
-
-plotshape(showIssue68B34Marks and showIssue68B34C and issue68B34CChanged and issue68B34C == 1 ? issue68B34CCenter : na, "C -> LONG", style=shape.labelup, location=location.absolute, color=colGreen, text="L", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34C and issue68B34CChanged and issue68B34C == -1 ? issue68B34CCenter : na, "C -> SHORT", style=shape.labeldown, location=location.absolute, color=colRed, text="S", textcolor=color.white, size=size.tiny)
-plotshape(showIssue68B34Marks and showIssue68B34C and issue68B34CChanged and issue68B34C == 0 ? issue68B34CCenter : na, "C -> FLAT", style=shape.circle, location=location.absolute, color=colNeutral, text="F", textcolor=color.white, size=size.tiny)
-
-// Compact current-state legend. Historical reading comes from the four color bands.
-var table issue68B34Legend = table.new(position.top_right, 2, 5, border_width=1)
-if barstate.islast
-    if showIssue68B34Legend
-        table.cell(issue68B34Legend, 0, 0, "LANE", text_color=color.white, bgcolor=color.new(colNeutral, 15), text_size=size.small)
-        table.cell(issue68B34Legend, 1, 0, "NOW", text_color=color.white, bgcolor=color.new(colNeutral, 15), text_size=size.small)
-        table.cell(issue68B34Legend, 0, 1, "CORE｜方向記憶", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
-        table.cell(issue68B34Legend, 1, 1, f_issue68B34StateText(issue68B34Bias), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34Bias), text_size=size.small)
-        table.cell(issue68B34Legend, 0, 2, "A｜Formal", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
-        table.cell(issue68B34Legend, 1, 2, f_issue68B34StateText(issue68B34A), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34A), text_size=size.small)
-        table.cell(issue68B34Legend, 0, 3, "B｜Flat Action", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
-        table.cell(issue68B34Legend, 1, 3, f_issue68B34StateText(issue68B34B), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34B), text_size=size.small)
-        table.cell(issue68B34Legend, 0, 4, "C｜Stateful", text_color=color.white, bgcolor=color.new(colNeutral, 45), text_size=size.small)
-        table.cell(issue68B34Legend, 1, 4, f_issue68B34StateText(issue68B34C), text_color=color.white, bgcolor=f_issue68B34Color(issue68B34C), text_size=size.small)
-    else
-        table.clear(issue68B34Legend, 0, 0, 1, 4)
-
-plot(float(formalId), "B34 Formal Stage ID", display=display.data_window)
-plot(float(issue68B34Bias), "B34 Core Bias", display=display.data_window)
-plot(float(flatActionLevel), "B34 Flat Action Level", display=display.data_window)
-plot(float(paceCode), "B34 Pace Code", display=display.data_window)
-plot(float(issue68B34A), "B34 Exposure A", display=display.data_window)
-plot(float(issue68B34B), "B34 Exposure B", display=display.data_window)
-plot(float(issue68B34C), "B34 Exposure C", display=display.data_window)
-plot(issue68B34Bars > 0 ? 100.0 * float(issue68B34FlatA) / float(issue68B34Bars) : na, "B34 A Flat share %", display=display.data_window)
-plot(issue68B34Bars > 0 ? 100.0 * float(issue68B34FlatB) / float(issue68B34Bars) : na, "B34 B Flat share %", display=display.data_window)
-plot(issue68B34Bars > 0 ? 100.0 * float(issue68B34FlatC) / float(issue68B34Bars) : na, "B34 C Flat share %", display=display.data_window)
-plot(float(issue68B34TransitionsA), "B34 A transitions", display=display.data_window)
-plot(float(issue68B34TransitionsB), "B34 B transitions", display=display.data_window)
-plot(float(issue68B34TransitionsC), "B34 C transitions", display=display.data_window)
-plot(issue68B34ViolationA ? 1.0 : 0.0, "B34 A bias violation", display=display.data_window)
-plot(issue68B34ViolationB ? 1.0 : 0.0, "B34 B bias violation", display=display.data_window)
-plot(issue68B34ViolationC ? 1.0 : 0.0, "B34 C bias violation", display=display.data_window)
-
-
-// ============================================================================
-// Issue #68 Core Semantic Validity Gate.
+// Issue #68 Core Semantic Validity Gate — CORE ONLY.
 // NO-PNL. NO TUNING. Frozen B3.3 Core Bias only.
 // FR10Y is discovery/burned. Other presets are preregistered validation windows.
 // ============================================================================
@@ -1746,7 +1582,6 @@ issue68CoreGatePreset = input.string(
          "SPX｜2022 Bear｜VALIDATION"
      ],
      group=groupIssue68CoreGate)
-showIssue68CoreGateWindowBg = input.bool(true, "顯示固定窗口淡色背景", group=groupIssue68CoreGate)
 showIssue68CoreGateMismatch = input.bool(true, "顯示 Core 反向紅點", group=groupIssue68CoreGate)
 showIssue68CoreGateTable = input.bool(true, "顯示語意統計表", group=groupIssue68CoreGate)
 
@@ -1831,45 +1666,40 @@ float issue68CoreGateNeutralPct = issue68CoreGateBars > 0 ? 100.0 * issue68CoreG
 bool issue68CoreGateHardFail = issue68CoreGateBars > 0 and (issue68CoreGateOppositePct > 50.0 or issue68CoreGateMaxOppRun > 63)
 string issue68CoreGateStatus = issue68CoreGateRole == "DISCOVERY" ? (issue68CoreGateHardFail ? "DISCOVERY FAIL" : "DISCOVERY") : (issue68CoreGateHardFail ? "FAIL" : "PASS")
 
-// Expected regime band: visible only inside the preregistered window.
-float issue68CoreGateExpectedCenter = 2.0
-float issue68CoreGateExpectedHalf = 0.34
-issue68CoreGateExpectedTop = plot(issue68CoreGateInWindow ? issue68CoreGateExpectedCenter + issue68CoreGateExpectedHalf : na, "CORE-GATE expected top", color=color.new(colNeutral, 100), display=display.pane)
-issue68CoreGateExpectedBottom = plot(issue68CoreGateInWindow ? issue68CoreGateExpectedCenter - issue68CoreGateExpectedHalf : na, "CORE-GATE expected bottom", color=color.new(colNeutral, 100), display=display.pane)
-fill(issue68CoreGateExpectedTop, issue68CoreGateExpectedBottom, color=issue68CoreGateInWindow ? color.new(issue68CoreGateExpected == 1 ? colGreen : colRed, 18) : na, title="EXPECTED major regime")
+// Minimal plot-budget-safe visualization.
+// EXPECTED is the upper stripe; CORE is the lower stripe. Dynamic color carries
+// the semantic state, while fixed y-levels are layout coordinates only.
+color issue68CoreGateExpectedColor = issue68CoreGateExpected == 1 ? colGreen : colRed
+color issue68CoreGateCoreColor = issue68B34Bias == 1 ? colGreen : issue68B34Bias == -1 ? colRed : colNeutral
+plot(issue68CoreGateInWindow ? 2.0 : na, "EXPECTED major regime", color=issue68CoreGateExpectedColor, linewidth=4, style=plot.style_linebr, display=display.pane)
+plot(issue68CoreGateInWindow ? 1.0 : na, "CORE frozen B3.3", color=issue68CoreGateCoreColor, linewidth=4, style=plot.style_linebr, display=display.pane)
+plotshape(showIssue68CoreGateMismatch and issue68CoreGateOpposite ? 0.0 : na, "CORE opposite expected", style=shape.circle, location=location.absolute, color=colRed, size=size.tiny)
 
-bgcolor(showIssue68CoreGateWindowBg and issue68CoreGateInWindow ? color.new(issue68CoreGateExpected == 1 ? colGreen : colRed, 96) : na, title="CORE-GATE fixed semantic window")
-plotshape(showIssue68CoreGateMismatch and issue68CoreGateOpposite ? 1.0 : na, "CORE opposite expected", style=shape.circle, location=location.absolute, color=colRed, size=size.tiny)
-
-plot(issue68CoreGateBars, "CORE-GATE bars", color=color.new(colNeutral, 100), display=display.data_window)
-plot(issue68CoreGateAlignedPct, "CORE-GATE aligned pct", color=color.new(colGreen, 100), display=display.data_window)
-plot(issue68CoreGateOppositePct, "CORE-GATE opposite pct", color=color.new(colRed, 100), display=display.data_window)
-plot(issue68CoreGateNeutralPct, "CORE-GATE neutral pct", color=color.new(colNeutral, 100), display=display.data_window)
-plot(issue68CoreGateFirstAlignDelay, "CORE-GATE first align delay bars", color=color.new(colNeutral, 100), display=display.data_window)
-plot(issue68CoreGateMaxOppRun, "CORE-GATE longest opposite run", color=color.new(colRed, 100), display=display.data_window)
-plot(issue68CoreGateTransitions, "CORE-GATE Core transitions", color=color.new(colNeutral, 100), display=display.data_window)
-
+// Table replaces seven Data Window plots; tables do not consume plot counts.
 var table issue68CoreGateTable = table.new(position.bottom_right, 2, 10, border_width=1)
-if barstate.islast and showIssue68CoreGateTable
-    color issue68CoreGateStatusColor = issue68CoreGateHardFail ? colRed : colGreen
-    table.cell(issue68CoreGateTable, 0, 0, "CORE SEMANTIC GATE", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 0, issue68CoreGateStatus, bgcolor=issue68CoreGateStatusColor, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 1, "Preset", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 1, issue68CoreGateLabel, bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 2, "Role / Chart", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 2, issue68CoreGateRole + " / " + syminfo.ticker, bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 3, "Expected", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 3, issue68CoreGateExpected == 1 ? "BULL / GREEN" : "BEAR / RED", bgcolor=issue68CoreGateExpected == 1 ? colGreen : colRed, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 4, "Bars", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 4, str.tostring(issue68CoreGateBars), bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 5, "Aligned", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 5, str.tostring(issue68CoreGateAlignedPct, "#.0") + "%", bgcolor=colGreen, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 6, "Opposite", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 6, str.tostring(issue68CoreGateOppositePct, "#.0") + "%", bgcolor=issue68CoreGateOppositePct > 50.0 ? colRed : colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 7, "First align delay", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 7, na(issue68CoreGateFirstAlignDelay) ? "NEVER" : str.tostring(issue68CoreGateFirstAlignDelay) + " bars", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 8, "Longest opposite", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 8, str.tostring(issue68CoreGateMaxOppRun) + " bars", bgcolor=issue68CoreGateMaxOppRun > 63 ? colRed : colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 9, "Hard fail rule", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 9, ">50% opp OR >63 run", bgcolor=colNeutral, text_color=color.white)
+if barstate.islast
+    if showIssue68CoreGateTable
+        color issue68CoreGateStatusColor = issue68CoreGateHardFail ? colRed : colGreen
+        table.cell(issue68CoreGateTable, 0, 0, "CORE SEMANTIC GATE", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 0, issue68CoreGateStatus, bgcolor=issue68CoreGateStatusColor, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 1, "Preset", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 1, issue68CoreGateLabel, bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 2, "Role / Chart", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 2, issue68CoreGateRole + " / " + syminfo.ticker, bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 3, "Expected", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 3, issue68CoreGateExpected == 1 ? "BULL / GREEN" : "BEAR / RED", bgcolor=issue68CoreGateExpectedColor, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 4, "Bars", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 4, str.tostring(issue68CoreGateBars), bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 5, "Aligned", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 5, str.tostring(issue68CoreGateAlignedPct, "#.0") + "%", bgcolor=colGreen, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 6, "Opposite", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 6, str.tostring(issue68CoreGateOppositePct, "#.0") + "%", bgcolor=issue68CoreGateOppositePct > 50.0 ? colRed : colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 7, "First align delay", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 7, na(issue68CoreGateFirstAlignDelay) ? "NEVER" : str.tostring(issue68CoreGateFirstAlignDelay) + " bars", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 8, "Longest opposite", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 8, str.tostring(issue68CoreGateMaxOppRun) + " bars", bgcolor=issue68CoreGateMaxOppRun > 63 ? colRed : colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 9, "Hard fail rule", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 9, ">50% opp OR >63 run", bgcolor=colNeutral, text_color=color.white)
+    else
+        table.clear(issue68CoreGateTable, 0, 0, 1, 9)
 
