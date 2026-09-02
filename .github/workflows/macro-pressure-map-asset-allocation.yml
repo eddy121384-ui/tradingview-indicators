@@ -1,0 +1,134 @@
+name: Macro Pressure Map Asset Allocation Research
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/*.py"
+      - "indicators/macro-pressure-map/research/data/issue-64-*"
+      - "indicators/macro-pressure-map/research/decisions/issue-64-*"
+      - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
+      - ".github/workflows/macro-pressure-map-asset-allocation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  issue-64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install research dependencies
+        run: python -m pip install --upgrade pip pandas numpy scipy scikit-learn yfinance pytest
+
+      - name: Run focused Issue 64 tests
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q \
+            test_issue_64_outcome_snapshot.py \
+            test_asset_allocation_phase_a.py \
+            test_asset_allocation_phase_a_frozen.py \
+            test_asset_allocation_relative.py \
+            test_asset_allocation_phase_b.py \
+            test_asset_allocation_phase_b_diagnostics.py \
+            test_asset_allocation_phase_b_episode_diagnostics.py \
+            test_asset_allocation_phase_c.py \
+            test_asset_allocation_phase_c_diagnostics.py \
+            test_asset_allocation_contribution_diagnostics.py
+
+      - name: Generate Phase A evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-64-phase-a
+          python asset_allocation_phase_a_snapshot.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-64-phase-a
+          python asset_allocation_phase_a_segments.py \
+            --output-dir generated/issue-64-phase-a
+
+      - name: Validate Phase A manifest
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m json.tool generated/issue-64-phase-a/phase-a-manifest.json > /dev/null
+          python -m json.tool generated/issue-64-phase-a/phase-a-outcome-prices-manifest.json > /dev/null
+
+      - name: Generate preregistered Phase B evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-64-phase-b
+          python asset_allocation_phase_b_snapshot.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-64-phase-b
+          python asset_allocation_phase_b_diagnostics.py \
+            --phase-b-dir generated/issue-64-phase-b
+          python asset_allocation_phase_b_episode_diagnostics.py \
+            --phase-b-dir generated/issue-64-phase-b
+          python asset_allocation_contribution_diagnostics.py \
+            --phase-dir generated/issue-64-phase-b \
+            --phase-prefix phase-b
+
+      - name: Validate Phase B evidence JSON
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m json.tool generated/issue-64-phase-b/phase-b-manifest.json > /dev/null
+          python -m json.tool generated/issue-64-phase-b/phase-b-outcome-prices-manifest.json > /dev/null
+          python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-exposure-match.json > /dev/null
+          python -m json.tool generated/issue-64-phase-b/phase-b-posthoc-timing-concentration.json > /dev/null
+          python -m json.tool generated/issue-64-phase-b/phase-b-contribution-manifest.json > /dev/null
+          test -s generated/issue-64-phase-b/phase-b-asset-contribution.csv
+          test -s generated/issue-64-phase-b/phase-b-regime-allocation-contribution.csv
+          test -s generated/issue-64-phase-b/phase-b-contribution-reconciliation.csv
+
+      - name: Generate preregistered Phase C evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-64-phase-c
+          python asset_allocation_phase_c.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-64-phase-c
+          python asset_allocation_phase_c_diagnostics.py \
+            --phase-b-dir generated/issue-64-phase-b \
+            --phase-c-dir generated/issue-64-phase-c
+          python asset_allocation_contribution_diagnostics.py \
+            --phase-dir generated/issue-64-phase-c \
+            --phase-prefix phase-c
+
+      - name: Validate Phase C evidence JSON
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m json.tool generated/issue-64-phase-c/phase-c-manifest.json > /dev/null
+          python -m json.tool generated/issue-64-phase-c/phase-c-posthoc-diagnostics.json > /dev/null
+          python -m json.tool generated/issue-64-phase-c/phase-c-contribution-manifest.json > /dev/null
+          test -s generated/issue-64-phase-c/phase-c-asset-contribution.csv
+          test -s generated/issue-64-phase-c/phase-c-regime-allocation-contribution.csv
+          test -s generated/issue-64-phase-c/phase-c-contribution-reconciliation.csv
+
+      - name: Upload Phase A research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-64-phase-a
+          path: indicators/macro-pressure-map/research/generated/issue-64-phase-a/
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload Phase B research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-64-phase-b
+          path: indicators/macro-pressure-map/research/generated/issue-64-phase-b/
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload Phase C research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-64-phase-c
+          path: indicators/macro-pressure-map/research/generated/issue-64-phase-c/
+          if-no-files-found: error
+          retention-days: 3

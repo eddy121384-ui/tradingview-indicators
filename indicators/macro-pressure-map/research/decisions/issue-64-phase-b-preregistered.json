@@ -1,0 +1,110 @@
+{
+  "schema_version": 2,
+  "issue": 64,
+  "phase": "B",
+  "artifact_role": "pre-registered portfolio accounting and allocation template contract",
+  "frozen_before_phase_b_portfolio_results_viewed": true,
+  "production_v66_parameters_modified": false,
+  "evidence_status": "exploratory reused-history test; not untouched OOS",
+  "hypothesis": {
+    "source": "Phase A selected exploratory hypothesis after an 81-comparison search",
+    "regime": "Reflation / Inflation Rising",
+    "claim_under_test": "A coarse equity-over-duration override during the frozen V6.6 Reflation regime improves portfolio-level risk-adjusted outcomes relative to the same neutral allocation held statically.",
+    "confirmatory_claim_allowed": false
+  },
+  "universe": ["SPY", "TLT", "GLD"],
+  "signal": {
+    "source": "issue-64-frozen-regime-transitions.csv",
+    "transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+    "first_date": "2007-01-04",
+    "last_date": "2026-08-14",
+    "execution_lag_trading_rows": 1,
+    "no_signal_forward_fill_after_cutoff": true
+  },
+  "templates": {
+    "neutral_40_40_20": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
+    "reflation_60_20_20": {"SPY": 0.60, "TLT": 0.20, "GLD": 0.20}
+  },
+  "strategy_rule": {
+    "name": "v66_reflation_override",
+    "default_template": "neutral_40_40_20",
+    "override_regime": "Reflation / Inflation Rising",
+    "override_template": "reflation_60_20_20",
+    "other_eight_regimes": "neutral_40_40_20",
+    "stagflation_override_included": false,
+    "per_regime_optimization_allowed": false,
+    "weight_magnitude_sweep_allowed": false
+  },
+  "rebalance": {
+    "scheduled": "first common trading day of each calendar month for the regime strategy and all fixed-weight benchmarks",
+    "event_driven": "the regime strategy additionally rebalances when the one-bar-lagged target template changes between neutral and Reflation",
+    "non_reflation_to_non_reflation_transition_triggers_trade": false,
+    "turnover_definition": "0.5 * sum(abs(target_weight - drifted_pretrade_weight))",
+    "weights_between_rebalances": "self-financing drift with adjusted close-to-close asset returns",
+    "initial_allocation": "initialize directly at the first target weight vector; initial entry is excluded from turnover and transaction-cost accounting"
+  },
+  "transaction_cost": {
+    "primary_bps_per_one_way_turnover": 5.0,
+    "sensitivity_bps_per_one_way_turnover": [0.0, 10.0],
+    "cost_application": "deduct turnover * bps / 10000 from portfolio value on each post-initial rebalance date"
+  },
+  "benchmarks": {
+    "fixed_60_40": {
+      "weights": {"SPY": 0.60, "TLT": 0.40, "GLD": 0.00},
+      "rebalance": "first common trading day of each calendar month"
+    },
+    "fixed_equal_weight": {
+      "weights": {"SPY": 0.3333333333333333, "TLT": 0.3333333333333333, "GLD": 0.3333333333333333},
+      "rebalance": "first common trading day of each calendar month"
+    },
+    "fixed_neutral_40_40_20": {
+      "weights": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
+      "rebalance": "first common trading day of each calendar month"
+    },
+    "causal_inverse_volatility": {
+      "lookback_trading_rows": 63,
+      "minimum_observations": 63,
+      "volatility_estimate": "sample standard deviation of daily adjusted close-to-close returns through t-1",
+      "rebalance": "first common trading day of each calendar month",
+      "asset_floor_or_cap": null
+    }
+  },
+  "portfolio_accounting": {
+    "return_frequency": "common-date adjusted close-to-close daily returns",
+    "trade_timing": "target for date t uses only regime/volatility information available through t-1; rebalance occurs before applying date-t close-to-close return",
+    "cost_treatment": "cost is a proportional portfolio-value deduction and does not alter relative post-trade target weights",
+    "drift": "after date-t asset returns, weights are marked to market and become the next date's drifted pre-trade weights"
+  },
+  "comparison_window": {
+    "common_start": "first date on or after 2007-01-04 for which the 63-row lagged inverse-volatility benchmark is finite for all three assets, the one-row-lagged regime is finite, and common asset returns are finite",
+    "end": "2026-08-14",
+    "same_dates_for_all_strategies": true,
+    "development_segment": "common_start through 2019-12-31",
+    "post2019_reused_exploratory_segment": "2020-01-01 through 2026-08-14"
+  },
+  "metrics": {
+    "risk_free_rate_for_sharpe": 0.0,
+    "annualization_trading_rows": 252,
+    "required": [
+      "CAGR",
+      "annualized_return",
+      "annualized_volatility",
+      "Sharpe",
+      "maximum_drawdown",
+      "Calmar",
+      "total_turnover",
+      "annualized_turnover",
+      "rebalance_count",
+      "transaction_cost_drag",
+      "average_asset_weights"
+    ],
+    "primary_incremental_comparison": "v66_reflation_override minus fixed_neutral_40_40_20",
+    "secondary_context_comparisons": ["fixed_60_40", "fixed_equal_weight", "causal_inverse_volatility"]
+  },
+  "interpretation_guardrails": [
+    "No Phase B parameter may be changed after viewing portfolio results in order to rescue performance.",
+    "A negative result is valid and ends the Reflation-only test without adding assets or tuning the override magnitude.",
+    "Because the Reflation hypothesis was selected from Phase A reused history, favorable Phase B results remain exploratory and cannot be called untouched OOS confirmation.",
+    "A Stagflation gold override, if studied later, must be registered as a separate incremental experiment and must not be retroactively included in this primary result."
+  ]
+}
