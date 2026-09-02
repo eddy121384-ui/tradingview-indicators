@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Generate Issue #68 Core Semantic Validity Gate TradingView audit Pine.
 
-This generator reuses the frozen B3.3 Core computation from the B3.4 lineage but
-*does not* carry the B3.4 Exposure rendering/counters into the audit artifact.
-That matters because hidden Pine plots still consume TradingView's 64-plot budget.
+This generator reuses the frozen B3.3 Core semantics but deliberately removes the
+entire B3.4 Exposure section before adding the Core-only audit. Hidden Pine plots
+still consume TradingView's 64-plot budget, so the audit must be structurally
+minimal rather than merely hiding A/B/C lanes.
 
 No C-2, B3.3 Core-memory, Exposure, or classifier parameter semantics are changed.
 """
@@ -20,11 +21,9 @@ HERE = Path(__file__).resolve().parent
 OLD_DECL = b34.AUDIT_DECL
 NEW_DECL = 'indicator("Chase Risk Radar｜Issue #68 Core Semantic Validity", shorttitle="ChaseRisk #68 CORE-GATE", overlay=false, precision=2)'
 
-# Everything from Candidate A onward is Exposure/rendering material. B3.3 Core is
-# fully computed immediately before this marker, so trimming here preserves Core
-# semantics while removing A/B/C plots, fills, plotshapes, legends and data-window
-# counters that are irrelevant to the Core validity gate.
-B34_EXPOSURE_CUT_MARKER = "// --- Candidate A: Formal trend-family exposure ---"
+# The original B3.4 block is appended after the frozen upstream classifier. Cut
+# the whole block and re-insert only the exact B3.3 Core state machine below.
+B34_SECTION_MARKER = "// Issue #66 C-2 runtime-validated price-only lineage."
 
 CORE_GATE_BODY = r'''
 
@@ -33,6 +32,28 @@ CORE_GATE_BODY = r'''
 // NO-PNL. NO TUNING. Frozen B3.3 Core Bias only.
 // FR10Y is discovery/burned. Other presets are preregistered validation windows.
 // ============================================================================
+
+// --- Exact frozen B3.3 Core Bias Memory semantics from B3.4 ---
+issue68B34Ready = bar_index >= rankLen - 1
+var int issue68B34Bias = 0
+int issue68B34BiasBefore = issue68B34Bias
+if issue68B34Ready
+    int issue68B34Stage = formalId
+    int issue68B34BiasAfter = issue68B34BiasBefore
+    if issue68B34BiasBefore == 0
+        if issue68B34Stage == 2
+            issue68B34BiasAfter := 1
+        else if issue68B34Stage == 5
+            issue68B34BiasAfter := -1
+        else
+            issue68B34BiasAfter := 0
+    else if issue68B34BiasBefore == 1
+        issue68B34BiasAfter := issue68B34Stage == 5 or issue68B34Stage == 6 ? -1 : 1
+    else if issue68B34BiasBefore == -1
+        issue68B34BiasAfter := issue68B34Stage == 2 or issue68B34Stage == 3 ? 1 : -1
+    issue68B34Bias := issue68B34BiasAfter
+else
+    issue68B34Bias := 0
 
 groupIssue68CoreGate = "Issue #68｜Core Semantic Validity Gate"
 issue68CoreGatePreset = input.string(
@@ -132,15 +153,14 @@ bool issue68CoreGateHardFail = issue68CoreGateBars > 0 and (issue68CoreGateOppos
 string issue68CoreGateStatus = issue68CoreGateRole == "DISCOVERY" ? (issue68CoreGateHardFail ? "DISCOVERY FAIL" : "DISCOVERY") : (issue68CoreGateHardFail ? "FAIL" : "PASS")
 
 // Minimal plot-budget-safe visualization.
-// EXPECTED is the upper stripe; CORE is the lower stripe. Dynamic color carries
-// the semantic state, while fixed y-levels are layout coordinates only.
+// EXPECTED = upper stripe, CORE = lower stripe. Fixed y-levels have no market meaning.
 color issue68CoreGateExpectedColor = issue68CoreGateExpected == 1 ? colGreen : colRed
 color issue68CoreGateCoreColor = issue68B34Bias == 1 ? colGreen : issue68B34Bias == -1 ? colRed : colNeutral
 plot(issue68CoreGateInWindow ? 2.0 : na, "EXPECTED major regime", color=issue68CoreGateExpectedColor, linewidth=4, style=plot.style_linebr, display=display.pane)
 plot(issue68CoreGateInWindow ? 1.0 : na, "CORE frozen B3.3", color=issue68CoreGateCoreColor, linewidth=4, style=plot.style_linebr, display=display.pane)
 plotshape(showIssue68CoreGateMismatch and issue68CoreGateOpposite ? 0.0 : na, "CORE opposite expected", style=shape.circle, location=location.absolute, color=colRed, size=size.tiny)
 
-// Table replaces seven Data Window plots; tables do not consume plot counts.
+// Table replaces Data Window diagnostics; tables do not consume plot counts.
 var table issue68CoreGateTable = table.new(position.bottom_right, 2, 10, border_width=1)
 if barstate.islast
     if showIssue68CoreGateTable
@@ -174,17 +194,20 @@ def generate(source: Path) -> str:
     out = b34.generate(source)
     out = replace_once(out, OLD_DECL, NEW_DECL)
 
-    cut_at = out.find(B34_EXPOSURE_CUT_MARKER)
+    cut_at = out.find(B34_SECTION_MARKER)
     if cut_at < 0:
-        raise RuntimeError("could not locate B3.4 Exposure cut marker")
+        raise RuntimeError("could not locate B3.4 section marker")
 
-    # Preserve the complete upstream classifier + B3.3 Core computation, then
-    # discard every Exposure/rendering statement after it.
-    out = out[:cut_at].rstrip() + "\n" + CORE_GATE_BODY + "\n"
+    # Trim from the beginning of the B3.4 block so no dead Exposure controls,
+    # rendering, fills, data-window plots or transition marks survive.
+    section_banner = out.rfind("// ============================================================================", 0, cut_at)
+    if section_banner < 0:
+        raise RuntimeError("could not locate B3.4 section banner")
+    out = out[:section_banner].rstrip() + "\n" + CORE_GATE_BODY + "\n"
 
     required = (
         "Issue #68 Core Semantic Validity Gate — CORE ONLY",
-        "// --- Frozen B3.3 Core Bias Memory ---",
+        "Exact frozen B3.3 Core Bias Memory semantics",
         "FR10Y｜2022-2023 Bull｜DISCOVERY",
         "JGB10Y｜2022-2024 Bull｜VALIDATION",
         "US10Y｜2020-2023 Bull｜VALIDATION",
@@ -203,15 +226,16 @@ def generate(source: Path) -> str:
 
     forbidden = (
         "strategy.",
-        "// --- Candidate A:",
-        "// --- Candidate B:",
-        "// --- Candidate C:",
+        "Exposure B3.4 Bakeoff",
+        "showIssue68B34A",
+        "showIssue68B34B",
+        "showIssue68B34C",
+        "Candidate A:",
+        "Candidate B:",
+        "Candidate C:",
         "B34 Exposure A",
         "B34 Exposure B",
         "B34 Exposure C",
-        "B34 A transitions",
-        "B34 B transitions",
-        "B34 C transitions",
         "issue68ArmedDir",
         "issue68EarlyFail",
         "LONG SETUP",
@@ -221,8 +245,8 @@ def generate(source: Path) -> str:
         if token in out:
             raise RuntimeError(f"forbidden Exposure/lifecycle token leaked into Core semantic gate: {token}")
 
-    # Conservative source-level safety guard. TradingView can charge extra plot
-    # counts for dynamic series/colors, so keep the literal call count far below 64.
+    # Conservative source-level guard. TradingView may charge more than one plot
+    # count for dynamic series/color arguments, so keep literal calls well below 64.
     literal_plot_calls = (
         out.count("plot(")
         + out.count("plotshape(")
@@ -231,7 +255,7 @@ def generate(source: Path) -> str:
         + out.count("fill(")
         + out.count("barcolor(")
     )
-    if literal_plot_calls > 42:
+    if literal_plot_calls > 38:
         raise RuntimeError(f"Core semantic gate literal plot-call budget too high: {literal_plot_calls}")
     return out
 
