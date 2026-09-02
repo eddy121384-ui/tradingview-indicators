@@ -1521,27 +1521,15 @@ paceOneLine = paceTitle + "｜空手:" + flatGuide + "｜多單:" + longGuide + 
 paceChanged = paceCode != paceCode[1]
 flatActionChanged = enableFlatAction and flatActionLevel != flatActionLevel[1]
 
+
 // ============================================================================
-// Issue #66 C-2 runtime-validated price-only lineage.
-// Issue #68 Phase B3.4 preregistered Exposure Policy Bakeoff.
-// Core Bias is frozen B3.3 regime memory. Exposure candidates are NO-PNL.
-// A = Formal trend family; B = Flat Action authorization;
-// C = Flat Action entry + mirrored Pace defensive-flat state machine.
-// Human-readable audit UI only: band rendering does not change A/B/C semantics.
+// Issue #68 Core Semantic Validity Gate — CORE ONLY.
+// NO-PNL. NO TUNING. Frozen B3.3 Core Bias only.
+// FR10Y is discovery/burned. Other presets are preregistered validation windows.
 // ============================================================================
 
-groupIssue68B34 = "Issue #68｜Exposure B3.4 Bakeoff"
-showIssue68B34StageBg = input.bool(false, "輔助｜顯示極淡 Formal Stage 背景", group=groupIssue68B34)
-showIssue68B34Bias = input.bool(true, "顯示 CORE｜大方向記憶", group=groupIssue68B34)
-showIssue68B34A = input.bool(true, "顯示 A｜Formal trend-family", group=groupIssue68B34)
-showIssue68B34B = input.bool(true, "顯示 B｜Flat Action authorization", group=groupIssue68B34)
-showIssue68B34C = input.bool(true, "顯示 C｜Flat Action + Pace stateful", group=groupIssue68B34)
-showIssue68B34Marks = input.bool(false, "輔助｜顯示 L/S/F 切換標記", group=groupIssue68B34)
-showIssue68B34Legend = input.bool(true, "顯示右上角狀態表", group=groupIssue68B34)
-
+// --- Exact frozen B3.3 Core Bias Memory semantics from B3.4 ---
 issue68B34Ready = bar_index >= rankLen - 1
-
-// --- Frozen B3.3 Core Bias Memory ---
 var int issue68B34Bias = 0
 int issue68B34BiasBefore = issue68B34Bias
 if issue68B34Ready
@@ -1561,13 +1549,6 @@ if issue68B34Ready
     issue68B34Bias := issue68B34BiasAfter
 else
     issue68B34Bias := 0
-
-
-// ============================================================================
-// Issue #68 Core Semantic Validity Gate — CORE ONLY.
-// NO-PNL. NO TUNING. Frozen B3.3 Core Bias only.
-// FR10Y is discovery/burned. Other presets are preregistered validation windows.
-// ============================================================================
 
 groupIssue68CoreGate = "Issue #68｜Core Semantic Validity Gate"
 issue68CoreGatePreset = input.string(
@@ -1667,15 +1648,14 @@ bool issue68CoreGateHardFail = issue68CoreGateBars > 0 and (issue68CoreGateOppos
 string issue68CoreGateStatus = issue68CoreGateRole == "DISCOVERY" ? (issue68CoreGateHardFail ? "DISCOVERY FAIL" : "DISCOVERY") : (issue68CoreGateHardFail ? "FAIL" : "PASS")
 
 // Minimal plot-budget-safe visualization.
-// EXPECTED is the upper stripe; CORE is the lower stripe. Dynamic color carries
-// the semantic state, while fixed y-levels are layout coordinates only.
+// EXPECTED = upper stripe, CORE = lower stripe. Fixed y-levels have no market meaning.
 color issue68CoreGateExpectedColor = issue68CoreGateExpected == 1 ? colGreen : colRed
 color issue68CoreGateCoreColor = issue68B34Bias == 1 ? colGreen : issue68B34Bias == -1 ? colRed : colNeutral
 plot(issue68CoreGateInWindow ? 2.0 : na, "EXPECTED major regime", color=issue68CoreGateExpectedColor, linewidth=4, style=plot.style_linebr, display=display.pane)
 plot(issue68CoreGateInWindow ? 1.0 : na, "CORE frozen B3.3", color=issue68CoreGateCoreColor, linewidth=4, style=plot.style_linebr, display=display.pane)
 plotshape(showIssue68CoreGateMismatch and issue68CoreGateOpposite ? 0.0 : na, "CORE opposite expected", style=shape.circle, location=location.absolute, color=colRed, size=size.tiny)
 
-// Table replaces seven Data Window plots; tables do not consume plot counts.
+// Table replaces Data Window diagnostics; tables do not consume plot counts.
 var table issue68CoreGateTable = table.new(position.bottom_right, 2, 10, border_width=1)
 if barstate.islast
     if showIssue68CoreGateTable
