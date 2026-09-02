@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Generate Issue #68 Core Semantic Validity Gate TradingView audit Pine.
 
-This is a display/measurement wrapper around the frozen B3.4/B3.3 Core Bias
-implementation. It does not modify C-2, B3.3 Core memory, Exposure semantics, or
-any classifier parameter.
+This generator reuses the frozen B3.3 Core computation from the B3.4 lineage but
+*does not* carry the B3.4 Exposure rendering/counters into the audit artifact.
+That matters because hidden Pine plots still consume TradingView's 64-plot budget.
+
+No C-2, B3.3 Core-memory, Exposure, or classifier parameter semantics are changed.
 """
 from __future__ import annotations
 
@@ -18,29 +20,16 @@ HERE = Path(__file__).resolve().parent
 OLD_DECL = b34.AUDIT_DECL
 NEW_DECL = 'indicator("Chase Risk Radar｜Issue #68 Core Semantic Validity", shorttitle="ChaseRisk #68 CORE-GATE", overlay=false, precision=2)'
 
-REPLACEMENTS = (
-    (
-        'showIssue68B34A = input.bool(true, "顯示 A｜Formal trend-family", group=groupIssue68B34)',
-        'showIssue68B34A = input.bool(false, "顯示 A｜Formal trend-family（Core Gate 預設隱藏）", group=groupIssue68B34)',
-    ),
-    (
-        'showIssue68B34B = input.bool(true, "顯示 B｜Flat Action authorization", group=groupIssue68B34)',
-        'showIssue68B34B = input.bool(false, "顯示 B｜Flat Action authorization（Core Gate 預設隱藏）", group=groupIssue68B34)',
-    ),
-    (
-        'showIssue68B34C = input.bool(true, "顯示 C｜Flat Action + Pace stateful", group=groupIssue68B34)',
-        'showIssue68B34C = input.bool(false, "顯示 C｜Flat Action + Pace stateful（Core Gate 預設隱藏）", group=groupIssue68B34)',
-    ),
-    (
-        'showIssue68B34Legend = input.bool(true, "顯示右上角狀態表", group=groupIssue68B34)',
-        'showIssue68B34Legend = input.bool(false, "顯示舊 B3.4 狀態表（Core Gate 預設隱藏）", group=groupIssue68B34)',
-    ),
-)
+# Everything from Candidate A onward is Exposure/rendering material. B3.3 Core is
+# fully computed immediately before this marker, so trimming here preserves Core
+# semantics while removing A/B/C plots, fills, plotshapes, legends and data-window
+# counters that are irrelevant to the Core validity gate.
+B34_EXPOSURE_CUT_MARKER = "// --- Candidate A: Formal trend-family exposure ---"
 
 CORE_GATE_BODY = r'''
 
 // ============================================================================
-// Issue #68 Core Semantic Validity Gate.
+// Issue #68 Core Semantic Validity Gate — CORE ONLY.
 // NO-PNL. NO TUNING. Frozen B3.3 Core Bias only.
 // FR10Y is discovery/burned. Other presets are preregistered validation windows.
 // ============================================================================
@@ -58,7 +47,6 @@ issue68CoreGatePreset = input.string(
          "SPX｜2022 Bear｜VALIDATION"
      ],
      group=groupIssue68CoreGate)
-showIssue68CoreGateWindowBg = input.bool(true, "顯示固定窗口淡色背景", group=groupIssue68CoreGate)
 showIssue68CoreGateMismatch = input.bool(true, "顯示 Core 反向紅點", group=groupIssue68CoreGate)
 showIssue68CoreGateTable = input.bool(true, "顯示語意統計表", group=groupIssue68CoreGate)
 
@@ -143,81 +131,71 @@ float issue68CoreGateNeutralPct = issue68CoreGateBars > 0 ? 100.0 * issue68CoreG
 bool issue68CoreGateHardFail = issue68CoreGateBars > 0 and (issue68CoreGateOppositePct > 50.0 or issue68CoreGateMaxOppRun > 63)
 string issue68CoreGateStatus = issue68CoreGateRole == "DISCOVERY" ? (issue68CoreGateHardFail ? "DISCOVERY FAIL" : "DISCOVERY") : (issue68CoreGateHardFail ? "FAIL" : "PASS")
 
-// Expected regime band: visible only inside the preregistered window.
-float issue68CoreGateExpectedCenter = 2.0
-float issue68CoreGateExpectedHalf = 0.34
-issue68CoreGateExpectedTop = plot(issue68CoreGateInWindow ? issue68CoreGateExpectedCenter + issue68CoreGateExpectedHalf : na, "CORE-GATE expected top", color=color.new(colNeutral, 100), display=display.pane)
-issue68CoreGateExpectedBottom = plot(issue68CoreGateInWindow ? issue68CoreGateExpectedCenter - issue68CoreGateExpectedHalf : na, "CORE-GATE expected bottom", color=color.new(colNeutral, 100), display=display.pane)
-fill(issue68CoreGateExpectedTop, issue68CoreGateExpectedBottom, color=issue68CoreGateInWindow ? color.new(issue68CoreGateExpected == 1 ? colGreen : colRed, 18) : na, title="EXPECTED major regime")
+// Minimal plot-budget-safe visualization.
+// EXPECTED is the upper stripe; CORE is the lower stripe. Dynamic color carries
+// the semantic state, while fixed y-levels are layout coordinates only.
+color issue68CoreGateExpectedColor = issue68CoreGateExpected == 1 ? colGreen : colRed
+color issue68CoreGateCoreColor = issue68B34Bias == 1 ? colGreen : issue68B34Bias == -1 ? colRed : colNeutral
+plot(issue68CoreGateInWindow ? 2.0 : na, "EXPECTED major regime", color=issue68CoreGateExpectedColor, linewidth=4, style=plot.style_linebr, display=display.pane)
+plot(issue68CoreGateInWindow ? 1.0 : na, "CORE frozen B3.3", color=issue68CoreGateCoreColor, linewidth=4, style=plot.style_linebr, display=display.pane)
+plotshape(showIssue68CoreGateMismatch and issue68CoreGateOpposite ? 0.0 : na, "CORE opposite expected", style=shape.circle, location=location.absolute, color=colRed, size=size.tiny)
 
-bgcolor(showIssue68CoreGateWindowBg and issue68CoreGateInWindow ? color.new(issue68CoreGateExpected == 1 ? colGreen : colRed, 96) : na, title="CORE-GATE fixed semantic window")
-plotshape(showIssue68CoreGateMismatch and issue68CoreGateOpposite ? 1.0 : na, "CORE opposite expected", style=shape.circle, location=location.absolute, color=colRed, size=size.tiny)
-
-plot(issue68CoreGateBars, "CORE-GATE bars", color=color.new(colNeutral, 100), display=display.data_window)
-plot(issue68CoreGateAlignedPct, "CORE-GATE aligned pct", color=color.new(colGreen, 100), display=display.data_window)
-plot(issue68CoreGateOppositePct, "CORE-GATE opposite pct", color=color.new(colRed, 100), display=display.data_window)
-plot(issue68CoreGateNeutralPct, "CORE-GATE neutral pct", color=color.new(colNeutral, 100), display=display.data_window)
-plot(issue68CoreGateFirstAlignDelay, "CORE-GATE first align delay bars", color=color.new(colNeutral, 100), display=display.data_window)
-plot(issue68CoreGateMaxOppRun, "CORE-GATE longest opposite run", color=color.new(colRed, 100), display=display.data_window)
-plot(issue68CoreGateTransitions, "CORE-GATE Core transitions", color=color.new(colNeutral, 100), display=display.data_window)
-
+// Table replaces seven Data Window plots; tables do not consume plot counts.
 var table issue68CoreGateTable = table.new(position.bottom_right, 2, 10, border_width=1)
-if barstate.islast and showIssue68CoreGateTable
-    color issue68CoreGateStatusColor = issue68CoreGateHardFail ? colRed : colGreen
-    table.cell(issue68CoreGateTable, 0, 0, "CORE SEMANTIC GATE", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 0, issue68CoreGateStatus, bgcolor=issue68CoreGateStatusColor, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 1, "Preset", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 1, issue68CoreGateLabel, bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 2, "Role / Chart", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 2, issue68CoreGateRole + " / " + syminfo.ticker, bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 3, "Expected", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 3, issue68CoreGateExpected == 1 ? "BULL / GREEN" : "BEAR / RED", bgcolor=issue68CoreGateExpected == 1 ? colGreen : colRed, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 4, "Bars", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 4, str.tostring(issue68CoreGateBars), bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 5, "Aligned", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 5, str.tostring(issue68CoreGateAlignedPct, "#.0") + "%", bgcolor=colGreen, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 6, "Opposite", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 6, str.tostring(issue68CoreGateOppositePct, "#.0") + "%", bgcolor=issue68CoreGateOppositePct > 50.0 ? colRed : colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 7, "First align delay", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 7, na(issue68CoreGateFirstAlignDelay) ? "NEVER" : str.tostring(issue68CoreGateFirstAlignDelay) + " bars", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 8, "Longest opposite", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 8, str.tostring(issue68CoreGateMaxOppRun) + " bars", bgcolor=issue68CoreGateMaxOppRun > 63 ? colRed : colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 0, 9, "Hard fail rule", bgcolor=colNeutral, text_color=color.white)
-    table.cell(issue68CoreGateTable, 1, 9, ">50% opp OR >63 run", bgcolor=colNeutral, text_color=color.white)
+if barstate.islast
+    if showIssue68CoreGateTable
+        color issue68CoreGateStatusColor = issue68CoreGateHardFail ? colRed : colGreen
+        table.cell(issue68CoreGateTable, 0, 0, "CORE SEMANTIC GATE", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 0, issue68CoreGateStatus, bgcolor=issue68CoreGateStatusColor, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 1, "Preset", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 1, issue68CoreGateLabel, bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 2, "Role / Chart", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 2, issue68CoreGateRole + " / " + syminfo.ticker, bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 3, "Expected", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 3, issue68CoreGateExpected == 1 ? "BULL / GREEN" : "BEAR / RED", bgcolor=issue68CoreGateExpectedColor, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 4, "Bars", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 4, str.tostring(issue68CoreGateBars), bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 5, "Aligned", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 5, str.tostring(issue68CoreGateAlignedPct, "#.0") + "%", bgcolor=colGreen, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 6, "Opposite", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 6, str.tostring(issue68CoreGateOppositePct, "#.0") + "%", bgcolor=issue68CoreGateOppositePct > 50.0 ? colRed : colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 7, "First align delay", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 7, na(issue68CoreGateFirstAlignDelay) ? "NEVER" : str.tostring(issue68CoreGateFirstAlignDelay) + " bars", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 8, "Longest opposite", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 8, str.tostring(issue68CoreGateMaxOppRun) + " bars", bgcolor=issue68CoreGateMaxOppRun > 63 ? colRed : colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 0, 9, "Hard fail rule", bgcolor=colNeutral, text_color=color.white)
+        table.cell(issue68CoreGateTable, 1, 9, ">50% opp OR >63 run", bgcolor=colNeutral, text_color=color.white)
+    else
+        table.clear(issue68CoreGateTable, 0, 0, 1, 9)
 '''
 
 
 def generate(source: Path) -> str:
     out = b34.generate(source)
     out = replace_once(out, OLD_DECL, NEW_DECL)
-    for old, new in REPLACEMENTS:
-        out = replace_once(out, old, new)
 
-    banner_marker = 'groupIssue68B34 = "Issue #68｜Exposure B3.4 Bakeoff"'
-    banner = """// ============================================================================
-// Issue #68 Core Semantic Validity Gate wrapper.
-// Exposure lanes remain mechanically present but are hidden by default.
-// The gate judges frozen B3.3 Core only; no classifier or lifecycle semantics change.
-// ============================================================================
-""".strip()
-    out = replace_once(out, banner_marker, banner + "\n\n" + banner_marker)
-    out = out.rstrip() + "\n" + CORE_GATE_BODY + "\n"
+    cut_at = out.find(B34_EXPOSURE_CUT_MARKER)
+    if cut_at < 0:
+        raise RuntimeError("could not locate B3.4 Exposure cut marker")
+
+    # Preserve the complete upstream classifier + B3.3 Core computation, then
+    # discard every Exposure/rendering statement after it.
+    out = out[:cut_at].rstrip() + "\n" + CORE_GATE_BODY + "\n"
 
     required = (
-        "Issue #68 Core Semantic Validity Gate",
+        "Issue #68 Core Semantic Validity Gate — CORE ONLY",
+        "// --- Frozen B3.3 Core Bias Memory ---",
         "FR10Y｜2022-2023 Bull｜DISCOVERY",
         "JGB10Y｜2022-2024 Bull｜VALIDATION",
         "US10Y｜2020-2023 Bull｜VALIDATION",
         "EURUSD｜2021-2022 Bear｜VALIDATION",
+        "SPX｜2020-2021 Bull｜VALIDATION",
         "SPX｜2022 Bear｜VALIDATION",
         "issue68CoreGateOppositePct > 50.0",
         "issue68CoreGateMaxOppRun > 63",
         "EXPECTED major regime",
+        "CORE frozen B3.3",
         "CORE opposite expected",
-        'showIssue68B34A = input.bool(false',
-        'showIssue68B34B = input.bool(false',
-        'showIssue68B34C = input.bool(false',
-        'showIssue68B34Legend = input.bool(false',
     )
     for token in required:
         if token not in out:
@@ -225,6 +203,15 @@ def generate(source: Path) -> str:
 
     forbidden = (
         "strategy.",
+        "// --- Candidate A:",
+        "// --- Candidate B:",
+        "// --- Candidate C:",
+        "B34 Exposure A",
+        "B34 Exposure B",
+        "B34 Exposure C",
+        "B34 A transitions",
+        "B34 B transitions",
+        "B34 C transitions",
         "issue68ArmedDir",
         "issue68EarlyFail",
         "LONG SETUP",
@@ -232,12 +219,20 @@ def generate(source: Path) -> str:
     )
     for token in forbidden:
         if token in out:
-            raise RuntimeError(f"forbidden strategy/lifecycle token leaked into Core semantic gate: {token}")
+            raise RuntimeError(f"forbidden Exposure/lifecycle token leaked into Core semantic gate: {token}")
 
-    # Keep margin below TradingView's 64 plot-count budget. `plotshape` is also a plot count.
-    estimated_plot_calls = out.count("plot(") + out.count("plotshape(") + out.count("bgcolor(")
-    if estimated_plot_calls > 58:
-        raise RuntimeError(f"Core semantic gate estimated plot budget too high: {estimated_plot_calls}")
+    # Conservative source-level safety guard. TradingView can charge extra plot
+    # counts for dynamic series/colors, so keep the literal call count far below 64.
+    literal_plot_calls = (
+        out.count("plot(")
+        + out.count("plotshape(")
+        + out.count("plotchar(")
+        + out.count("bgcolor(")
+        + out.count("fill(")
+        + out.count("barcolor(")
+    )
+    if literal_plot_calls > 42:
+        raise RuntimeError(f"Core semantic gate literal plot-call budget too high: {literal_plot_calls}")
     return out
 
 
