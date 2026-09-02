@@ -24,6 +24,26 @@ Relative to the already-frozen Phase B Reflation-only strategy, adding the Stagf
 
 The full-history advantage remains positive at 10 bp costs, although it narrows.
 
+## Portfolio contribution audit
+
+Phase C now emits the Issue #64-required average allocation by regime, asset contribution, regime contribution, transaction-cost residual, and exact reconciliation tables from the frozen outcome-price snapshot. Regime attribution uses the prior-bar V6.6 state that was actually available to the portfolio on each return row.
+
+For the full reused history, Phase C's annualized arithmetic contribution is:
+
+- SPY: +5.87 percentage points;
+- TLT: +1.54 percentage points;
+- GLD: +2.12 percentage points;
+- transaction-cost residual: -0.16 percentage points;
+- total annualized arithmetic net return: +9.37%.
+
+Within executed Stagflation Pressure rows, realized average allocation is approximately 19.87% SPY / 39.79% TLT / 40.34% GLD, confirming that the intended 20/40/40 template is actually expressed after drift. Importantly, the Stagflation regime remains a negative absolute contributor: about -0.56 percentage points per year. Under the Phase B Reflation-only strategy the same Stagflation rows contributed about -0.79 percentage points, so Phase C improves those rows by roughly +0.24 percentage points per year rather than turning them into a profit center.
+
+That distinction strengthens the risk-overlay interpretation: the Stagflation rule historically acted more like drawdown mitigation / damage reduction than a standalone return engine. The largest positive regime contribution in Phase C remains Slowdown / Disinflation at about +4.04 percentage points per year; Reflation contributes about +2.58 percentage points.
+
+The contribution tables reconcile to the portfolio arithmetic net return to floating-point precision. Maximum absolute asset-plus-cost reconciliation error and regime reconciliation error are both `2.78e-17` across full/pre-2020/post-2019 segments and all Phase C comparison strategies.
+
+These diagnostics do not overturn the existing Phase C verdict. They make the mechanism more auditable while the leave-largest-episode-out robustness failure still stands.
+
 ## Realized-exposure attribution
 
 A post-hoc noncausal control preserves the Phase B Reflation timing rule and shifts its neutral/Reflation templates only enough to match Phase C's realized average SPY/TLT/GLD exposure. This removes the simple explanation that Phase C wins merely because it carries more GLD and less SPY on average.
@@ -62,19 +82,22 @@ Thus the attractive recent result is indeed strongly tied to the 2021-22 inflati
 
 ## Interpretation
 
-Phase C is stronger as a **historical risk-management / crisis-overlay candidate** than as evidence for a robust production allocation rule. The exposure-matched attribution says the Stagflation state contains some timing information, especially after 2019, but the leave-largest-episode-out test says that information has not been broadly distributed across episodes.
+Phase C is stronger as a **historical risk-management / crisis-overlay candidate** than as evidence for a robust production allocation rule. The contribution audit sharpens that interpretation because the Stagflation state remains negative in absolute return contribution even after the defensive override; the improvement comes from losing less in those rows. The exposure-matched attribution says the state contains some timing information, especially after 2019, but the leave-largest-episode-out test says that information has not been broadly distributed across episodes.
 
 Do not tune the 20/40/40 weights or thresholds to rescue the result. All history used here has already been inspected and remains development/reused exploratory evidence, not untouched OOS confirmation.
 
 ## Provenance
 
-- official Phase C primary artifact: Actions run `33038153870`, artifact `9632868973`, digest `sha256:ee0d592cd15f646718337ff26bbf2208a79a21cc9ee372892cda5d3eae7aa1b1`;
-- current-head robustness workflow: Actions run `33038423000` on `1dbc8453e8f35cd076cc554c3430c78f12111c7b`, conclusion `success`;
-- the three-day artifact retention expired before this follow-up; the official Phase C daily artifact was replayed using the current-head accounting/diagnostic contract with maximum absolute net-return replay error below `6.7e-16`.
+Contribution-audit source workflow: Actions run `33492086706` on code head `51a9998ac0b370bdda8e2ccb5dc6e0e5e79e8b0e`, conclusion `success`.
+
+Phase C artifact: `9794326632`, digest `sha256:a2185cc603fafbdba6dc61bde43f05ca6f2ca8337b9ee0997d1ce0265dccb159`.
+
+The artifact contains `phase-c-asset-contribution.csv`, `phase-c-regime-allocation-contribution.csv`, `phase-c-contribution-reconciliation.csv`, and `phase-c-contribution-manifest.json` together with the existing Phase C primary and robustness evidence. The contribution manifest confirms `committed_frozen_snapshot`, frozen CSV SHA-256 `3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57`, and maximum reconciliation error `2.78e-17`.
 
 ## Decision
 
 - Do not call V6.6 a validated production allocator.
 - Keep the Reflation and Stagflation relationships as distinct exploratory allocation/risk-overlay findings.
+- Treat the Stagflation result primarily as historical loss mitigation, not evidence that Stagflation rows are positively returning after the override.
 - Do not optimize nine regime weights.
 - The next useful research question should test whether a simpler, explicitly defensive **risk-overlay interpretation** can generalize without relying on one historical crisis episode, or wait for genuinely unseen future observations for confirmation.
