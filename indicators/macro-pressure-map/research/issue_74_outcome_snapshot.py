@@ -13,7 +13,9 @@ import gzip
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
+import subprocess
 
 import numpy as np
 import pandas as pd
@@ -37,6 +39,29 @@ def display_path(path: Path) -> str:
         return str(resolved.relative_to(HERE))
     except ValueError:
         return str(resolved)
+
+
+def _assert_github_pr_checkout_matches_trigger() -> None:
+    """Fail closed if a PR run checked out a tip newer than its triggering SHA."""
+    if os.environ.get("GITHUB_EVENT_NAME") != "pull_request":
+        return
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if not event_path:
+        raise RuntimeError("GitHub PR run is missing GITHUB_EVENT_PATH")
+    payload = json.loads(Path(event_path).read_text(encoding="utf-8"))
+    expected = str(payload.get("pull_request", {}).get("head", {}).get("sha", "")).strip()
+    if not expected:
+        raise RuntimeError("GitHub PR event does not declare pull_request.head.sha")
+    actual = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"],
+        cwd=HERE,
+        text=True,
+    ).strip()
+    if actual != expected:
+        raise RuntimeError(
+            "Issue #74 exact-head provenance failure: "
+            f"triggered SHA {expected}, checked-out SHA {actual}"
+        )
 
 
 def normalize_price_panel(frame: pd.DataFrame) -> pd.DataFrame:
@@ -139,6 +164,7 @@ def load_frozen_prices(
     *,
     manifest_path: Path = DEFAULT_MANIFEST,
 ) -> tuple[pd.DataFrame, dict]:
+    _assert_github_pr_checkout_matches_trigger()
     if not manifest_path.exists():
         raise FileNotFoundError("committed Issue #74 outcome snapshot manifest is not available")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
