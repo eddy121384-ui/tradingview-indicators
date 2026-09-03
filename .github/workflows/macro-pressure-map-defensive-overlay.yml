@@ -1,0 +1,167 @@
+name: Macro Pressure Map Defensive Overlay Research
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_74_*.py"
+      - "indicators/macro-pressure-map/research/build_issue_74_*.py"
+      - "indicators/macro-pressure-map/research/freeze_issue_74_*.py"
+      - "indicators/macro-pressure-map/research/evaluate_issue_74_*.py"
+      - "indicators/macro-pressure-map/research/test_issue_74_*.py"
+      - "indicators/macro-pressure-map/research/data/issue-74-*"
+      - "indicators/macro-pressure-map/research/decisions/issue-74-*"
+      - ".github/workflows/macro-pressure-map-defensive-overlay.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  issue-74:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact research head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install research dependencies
+        run: python -m pip install --upgrade pip pandas numpy scipy scikit-learn yfinance pytest
+
+      - name: Run Issue 74 focused tests before data/PnL
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q \
+            test_issue_74_outcome_snapshot.py \
+            test_issue_74_portfolio.py
+          python - <<'PY'
+          import issue_74_severe_inflation as severe
+          positive, manifest = severe.load_severe_positive_dates()
+          assert manifest["parity_pass"] is True
+          assert manifest["parity_checkpoints"] >= 51
+          assert manifest["parity_max_abs_ipi_error"] <= 5e-8
+          assert (positive >= 60.0).all()
+          print({
+              "evidence_mode": manifest["evidence_mode"],
+              "source_sha256": manifest["source_log_sha256"],
+              "positive_rows": len(positive),
+              "parity_max_abs_ipi_error": manifest["parity_max_abs_ipi_error"],
+          })
+          PY
+
+      - name: Freeze outcome panel before Issue 74 PnL
+        id: freeze
+        working-directory: indicators/macro-pressure-map/research
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f data/issue-74-outcome-prices-manifest.json ]]; then
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            echo "Issue #74 outcome snapshot already committed; no network refresh permitted."
+            exit 0
+          fi
+          python build_issue_74_outcome_snapshot.py --start 2007-01-01 --end 2026-08-25
+          python - <<'PY'
+          from issue_74_outcome_snapshot import load_frozen_prices
+          prices, manifest = load_frozen_prices(start="2007-01-01", end="2026-08-25")
+          assert manifest["source_mode"] == "committed_frozen_snapshot"
+          print(manifest)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/issue-74-outcome-prices-manifest.json data/issue-74-outcome-prices-*.b64
+          git commit -m "Freeze Issue 74 outcome price snapshot"
+          git push origin "HEAD:${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}"
+          echo "created=true" >> "$GITHUB_OUTPUT"
+          echo "frozen_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Verify committed/frozen outcome panel
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          from issue_74_outcome_snapshot import load_frozen_prices
+          prices, manifest = load_frozen_prices(start="2007-01-01", end="2026-08-25")
+          assert manifest["source_mode"] == "committed_frozen_snapshot"
+          assert list(prices.columns) == ["SPY", "TLT", "SHV", "GSG"]
+          print({
+              "rows": len(prices),
+              "first": prices.index.min().date().isoformat(),
+              "last": prices.index.max().date().isoformat(),
+              "csv_sha256": manifest["snapshot_csv_sha256"],
+              "archive_sha256": manifest["snapshot_archive_sha256"],
+          })
+          PY
+
+      - name: Generate preregistered Phase A/B evidence from frozen data
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-74-phase-ab
+          python evaluate_issue_74_defensive_overlay.py \
+            --output-dir generated/issue-74-phase-ab
+
+      - name: Generate preregistered Phase C evidence from frozen data
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-74-phase-c
+          python evaluate_issue_74_phase_c.py \
+            --output-dir generated/issue-74-phase-c
+
+      - name: Generate post-hoc same-window Gold vs Cash comparator
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-74-legacy-gold-cash
+          python issue_74_legacy_gold_comparator.py \
+            --output-dir generated/issue-74-legacy-gold-cash \
+            --cost-bps 5
+
+      - name: Validate Issue 74 evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m json.tool generated/issue-74-phase-ab/issue-74-phase-ab-manifest.json > /dev/null
+          python -m json.tool generated/issue-74-phase-ab/issue-74-phase-c-gate.json > /dev/null
+          test -s generated/issue-74-phase-ab/issue-74-phase-ab-summary.csv
+          test -s generated/issue-74-phase-ab/issue-74-phase-ab-comparisons.csv
+          test -s generated/issue-74-phase-ab/issue-74-phase-ab-asset-contribution.csv
+          test -s generated/issue-74-phase-ab/issue-74-phase-ab-regime-contribution.csv
+          test -s generated/issue-74-phase-ab/issue-74-phase-ab-episode-concentration.csv
+          test -s generated/issue-74-phase-ab/issue-74-phase-ab-report.md
+          python -m json.tool generated/issue-74-phase-c/issue-74-phase-c-manifest.json > /dev/null
+          test -s generated/issue-74-phase-c/issue-74-phase-c-summary.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-comparison.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-cost-sensitivity.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-episode-concentration.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-attribution.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-report.md
+          test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-incremental.csv
+          test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-episodes.csv
+          test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-report.md
+
+      - name: Upload Issue 74 Phase A/B evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-74-phase-ab
+          path: indicators/macro-pressure-map/research/generated/issue-74-phase-ab/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Issue 74 Phase C evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-74-phase-c
+          path: indicators/macro-pressure-map/research/generated/issue-74-phase-c/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Issue 74 legacy Gold vs Cash diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-74-legacy-gold-cash
+          path: indicators/macro-pressure-map/research/generated/issue-74-legacy-gold-cash/
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,74 @@
+//@version=6
+indicator("Macro Pressure Map V6.6 Phase C Sources", shorttitle="MPM V6.6 PHASE C SRC", overlay=false)
+
+// Issue #74 reconstruction helper.
+// Purpose: capture enough TradingView source pre-history to reconstruct the
+// frozen V6.6 raw GPI/IPI/FCPI axes from 2007 onward without depending on the
+// original V6.6 plotted-output input.source selectors.
+//
+// Use on AMEX:SPY 1D. Keep Market Proxy Timeframe = D.
+// Default Pine Logs start year is intentionally 2005 to provide the 252-row
+// rolling + momentum warm-up needed before the Issue #74 2007 evaluation start.
+
+marketTf = input.timeframe("D", "Market Proxy Timeframe")
+logFromYear = input.int(2005, "Pine Logs start year", minval=2000, maxval=2100)
+
+f_req(symbol) =>
+    request.security(symbol, marketTf, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_num(v) =>
+    str.tostring(v, "#.########")
+
+spy = f_req("AMEX:SPY")
+iwm = f_req("AMEX:IWM")
+rsp = f_req("AMEX:RSP")
+xly = f_req("AMEX:XLY")
+xlp = f_req("AMEX:XLP")
+xli = f_req("AMEX:XLI")
+xlu = f_req("AMEX:XLU")
+copper = f_req("COMEX:HG1!")
+gold = f_req("COMEX:GC1!")
+breakeven10y = f_req("FRED:T10YIE")
+oil = f_req("NYMEX:CL1!")
+gasoline = f_req("NYMEX:RB1!")
+commodityBasket = f_req("AMEX:DBC")
+dxy = f_req("TVC:DXY")
+vix = f_req("CBOE:VIX")
+move = f_req("TVC:MOVE")
+hyg = f_req("AMEX:HYG")
+ief = f_req("NASDAQ:IEF")
+hyOas = f_req("FRED:BAMLH0A0HYM2")
+realYield = f_req("FRED:DFII10")
+
+plot(spy, "PHASE C SRC spy", display=display.data_window)
+plot(iwm, "PHASE C SRC iwm", display=display.data_window)
+plot(rsp, "PHASE C SRC rsp", display=display.data_window)
+plot(xly, "PHASE C SRC xly", display=display.data_window)
+plot(xlp, "PHASE C SRC xlp", display=display.data_window)
+plot(xli, "PHASE C SRC xli", display=display.data_window)
+plot(xlu, "PHASE C SRC xlu", display=display.data_window)
+plot(copper, "PHASE C SRC copper", display=display.data_window)
+plot(gold, "PHASE C SRC gold", display=display.data_window)
+plot(breakeven10y, "PHASE C SRC breakeven_10y", display=display.data_window)
+plot(oil, "PHASE C SRC oil", display=display.data_window)
+plot(gasoline, "PHASE C SRC gasoline", display=display.data_window)
+plot(commodityBasket, "PHASE C SRC commodity_basket", display=display.data_window)
+plot(dxy, "PHASE C SRC dxy", display=display.data_window)
+plot(vix, "PHASE C SRC vix", display=display.data_window)
+plot(move, "PHASE C SRC move", display=display.data_window)
+plot(hyg, "PHASE C SRC hyg", display=display.data_window)
+plot(ief, "PHASE C SRC ief", display=display.data_window)
+plot(hyOas, "PHASE C SRC hy_oas", display=display.data_window)
+plot(realYield, "PHASE C SRC real_yield", display=display.data_window)
+
+if barstate.isconfirmed and year >= logFromYear
+    message = "MPM_PHASE_C_SRC" +
+      "|date=" + str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) +
+      "|spy=" + f_num(spy) + "|iwm=" + f_num(iwm) + "|rsp=" + f_num(rsp) +
+      "|xly=" + f_num(xly) + "|xlp=" + f_num(xlp) + "|xli=" + f_num(xli) + "|xlu=" + f_num(xlu) +
+      "|copper=" + f_num(copper) + "|gold=" + f_num(gold) +
+      "|breakeven_10y=" + f_num(breakeven10y) + "|oil=" + f_num(oil) + "|gasoline=" + f_num(gasoline) +
+      "|commodity_basket=" + f_num(commodityBasket) + "|dxy=" + f_num(dxy) +
+      "|vix=" + f_num(vix) + "|move=" + f_num(move) + "|hyg=" + f_num(hyg) + "|ief=" + f_num(ief) +
+      "|hy_oas=" + f_num(hyOas) + "|real_yield=" + f_num(realYield)
+    log.info(message)

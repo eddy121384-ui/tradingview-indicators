@@ -1,0 +1,115 @@
+{
+  "schema_version": 2,
+  "issue": 74,
+  "phase": "C",
+  "study": "macro_pressure_map_v66_severe_inflation_commodity_satellite",
+  "evidence_status": "development_or_reused_exploratory; not newly untouched OOS",
+  "production_v66_modified": false,
+  "rule": {
+    "activation": "lagged Stagflation Pressure AND lagged raw IPI >= +60.0",
+    "threshold_source": "existing V6.6 inflationExtremeThreshold",
+    "phase_b_stagflation": {"SPY": 0.20, "TLT": 0.20, "SHV": 0.60, "GSG": 0.00},
+    "phase_c_severe_stagflation": {"SPY": 0.20, "TLT": 0.20, "SHV": 0.40, "GSG": 0.20},
+    "optimizer_used": false,
+    "weight_sweep_performed": false,
+    "commodity_momentum_used": false,
+    "oil_only_rescue_test_used": false
+  },
+  "signal_evidence": {
+    "mode": "equivalently exact verified reconstruction",
+    "source_filename": "pine-logs-MPM V6.6 PHASE C SRC.csv",
+    "source_sha256": "6c5aa03419d2e5325d28fb33bf9c83a9744d7170da84f72a614676a7fc1aad4d",
+    "raw_rows": 5458,
+    "unique_dates": 5451,
+    "raw_ipi_rows": 5137,
+    "severe_ipi_rows": 194,
+    "issue_64_audit_checkpoints": 51,
+    "max_abs_ipi_parity_error": 2.0430569236395968e-08,
+    "parity_gate": 5e-08,
+    "parity_pass": true,
+    "availability_semantics": "READY only after manifest, source SHA, parity gate, threshold, CSV SHA, row identity and content validation"
+  },
+  "outcome_data": {
+    "assets": ["SPY", "TLT", "SHV", "GSG"],
+    "evaluation_first_date": "2007-01-12",
+    "evaluation_last_date": "2026-08-14",
+    "evaluation_rows": 4928,
+    "frozen_csv_sha256": "eba5c4d82c647536a23856e091b874f7a82940d7358bc5235ed066a20ae9566c",
+    "frozen_archive_sha256": "e2a76e4aa6c43f64c9574000723ebf96309f7f129d148b805e26123c11643398"
+  },
+  "activation": {
+    "rows": 74,
+    "episodes": 11,
+    "first_date": "2007-11-05",
+    "last_date": "2026-05-20"
+  },
+  "primary_5bp_phase_c_minus_phase_b": {
+    "full_reused_history": {
+      "delta_CAGR": -0.0013616696805689443,
+      "delta_Sharpe": -0.022844483752688327,
+      "delta_maximum_drawdown": -0.008831332891538812,
+      "delta_Calmar": -0.025357166201828096,
+      "delta_annualized_turnover": 0.14414319926212826
+    },
+    "development_pre2020": {
+      "delta_CAGR": -0.0015984452540795946,
+      "delta_Sharpe": -0.02426859534927428,
+      "delta_maximum_drawdown": -0.008831332891538812,
+      "delta_Calmar": -0.026892679785227525
+    },
+    "post2019_reused_exploratory": {
+      "delta_CAGR": -0.0008983440671326282,
+      "delta_Sharpe": -0.018227287613335252,
+      "delta_maximum_drawdown": -0.00297713545117384,
+      "delta_Calmar": -0.012468207766530015
+    }
+  },
+  "zero_cost_check": {
+    "full_delta_CAGR": -0.001287,
+    "full_delta_Sharpe": -0.022163,
+    "full_delta_maximum_drawdown": -0.008312,
+    "interpretation": "Phase C remains inferior even with zero transaction cost; failure is not caused by execution cost."
+  },
+  "realized_weight_attribution": {
+    "method": "sum over assets of (Phase C realized invested weight - Phase B realized invested weight) times asset return; includes within-episode drift and reconciles to gross asset-mix return difference",
+    "full_annualized_arithmetic_gross_delta": -0.001165910013563907,
+    "pre2020_annualized_arithmetic_gross_delta": -0.0014663130128765242,
+    "post2019_annualized_arithmetic_gross_delta": -0.0005761230064949359,
+    "max_abs_daily_reconciliation": 3.469446951953614e-18,
+    "prior_fixed_20pct_target_approximation_superseded": true
+  },
+  "episode_concentration": {
+    "full_active_log_return": -0.024770,
+    "largest_winning_episode": {
+      "start": "2022-03-02",
+      "end": "2022-04-04",
+      "observations": 24,
+      "active_log_return": 0.009965
+    },
+    "active_log_return_ex_largest_winner": -0.034735,
+    "pre2020_active_log_return": -0.019243,
+    "post2019_active_log_return": -0.005527
+  },
+  "review_hardening": {
+    "phase_c_gate_full_validation": true,
+    "realized_weight_attribution": true,
+    "github_pr_trigger_sha_fail_closed_guard": true,
+    "workflow_branch_checkout_itself_pinned": false,
+    "provenance_interpretation": "Artifacts fail closed if GitHub PR checked-out HEAD differs from the triggering pull_request.head.sha."
+  },
+  "verdict": "preregistered_gsg_satellite_does_not_add_historical_value_over_deep_cash_in_v66_severe_stagflation",
+  "decision": {
+    "phase_c_passed": false,
+    "broad_commodity_satellite_supported": false,
+    "cash_core_defensive_role_from_phase_a_remains_supported": true,
+    "phase_b_60pct_cash_becomes_universal_rule": false,
+    "production_allocator_validated": false,
+    "rescue_tuning_permitted": false
+  },
+  "provenance": {
+    "github_actions_run": 33728936711,
+    "head_sha": "5f1c87e6cf1d23725db676b26f876c0d7a6ebf05",
+    "phase_c_artifact_id": 9883140294,
+    "phase_c_artifact_digest": "sha256:f5ba2d135b308ad491e613e461d315e566e63dbbd9d35e1e8f9a44e84d4ab6bb"
+  }
+}
