@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "issue": 74,
+  "phase": "A+B",
+  "study": "Macro Pressure Map V6.6 cash defensive overlay",
+  "evidence_status": "reused/development exploratory history; not untouched OOS confirmation",
+  "production_v66_parameters_modified": false,
+  "preregistration": {
+    "path": "decisions/issue-74-defensive-overlay-preregistered.json",
+    "frozen_before_issue_74_portfolio_results_viewed": true,
+    "weight_sweep_performed": false,
+    "threshold_tuning_performed": false,
+    "optimizer_used": false,
+    "commodity_momentum_used": false
+  },
+  "data": {
+    "outcome_assets": ["SPY", "TLT", "SHV", "GSG"],
+    "outcome_snapshot_commit": "5b407ebf1df7f88b4c3ab720234bf2b587a01027",
+    "outcome_snapshot_csv_sha256": "eba5c4d82c647536a23856e091b874f7a82940d7358bc5235ed066a20ae9566c",
+    "outcome_snapshot_archive_sha256": "e2a76e4aa6c43f64c9574000723ebf96309f7f129d148b805e26123c11643398",
+    "outcome_snapshot_rows": 4935,
+    "outcome_snapshot_first_date": "2007-01-11",
+    "outcome_snapshot_last_date": "2026-08-24",
+    "evaluation_first_date": "2007-01-12",
+    "evaluation_last_date": "2026-08-14",
+    "evaluation_rows": 4928,
+    "core_regime_transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af"
+  },
+  "execution": {
+    "signal_lag_trading_rows": 1,
+    "scheduled_rebalance": "first common trading row of each calendar month",
+    "event_rebalance": "lagged target-template change",
+    "primary_cost_bps_per_one_way_turnover": 5.0,
+    "cost_sensitivity_bps": [0.0, 10.0]
+  },
+  "strategies_full_reused_history_5bp": {
+    "fixed_neutral_40_40_20_spy_tlt_shv": {
+      "CAGR": 0.063167,
+      "Sharpe": 0.7969,
+      "maximum_drawdown": -0.237058,
+      "Calmar": 0.2665,
+      "annualized_turnover": 0.135
+    },
+    "reflation_only_60_20_20_else_40_40_20": {
+      "CAGR": 0.071779,
+      "Sharpe": 0.8752,
+      "maximum_drawdown": -0.237058,
+      "Calmar": 0.3028,
+      "annualized_turnover": 1.739
+    },
+    "phase_a_cash_substitution_stag_20_40_40": {
+      "CAGR": 0.075087,
+      "Sharpe": 0.9317,
+      "maximum_drawdown": -0.211226,
+      "Calmar": 0.3555,
+      "annualized_turnover": 3.090
+    },
+    "phase_b_deep_cash_stag_20_20_60": {
+      "CAGR": 0.075685,
+      "Sharpe": 0.9538,
+      "maximum_drawdown": -0.186332,
+      "Calmar": 0.4062,
+      "annualized_turnover": 4.427
+    }
+  },
+  "phase_a_incremental_vs_reflation_only_5bp": {
+    "full_reused_history": {
+      "delta_CAGR": 0.003308,
+      "delta_Sharpe": 0.0565,
+      "delta_maximum_drawdown": 0.025833,
+      "delta_Calmar": 0.0527
+    },
+    "development_pre2020": {
+      "delta_CAGR": 0.001414,
+      "delta_Sharpe": 0.0310,
+      "delta_maximum_drawdown": 0.004925,
+      "delta_Calmar": 0.0179
+    },
+    "post2019_reused_exploratory": {
+      "delta_CAGR": 0.006972,
+      "delta_Sharpe": 0.0870,
+      "delta_maximum_drawdown": 0.025833,
+      "delta_Calmar": 0.0637
+    }
+  },
+  "phase_b_incremental_vs_phase_a_5bp": {
+    "full_reused_history": {
+      "delta_CAGR": 0.000598,
+      "delta_Sharpe": 0.0221,
+      "delta_maximum_drawdown": 0.024893,
+      "delta_Calmar": 0.0507
+    },
+    "development_pre2020": {
+      "delta_CAGR": -0.002458,
+      "delta_Sharpe": -0.0232,
+      "delta_maximum_drawdown": 0.003061,
+      "delta_Calmar": -0.0063
+    },
+    "post2019_reused_exploratory": {
+      "delta_CAGR": 0.006551,
+      "delta_Sharpe": 0.0838,
+      "delta_maximum_drawdown": 0.040147,
+      "delta_Calmar": 0.1122
+    }
+  },
+  "phase_b_incremental_vs_reflation_only_5bp": {
+    "full_reused_history": {
+      "delta_CAGR": 0.003906,
+      "delta_Sharpe": 0.0787,
+      "delta_maximum_drawdown": 0.050726,
+      "delta_Calmar": 0.1034
+    },
+    "development_pre2020": {
+      "delta_CAGR": -0.001044,
+      "delta_Sharpe": 0.0078,
+      "delta_maximum_drawdown": 0.007987,
+      "delta_Calmar": 0.0116
+    },
+    "post2019_reused_exploratory": {
+      "delta_CAGR": 0.013523,
+      "delta_Sharpe": 0.1708,
+      "delta_maximum_drawdown": 0.065980,
+      "delta_Calmar": 0.1759
+    }
+  },
+  "cost_robustness": {
+    "phase_a_minus_reflation_only_full_history": {
+      "zero_bps_delta_CAGR": 0.004038,
+      "five_bps_delta_CAGR": 0.003308,
+      "ten_bps_delta_CAGR": 0.002580,
+      "ten_bps_sign_positive": true
+    },
+    "phase_b_minus_phase_a_full_history": {
+      "zero_bps_delta_CAGR": 0.001319,
+      "five_bps_delta_CAGR": 0.000598,
+      "ten_bps_delta_CAGR": -0.000121,
+      "ten_bps_CAGR_sign_positive": false,
+      "ten_bps_delta_Sharpe": 0.0133,
+      "ten_bps_delta_maximum_drawdown": 0.024103,
+      "interpretation": "deep-cash return edge is cost-fragile, while drawdown reduction persists"
+    }
+  },
+  "episode_concentration": {
+    "phase_a_minus_reflation_only": {
+      "development_pre2020": {
+        "active_log_return": 0.016984,
+        "largest_winner": "2007-09-17 -> 2008-01-17",
+        "largest_winner_active_log_return": 0.022338,
+        "active_log_return_ex_largest_winner": -0.005354,
+        "sign_flips_after_removal": true
+      },
+      "post2019_reused_exploratory": {
+        "active_log_return": 0.043280,
+        "largest_winner": "2021-12-29 -> 2022-06-06",
+        "largest_winner_active_log_return": 0.028651,
+        "active_log_return_ex_largest_winner": 0.014630,
+        "sign_flips_after_removal": false
+      }
+    },
+    "phase_b_minus_phase_a": {
+      "development_pre2020": {
+        "active_log_return": -0.029538,
+        "largest_winner": "2012-08-06 -> 2012-08-17",
+        "largest_winner_active_log_return": 0.009109,
+        "baseline_incremental_already_negative": true
+      },
+      "post2019_reused_exploratory": {
+        "active_log_return": 0.040410,
+        "largest_winner": "2021-12-29 -> 2022-06-06",
+        "largest_winner_active_log_return": 0.050652,
+        "active_log_return_ex_largest_winner": -0.010242,
+        "sign_flips_after_removal": true
+      }
+    }
+  },
+  "stagflation_regime_contribution": {
+    "reflation_only": {
+      "full": -0.007110,
+      "pre2020": 0.001709,
+      "post2019": -0.024424
+    },
+    "phase_a": {
+      "full": -0.004018,
+      "pre2020": 0.003069,
+      "post2019": -0.017932,
+      "realized_average_stagflation_allocation": {"SPY": 0.1991, "TLT": 0.3986, "SHV": 0.4023}
+    },
+    "phase_b": {
+      "full": -0.003242,
+      "pre2020": 0.001075,
+      "post2019": -0.011717,
+      "realized_average_stagflation_allocation": {"SPY": 0.1988, "TLT": 0.1990, "SHV": 0.6023}
+    },
+    "interpretation": "cash overlays primarily reduce Stagflation losses; they do not establish Stagflation as an absolute return engine"
+  },
+  "same_window_posthoc_gold_vs_cash": {
+    "role": "diagnostic only; compares already-frozen marginal Stagflation overlays on identical dates",
+    "comparison_window": "2007-01-12 -> 2026-08-14",
+    "gold_incremental_full_history": {
+      "delta_CAGR": 0.002388,
+      "delta_Sharpe": 0.0200,
+      "delta_maximum_drawdown": 0.023567,
+      "delta_Calmar": 0.0470
+    },
+    "cash_incremental_full_history": {
+      "delta_CAGR": 0.003308,
+      "delta_Sharpe": 0.0565,
+      "delta_maximum_drawdown": 0.025833,
+      "delta_Calmar": 0.0527
+    },
+    "cash_minus_gold_full_history": {
+      "delta_incremental_CAGR": 0.000920,
+      "delta_incremental_Sharpe": 0.0365,
+      "delta_incremental_maximum_drawdown": 0.002265,
+      "delta_incremental_Calmar": 0.0057
+    },
+    "leave_largest_episode_out": {
+      "gold_pre2020_flips_negative": true,
+      "gold_post2019_flips_negative": true,
+      "cash_pre2020_flips_negative": true,
+      "cash_post2019_flips_negative": false,
+      "cash_post2019_active_log_return_ex_2021_22": 0.014630
+    },
+    "interpretation": "cash has stronger same-window marginal Stagflation evidence than gold, especially post-2019, but this post-hoc comparison cannot establish universal superiority"
+  },
+  "accounting": {
+    "maximum_reconciliation_error": 3.469447e-18
+  },
+  "phase_c": {
+    "status": "BLOCKED_MISSING_EXACT_DAILY_IPI_EVIDENCE",
+    "reason": "Issue #64 committed 3x3 core regime transitions but not the full daily raw IPI >= +60 state; Phase C must fail closed until the exact prior Pine parity log or equivalently exact verified reconstruction is available",
+    "expected_prior_pine_log_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
+    "portfolio_phase_c_calculated": false
+  },
+  "provenance": {
+    "workflow_run": 33708354990,
+    "source_head_sha": "be3a687fb80f28a0cb4d09e88c2fc027617b706d",
+    "phase_ab_artifact_id": 9876055030,
+    "phase_ab_artifact_sha256": "ce44a90523cff50ec9586724dcae9814a94a09d86b82788648e317d5c762aa95",
+    "legacy_gold_cash_artifact_id": 9876055349,
+    "legacy_gold_cash_artifact_sha256": "44189ade884cbba297b120435e10d07aa435de3f81b24b9134c9c0947cb75489",
+    "workflow_conclusion": "success"
+  },
+  "verdict": {
+    "phase_a": "cash_substitution_has_historical_stagflation_loss_mitigation_value_with_better_recent_episode_robustness_but_pre2020_concentration",
+    "phase_b": "deep_cash_defense_is_recent_hiking_episode_specific_not_a_stable_all_stagflation_rule",
+    "overall": "cash_is_a_credible_defensive_asset_role_but_60pct_cash_requires_stronger_conditioning_than_core_stagflation"
+  },
+  "decision": {
+    "production_allocator_validated": false,
+    "gold_required_for_stagflation_defense": false,
+    "cash_supported_as_core_defensive_role": true,
+    "always_use_60pct_cash_in_core_stagflation": false,
+    "phase_c_should_remain_preregistered_and_blocked_until_exact_ipi_evidence": true,
+    "do_not_tune_weights_or_thresholds_to_rescue_results": true
+  }
+}
