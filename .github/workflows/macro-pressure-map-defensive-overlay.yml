@@ -40,6 +40,20 @@ jobs:
           python -m pytest -q \
             test_issue_74_outcome_snapshot.py \
             test_issue_74_portfolio.py
+          python - <<'PY'
+          import issue_74_severe_inflation as severe
+          positive, manifest = severe.load_severe_positive_dates()
+          assert manifest["parity_pass"] is True
+          assert manifest["parity_checkpoints"] >= 51
+          assert manifest["parity_max_abs_ipi_error"] <= 5e-8
+          assert (positive >= 60.0).all()
+          print({
+              "evidence_mode": manifest["evidence_mode"],
+              "source_sha256": manifest["source_log_sha256"],
+              "positive_rows": len(positive),
+              "parity_max_abs_ipi_error": manifest["parity_max_abs_ipi_error"],
+          })
+          PY
 
       - name: Freeze outcome panel before Issue 74 PnL
         id: freeze
@@ -91,6 +105,13 @@ jobs:
           python evaluate_issue_74_defensive_overlay.py \
             --output-dir generated/issue-74-phase-ab
 
+      - name: Generate preregistered Phase C evidence from frozen data
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-74-phase-c
+          python evaluate_issue_74_phase_c.py \
+            --output-dir generated/issue-74-phase-c
+
       - name: Generate post-hoc same-window Gold vs Cash comparator
         working-directory: indicators/macro-pressure-map/research
         run: |
@@ -110,6 +131,13 @@ jobs:
           test -s generated/issue-74-phase-ab/issue-74-phase-ab-regime-contribution.csv
           test -s generated/issue-74-phase-ab/issue-74-phase-ab-episode-concentration.csv
           test -s generated/issue-74-phase-ab/issue-74-phase-ab-report.md
+          python -m json.tool generated/issue-74-phase-c/issue-74-phase-c-manifest.json > /dev/null
+          test -s generated/issue-74-phase-c/issue-74-phase-c-summary.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-comparison.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-cost-sensitivity.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-episode-concentration.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-attribution.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-report.md
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-incremental.csv
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-episodes.csv
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-report.md
@@ -119,6 +147,14 @@ jobs:
         with:
           name: macro-pressure-map-issue-74-phase-ab
           path: indicators/macro-pressure-map/research/generated/issue-74-phase-ab/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Issue 74 Phase C evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-74-phase-c
+          path: indicators/macro-pressure-map/research/generated/issue-74-phase-c/
           if-no-files-found: error
           retention-days: 30
 
