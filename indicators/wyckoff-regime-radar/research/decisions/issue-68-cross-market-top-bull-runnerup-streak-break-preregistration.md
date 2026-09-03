@@ -97,6 +97,22 @@ Also report:
 - If both runner-up profile and streak-break profile differ, retain a two-stage explanation; do not collapse it into one culprit.
 - No result from this audit authorizes changing `topGapMin`, `confirmBars`, stage weights, or any component.
 
+## Observed FR10Y / DE10Y result — frozen before Path-Geometry audit
+
+TradingView observations on the shared window:
+
+- Runner-up family is overwhelmingly **Neutral** on both FR10Y and DE10Y; the simple `Bear runner-up keeps biting Bull` story is rejected.
+- DE10Y: `Strong bars = 31`, `Max run = 5`, `Formal Bull acquire = 1`.
+- FR10Y: `Strong bars = 5`, `Max run = 2`, `Formal Bull acquire = 0`.
+- FR10Y Strong-streak breaks: Gap fail is the largest observed reason (`2 / 4 = 50%`), with TOP leaving Bull (`1 / 4 = 25%`) and Conflict (`1 / 4 = 25%`).
+- DE10Y Strong-streak breaks in the observed chart are dominated by Conflict (`20 / 20`), while Gap is not the break driver.
+
+Interpretation frozen from these results:
+
+> The catastrophic FR failure is not explained by an opposite-family runner-up. The sharper cross-market distinction is that FR Bull leadership is too thin and temporally discontinuous: Bull TOP can appear, but top-gap quality frequently collapses and Strong-Bull runs never reach the normal confirmation length. DE can sustain Bull Strong long enough to formalize once.
+
+This observation motivates a separate FR-vs-DE Path-Geometry / Transformation audit. It does **not** authorize any threshold or confirmation change.
+
 ## Hard boundary
 
 - no Strategy Tester, returns, PnL, Sharpe, drawdown, hit rate
