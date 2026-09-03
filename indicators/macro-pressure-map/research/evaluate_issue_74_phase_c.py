@@ -155,27 +155,48 @@ def run(output_dir: Path) -> dict:
     active_log = np.log1p(sims["phase_c_severe_inflation_commodity"]["net_return"]) - np.log1p(sims["phase_b_defensive_cash_4asset"]["net_return"])
     concentration = episode_concentration(active_log, activation)
 
-    # Direct attribution: during active rows the target swap is 20% SHV -> GSG.
+    # Realized gross attribution uses each simulation's actual invested weights,
+    # including within-episode drift between rebalances.  This is the realized
+    # Phase C-minus-Phase B gross asset-mix contribution, not a fixed 20% target
+    # weight approximation.
+    phase_b_sim = sims["phase_b_defensive_cash_4asset"]
+    phase_c_sim = sims["phase_c_severe_inflation_commodity"]
+    realized_asset_delta = pd.DataFrame(index=eval_index)
+    for asset in assets:
+        realized_asset_delta[asset] = (
+            phase_c_sim[f"invested_weight_{asset}"] - phase_b_sim[f"invested_weight_{asset}"]
+        ) * returns[asset]
+    realized_gross_delta = phase_c_sim["gross_asset_mix_return"] - phase_b_sim["gross_asset_mix_return"]
+    attribution_recon = realized_asset_delta.sum(axis=1) - realized_gross_delta
+    if float(attribution_recon.abs().max()) > 2e-12:
+        raise AssertionError("Phase C realized-weight attribution does not reconcile to gross return difference")
+
     attribution_rows: list[dict] = []
     for segment, (start, end) in {
         "full_reused_history": (None, None),
         "development_pre2020": (None, "2019-12-31"),
         "post2019_reused_exploratory": ("2020-01-01", None),
     }.items():
-        mask = activation.copy()
+        segment_mask = pd.Series(True, index=eval_index)
         if start is not None:
-            mask &= activation.index >= pd.Timestamp(start)
+            segment_mask &= eval_index >= pd.Timestamp(start)
         if end is not None:
-            mask &= activation.index <= pd.Timestamp(end)
-        dates = activation.index[mask.to_numpy()]
-        sleeve = 0.20 * (returns.loc[dates, "GSG"] - returns.loc[dates, "SHV"])
-        attribution_rows.append({
+            segment_mask &= eval_index <= pd.Timestamp(end)
+        segment_dates = eval_index[segment_mask.to_numpy()]
+        active_dates = segment_dates[activation.loc[segment_dates].to_numpy()]
+        gross = realized_gross_delta.loc[active_dates]
+        row = {
             "segment": segment,
-            "activation_rows": int(len(dates)),
-            "mean_daily_20pct_GSG_minus_SHV": float(sleeve.mean()) if len(dates) else np.nan,
-            "cumulative_arithmetic_20pct_GSG_minus_SHV": float(sleeve.sum()) if len(dates) else 0.0,
-            "annualized_arithmetic_20pct_GSG_minus_SHV_over_all_segment_rows": float(sleeve.sum() / max(1, sum((eval_index >= (pd.Timestamp(start) if start else eval_index.min())) & (eval_index <= (pd.Timestamp(end) if end else eval_index.max())))) * annualization),
-        })
+            "activation_rows": int(len(active_dates)),
+            "mean_daily_realized_gross_phase_c_minus_phase_b": float(gross.mean()) if len(active_dates) else np.nan,
+            "cumulative_arithmetic_realized_gross_phase_c_minus_phase_b": float(gross.sum()) if len(active_dates) else 0.0,
+            "annualized_arithmetic_realized_gross_phase_c_minus_phase_b_over_all_segment_rows": float(gross.sum() / max(1, len(segment_dates)) * annualization),
+            "max_abs_daily_attribution_reconciliation": float(attribution_recon.loc[active_dates].abs().max()) if len(active_dates) else 0.0,
+        }
+        for asset in assets:
+            contribution = realized_asset_delta.loc[active_dates, asset]
+            row[f"cumulative_realized_weight_delta_contribution_{asset}"] = float(contribution.sum()) if len(active_dates) else 0.0
+        attribution_rows.append(row)
     attribution = pd.DataFrame(attribution_rows)
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -236,6 +257,8 @@ def run(output_dir: Path) -> dict:
         f"- Δmax drawdown {full.delta_maximum_drawdown:.6%}",
         f"- ΔCalmar {full.delta_Calmar:.6f}",
         f"- Δannualized turnover {full.delta_annualized_turnover:.6f}x/year",
+        "",
+        "Attribution uses realized invested weights from both simulations and reconciles to their gross asset-mix return difference.",
         "",
         "No thresholds, weights, V6.6 formulas, commodity momentum filters, or rescue assets were changed after seeing results.",
     ]
