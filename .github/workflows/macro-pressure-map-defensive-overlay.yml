@@ -91,6 +91,14 @@ jobs:
           python evaluate_issue_74_defensive_overlay.py \
             --output-dir generated/issue-74-phase-ab
 
+      - name: Generate post-hoc same-window Gold vs Cash comparator
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-74-legacy-gold-cash
+          python issue_74_legacy_gold_comparator.py \
+            --output-dir generated/issue-74-legacy-gold-cash \
+            --cost-bps 5
+
       - name: Validate Issue 74 evidence
         working-directory: indicators/macro-pressure-map/research
         run: |
@@ -102,11 +110,22 @@ jobs:
           test -s generated/issue-74-phase-ab/issue-74-phase-ab-regime-contribution.csv
           test -s generated/issue-74-phase-ab/issue-74-phase-ab-episode-concentration.csv
           test -s generated/issue-74-phase-ab/issue-74-phase-ab-report.md
+          test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-incremental.csv
+          test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-episodes.csv
+          test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-report.md
 
       - name: Upload Issue 74 Phase A/B evidence
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-74-phase-ab
           path: indicators/macro-pressure-map/research/generated/issue-74-phase-ab/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Issue 74 legacy Gold vs Cash diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-74-legacy-gold-cash
+          path: indicators/macro-pressure-map/research/generated/issue-74-legacy-gold-cash/
           if-no-files-found: error
           retention-days: 30
