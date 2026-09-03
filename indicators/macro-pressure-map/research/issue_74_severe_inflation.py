@@ -55,7 +55,20 @@ def legacy_available(
 
 
 def available() -> bool:
-    return compact_available() or legacy_available()
+    """Return true only when at least one frozen evidence path fully validates."""
+    if compact_available():
+        try:
+            load_severe_positive_dates()
+            return True
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+            pass
+    if legacy_available():
+        try:
+            load_daily_ipi()
+            return True
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+            pass
+    return False
 
 
 def load_severe_positive_dates(
