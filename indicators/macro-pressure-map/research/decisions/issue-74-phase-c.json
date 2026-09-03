@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "issue": 74,
   "phase": "C",
   "study": "macro_pressure_map_v66_severe_inflation_commodity_satellite",
@@ -26,7 +26,8 @@
     "issue_64_audit_checkpoints": 51,
     "max_abs_ipi_parity_error": 2.0430569236395968e-08,
     "parity_gate": 5e-08,
-    "parity_pass": true
+    "parity_pass": true,
+    "availability_semantics": "READY only after manifest, source SHA, parity gate, threshold, CSV SHA, row identity and content validation"
   },
   "outcome_data": {
     "assets": ["SPY", "TLT", "SHV", "GSG"],
@@ -44,23 +45,23 @@
   },
   "primary_5bp_phase_c_minus_phase_b": {
     "full_reused_history": {
-      "delta_CAGR": -0.00136167,
-      "delta_Sharpe": -0.022844,
-      "delta_maximum_drawdown": -0.00883133,
-      "delta_Calmar": -0.025357,
-      "delta_annualized_turnover": 0.144143
+      "delta_CAGR": -0.0013616696805689443,
+      "delta_Sharpe": -0.022844483752688327,
+      "delta_maximum_drawdown": -0.008831332891538812,
+      "delta_Calmar": -0.025357166201828096,
+      "delta_annualized_turnover": 0.14414319926212826
     },
     "development_pre2020": {
-      "delta_CAGR": -0.001598,
-      "delta_Sharpe": -0.024269,
-      "delta_maximum_drawdown": -0.008831,
-      "delta_Calmar": -0.026893
+      "delta_CAGR": -0.0015984452540795946,
+      "delta_Sharpe": -0.02426859534927428,
+      "delta_maximum_drawdown": -0.008831332891538812,
+      "delta_Calmar": -0.026892679785227525
     },
     "post2019_reused_exploratory": {
-      "delta_CAGR": -0.000898,
-      "delta_Sharpe": -0.018227,
-      "delta_maximum_drawdown": -0.002977,
-      "delta_Calmar": -0.012468
+      "delta_CAGR": -0.0008983440671326282,
+      "delta_Sharpe": -0.018227287613335252,
+      "delta_maximum_drawdown": -0.00297713545117384,
+      "delta_Calmar": -0.012468207766530015
     }
   },
   "zero_cost_check": {
@@ -69,10 +70,13 @@
     "full_delta_maximum_drawdown": -0.008312,
     "interpretation": "Phase C remains inferior even with zero transaction cost; failure is not caused by execution cost."
   },
-  "direct_sleeve_attribution": {
-    "full_annualized_arithmetic_20pct_GSG_minus_SHV": -0.000956,
-    "pre2020_annualized_arithmetic_20pct_GSG_minus_SHV": -0.001384,
-    "post2019_annualized_arithmetic_20pct_GSG_minus_SHV": -0.000116
+  "realized_weight_attribution": {
+    "method": "sum over assets of (Phase C realized invested weight - Phase B realized invested weight) times asset return; includes within-episode drift and reconciles to gross asset-mix return difference",
+    "full_annualized_arithmetic_gross_delta": -0.001165910013563907,
+    "pre2020_annualized_arithmetic_gross_delta": -0.0014663130128765242,
+    "post2019_annualized_arithmetic_gross_delta": -0.0005761230064949359,
+    "max_abs_daily_reconciliation": 3.469446951953614e-18,
+    "prior_fixed_20pct_target_approximation_superseded": true
   },
   "episode_concentration": {
     "full_active_log_return": -0.024770,
@@ -86,6 +90,13 @@
     "pre2020_active_log_return": -0.019243,
     "post2019_active_log_return": -0.005527
   },
+  "review_hardening": {
+    "phase_c_gate_full_validation": true,
+    "realized_weight_attribution": true,
+    "github_pr_trigger_sha_fail_closed_guard": true,
+    "workflow_branch_checkout_itself_pinned": false,
+    "provenance_interpretation": "Artifacts fail closed if GitHub PR checked-out HEAD differs from the triggering pull_request.head.sha."
+  },
   "verdict": "preregistered_gsg_satellite_does_not_add_historical_value_over_deep_cash_in_v66_severe_stagflation",
   "decision": {
     "phase_c_passed": false,
@@ -96,9 +107,9 @@
     "rescue_tuning_permitted": false
   },
   "provenance": {
-    "github_actions_run": 33724590524,
-    "head_sha": "c0c32921e9c4ba42491b6da3198a7109e48f649c",
-    "phase_c_artifact_id": 9881524569,
-    "phase_c_artifact_digest": "sha256:079c3dd3e5cd378d1cda36634bd2ea08573ec2d49e84cee1a6bf99c520e53b98"
+    "github_actions_run": 33728936711,
+    "head_sha": "5f1c87e6cf1d23725db676b26f876c0d7a6ebf05",
+    "phase_c_artifact_id": 9883140294,
+    "phase_c_artifact_digest": "sha256:f5ba2d135b308ad491e613e461d315e566e63dbbd9d35e1e8f9a44e84d4ab6bb"
   }
 }
