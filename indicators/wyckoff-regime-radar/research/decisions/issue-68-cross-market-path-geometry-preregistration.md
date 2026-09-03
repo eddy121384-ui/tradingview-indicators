@@ -11,7 +11,9 @@ FR10Y and DE10Y look visually similar during the 2022–2023 yield-rise regime, 
 - both have severe RAW/S1 pathology and `RAW Bull = 0%`;
 - DE10Y nevertheless produces materially more Bull TOP / Strong continuity and eventually acquires Bull Formal once;
 - FR10Y produces sparse Bull Strong bars, weak TOP-gap continuity, and never acquires Bull Formal;
-- earlier component attribution showed FR10Y Breakout and Structure are not deficient, while Heat Up and Markup Extension are materially weaker.
+- earlier component attribution showed FR10Y Breakout and Structure are not deficient, while Heat Up and Markup Extension are materially weaker;
+- runner-up attribution rejected the simple `Bear family keeps biting Bull` explanation: runner-up family is overwhelmingly Neutral in both FR10Y and DE10Y;
+- FR Strong-Bull streaks are primarily fragile because gap quality collapses and the run never reaches normal confirmation length.
 
 This phase asks:
 
