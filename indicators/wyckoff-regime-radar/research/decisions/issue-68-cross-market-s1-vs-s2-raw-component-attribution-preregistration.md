@@ -1,6 +1,6 @@
 # Issue #68 — Cross-Market S1-vs-S2 RAW Component Attribution
 
-Status: **POST-HOC DISCOVERY ATTRIBUTION / NO TUNING / PRODUCTION C-2 FROZEN**
+Status: **RESULT RECORDED / S1-ONLY ATTRIBUTION OPENED / NO TUNING / PRODUCTION C-2 FROZEN**
 
 ## Trigger
 
@@ -13,27 +13,11 @@ Primary contrast:
 
 FR10Y also has material S6 Redistribution competition (24.0% winner occupancy), but S1 is the dominant suppressor and is therefore the first frozen component-attribution target.
 
-## Question
-
-> Why does frozen S1 Accumulation remain much stronger than S2 Markup on FR10Y during the obvious 2022-2023 Bull yield regime, while the same relationship reverses on GB10Y?
-
-This phase does not change any formula and does not yet test a repair.
-
 ## Exact frozen formulas under audit
 
 ### S1 Accumulation RAW0
 
 `accRaw0 = weighted5(bearMaturityTrace 0.20, rangeScore 0.20, downsideExhaustion 0.25, supportHolding 0.25, lowVolScore 0.10)`
-
-Audit components:
-
-- bearMaturityTrace
-- rangeScore
-- downsideExhaustion
-- supportHolding
-- lowVolScore
-- accRaw0
-- smoothed accRaw
 
 ### S2 Markup RAW0
 
@@ -41,46 +25,57 @@ Audit components:
 
 `markupRaw0 = weighted2(markupBaseRaw 0.85, accTraceForMarkup 0.15)`
 
-Audit components:
+## Observed FR10Y vs GB10Y result
 
-- breakoutScore
-- heatUp
-- structureStrong
-- markupExtensionScore
-- markupContinuationScore
-- accTraceForMarkup
-- markupBaseRaw
-- markupRaw0
-- smoothed markupRaw
+### GB10Y control
 
-## Descriptive diagnostics
+- Breakout: 83.1
+- Heat up: 52.1
+- Structure strong: 82.1
+- Markup extension: 62.1
+- Markup continuation: 65.1
+- Acc trace -> Markup: 73.1
+- S2 Base / RAW0 / RAW: 69.1 / 70.1 / 70.1
+- S1 RAW0 / RAW: 66.1 / 66.1
+- S2 - S1 average gap: +3.1
+- S2 > S1: 58.1% of bars
+- longest S1>=S2 run: 57 bars
 
-Within the same fixed 2022-01-03 -> 2023-12-29 window, record:
+### FR10Y adverse
 
-- mean value of every frozen S1 and S2 primitive above;
-- mean S2-minus-S1 smoothed RAW gap;
-- fraction of bars where S2 RAW > S1 RAW;
-- longest continuous run where S1 RAW >= S2 RAW.
+- Breakout: 83.1
+- Heat up: 20.1
+- Structure strong: 84.1
+- Markup extension: 39.1
+- Markup continuation: 58.1
+- Acc trace -> Markup: 79.1
+- S2 Base / RAW0 / RAW: 56.1 / 59.1 / 59.1
+- S1 RAW0 / RAW: 75.1 / 75.1
+- S2 - S1 average gap: -16.1
+- S2 > S1: 0.1% of bars
+- longest S1>=S2 run: 512 bars
 
-These statistics are semantic diagnostics only.
+## Interpretation
 
-TradingView audit:
+The FR10Y failure is two-sided.
 
-`indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-cross-market-s1-vs-s2-component-audit.pine`
+S2-side missing trend evidence is **not** caused by Breakout or Structure Strong; both are comparable to, or stronger than, GB10Y. The dominant S2 divergences are:
 
-The audit uses only three plot-safe lanes; detailed diagnostics are carried by the table.
+- much lower Heat Up (20.1 vs 52.1),
+- much lower Markup Extension (39.1 vs 62.1),
+- moderately lower Markup Continuation (58.1 vs 65.1).
 
-## Attribution interpretation
+`Acc trace -> Markup` is not deficient on FR10Y and therefore is not the primary S2 bottleneck.
 
-Primary comparison remains FR10Y vs GB10Y.
+At the same time, S1 itself remains materially elevated on FR10Y (75.1 vs 66.1). The current combined table did not provide a clean enough visual read of the five S1 primitive rows, so S1 over-support remains unresolved.
 
-- If one or two S1 primitives are materially higher on FR while S2 primitives are broadly similar, treat those S1 primitives as upstream over-support candidates.
-- If S1 primitives are broadly similar but one or two S2 primitives are materially lower on FR, treat those S2 primitives as missing-trend-evidence candidates.
-- If both occur, record a two-sided competition failure rather than forcing a single-cause story.
-- If the difference is mostly in `accTraceForMarkup` or smoothing rather than primitive inputs, isolate that transformation next.
-- Do not infer causality from mean differences alone; any later counterfactual requires a separate preregistration and safety gate.
+## Next preregistered step
 
-Secondary descriptive control after the primary contrast: JP10Y. DE10Y / IT10Y / AU10Y / US10Y remain available only if the FR-vs-GB split is not interpretable.
+Open a dedicated S1 component-only attribution:
+
+`indicators/wyckoff-regime-radar/research/decisions/issue-68-cross-market-s1-component-only-preregistration.md`
+
+The next question is only which frozen S1 primitive(s) account for FR10Y's elevated S1 RAW versus GB10Y. No repair or counterfactual is authorized.
 
 ## Hard boundary
 
