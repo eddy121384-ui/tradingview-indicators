@@ -1,6 +1,6 @@
 # Issue #68 — Cross-Market RAW Family Competition Attribution
 
-Status: **POST-HOC DISCOVERY ATTRIBUTION / NO TUNING / PRODUCTION C-2 FROZEN**
+Status: **PRIMARY FR-vs-GB CONTRAST COMPLETE / RESULT RECORDED / NEXT GATE OPENED**
 
 ## Why this step exists
 
@@ -11,7 +11,7 @@ Observed before this preregistration:
 - FR10Y RAW Bull-family winner occupancy: 0.0%
 - GB10Y RAW Bull-family winner occupancy: 48.3%
 
-Therefore the next question is not yet which component to change. The next question is:
+Therefore the next question was:
 
 > Which exact RAW stage/family repeatedly beats S2/S3 on FR10Y, and how does that competition differ from the cleaner controls?
 
@@ -64,24 +64,47 @@ For each market/window record only:
 1. winner occupancy % for each S1..S6;
 2. mean raw score for each S1..S6;
 3. family winner occupancy for Bull / Neutral / Bear;
-4. mean per-bar family maximum:
-   - Bull max = `max(markupRaw, reaccRaw)`
-   - Neutral max = `max(accRaw, distRaw)`
-   - Bear max = `max(markdownRaw, redistRaw)`
+4. mean per-bar family maximum;
 5. mean Bull margin = `Bull max - max(Neutral max, Bear max)`.
 
 No performance metric is allowed.
 
-## Attribution rule
+## Primary FR-vs-GB result
 
-The purpose of this step is to identify the dominant competing RAW family/stage on FR10Y.
+FR10Y:
 
-Interpretation:
+- S1 Acc: 69.9% winner occupancy, avg RAW 75.1;
+- S2 Markup: 0.0%, avg RAW 59.1;
+- S6 Redist: 24.0%, avg RAW 70.1;
+- Bull family: 0.0% winner occupancy, mean max 60.1;
+- Neutral family: 71.7%, mean max 77.1;
+- Bear family: 28.3%, mean max 71.1;
+- mean Bull margin: -18.1.
 
-- if one non-Bull stage/family dominates FR but not GB, the next allowed step is component attribution between S2/S3 and that dominant competitor;
-- if several non-Bull stages share the suppression, record a distributed RAW competition failure and compare only the shared primitives that feed those stages;
-- if FR and GB RAW stage-score means are similar despite very different winner occupancy, inspect score spacing / near-tie geometry next rather than component levels;
-- do not change any formula in this phase.
+GB10Y:
+
+- S1 Acc: 4.8% winner occupancy, avg RAW 66.1;
+- S2 Markup: 48.1%, avg RAW 70.1;
+- S6 Redist: 0.0%, avg RAW 47.1;
+- Bull family: 48.3% winner occupancy, mean max 70.1;
+- Neutral family: 47.3%, mean max 75.1;
+- Bear family: 4.4%, mean max 49.1;
+- mean Bull margin: -5.1.
+
+Interpretation under the preregistered rule:
+
+- the FR failure is not mainly near-tie geometry;
+- S1 Accumulation is the dominant FR suppressor and differs materially from GB;
+- S2 Markup is simultaneously materially weaker on FR than GB;
+- S6 Redistribution is a meaningful secondary suppressor but is not the first attribution target.
+
+Therefore the next allowed step is the preregistered S1-vs-S2 primitive/component attribution. Result memo:
+
+`indicators/wyckoff-regime-radar/research/reports/issue-68-cross-market-raw-family-competition-fr-vs-gb-result.md`
+
+Next preregistration:
+
+`indicators/wyckoff-regime-radar/research/decisions/issue-68-cross-market-s1-vs-s2-raw-component-attribution-preregistration.md`
 
 ## Hard boundary
 
