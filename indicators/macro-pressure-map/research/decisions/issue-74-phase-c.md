@@ -8,7 +8,7 @@ Frozen Phase C rule:
 
 - ordinary Stagflation defense: SPY/TLT/SHV/GSG = **20/20/60/0**
 - severe-inflation Stagflation: **20/20/40/20**
-- the 20% commodity sleeve is GSG and comes entirely from SHV
+- the 20% commodity sleeve is GSG and comes entirely from SHV at each target rebalance
 - one-bar signal lag
 - monthly plus lagged-template-change rebalance
 - 5 bp primary one-way-turnover cost
@@ -28,7 +28,7 @@ The operator supplied a new TradingView source capture, `pine-logs-MPM V6.6 PHAS
 - maximum absolute IPI difference: `2.0430569236395968e-08`
 - frozen parity gate: `5e-08`
 
-This satisfies the preregistered `equivalently exact verified reconstruction` path. Production V6.6 is unchanged.
+This satisfies the preregistered `equivalently exact verified reconstruction` path. The gate now performs full manifest/SHA/content validation before reporting Phase C ready. Production V6.6 is unchanged.
 
 ## Outcome window
 
@@ -58,17 +58,19 @@ The result is negative in both era splits:
 
 This is not a transaction-cost artifact. At **0 bp**, full-history Phase C minus Phase B still has Delta CAGR **-0.1287 pp**, Delta Sharpe **-0.0222**, and maximum drawdown **-0.8312 pp** worse.
 
-## Direct sleeve attribution
+## Realized-weight attribution
 
-Because Phase C changes only 20% SHV into 20% GSG during the activation state, the direct commodity-versus-cash sleeve can be read cleanly.
+The original diagnostic used a fixed `20% × (GSG - SHV)` target-weight approximation. Codex review correctly noted that this ignores within-episode drift after the entry rebalance.
 
-Annualized arithmetic contribution of the 20% GSG-minus-SHV sleeve over the corresponding segment:
+The reviewed attribution therefore uses each simulation's **actual invested weights on every row**, including drift, and reconciles the asset-level weight-difference contributions to the realized gross Phase C-minus-Phase B asset-mix return difference to floating-point precision.
 
-- full history: **-0.0956 pp/year**
-- pre-2020: **-0.1384 pp/year**
-- post-2019 reused: **-0.0116 pp/year**
+Annualized arithmetic realized gross Phase C-minus-Phase B contribution over the corresponding segment:
 
-The commodity sleeve therefore did not add historical value under this exact V6.6 severe-Stagflation condition.
+- full history: **-0.1166 pp/year**
+- pre-2020: **-0.1466 pp/year**
+- post-2019 reused: **-0.0576 pp/year**
+
+The revised attribution remains negative in every era split and strengthens, rather than reverses, the conclusion that the commodity substitution did not add historical value under this exact V6.6 severe-Stagflation condition.
 
 ## Episode evidence
 
@@ -94,11 +96,19 @@ Interpretation:
 - No momentum filter, threshold change, weight sweep, oil-only replacement, or extra asset may now be added to rescue Phase C inside Issue #74.
 - Macro Pressure Map V6.6 is still **not a validated production allocator**.
 
+## Review hardening
+
+Three Codex P2 review findings were addressed in the reviewed evidence path:
+
+1. Severe-inflation availability now means **full evidence validation**, not mere file existence.
+2. Phase C attribution now uses **realized invested weights including drift**, not a fixed target-weight approximation.
+3. GitHub PR execution now **fails closed if the checked-out SHA differs from the triggering `pull_request.head.sha`**, preventing artifacts from being mislabeled as exact-head evidence even though the workflow's branch-name checkout remains mutable.
+
 ## Provenance
 
-GitHub Actions run: `33724590524` on head `c0c32921e9c4ba42491b6da3198a7109e48f649c` — success.
+Reviewed GitHub Actions run: `33728936711` on head `5f1c87e6cf1d23725db676b26f876c0d7a6ebf05` — success.
 
-Phase C artifact:
+Reviewed Phase C artifact:
 
-- ID `9881524569`
-- digest `sha256:079c3dd3e5cd378d1cda36634bd2ea08573ec2d49e84cee1a6bf99c520e53b98`
+- ID `9883140294`
+- digest `sha256:f5ba2d135b308ad491e613e461d315e566e63dbbd9d35e1e8f9a44e84d4ab6bb`
