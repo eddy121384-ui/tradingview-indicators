@@ -24,7 +24,7 @@ jobs:
       - name: Checkout exact research head
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.ref_name }}
           fetch-depth: 0
 
       - uses: actions/setup-python@v5
