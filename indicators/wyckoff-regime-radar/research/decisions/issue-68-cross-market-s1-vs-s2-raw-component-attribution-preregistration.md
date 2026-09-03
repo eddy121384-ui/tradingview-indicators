@@ -64,6 +64,12 @@ Within the same fixed 2022-01-03 -> 2023-12-29 window, record:
 
 These statistics are semantic diagnostics only.
 
+TradingView audit:
+
+`indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-cross-market-s1-vs-s2-component-audit.pine`
+
+The audit uses only three plot-safe lanes; detailed diagnostics are carried by the table.
+
 ## Attribution interpretation
 
 Primary comparison remains FR10Y vs GB10Y.
