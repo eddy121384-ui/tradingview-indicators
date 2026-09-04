@@ -6,12 +6,14 @@ on:
       - research/issue-68-lifecycle-retest-symmetry-repaired
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_issue68_support_invariant_slope_shadow_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_support_invariant_slope_shadow_pine_v2.py"
       - "indicators/wyckoff-regime-radar/research/decisions/issue-68-support-invariant-slope-shadow-preregistration.md"
       - ".github/workflows/wyckoff-issue68-support-invariant-slope-shadow.yml"
   pull_request:
     branches: [main]
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_issue68_support_invariant_slope_shadow_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_support_invariant_slope_shadow_pine_v2.py"
       - "indicators/wyckoff-regime-radar/research/decisions/issue-68-support-invariant-slope-shadow-preregistration.md"
       - ".github/workflows/wyckoff-issue68-support-invariant-slope-shadow.yml"
 
@@ -33,10 +35,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Compile generator
-        run: python -m py_compile generate_issue68_support_invariant_slope_shadow_pine.py
+        run: python -m py_compile generate_issue68_support_invariant_slope_shadow_pine.py generate_issue68_support_invariant_slope_shadow_pine_v2.py
       - name: Generate TradingView support-invariant shadow
         run: |
-          python generate_issue68_support_invariant_slope_shadow_pine.py \
+          python generate_issue68_support_invariant_slope_shadow_pine_v2.py \
             --output generated/wyckoff-issue68-support-invariant-slope-shadow.pine
           test -s generated/wyckoff-issue68-support-invariant-slope-shadow.pine
           grep -q 'Support-Invariant Slope-Dulling Shadow' generated/wyckoff-issue68-support-invariant-slope-shadow.pine
