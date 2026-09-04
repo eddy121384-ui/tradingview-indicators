@@ -6,12 +6,14 @@ on:
       - research/issue-68-lifecycle-retest-symmetry-repaired
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_issue68_downex_routing_decomposition_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_downex_routing_decomposition_pine_v2.py"
       - "indicators/wyckoff-regime-radar/research/decisions/issue-68-downex-routing-decomposition-preregistration.md"
       - ".github/workflows/wyckoff-issue68-downex-routing-decomposition.yml"
   pull_request:
     branches: [main]
     paths:
       - "indicators/wyckoff-regime-radar/research/generate_issue68_downex_routing_decomposition_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_downex_routing_decomposition_pine_v2.py"
       - "indicators/wyckoff-regime-radar/research/decisions/issue-68-downex-routing-decomposition-preregistration.md"
       - ".github/workflows/wyckoff-issue68-downex-routing-decomposition.yml"
 
@@ -33,10 +35,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Compile generator
-        run: python -m py_compile generate_issue68_downex_routing_decomposition_pine.py
+        run: python -m py_compile generate_issue68_downex_routing_decomposition_pine_v2.py
       - name: Generate TradingView DownEx routing decomposition audit
         run: |
-          python generate_issue68_downex_routing_decomposition_pine.py \
+          python generate_issue68_downex_routing_decomposition_pine_v2.py \
             --output generated/wyckoff-issue68-downex-routing-decomposition-audit.pine
           test -s generated/wyckoff-issue68-downex-routing-decomposition-audit.pine
           grep -q 'Downside-Exhaustion Routing Decomposition' generated/wyckoff-issue68-downex-routing-decomposition-audit.pine
