@@ -289,17 +289,16 @@ if barstate.islast
         table.cell(t, 3, 17, "FROZEN C-2", bgcolor=colNeutral, text_color=color.white)
     else
         table.clear(t, 0, 0, 3, 17)
-'''
+'''.strip()
 
 
 def generate(source: Path) -> str:
-    core = phase_b.shared_body(source)
-    lines = core.splitlines()
-    strategy_indices = [i for i, line in enumerate(lines) if line.startswith("strategy(")]
-    if len(strategy_indices) != 1:
-        raise RuntimeError(f"expected one strategy declaration, found {len(strategy_indices)}")
-    lines[strategy_indices[0]] = AUDIT_DECL
-    out = "\n".join(lines).rstrip() + BODY + "\n"
+    d1_text = phase_b.d1.generate(source)
+    if d1_text.count(phase_b.D1_EXPORT_MARKER) != 1:
+        raise RuntimeError("expected exactly one D1 parity export marker")
+    core = d1_text.split(phase_b.D1_EXPORT_MARKER, 1)[0].rstrip()
+    core = replace_once(core, phase_b.D1_INDICATOR_DECL, AUDIT_DECL)
+    out = core + "\n\n" + BODY + "\n"
     for token in (
         "Relative-Gate Crossing Audit",
         "RAW S1 -> EFF S2",
