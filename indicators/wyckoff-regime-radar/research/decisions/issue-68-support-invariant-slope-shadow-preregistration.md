@@ -87,3 +87,5 @@ The markets are less path-equivalent than the earlier local geometry audit sugge
 ## Repair boundary
 
 This shadow authorizes no production change. Any production proposal must be symmetric, full-support, causally justified, and pass FR/DE plus JP/GB/US controls before merge consideration.
+
+CI note: this no-op documentation touch intentionally re-triggers the branch workflow after the workflow definition is present on the branch.
