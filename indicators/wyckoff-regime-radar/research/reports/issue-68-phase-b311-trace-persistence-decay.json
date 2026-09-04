@@ -1,0 +1,845 @@
+{
+  "aggregate": {
+    "full_vs_no_trace_sign_flip_bars": 122,
+    "handoff_events": 373,
+    "max_reconstruction_error": 2.842170943040401e-14,
+    "minimum_handoff_event_agreement": 0.998176291793313,
+    "opposing_trace_source_age_at_handoff_t_minus_1": {
+      "max": 49.0,
+      "median": 11.0,
+      "n": 185,
+      "p90": 47.599999999999994
+    },
+    "other5_consensus_bars": 2475,
+    "pooled_sign_flip_bars": 13160,
+    "pooled_sign_flip_matches": 13154,
+    "pooled_sign_flip_mirror_agreement": 0.9995440729483283,
+    "pooled_stale_bars": 13160,
+    "pooled_stale_matches": 13148,
+    "pooled_stale_mirror_agreement": 0.9990881458966565,
+    "stale_opposing_trace_source_age": {
+      "max": 49.0,
+      "median": 28.0,
+      "n": 1479,
+      "p90": 47.0
+    },
+    "stale_opposition_bars": 1479,
+    "stale_opposition_runs": {
+      "max": 87.0,
+      "median": 9.0,
+      "n": 110,
+      "p90": 29.10000000000001
+    },
+    "stale_raw_blocking_bars": 0,
+    "stale_raw_blocking_share": 0.0,
+    "stale_visible_only_bars": 1479,
+    "trace_blocks_target_bars": 61,
+    "trace_opposes_handoff_now": 184,
+    "trace_opposes_handoff_prev": 185,
+    "trace_opposition_share_at_handoff_t": 0.4932975871313673,
+    "trace_opposition_share_at_handoff_t_minus_1": 0.4959785522788204,
+    "trace_rescues_target_bars": 61,
+    "unexplained_sign_flip_bars": 0,
+    "usable_direction_observations": 10776
+  },
+  "boundary": "Frozen 50-bar rolling-max Trace attribution only; no Trace length/weight/decay/reset or model rule is changed.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 18,
+        "handoff_events": 42,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 20.0,
+          "n": 27,
+          "p90": 48.400000000000006
+        },
+        "other5_consensus_bars": 386,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 33.0,
+          "n": 212,
+          "p90": 47.0
+        },
+        "stale_opposition_bars": 212,
+        "stale_opposition_runs": {
+          "max": 30.0,
+          "median": 5.5,
+          "n": 22,
+          "p90": 23.700000000000006
+        },
+        "stale_opposition_share_of_other5_consensus": 0.5492227979274611,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 212,
+        "trace_blocks_target_bars": 8,
+        "trace_opposes_at_handoff_t": 27,
+        "trace_opposes_at_handoff_t_minus_1": 27,
+        "trace_opposition_share_at_handoff_t": 0.6428571428571429,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.6428571428571429,
+        "trace_rescues_target_bars": 10,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 18,
+        "handoff_events": 43,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 19.0,
+          "n": 16,
+          "p90": 43.0
+        },
+        "other5_consensus_bars": 279,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 35.5,
+          "n": 204,
+          "p90": 49.0
+        },
+        "stale_opposition_bars": 204,
+        "stale_opposition_runs": {
+          "max": 57.0,
+          "median": 19.0,
+          "n": 10,
+          "p90": 42.599999999999994
+        },
+        "stale_opposition_share_of_other5_consensus": 0.7311827956989247,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 204,
+        "trace_blocks_target_bars": 10,
+        "trace_opposes_at_handoff_t": 16,
+        "trace_opposes_at_handoff_t_minus_1": 16,
+        "trace_opposition_share_at_handoff_t": 0.37209302325581395,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.37209302325581395,
+        "trace_rescues_target_bars": 8,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 16,
+        "handoff_events": 42,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 19.0,
+          "n": 16,
+          "p90": 43.0
+        },
+        "other5_consensus_bars": 279,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 35.5,
+          "n": 204,
+          "p90": 49.0
+        },
+        "stale_opposition_bars": 204,
+        "stale_opposition_runs": {
+          "max": 57.0,
+          "median": 19.0,
+          "n": 10,
+          "p90": 42.599999999999994
+        },
+        "stale_opposition_share_of_other5_consensus": 0.7311827956989247,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 204,
+        "trace_blocks_target_bars": 10,
+        "trace_opposes_at_handoff_t": 16,
+        "trace_opposes_at_handoff_t_minus_1": 16,
+        "trace_opposition_share_at_handoff_t": 0.38095238095238093,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.38095238095238093,
+        "trace_rescues_target_bars": 6,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 16,
+        "handoff_events": 41,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 19.5,
+          "n": 26,
+          "p90": 48.0
+        },
+        "other5_consensus_bars": 386,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 33.0,
+          "n": 208,
+          "p90": 47.0
+        },
+        "stale_opposition_bars": 208,
+        "stale_opposition_runs": {
+          "max": 30.0,
+          "median": 6.0,
+          "n": 21,
+          "p90": 24.0
+        },
+        "stale_opposition_share_of_other5_consensus": 0.538860103626943,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 208,
+        "trace_blocks_target_bars": 6,
+        "trace_opposes_at_handoff_t": 26,
+        "trace_opposes_at_handoff_t_minus_1": 26,
+        "trace_opposition_share_at_handoff_t": 0.6341463414634146,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.6341463414634146,
+        "trace_rescues_target_bars": 10,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "handoff": {
+            "agreement": 0.9993920972644377,
+            "bars": 1645,
+            "matches": 1644,
+            "mismatches": 1
+          },
+          "sign_flip": {
+            "agreement": 0.9987841945288753,
+            "bars": 1645,
+            "matches": 1643,
+            "mismatches": 2
+          },
+          "stale": {
+            "agreement": 0.9975683890577508,
+            "bars": 1645,
+            "matches": 1641,
+            "mismatches": 4
+          }
+        },
+        "bull_vs_inverse_bear": {
+          "handoff": {
+            "agreement": 0.998176291793313,
+            "bars": 1645,
+            "matches": 1642,
+            "mismatches": 3
+          },
+          "sign_flip": {
+            "agreement": 0.9987841945288753,
+            "bars": 1645,
+            "matches": 1643,
+            "mismatches": 2
+          },
+          "stale": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          }
+        }
+      },
+      "trace_window": 50,
+      "warmup": 755
+    },
+    "EURUSD": {
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 22,
+        "handoff_events": 54,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 7.5,
+          "n": 34,
+          "p90": 36.79999999999999
+        },
+        "other5_consensus_bars": 329,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 34.0,
+          "n": 213,
+          "p90": 48.0
+        },
+        "stale_opposition_bars": 213,
+        "stale_opposition_runs": {
+          "max": 26.0,
+          "median": 10.0,
+          "n": 19,
+          "p90": 22.4
+        },
+        "stale_opposition_share_of_other5_consensus": 0.6474164133738601,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 213,
+        "trace_blocks_target_bars": 13,
+        "trace_opposes_at_handoff_t": 33,
+        "trace_opposes_at_handoff_t_minus_1": 34,
+        "trace_opposition_share_at_handoff_t": 0.6111111111111112,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.6296296296296297,
+        "trace_rescues_target_bars": 9,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 22,
+        "handoff_events": 54,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 4.0,
+          "n": 19,
+          "p90": 45.8
+        },
+        "other5_consensus_bars": 297,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 29.0,
+          "n": 188,
+          "p90": 47.0
+        },
+        "stale_opposition_bars": 188,
+        "stale_opposition_runs": {
+          "max": 40.0,
+          "median": 11.0,
+          "n": 11,
+          "p90": 33.0
+        },
+        "stale_opposition_share_of_other5_consensus": 0.632996632996633,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 188,
+        "trace_blocks_target_bars": 9,
+        "trace_opposes_at_handoff_t": 19,
+        "trace_opposes_at_handoff_t_minus_1": 19,
+        "trace_opposition_share_at_handoff_t": 0.35185185185185186,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.35185185185185186,
+        "trace_rescues_target_bars": 13,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 22,
+        "handoff_events": 54,
+        "max_reconstruction_error": 4.263256414560601e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 4.0,
+          "n": 19,
+          "p90": 45.8
+        },
+        "other5_consensus_bars": 297,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 29.0,
+          "n": 188,
+          "p90": 47.0
+        },
+        "stale_opposition_bars": 188,
+        "stale_opposition_runs": {
+          "max": 40.0,
+          "median": 11.0,
+          "n": 11,
+          "p90": 33.0
+        },
+        "stale_opposition_share_of_other5_consensus": 0.632996632996633,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 188,
+        "trace_blocks_target_bars": 9,
+        "trace_opposes_at_handoff_t": 19,
+        "trace_opposes_at_handoff_t_minus_1": 19,
+        "trace_opposition_share_at_handoff_t": 0.35185185185185186,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.35185185185185186,
+        "trace_rescues_target_bars": 13,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 22,
+        "handoff_events": 54,
+        "max_reconstruction_error": 4.263256414560601e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 7.5,
+          "n": 34,
+          "p90": 36.79999999999999
+        },
+        "other5_consensus_bars": 329,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 33.5,
+          "n": 210,
+          "p90": 48.0
+        },
+        "stale_opposition_bars": 210,
+        "stale_opposition_runs": {
+          "max": 26.0,
+          "median": 10.5,
+          "n": 18,
+          "p90": 22.6
+        },
+        "stale_opposition_share_of_other5_consensus": 0.6382978723404256,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 210,
+        "trace_blocks_target_bars": 13,
+        "trace_opposes_at_handoff_t": 33,
+        "trace_opposes_at_handoff_t_minus_1": 34,
+        "trace_opposition_share_at_handoff_t": 0.6111111111111112,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.6296296296296297,
+        "trace_rescues_target_bars": 9,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "handoff": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "sign_flip": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "stale": {
+            "agreement": 0.998176291793313,
+            "bars": 1645,
+            "matches": 1642,
+            "mismatches": 3
+          }
+        },
+        "bull_vs_inverse_bear": {
+          "handoff": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "sign_flip": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "stale": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          }
+        }
+      },
+      "trace_window": 50,
+      "warmup": 755
+    },
+    "GBPUSD": {
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 8,
+        "handoff_events": 41,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 23.0,
+          "n": 15,
+          "p90": 42.8
+        },
+        "other5_consensus_bars": 272,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 31.0,
+          "n": 122,
+          "p90": 44.0
+        },
+        "stale_opposition_bars": 122,
+        "stale_opposition_runs": {
+          "max": 34.0,
+          "median": 8.0,
+          "n": 12,
+          "p90": 17.9
+        },
+        "stale_opposition_share_of_other5_consensus": 0.4485294117647059,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 122,
+        "trace_blocks_target_bars": 6,
+        "trace_opposes_at_handoff_t": 15,
+        "trace_opposes_at_handoff_t_minus_1": 15,
+        "trace_opposition_share_at_handoff_t": 0.36585365853658536,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.36585365853658536,
+        "trace_rescues_target_bars": 2,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 8,
+        "handoff_events": 41,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 32.0,
+          "n": 23,
+          "p90": 47.8
+        },
+        "other5_consensus_bars": 360,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 18.0,
+          "n": 243,
+          "p90": 33.0
+        },
+        "stale_opposition_bars": 243,
+        "stale_opposition_runs": {
+          "max": 87.0,
+          "median": 17.0,
+          "n": 13,
+          "p90": 29.400000000000002
+        },
+        "stale_opposition_share_of_other5_consensus": 0.675,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 243,
+        "trace_blocks_target_bars": 2,
+        "trace_opposes_at_handoff_t": 23,
+        "trace_opposes_at_handoff_t_minus_1": 23,
+        "trace_opposition_share_at_handoff_t": 0.5609756097560976,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.5609756097560976,
+        "trace_rescues_target_bars": 6,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 9,
+        "handoff_events": 42,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 32.0,
+          "n": 25,
+          "p90": 47.6
+        },
+        "other5_consensus_bars": 358,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 18.0,
+          "n": 241,
+          "p90": 33.0
+        },
+        "stale_opposition_bars": 241,
+        "stale_opposition_runs": {
+          "max": 87.0,
+          "median": 17.0,
+          "n": 12,
+          "p90": 29.700000000000003
+        },
+        "stale_opposition_share_of_other5_consensus": 0.6731843575418994,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 241,
+        "trace_blocks_target_bars": 3,
+        "trace_opposes_at_handoff_t": 24,
+        "trace_opposes_at_handoff_t_minus_1": 25,
+        "trace_opposition_share_at_handoff_t": 0.5714285714285714,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.5952380952380952,
+        "trace_rescues_target_bars": 6,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 9,
+        "handoff_events": 42,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 27.0,
+          "n": 15,
+          "p90": 43.6
+        },
+        "other5_consensus_bars": 272,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 32.5,
+          "n": 120,
+          "p90": 46.0
+        },
+        "stale_opposition_bars": 120,
+        "stale_opposition_runs": {
+          "max": 34.0,
+          "median": 10.5,
+          "n": 10,
+          "p90": 19.599999999999994
+        },
+        "stale_opposition_share_of_other5_consensus": 0.4411764705882353,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 120,
+        "trace_blocks_target_bars": 6,
+        "trace_opposes_at_handoff_t": 15,
+        "trace_opposes_at_handoff_t_minus_1": 15,
+        "trace_opposition_share_at_handoff_t": 0.35714285714285715,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.35714285714285715,
+        "trace_rescues_target_bars": 3,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "handoff": {
+            "agreement": 0.9993920972644377,
+            "bars": 1645,
+            "matches": 1644,
+            "mismatches": 1
+          },
+          "sign_flip": {
+            "agreement": 0.9993920972644377,
+            "bars": 1645,
+            "matches": 1644,
+            "mismatches": 1
+          },
+          "stale": {
+            "agreement": 0.9987841945288753,
+            "bars": 1645,
+            "matches": 1643,
+            "mismatches": 2
+          }
+        },
+        "bull_vs_inverse_bear": {
+          "handoff": {
+            "agreement": 0.9993920972644377,
+            "bars": 1645,
+            "matches": 1644,
+            "mismatches": 1
+          },
+          "sign_flip": {
+            "agreement": 0.9993920972644377,
+            "bars": 1645,
+            "matches": 1644,
+            "mismatches": 1
+          },
+          "stale": {
+            "agreement": 0.9987841945288753,
+            "bars": 1645,
+            "matches": 1643,
+            "mismatches": 2
+          }
+        }
+      },
+      "trace_window": 50,
+      "warmup": 755
+    },
+    "USDJPY": {
+      "bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 13,
+        "handoff_events": 49,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 19.0,
+          "n": 20,
+          "p90": 49.0
+        },
+        "other5_consensus_bars": 266,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 28.0,
+          "n": 168,
+          "p90": 45.0
+        },
+        "stale_opposition_bars": 168,
+        "stale_opposition_runs": {
+          "max": 42.0,
+          "median": 13.0,
+          "n": 10,
+          "p90": 25.799999999999994
+        },
+        "stale_opposition_share_of_other5_consensus": 0.631578947368421,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 168,
+        "trace_blocks_target_bars": 2,
+        "trace_opposes_at_handoff_t": 19,
+        "trace_opposes_at_handoff_t_minus_1": 20,
+        "trace_opposition_share_at_handoff_t": 0.3877551020408163,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.40816326530612246,
+        "trace_rescues_target_bars": 11,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 13,
+        "handoff_events": 49,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 4.0,
+          "n": 31,
+          "p90": 47.0
+        },
+        "other5_consensus_bars": 286,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 21.0,
+          "n": 129,
+          "p90": 39.2
+        },
+        "stale_opposition_bars": 129,
+        "stale_opposition_runs": {
+          "max": 30.0,
+          "median": 7.0,
+          "n": 13,
+          "p90": 17.6
+        },
+        "stale_opposition_share_of_other5_consensus": 0.45104895104895104,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 129,
+        "trace_blocks_target_bars": 11,
+        "trace_opposes_at_handoff_t": 32,
+        "trace_opposes_at_handoff_t_minus_1": 31,
+        "trace_opposition_share_at_handoff_t": 0.6530612244897959,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.6326530612244898,
+        "trace_rescues_target_bars": 2,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear_s2_to_s5",
+        "full_vs_no_trace_sign_flip_bars": 13,
+        "handoff_events": 49,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 4.0,
+          "n": 31,
+          "p90": 47.0
+        },
+        "other5_consensus_bars": 286,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 21.0,
+          "n": 130,
+          "p90": 40.80000000000007
+        },
+        "stale_opposition_bars": 130,
+        "stale_opposition_runs": {
+          "max": 30.0,
+          "median": 6.5,
+          "n": 14,
+          "p90": 17.400000000000002
+        },
+        "stale_opposition_share_of_other5_consensus": 0.45454545454545453,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 130,
+        "trace_blocks_target_bars": 11,
+        "trace_opposes_at_handoff_t": 32,
+        "trace_opposes_at_handoff_t_minus_1": 31,
+        "trace_opposition_share_at_handoff_t": 0.6530612244897959,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.6326530612244898,
+        "trace_rescues_target_bars": 2,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull_s5_to_s2",
+        "full_vs_no_trace_sign_flip_bars": 13,
+        "handoff_events": 49,
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "opposing_trace_source_age_at_handoff_t_minus_1": {
+          "max": 49.0,
+          "median": 19.0,
+          "n": 19,
+          "p90": 49.0
+        },
+        "other5_consensus_bars": 266,
+        "stale_opposing_trace_source_age": {
+          "max": 49.0,
+          "median": 28.0,
+          "n": 168,
+          "p90": 45.0
+        },
+        "stale_opposition_bars": 168,
+        "stale_opposition_runs": {
+          "max": 42.0,
+          "median": 13.0,
+          "n": 10,
+          "p90": 25.799999999999994
+        },
+        "stale_opposition_share_of_other5_consensus": 0.631578947368421,
+        "stale_raw_blocking_bars": 0,
+        "stale_raw_blocking_share": 0.0,
+        "stale_visible_only_bars": 168,
+        "trace_blocks_target_bars": 2,
+        "trace_opposes_at_handoff_t": 19,
+        "trace_opposes_at_handoff_t_minus_1": 19,
+        "trace_opposition_share_at_handoff_t": 0.3877551020408163,
+        "trace_opposition_share_at_handoff_t_minus_1": 0.3877551020408163,
+        "trace_rescues_target_bars": 11,
+        "unexplained_sign_flip_bars": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "handoff": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "sign_flip": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "stale": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          }
+        },
+        "bull_vs_inverse_bear": {
+          "handoff": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "sign_flip": {
+            "agreement": 1.0,
+            "bars": 1645,
+            "matches": 1645,
+            "mismatches": 0
+          },
+          "stale": {
+            "agreement": 0.9993920972644377,
+            "bars": 1645,
+            "matches": 1644,
+            "mismatches": 1
+          }
+        }
+      },
+      "trace_window": 50,
+      "warmup": 755
+    }
+  },
+  "phase": "B3.11",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "TRACE_PERSISTENCE_DECAY_AUDIT_NO_PERFORMANCE"
+}

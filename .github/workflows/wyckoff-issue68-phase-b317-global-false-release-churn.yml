@@ -1,0 +1,77 @@
+name: Wyckoff Issue 68 Phase B3.17 Global False-Release Churn
+on:
+  push:
+    branches: [research/issue-68-lifecycle-retest-symmetry-repaired]
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b317_global_false_release_churn.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b317_global_false_release_churn.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b317_global_false_release_churn_audit_pine.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b317-global-false-release-churn-preregistration.md'
+      - '.github/workflows/wyckoff-issue68-phase-b317-global-false-release-churn.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b317_global_false_release_churn.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b317_global_false_release_churn.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b317_global_false_release_churn_audit_pine.py'
+      - '.github/workflows/wyckoff-issue68-phase-b317-global-false-release-churn.yml'
+permissions: {contents: write}
+jobs:
+  global-false-release-churn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy pandas
+      - name: Compile contracts
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python -m py_compile diagnose_issue68_phase_b317_global_false_release_churn.py test_issue68_phase_b317_global_false_release_churn.py generate_issue68_phase_b317_global_false_release_churn_audit_pine.py
+      - name: Frozen-FX global false-release churn audit
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python diagnose_issue68_phase_b317_global_false_release_churn.py \
+            --report-json reports/issue-68-phase-b317-global-false-release-churn.json \
+            --report-md reports/issue-68-phase-b317-global-false-release-churn.md
+      - name: Synthetic / reciprocal contracts
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python test_issue68_phase_b317_global_false_release_churn.py
+      - name: Generate TradingView B3.17 safety audit
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python generate_issue68_phase_b317_global_false_release_churn_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b317-global-false-release-churn-audit.pine
+          python - <<'PY'
+          p='generated/wyckoff-issue68-phase-b317-global-false-release-churn-audit.pine'
+          s=open(p,encoding='utf-8').read()
+          assert 'strategy.' not in s
+          for token in ('B316 OBS RAW band','B316 SHADOW RAW band','B316 STALE OVERLAP band','B316 RAW ADVANCE band','"B317 OBS HANDOFF"','"B317 FALSE RELEASE CONFIRM"','"B317 FLIPFLOP START"'):
+              assert token in s,token
+          for removed in ('B316 OBS BREAK band','B316 SHADOW BREAK band','B316 NEW RANGE band','B316 BREAK RELEASE band','B316 BREAK FINAL BLOCKER band'):
+              assert removed not in s,removed
+          budget=s.count('plot(')+s.count('plotshape(')+s.count('plotchar(')+s.count('fill(')
+          assert budget <= 58,budget
+          print(f'B3.17 lean Pine safety contract PASS; source plot budget={budget}')
+          PY
+      - name: Diagnostic-only guard
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python - <<'PY'
+          import json
+          p='reports/issue-68-phase-b317-global-false-release-churn.json'
+          data=json.load(open(p,encoding='utf-8'))
+          text=json.dumps(data).lower()
+          bad=[x for x in ('sharpe','sortino','profit_factor','net_profit','strategy_return') if x in text]
+          assert not bad,bad
+          assert data['aggregate']['unexplained_episode_accounting']==0
+          assert data['primary_gate_pass']
+          print('B3.17 diagnostic-only boundary PASS')
+          PY
+      - name: Commit refreshed B3.17 artifacts
+        if: github.event_name == 'push'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b317-global-false-release-churn.* \
+                  indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b317-global-false-release-churn-audit.pine
+          git diff --cached --quiet || (git commit -m 'research(issue-68): refresh B3.17 global churn artifacts' && git push)

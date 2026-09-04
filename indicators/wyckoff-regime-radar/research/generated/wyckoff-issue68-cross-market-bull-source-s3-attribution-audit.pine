@@ -1,0 +1,1767 @@
+//@version=6
+indicator("Chase Risk Radar｜Issue #68 Bull Source S3", shorttitle="ChaseRisk #68 S3", overlay=false, precision=2)
+
+// Chase Risk Market Regime Radar v0.5.2.1
+// Non-functional cleanup of v0.5.2: calculations, inputs, plots, dashboard, and alert logic are unchanged.
+// Price action remains the primary engine; Volume, MTF, and Divergence remain auxiliary witnesses.
+// Six stage values are relative weights, not statistical probabilities. Risk warnings are not reversal signals.
+
+// Input Groups
+
+groupHeat      = "參數｜即時熱度"
+groupMaturity  = "參數｜趨勢成熟度"
+groupRange     = "參數｜突破與區間"
+groupAbsorb    = "參數｜吸收 / 出貨辨識"
+groupTrendExt  = "參數｜趨勢延續 / 快速切換"
+groupVolume    = "參數｜Volume Quality Layer v0.4"
+groupMTF       = "參數｜MTF Effort / Result Layer v0.5.2"
+groupDivergence = "參數｜Divergence Witness Layer v0.5.2"
+groupWitness   = "參數｜Witness Governance v0.5.2"
+groupRegime    = "參數｜威科夫權重表 v0.5"
+groupWeights   = "參數｜權重"
+groupDisplay   = "顯示｜視覺設定"
+groupPace      = "顯示｜Pace Guide / Flat Action v0.5"
+groupColors    = "顯示｜Dashboard 顏色自訂"
+groupAlert     = "警示｜門檻設定"
+
+// === 即時熱度 ===
+speedLen = input.int(20, "速度斜率天期", minval=2, group=groupHeat)
+shortLen = input.int(10, "短斜率天期", minval=2, group=groupHeat)
+longLen  = input.int(60, "長斜率天期", minval=5, group=groupHeat)
+volLen   = input.int(60, "波動率天期", minval=5, group=groupHeat)
+maLen    = input.int(50, "短中期均線天期", minval=5, group=groupHeat)
+atrLen   = input.int(20, "短中期 ATR 天期", minval=5, group=groupHeat)
+rankLen  = input.int(756, "歷史百分位回看天期", minval=100, group=groupHeat)
+
+// === 趨勢成熟度 ===
+maturitySlopeLen = input.int(120, "成熟度長斜率天期", minval=20, group=groupMaturity)
+maturityMaLen    = input.int(200, "成熟度均線天期", minval=20, group=groupMaturity)
+maturityAtrLen   = input.int(60, "成熟度 ATR 天期", minval=5, group=groupMaturity)
+
+// === 區間與突破 ===
+rangeLen      = input.int(50, "區間偵測天期", minval=10, group=groupRange)
+breakoutBars  = input.int(20, "突破 / 跌破觀察期", minval=3, group=groupRange)
+lowVolLevel   = input.float(25.0, "低波動門檻｜ATR 百分位低於", minval=0.0, maxval=100.0, step=0.5, group=groupRange)
+useBreakoutExemption = input.bool(true, "啟用低波動突破 / 下破豁免", group=groupRange)
+
+// === 吸收 / 出貨辨識 ===
+absorbLen       = input.int(50, "吸收 / 出貨觀察天期", minval=10, group=groupAbsorb)
+absorbThreshold = input.float(60.0, "吸收 / 出貨有效門檻", minval=0.0, maxval=100.0, step=0.5, group=groupAbsorb)
+
+// === 趨勢延伸辨識 v0.3.8 ===
+trendExtThreshold = input.float(60.0, "趨勢延伸有效門檻", minval=0.0, maxval=100.0, step=0.5, group=groupTrendExt)
+nonRangeGateStart = input.float(40.0, "非橫盤 Gate 啟動｜100-RangeScore", minval=0.0, maxval=100.0, step=0.5, group=groupTrendExt)
+nonRangeGateFull  = input.float(75.0, "非橫盤 Gate 滿分｜100-RangeScore", minval=0.0, maxval=100.0, step=0.5, group=groupTrendExt)
+continuationHoldBars = input.int(2, "整理後延續確認根數", minval=1, maxval=10, group=groupTrendExt)
+fastSwitchWeight = input.float(85.0, "快速轉正｜候選權重門檻", minval=0.0, maxval=100.0, step=0.5, group=groupTrendExt)
+fastSwitchGap = input.float(25.0, "快速轉正｜Top Gap 門檻", minval=0.0, maxval=100.0, step=0.5, group=groupTrendExt)
+fastSwitchEvidence = input.float(50.0, "快速轉正｜證據強度門檻", minval=0.0, maxval=100.0, step=0.5, group=groupTrendExt)
+fastSwitchExt = input.float(70.0, "快速轉正｜趨勢延伸門檻", minval=0.0, maxval=100.0, step=0.5, group=groupTrendExt)
+fastSwitchConfirmBars = input.int(1, "快速轉正｜確認根數", minval=1, maxval=5, group=groupTrendExt)
+
+// === Volume Quality Layer v0.4 ===
+volumeMode = "Off"  // Issue #66 forced price-only
+volumeRankLen = input.int(252, "成交量百分位回看天期", minval=50, group=groupVolume)
+volumeQualityLen = input.int(252, "成交量品質檢查天期", minval=50, group=groupVolume)
+volumeMaxWeight = input.float(20.0, "成交量最大參與權重 %", minval=0.0, maxval=50.0, step=0.5, group=groupVolume)
+tickVolumeMaxWeight = input.float(12.0, "Tick Volume 最大參與權重 %", minval=0.0, maxval=30.0, step=0.5, group=groupVolume)
+volumeParticipationThreshold = input.float(60.0, "成交量參與度門檻", minval=0.0, maxval=100.0, step=0.5, group=groupVolume)
+volumeSpikeThreshold = input.float(95.0, "成交量尖峰污染門檻", minval=50.0, maxval=100.0, step=0.5, group=groupVolume)
+volumeQualityMin = input.float(45.0, "Auto 啟用最低品質", minval=0.0, maxval=100.0, step=0.5, group=groupVolume)
+volumeQualityFull = input.float(80.0, "Auto 滿權重品質", minval=0.0, maxval=100.0, step=0.5, group=groupVolume)
+effortResultThreshold = input.float(60.0, "Effort vs Result 有效門檻", minval=0.0, maxval=100.0, step=0.5, group=groupVolume)
+showVolumeInCompact = input.bool(true, "Dashboard 精簡模式顯示量能層", group=groupVolume)
+
+// === MTF Effort / Result Layer v0.5 ===
+// 次一級 Time Frame 不直接投票決定主週期階段；它只衡量內部多空 effort，並與主週期 result 對照。
+// 預設 Observe Only：只觀察與顯示，不改寫正式主導、候選、Evidence 或 Flat Action。
+mtfMode = "Off"  // Issue #66 forced price-only
+mtfLowerTf = input.timeframe("240", "Primary Lower Time Frame", group=groupMTF)
+mtfFallbackTf1 = input.timeframe("120", "Fallback TF 1", group=groupMTF)
+mtfFallbackTf2 = input.timeframe("60", "Fallback TF 2", group=groupMTF)
+mtfFallbackTf3 = input.timeframe("30", "Fallback TF 3", group=groupMTF)
+mtfMinIntrabars = input.int(3, "最低有效次級 K 根數", minval=1, maxval=50, group=groupMTF)
+mtfEffortThreshold = input.float(60.0, "MTF Effort / Result 有效門檻", minval=0.0, maxval=100.0, step=0.5, group=groupMTF)
+mtfMaxWeight = input.float(15.0, "MTF 最大參與權重 %", minval=0.0, maxval=30.0, step=0.5, group=groupMTF)
+mtfResultAtrFull = input.float(1.5, "主週期 Result 滿分 ATR 倍數", minval=0.25, maxval=5.0, step=0.25, group=groupMTF)
+showMTFInCompact = input.bool(true, "Dashboard 精簡模式顯示 MTF 層", group=groupMTF)
+
+// === Divergence Witness Layer v0.5.2 ===
+divMode = "Off"  // Issue #66 forced price-only
+divPivotLeft = input.int(5, "背離 Pivot Left", minval=1, maxval=20, group=groupDivergence)
+divPivotRight = input.int(5, "背離 Pivot Right", minval=1, maxval=20, group=groupDivergence)
+divRiskAlignWindow = input.int(3, "追價風險對位視窗", minval=0, maxval=10, group=groupDivergence)
+divSignalHoldBars = input.int(20, "背離訊號保留根數", minval=1, maxval=100, group=groupDivergence)
+divMinPricePct = input.float(0.5, "最小創高 / 破低幅度 %", minval=0.0, maxval=10.0, step=0.1, group=groupDivergence)
+divNearPricePct = input.float(1.0, "Soft 背離｜接近前高 / 前低容許 %", minval=0.0, maxval=10.0, step=0.1, group=groupDivergence)
+divMinRiskGap = input.float(8.0, "最小風險背離差距", minval=0.0, maxval=50.0, step=0.5, group=groupDivergence)
+divRiskMin = input.float(55.0, "最低有效追價風險", minval=0.0, maxval=100.0, step=0.5, group=groupDivergence)
+divMaxWeight = input.float(10.0, "背離最大參與權重 %", minval=0.0, maxval=20.0, step=0.5, group=groupDivergence)
+showDivInCompact = input.bool(true, "Dashboard 精簡模式顯示背離層", group=groupDivergence)
+
+// === Witness Governance v0.5.2 ===
+witnessStageBiasMode = "Conservative"  // Issue #66 forced price-only
+witnessMaxTotalWeight = input.float(25.0, "Witness 總權重上限 %", minval=0.0, maxval=60.0, step=0.5, group=groupWitness)
+
+// === Regime / Evidence ===
+stageSmoothLen  = input.int(3, "階段分數平滑天期", minval=1, maxval=20, group=groupRegime)
+regimeGamma     = input.float(2.0, "銳化係數 γ", minval=1.0, maxval=5.0, step=0.25, group=groupRegime)
+dominantMin     = input.float(30.0, "主導狀態最低權重", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+topGapMin       = input.float(8.0, "Top Gap 最小領先差距", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+highConfidence  = input.float(50.0, "高信心權重門檻", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+evidenceMin     = input.float(35.0, "最低證據門檻", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+evidenceHigh    = input.float(65.0, "高信心證據門檻", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+evidenceEffFull = input.float(40.0, "證據強度｜有效總分滿分基準", minval=1.0, maxval=200.0, step=1.0, group=groupRegime)
+evidenceTopFull = input.float(15.0, "證據強度｜最高有效分滿分基準", minval=1.0, maxval=100.0, step=1.0, group=groupRegime)
+confirmBars     = input.int(3, "正式狀態確認根數", minval=1, maxval=20, group=groupRegime)
+minEffTotal     = input.float(3.0, "無明確階段｜最低有效總分", minval=0.0, maxval=600.0, step=0.5, group=groupRegime)
+stageDisputeMinWeight = input.float(20.0, "階段分歧｜最低權重", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+stageDisputeMaxGap    = input.float(15.0, "階段分歧｜最大差距", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+clueObservationLevel  = input.float(60.0, "線索觀察｜鈍化 / 壓力門檻", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+stageNameUseMinWeight = input.float(20.0, "階段名稱使用｜最低權重", minval=0.0, maxval=100.0, step=0.5, group=groupRegime)
+
+// === 權重 ===
+wSpeed = input.float(0.50, "速度權重", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wAccel = input.float(0.25, "加速度權重", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wDist  = input.float(0.25, "短中期乖離權重", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wMatSlope = input.float(0.50, "成熟度長斜率權重", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+wMatDist  = input.float(0.50, "成熟度長乖離權重", minval=0.0, maxval=1.0, step=0.05, group=groupWeights)
+
+// === 顯示 ===
+showDownRiskLine = input.bool(true, "顯示下跌末段恐慌風險線", group=groupDisplay)
+showInstantHeat  = input.bool(false, "顯示即時熱度輔助線", group=groupDisplay)
+showMaturity     = input.bool(false, "顯示趨勢成熟度輔助線", group=groupDisplay)
+showRangeScore   = input.bool(false, "顯示區間分數", group=groupDisplay)
+showBg           = input.bool(true, "啟用背景色", group=groupDisplay)
+bgMode           = input.string("單色｜正式主導", "背景顯示模式", options=["關閉", "單色｜正式主導", "單色｜候選", "單色｜Pace Guide", "雙層｜上正式 / 下候選", "雙層｜上 Pace / 下候選"], group=groupDisplay)
+showDualBgMidline = input.bool(false, "雙層背景｜顯示 50 分界線", group=groupDisplay)
+showTable        = input.bool(true, "顯示 Dashboard", group=groupDisplay)
+tableMode        = input.string("精簡", "Dashboard 模式", options=["極簡", "精簡", "完整", "除錯"], group=groupDisplay)
+tableTextSizeOpt = input.string("小", "Dashboard 字體", options=["迷你", "小", "正常"], group=groupDisplay)
+tablePosOpt      = input.string("右上", "Dashboard 位置", options=["右上", "右下", "左上", "左下"], group=groupDisplay)
+debugPlotMode = input.string("關閉", "Debug 單線顯示", options=["關閉", "吸籌權重", "拉升權重", "再吸籌權重", "派發權重", "崩跌權重", "再出貨權重", "吸籌Gate", "拉升Gate", "再吸籌Gate", "派發Gate", "崩跌Gate", "再出貨Gate", "下跌鈍化", "上漲鈍化", "支撐守住", "壓力壓回", "上漲延伸", "下跌延伸", "上漲續", "下跌續", "量能品質", "量能參與", "量能吸收", "量能派發", "量能上攻無效", "量能下跌無效", "量能突破確認", "量能下破確認", "量能權重", "MTF空方努力", "MTF多方努力", "MTF吸收", "MTF派發", "MTF拉升確認", "MTF崩跌確認", "MTF權重", "MTF Count", "MTF Active TF", "MTF Data Quality", "Witness Total Weight", "Witness Scale", "MTF Bias Weight", "Divergence Bias Weight"], group=groupDisplay)
+
+// === Pace Guide / Flat Action v0.5 ===
+showPaceGuide   = input.bool(true, "顯示 Pace Guide 操作節奏", group=groupPace)
+paceDisplayMode = input.string("三行", "Pace Guide 顯示模式", options=["單行", "三行", "完整"], group=groupPace)
+paceBgTransp    = input.int(8, "Pace Guide 背景透明度", minval=0, maxval=100, group=groupPace)
+
+enableFlatAction = input.bool(true, "啟用 Flat Action 空手行動分級", group=groupPace)
+allowCandidateFlatAction = input.bool(true, "Flat Action｜允許候選階段觸發試單", group=groupPace)
+requireFormalForTrendAction = input.bool(true, "Flat Action｜順勢試單需正式主導或快速轉正", group=groupPace)
+flatTriggerRequired = input.bool(true, "Flat Action｜試單需突破 / 延伸 / 續行觸發", group=groupPace)
+flatSmallEvidence = input.float(45.0, "Flat Action｜小部位 Evidence 門檻", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatTrendEvidence = input.float(55.0, "Flat Action｜順勢 Evidence 門檻", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatSmallGap = input.float(8.0, "Flat Action｜小部位 Top Gap 門檻", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatTrendGap = input.float(15.0, "Flat Action｜順勢 Top Gap 門檻", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatSmallLongMaxRisk = input.float(85.0, "Flat Action｜小部位試多最高末段風險", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatTrendLongMaxRisk = input.float(75.0, "Flat Action｜順勢試多最高末段風險", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatSmallShortMaxRisk = input.float(85.0, "Flat Action｜小部位試空最高恐慌風險", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatTrendShortMaxRisk = input.float(75.0, "Flat Action｜順勢試空最高恐慌風險", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatNoChaseLongLevel = input.float(85.0, "Flat Action｜禁止追多門檻", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+flatNoChaseShortLevel = input.float(85.0, "Flat Action｜禁止追空門檻", minval=0.0, maxval=100.0, step=0.5, group=groupPace)
+
+enableActionDowngrade = input.bool(true, "v0.5｜啟用 Pace Context 行動降級", group=groupPace)
+downgradeStrongClueToWait = input.bool(false, "v0.5｜鈍化線索很強時降級為等待", group=groupPace)
+showDowngradeReason = input.bool(true, "v0.5｜完整模式顯示降級原因", group=groupPace)
+
+// === Dashboard 顏色自訂 ===
+colAcc      = input.color(color.rgb(40, 170, 120), "吸籌顏色", group=groupColors)
+colMarkup   = input.color(color.rgb(40, 160, 90), "拉升顏色", group=groupColors)
+colReacc    = input.color(color.rgb(45, 180, 180), "再吸籌顏色", group=groupColors)
+colDist     = input.color(color.rgb(255, 150, 35), "派發顏色", group=groupColors)
+colMarkdown = input.color(color.rgb(220, 50, 47), "崩跌顏色", group=groupColors)
+colRedist   = input.color(color.rgb(150, 70, 170), "再出貨顏色", group=groupColors)
+colNeutral  = input.color(color.rgb(120, 120, 120), "無明確 / 混沌顏色", group=groupColors)
+colCoexist  = input.color(color.rgb(120, 130, 165), "並存 / 弱候選顏色", group=groupColors)
+colLowDispute = input.color(color.rgb(45, 150, 130), "低位階段分歧顏色", group=groupColors)
+colHighDispute = input.color(color.rgb(210, 135, 45), "高位階段分歧顏色", group=groupColors)
+colTrendDispute = input.color(color.rgb(220, 190, 50), "趨勢階段分歧顏色", group=groupColors)
+colHighClue = input.color(color.rgb(230, 165, 75), "高位鈍化觀察顏色", group=groupColors)
+colLowClue = input.color(color.rgb(70, 170, 140), "低位鈍化觀察顏色", group=groupColors)
+colTrendClue = input.color(color.rgb(135, 130, 190), "趨勢線索分歧顏色", group=groupColors)
+colPaceBull = input.color(color.rgb(40, 160, 90), "Pace｜偏多推進", group=groupColors)
+colPaceHot = input.color(color.rgb(230, 190, 40), "Pace｜偏多偏熱", group=groupColors)
+colPaceDefense = input.color(color.rgb(255, 140, 0), "Pace｜防守 / 高位風險", group=groupColors)
+colPaceAbsorb = input.color(color.rgb(40, 170, 120), "Pace｜低位吸收", group=groupColors)
+colPaceBear = input.color(color.rgb(220, 50, 47), "Pace｜偏空推進", group=groupColors)
+colPacePanic = input.color(color.rgb(150, 70, 170), "Pace｜恐慌 / 停利防守", group=groupColors)
+colPaceNeutral = input.color(color.rgb(120, 120, 120), "Pace｜觀望 / 混沌", group=groupColors)
+colPaceDispute = input.color(color.rgb(120, 130, 165), "Pace｜分歧等待", group=groupColors)
+colBreakout = input.color(color.rgb(45, 180, 210), "突破啟動顏色", group=groupColors)
+colBreakdown = input.color(color.rgb(85, 145, 220), "下破啟動顏色", group=groupColors)
+colGreen = input.color(color.rgb(40, 160, 90), "綠燈顏色", group=groupColors)
+colYellow = input.color(color.rgb(230, 190, 40), "黃燈顏色", group=groupColors)
+colOrange = input.color(color.rgb(255, 140, 0), "橘燈顏色", group=groupColors)
+colRed = input.color(color.rgb(220, 50, 47), "紅燈顏色", group=groupColors)
+colText = input.color(color.white, "Dashboard 文字顏色", group=groupColors)
+colDarkText = input.color(color.black, "Dashboard 深色文字", group=groupColors)
+colRowBg = input.color(color.rgb(80, 80, 80), "Dashboard 一般列背景", group=groupColors)
+dashboardTransp = input.int(78, "Dashboard 一般列透明度", minval=0, maxval=100, group=groupColors)
+bgTranspFormal = input.int(88, "正式主導背景透明度", minval=0, maxval=100, group=groupColors)
+bgTranspWeak   = input.int(95, "弱候選 / 並存背景透明度", minval=0, maxval=100, group=groupColors)
+bgTranspCandidate = input.int(92, "候選背景透明度", minval=0, maxval=100, group=groupColors)
+bgTranspPace = input.int(90, "Pace 背景透明度", minval=0, maxval=100, group=groupColors)
+candidateBgMinWeight = input.float(20.0, "候選背景最低權重", minval=0.0, maxval=100.0, step=0.5, group=groupColors)
+dualBgMidlineColor = input.color(color.rgb(150, 150, 150), "雙層背景｜50 分界線顏色", group=groupColors)
+dualBgMidlineTransp = input.int(75, "雙層背景｜50 分界線透明度", minval=0, maxval=100, group=groupColors)
+
+// === 警示 / 燈號 ===
+yellowLevel = input.float(70.0, "黃燈門檻", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+orangeLevel = input.float(85.0, "橘燈門檻", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+redLevel    = input.float(95.0, "紅燈門檻", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+highHeatConfirm      = input.float(85.0, "紅燈確認｜即時熱度高於", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+speedRankConfirm     = input.float(85.0, "紅燈確認｜速度 Rank 高於", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+maturityConfirm      = input.float(75.0, "紅燈確認｜成熟度高於", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+longSlopeRankConfirm = input.float(70.0, "紅燈確認｜長斜率 Rank 高於", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+evidenceAlertLevel   = input.float(45.0, "證據強度警示門檻", minval=0.0, maxval=100.0, step=0.5, group=groupAlert)
+
+// Helper Functions
+
+f_safeDiv(num, den) =>
+    na(num) or na(den) or den == 0.0 ? na : num / den
+
+f_clamp(x, lo, hi) =>
+    math.max(lo, math.min(hi, x))
+
+f_gate(x, lo, hi) =>
+    na(x) or hi == lo ? 0.0 : f_clamp((x - lo) / (hi - lo), 0.0, 1.0)
+
+f_weighted2(a, wa, b, wb) =>
+    sumW = wa + wb
+    sumW == 0.0 ? na : (a * wa + b * wb) / sumW
+
+f_weighted3(a, wa, b, wb, c, wc) =>
+    sumW = wa + wb + wc
+    sumW == 0.0 ? na : (a * wa + b * wb + c * wc) / sumW
+
+f_weighted4(a, wa, b, wb, c, wc, d, wd) =>
+    sumW = wa + wb + wc + wd
+    sumW == 0.0 ? na : (a * wa + b * wb + c * wc + d * wd) / sumW
+
+f_weighted5(a, wa, b, wb, c, wc, d, wd, e, we) =>
+    sumW = wa + wb + wc + wd + we
+    sumW == 0.0 ? na : (a * wa + b * wb + c * wc + d * wd + e * we) / sumW
+
+f_slopeZ(src, len, volSeries) =>
+    regNow  = ta.linreg(src, len, 0)
+    regPrev = ta.linreg(src, len, 1)
+    slope   = regNow - regPrev
+    denom   = volSeries * math.sqrt(len)
+    f_safeDiv(slope * len, denom)
+
+f_recent(condition, bars) =>
+    bs = ta.barssince(condition)
+    not na(bs) and bs <= bars
+
+f_smooth(x, len) =>
+    len <= 1 ? x : ta.ema(x, len)
+
+f_pct(x) =>
+    na(x) ? "na" : str.tostring(x, "#.0") + "%"
+
+f_num(x) =>
+    na(x) ? "na" : str.tostring(x, "#.0")
+
+f_tableTextSize() =>
+    tableTextSizeOpt == "迷你" ? size.tiny :
+     tableTextSizeOpt == "小" ? size.small : size.normal
+
+f_tablePosition() =>
+    tablePosOpt == "右下" ? position.bottom_right :
+     tablePosOpt == "左上" ? position.top_left :
+     tablePosOpt == "左下" ? position.bottom_left : position.top_right
+
+f_evidenceText(x) =>
+    na(x) ? "na" :
+     x < 25.0 ? "低" :
+     x < 45.0 ? "中低" :
+     x < 65.0 ? "中高" : "高"
+
+f_stageName(id) =>
+    id == 1 ? "吸籌" :
+     id == 2 ? "拉升" :
+     id == 3 ? "再吸籌" :
+     id == 4 ? "派發" :
+     id == 5 ? "崩跌" :
+     id == 6 ? "再出貨" : "無明確"
+
+f_stageColor(id) =>
+    id == 1 ? colAcc :
+     id == 2 ? colMarkup :
+     id == 3 ? colReacc :
+     id == 4 ? colDist :
+     id == 5 ? colMarkdown :
+     id == 6 ? colRedist : colNeutral
+
+f_riskColor(score, redConfirmed, breakoutMode, breakdownMode) =>
+    na(score) ? colNeutral :
+     breakoutMode ? colBreakout :
+     breakdownMode ? colBreakdown :
+     redConfirmed ? colRed :
+     score >= orangeLevel ? colOrange :
+     score >= yellowLevel ? colYellow :
+     colGreen
+
+// v0.5 MTF helper：單根次級 K 的空方 / 多方努力。
+// 這裡不做次級週期威科夫六階段切分，只衡量 K 棒內部壓力、收盤位置與方向延續。
+f_ltfBearEffortBar() =>
+    _range = math.max(high - low, syminfo.mintick)
+    _downBody = math.max(open - close, 0.0)
+    _closeLoc = f_clamp(f_safeDiv(close - low, _range), 0.0, 1.0)
+    _score = f_weighted3(_downBody / _range * 100.0, 0.50, (1.0 - _closeLoc) * 100.0, 0.30, close < close[1] ? 100.0 : 0.0, 0.20)
+    f_clamp(_score, 0.0, 100.0)
+
+f_ltfBullEffortBar() =>
+    _range = math.max(high - low, syminfo.mintick)
+    _upBody = math.max(close - open, 0.0)
+    _closeLoc = f_clamp(f_safeDiv(close - low, _range), 0.0, 1.0)
+    _score = f_weighted3(_upBody / _range * 100.0, 0.50, _closeLoc * 100.0, 0.30, close > close[1] ? 100.0 : 0.0, 0.20)
+    f_clamp(_score, 0.0, 100.0)
+
+f_arrayAvgOrNa(arr) =>
+    float _out = na
+    if array.size(arr) > 0
+        _out := array.avg(arr)
+    _out
+
+// === Issue #66 v0.6 continuous boundary primitives ===
+f_issue66_softNoBreakLow(_close, _boundary, _atr) =>
+    _scale = _atr * 0.25
+    f_clamp(50.0 + 50.0 * f_safeDiv(_close - _boundary, _scale), 0.0, 100.0)
+
+f_issue66_softNoBreakHigh(_close, _boundary, _atr) =>
+    _scale = _atr * 0.25
+    f_clamp(50.0 + 50.0 * f_safeDiv(_boundary - _close, _scale), 0.0, 100.0)
+
+f_issue66_softAboveRange(_close, _boundary, _atr) =>
+    100.0 - f_issue66_softNoBreakHigh(_close, _boundary, _atr)
+
+f_issue66_softBelowRange(_close, _boundary, _atr) =>
+    100.0 - f_issue66_softNoBreakLow(_close, _boundary, _atr)
+
+f_issue66_softBreakAbove(_close, _boundary, _atr) =>
+    _scale = _atr * 0.25
+    f_clamp(100.0 * f_safeDiv(_close - _boundary, _scale), 0.0, 100.0)
+
+f_issue66_softBreakBelow(_close, _boundary, _atr) =>
+    _scale = _atr * 0.25
+    f_clamp(100.0 * f_safeDiv(_boundary - _close, _scale), 0.0, 100.0)
+
+// Core Calculation｜即時熱度
+
+safeClose = close > 0 ? close : na
+logPrice  = math.log(safeClose)
+logRet    = math.log(safeClose / safeClose[1])
+vol       = ta.stdev(logRet, volLen)
+
+speedZ = f_slopeZ(logPrice, speedLen, vol)
+shortZ = f_slopeZ(logPrice, shortLen, vol)
+longZ  = f_slopeZ(logPrice, longLen, vol)
+accelZ = shortZ - longZ
+
+// Issue #66 B-1: geometric MA and log-space ATR representation.
+logHigh = math.log(high > 0 ? high : na)
+logLow  = math.log(low > 0 ? low : na)
+maLog   = ta.sma(logPrice, maLen)
+ma      = math.exp(maLog)
+atr     = ta.atr(atrLen)  // retained for accepted v0.6 boundary primitives
+logTR   = na(logPrice[1]) ? logHigh - logLow : math.max(logHigh - logLow, math.max(math.abs(logHigh - logPrice[1]), math.abs(logLow - logPrice[1])))
+symATR  = ta.rma(logTR, atrLen)
+distATR = f_safeDiv(logPrice - maLog, symATR)
+
+speedRank = ta.percentrank(speedZ, rankLen)
+accelRank = ta.percentrank(accelZ, rankLen)
+distRank  = ta.percentrank(distATR, rankLen)
+
+heatUp      = f_weighted3(speedRank, wSpeed, accelRank, wAccel, distRank, wDist)
+panicHeatDn = f_weighted3(100.0 - speedRank, wSpeed, 100.0 - accelRank, wAccel, 100.0 - distRank, wDist)
+
+// Trend Maturity / End Risk
+
+maturitySlopeZ = f_slopeZ(logPrice, maturitySlopeLen, vol)
+longSlopeRank  = ta.percentrank(maturitySlopeZ, rankLen)
+
+maturityMaLog    = ta.sma(logPrice, maturityMaLen)
+maturityMa       = math.exp(maturityMaLog)
+maturityAtr      = ta.atr(maturityAtrLen)  // retained diagnostic compatibility
+maturitySymATR   = ta.rma(logTR, maturityAtrLen)
+maturityDistATR  = f_safeDiv(logPrice - maturityMaLog, maturitySymATR)
+maturityDistRank = ta.percentrank(maturityDistATR, rankLen)
+
+maturityUp = f_weighted2(longSlopeRank, wMatSlope, maturityDistRank, wMatDist)
+maturityDn = f_weighted2(100.0 - longSlopeRank, wMatSlope, 100.0 - maturityDistRank, wMatDist)
+
+endRiskUpRaw = f_safeDiv(heatUp * maturityUp, 100.0)
+endRiskDnRaw = f_safeDiv(panicHeatDn * maturityDn, 100.0)
+
+// Breakout / Breakdown / Low-vol Exemption
+
+atrPct     = symATR * 100.0
+atrPctRank = ta.percentrank(atrPct, rankLen)
+lowVolRecentlyBase = ta.lowest(atrPctRank[1], breakoutBars)
+lowVolRecently = not na(lowVolRecentlyBase) and lowVolRecentlyBase <= lowVolLevel
+
+rangeHighBreak = ta.highest(high[1], breakoutBars)
+rangeLowBreak  = ta.lowest(low[1], breakoutBars)
+rangeBreakUp   = not na(rangeHighBreak) and close > rangeHighBreak and close[1] <= rangeHighBreak[1]
+rangeBreakDn   = not na(rangeLowBreak) and close < rangeLowBreak and close[1] >= rangeLowBreak[1]
+maCrossUp      = ta.crossover(logPrice, maLog)
+maCrossDn      = ta.crossunder(logPrice, maLog)
+
+recentBreakUp = f_recent(rangeBreakUp or maCrossUp, breakoutBars)
+recentBreakDn = f_recent(rangeBreakDn or maCrossDn, breakoutBars)
+recentRangeBreakDn = f_recent(rangeBreakDn, breakoutBars)
+recentMaCrossUp = f_recent(maCrossUp, breakoutBars)
+recentMaCrossDn = f_recent(maCrossDn, breakoutBars)
+rangeBreakUpStrength = f_issue66_softBreakAbove(close, rangeHighBreak, atr)
+rangeBreakDnStrength = f_issue66_softBreakBelow(close, rangeLowBreak, atr)
+recentRangeBreakUpStrength = ta.highest(rangeBreakUpStrength, breakoutBars)
+recentRangeBreakDnStrength = ta.highest(rangeBreakDnStrength, breakoutBars)
+
+breakoutModeUp  = useBreakoutExemption and heatUp >= orangeLevel and maturityUp < maturityConfirm and lowVolRecently and recentBreakUp
+breakdownModeDn = useBreakoutExemption and panicHeatDn >= orangeLevel and maturityDn < maturityConfirm and lowVolRecently and recentBreakDn
+
+redUpCore = endRiskUpRaw >= redLevel and heatUp >= highHeatConfirm and speedRank >= speedRankConfirm and maturityUp >= maturityConfirm and longSlopeRank >= longSlopeRankConfirm
+redDnCore = endRiskDnRaw >= redLevel and panicHeatDn >= highHeatConfirm and speedRank <= 100.0 - speedRankConfirm and maturityDn >= maturityConfirm and longSlopeRank <= 100.0 - longSlopeRankConfirm
+redUp = redUpCore and not breakoutModeUp
+redDn = redDnCore and not breakdownModeDn
+
+endRiskUp = endRiskUpRaw
+endRiskDn = endRiskDnRaw
+
+// Range Score
+
+rangeHigh = ta.highest(high, rangeLen)
+rangeLow  = ta.lowest(low, rangeLen)
+rangeMid  = (rangeHigh + rangeLow) / 2.0
+rangeW    = rangeHigh - rangeLow
+rangeWidthLog = math.log(rangeHigh) - math.log(rangeLow)
+rangeWidthATR = f_safeDiv(rangeWidthLog, symATR)
+rangeWidthRank = ta.percentrank(rangeWidthATR, rankLen)
+
+absSpeedZ = math.abs(speedZ)
+absSpeedRank = ta.percentrank(absSpeedZ, rankLen)
+
+lowSlopeScore = 100.0 - absSpeedRank
+lowVolScore   = 100.0 - atrPctRank
+narrowScore   = 100.0 - rangeWidthRank
+rangeScore    = f_clamp(f_weighted3(lowSlopeScore, 0.40, lowVolScore, 0.30, narrowScore, 0.30), 0.0, 100.0)
+
+bullStructure = (close > ma ? 50.0 : 0.0) + (close > maturityMa ? 50.0 : 0.0)
+bearStructure = (close < ma ? 50.0 : 0.0) + (close < maturityMa ? 50.0 : 0.0)
+bullBg = f_weighted2(maturityUp, 0.70, bullStructure, 0.30)
+bearBg = f_weighted2(maturityDn, 0.70, bearStructure, 0.30)
+
+heatTrace  = ta.highest(endRiskUpRaw, rangeLen)
+panicTrace = ta.highest(endRiskDnRaw, rangeLen)
+heatCooling  = heatTrace > orangeLevel ? f_clamp(heatTrace - endRiskUpRaw, 0.0, 100.0) : 0.0
+panicCooling = panicTrace > orangeLevel ? f_clamp(panicTrace - endRiskDnRaw, 0.0, 100.0) : 0.0
+
+bullMaturityTrace = ta.highest(maturityUp, rangeLen)
+bearMaturityTrace = ta.highest(maturityDn, rangeLen)
+
+bearPressureRising = f_weighted3(panicHeatDn, 0.45, bearStructure, 0.35, 100.0 - speedRank, 0.20)
+
+nonEndRiskUp = 100.0 - endRiskUpRaw
+structureStrong = bullStructure
+structureWeak   = bearStructure
+
+breakoutRangeEvidence = f_clamp(nz(recentRangeBreakUpStrength, 0.0), 0.0, 100.0)
+breakoutMaEvidence = recentMaCrossUp ? 70.0 : logPrice > maLog ? 35.0 : 0.0
+breakoutScore = breakoutModeUp ? 100.0 : math.max(breakoutRangeEvidence, breakoutMaEvidence)
+breakdownRangeEvidence = f_clamp(nz(recentRangeBreakDnStrength, 0.0), 0.0, 100.0)
+breakdownMaEvidence = recentMaCrossDn ? 70.0 : logPrice < maLog ? 35.0 : 0.0
+explicitBreakdownScore = breakdownModeDn ? 100.0 : math.max(breakdownRangeEvidence, breakdownMaEvidence)
+
+// v0.3.3 Absorption vs Distribution Layer
+
+absRangeHigh = ta.highest(high, absorbLen)
+absRangeLow  = ta.lowest(low, absorbLen)
+absRangeMid  = (absRangeHigh + absRangeLow) / 2.0
+absRangeW    = absRangeHigh - absRangeLow
+absRangePos  = f_clamp(f_safeDiv(close - absRangeLow, absRangeW) * 100.0, 0.0, 100.0)
+
+prevAbsLow  = ta.lowest(low[1], absorbLen)
+prevAbsHigh = ta.highest(high[1], absorbLen)
+
+noBreakLowScore   = f_issue66_softNoBreakLow(close, prevAbsLow, atr)
+noBreakHighScore  = f_issue66_softNoBreakHigh(close, prevAbsHigh, atr)
+negSlopeDullScore = f_gate(speedRank, 15.0, 55.0) * 100.0
+posSlopeDullScore = f_gate(100.0 - speedRank, 15.0, 55.0) * 100.0
+panicDullScore    = f_weighted2(100.0 - panicHeatDn, 0.55, panicCooling, 0.45)
+heatDullScore     = f_weighted2(100.0 - heatUp, 0.55, heatCooling, 0.45)
+lowZoneStableScore  = f_weighted2(100.0 - absRangePos, 0.50, noBreakLowScore, 0.50)
+highZoneStableScore = f_weighted2(absRangePos, 0.50, noBreakHighScore, 0.50)
+
+downsideExhaustion = f_clamp(f_weighted5(noBreakLowScore, 0.30, negSlopeDullScore, 0.25, panicDullScore, 0.20, lowVolScore, 0.15, lowZoneStableScore, 0.10), 0.0, 100.0)
+upsideExhaustion   = f_clamp(f_weighted5(noBreakHighScore, 0.30, posSlopeDullScore, 0.25, heatDullScore, 0.20, lowVolScore, 0.15, highZoneStableScore, 0.10), 0.0, 100.0)
+
+supportProbe = low <= absRangeLow + absRangeW * 0.35
+supportReclaimScore = close > absRangeMid ? 100.0 : close > ma ? 70.0 : close > absRangeLow + absRangeW * 0.35 ? 45.0 : 0.0
+panicNotContinueScore = 100.0 - panicHeatDn
+supportHoldingRaw = supportProbe ? f_weighted4(noBreakLowScore, 0.35, supportReclaimScore, 0.25, panicNotContinueScore, 0.25, lowZoneStableScore, 0.15) : f_weighted3(noBreakLowScore, 0.45, panicNotContinueScore, 0.35, lowZoneStableScore, 0.20)
+supportHolding = f_clamp(supportHoldingRaw, 0.0, 100.0)
+
+resistanceProbe = high >= absRangeHigh - absRangeW * 0.35
+resistanceRejectScore = close < absRangeMid ? 100.0 : close < ma ? 70.0 : close < absRangeHigh - absRangeW * 0.35 ? 45.0 : 0.0
+heatNotContinueScore = 100.0 - heatUp
+resistanceHoldingRaw = resistanceProbe ? f_weighted4(noBreakHighScore, 0.35, resistanceRejectScore, 0.25, heatNotContinueScore, 0.25, highZoneStableScore, 0.15) : f_weighted3(noBreakHighScore, 0.45, heatNotContinueScore, 0.35, highZoneStableScore, 0.20)
+resistanceHolding = f_clamp(resistanceHoldingRaw, 0.0, 100.0)
+
+downsideExhaustionGate = f_gate(downsideExhaustion, 35.0, absorbThreshold)
+upsideExhaustionGate   = f_gate(upsideExhaustion, 35.0, absorbThreshold)
+supportHoldingGate     = f_gate(supportHolding, 35.0, absorbThreshold)
+resistanceHoldingGate  = f_gate(resistanceHolding, 35.0, absorbThreshold)
+nonAbsorptionGate      = f_gate(100.0 - downsideExhaustion, 25.0, 65.0)
+nonDistributionGate    = f_gate(100.0 - upsideExhaustion, 25.0, 65.0)
+
+// v0.4 Volume Quality Layer｜成交量品質 / Effort vs Result
+// 價格行為仍是主引擎，成交量只是可選證人。
+// Volume Mode = Off 或品質不足時，量能層不懲罰 price-only 判斷，只是不加權。
+
+volOk = not na(volume) and volume > 0.0
+volPresenceScore = (volOk ? 100.0 : 0.0)
+volContinuityScore = ta.sma(volOk ? 1.0 : 0.0, volumeQualityLen) * 100.0
+hasAnyVolume = volContinuityScore > 5.0
+
+volumeRankRaw = ta.percentrank(volume, volumeRankLen)
+volumeParticipationRaw = f_clamp(nz(volumeRankRaw, 0.0), 0.0, 100.0)
+
+volumeSma = ta.sma(volume, volumeQualityLen)
+volumeStdev = ta.stdev(volume, volumeQualityLen)
+volumeCv = f_safeDiv(volumeStdev, volumeSma)
+volumeCvRank = ta.percentrank(volumeCv, volumeRankLen)
+volumeStabilityScore = hasAnyVolume ? f_clamp(100.0 - nz(volumeCvRank, 100.0), 0.0, 100.0) : 0.0
+
+volumeCvOkLow = f_gate(volumeCv, 0.01, 0.20) * 100.0
+volumeCvOkHigh = 100.0 - f_gate(volumeCv, 5.0, 12.0) * 100.0
+volumeDistributionReasonableScore = hasAnyVolume ? math.min(volumeCvOkLow, volumeCvOkHigh) : 0.0
+
+volumeSpikeRatio = f_safeDiv(volume, volumeSma)
+volumeSpikeRatioRank = ta.percentrank(volumeSpikeRatio, volumeRankLen)
+volumeSpikeScore = hasAnyVolume ? f_clamp(nz(volumeSpikeRatioRank, 0.0), 0.0, 100.0) : 0.0
+volumeSpikePollutionPenalty = f_gate(volumeSpikeScore, volumeSpikeThreshold, 100.0) * 100.0
+nonSpikePollutionScore = hasAnyVolume ? 100.0 - volumeSpikePollutionPenalty : 0.0
+
+volumeQualityScore = f_clamp(f_weighted5(volPresenceScore, 0.25, volContinuityScore, 0.25, volumeStabilityScore, 0.20, volumeDistributionReasonableScore, 0.20, nonSpikePollutionScore, 0.10), 0.0, 100.0)
+volumeAutoFactor = f_gate(volumeQualityScore, volumeQualityMin, volumeQualityFull)
+volumeBaseMaxWeight = volumeMode == "Tick Volume Proxy" ? tickVolumeMaxWeight : volumeMaxWeight
+volumeWeightApplied = volumeMode == "Off" or not hasAnyVolume ? 0.0 : volumeMode == "Force On" ? volumeBaseMaxWeight / 100.0 : volumeMode == "Tick Volume Proxy" ? volumeBaseMaxWeight / 100.0 * f_gate(volumeQualityScore, 25.0, volumeQualityFull) : volumeBaseMaxWeight / 100.0 * volumeAutoFactor
+volumeActive = volumeWeightApplied > 0.0
+
+volumeParticipation = volumeActive ? volumeParticipationRaw : 0.0
+priceUpATR = f_safeDiv(math.max(close - close[1], 0.0), atr)
+priceDnATR = f_safeDiv(math.max(close[1] - close, 0.0), atr)
+upProgressScore = f_gate(priceUpATR, 0.0, 1.5) * 100.0
+downProgressScore = f_gate(priceDnATR, 0.0, 1.5) * 100.0
+upInefficiencyScore = f_clamp(100.0 - upProgressScore, 0.0, 100.0)
+downInefficiencyScore = f_clamp(100.0 - downProgressScore, 0.0, 100.0)
+
+effortResultUp = volumeActive ? f_clamp(f_weighted5(volumeParticipation, 0.30, noBreakHighScore, 0.25, upInefficiencyScore, 0.20, resistanceHolding, 0.15, upsideExhaustion, 0.10), 0.0, 100.0) : 0.0
+effortResultDown = volumeActive ? f_clamp(f_weighted5(volumeParticipation, 0.30, noBreakLowScore, 0.25, downInefficiencyScore, 0.20, supportHolding, 0.15, downsideExhaustion, 0.10), 0.0, 100.0) : 0.0
+
+volumeAbsorptionScore = volumeActive ? f_clamp(f_weighted4(effortResultDown, 0.35, downsideExhaustion, 0.25, supportHolding, 0.25, volumeParticipation, 0.15), 0.0, 100.0) : 0.0
+volumeDistributionScore = volumeActive ? f_clamp(f_weighted4(effortResultUp, 0.35, upsideExhaustion, 0.25, resistanceHolding, 0.25, volumeParticipation, 0.15), 0.0, 100.0) : 0.0
+volumeBreakoutConfirmation = volumeActive ? f_clamp(f_weighted4(breakoutScore, 0.35, volumeParticipation, 0.25, upProgressScore, 0.25, 100.0 - math.max(upsideExhaustion, resistanceHolding), 0.15), 0.0, 100.0) : 0.0
+volumeBreakdownConfirmation = volumeActive ? f_clamp(f_weighted4(explicitBreakdownScore, 0.35, volumeParticipation, 0.25, downProgressScore, 0.25, 100.0 - math.max(downsideExhaustion, supportHolding), 0.15), 0.0, 100.0) : 0.0
+
+volumeDemandClue = volumeActive and volumeAbsorptionScore >= effortResultThreshold
+volumeSupplyClue = volumeActive and volumeDistributionScore >= effortResultThreshold
+volumeBreakoutClue = volumeActive and volumeBreakoutConfirmation >= effortResultThreshold
+volumeBreakdownClue = volumeActive and volumeBreakdownConfirmation >= effortResultThreshold
+volumeSpikePolluted = volumeMode != "Off" and hasAnyVolume and volumeSpikeScore >= volumeSpikeThreshold and volumeQualityScore < volumeQualityMin
+volumeForceLowQuality = volumeMode == "Force On" and volumeQualityScore < volumeQualityMin
+
+volumeStatusText = volumeMode == "Off" ? "關閉" :
+     not hasAnyVolume ? "無成交量" :
+     volumeForceLowQuality ? "強制低品質" :
+     volumeMode == "Tick Volume Proxy" ? "Tick Proxy" :
+     volumeQualityScore < 25.0 ? "不可用" :
+     volumeQualityScore < volumeQualityMin ? "低可信降權" :
+     volumeQualityScore < 65.0 ? "中等輔助" :
+     volumeQualityScore < volumeQualityFull ? "可用" : "高可信"
+volumeCompactText = volumeStatusText + "｜Q " + f_num(volumeQualityScore) + "｜W " + f_num(volumeWeightApplied * 100.0) + "%"
+volumeClueText = volumeMode == "Off" ? "量能關閉" :
+     not volumeActive ? "量能未採用" :
+     volumeDemandClue ? "量能承接" :
+     volumeSupplyClue ? "量能供給" :
+     volumeBreakoutClue ? "量能突破" :
+     volumeBreakdownClue ? "量能下破" : "量能中性"
+
+// v0.5 MTF Effort / Result Layer｜次一級 Time Frame 努力 / 結果驗證
+// 核心精神：次級週期不是方向投票，而是 effort 證人。
+// 例：4H 空方努力很強，但 1D 沒有跌出結果，語意是「吸收 / 承接證據」，不是「主週期轉空」。
+// 預設 Observe Only 不參與主模型；Auto / Force On 才以低權重加強對應劇本。
+
+mtfEnabled = mtfMode != "Off"
+
+ltfBearEffortArr0 = request.security_lower_tf(syminfo.tickerid, mtfLowerTf, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)
+ltfBullEffortArr0 = request.security_lower_tf(syminfo.tickerid, mtfLowerTf, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)
+ltfBearEffortArr1 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf1, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)
+ltfBullEffortArr1 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf1, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)
+ltfBearEffortArr2 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf2, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)
+ltfBullEffortArr2 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf2, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)
+ltfBearEffortArr3 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf3, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)
+ltfBullEffortArr3 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf3, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)
+
+ltfCount0 = array.size(ltfBearEffortArr0)
+ltfCount1 = array.size(ltfBearEffortArr1)
+ltfCount2 = array.size(ltfBearEffortArr2)
+ltfCount3 = array.size(ltfBearEffortArr3)
+softMinIntrabars = math.max(1, math.floor(mtfMinIntrabars * 0.50))
+mtfStrict0 = mtfEnabled and ltfCount0 >= mtfMinIntrabars
+mtfStrict1 = mtfEnabled and ltfCount1 >= mtfMinIntrabars
+mtfStrict2 = mtfEnabled and ltfCount2 >= mtfMinIntrabars
+mtfStrict3 = mtfEnabled and ltfCount3 >= mtfMinIntrabars
+mtfSoft0 = mtfEnabled and not mtfStrict0 and ltfCount0 >= softMinIntrabars
+mtfSoft1 = mtfEnabled and not mtfStrict1 and ltfCount1 >= softMinIntrabars
+mtfSoft2 = mtfEnabled and not mtfStrict2 and ltfCount2 >= softMinIntrabars
+mtfSoft3 = mtfEnabled and not mtfStrict3 and ltfCount3 >= softMinIntrabars
+
+mtfSelectedIndex = mtfStrict0 ? 0 : mtfStrict1 ? 1 : mtfStrict2 ? 2 : mtfStrict3 ? 3 : mtfSoft0 ? 0 : mtfSoft1 ? 1 : mtfSoft2 ? 2 : mtfSoft3 ? 3 : -1
+mtfStrictDataOk = mtfEnabled and (mtfStrict0 or mtfStrict1 or mtfStrict2 or mtfStrict3)
+mtfSoftDataOk = mtfEnabled and not mtfStrictDataOk and (mtfSoft0 or mtfSoft1 or mtfSoft2 or mtfSoft3)
+mtfDataQualityText = mtfMode == "Off" ? "off" : mtfStrictDataOk ? "strict" : mtfSoftDataOk ? "soft" : "fail"
+mtfActiveTf = mtfSelectedIndex == 0 ? mtfLowerTf : mtfSelectedIndex == 1 ? mtfFallbackTf1 : mtfSelectedIndex == 2 ? mtfFallbackTf2 : mtfSelectedIndex == 3 ? mtfFallbackTf3 : "無"
+ltfCount = mtfSelectedIndex == 0 ? ltfCount0 : mtfSelectedIndex == 1 ? ltfCount1 : mtfSelectedIndex == 2 ? ltfCount2 : mtfSelectedIndex == 3 ? ltfCount3 : 0
+mtfFallbackActive = mtfSelectedIndex > 0
+mtfFailureReason = mtfMode == "Off" ? "MTF關閉" : mtfStrictDataOk ? "strict ok" : mtfSoftDataOk ? "僅soft：count " + str.tostring(ltfCount) + "/" + str.tostring(mtfMinIntrabars) : "fail：counts " + str.tostring(ltfCount0) + "/" + str.tostring(ltfCount1) + "/" + str.tostring(ltfCount2) + "/" + str.tostring(ltfCount3) + " < " + str.tostring(mtfMinIntrabars)
+
+ltfBearEffortRaw0 = f_arrayAvgOrNa(ltfBearEffortArr0)
+ltfBullEffortRaw0 = f_arrayAvgOrNa(ltfBullEffortArr0)
+ltfBearEffortRaw1 = f_arrayAvgOrNa(ltfBearEffortArr1)
+ltfBullEffortRaw1 = f_arrayAvgOrNa(ltfBullEffortArr1)
+ltfBearEffortRaw2 = f_arrayAvgOrNa(ltfBearEffortArr2)
+ltfBullEffortRaw2 = f_arrayAvgOrNa(ltfBullEffortArr2)
+ltfBearEffortRaw3 = f_arrayAvgOrNa(ltfBearEffortArr3)
+ltfBullEffortRaw3 = f_arrayAvgOrNa(ltfBullEffortArr3)
+
+ltfBearEffortRaw = mtfSelectedIndex == 0 ? ltfBearEffortRaw0 : mtfSelectedIndex == 1 ? ltfBearEffortRaw1 : mtfSelectedIndex == 2 ? ltfBearEffortRaw2 : mtfSelectedIndex == 3 ? ltfBearEffortRaw3 : na
+ltfBullEffortRaw = mtfSelectedIndex == 0 ? ltfBullEffortRaw0 : mtfSelectedIndex == 1 ? ltfBullEffortRaw1 : mtfSelectedIndex == 2 ? ltfBullEffortRaw2 : mtfSelectedIndex == 3 ? ltfBullEffortRaw3 : na
+mtfDataOk = mtfEnabled and mtfSelectedIndex >= 0 and not na(ltfBearEffortRaw) and not na(ltfBullEffortRaw)
+
+ltfBearEffort = mtfDataOk ? f_clamp(ltfBearEffortRaw, 0.0, 100.0) : 0.0
+ltfBullEffort = mtfDataOk ? f_clamp(ltfBullEffortRaw, 0.0, 100.0) : 0.0
+
+htfRange = math.max(high - low, syminfo.mintick)
+htfCloseLoc = f_clamp(f_safeDiv(close - low, htfRange) * 100.0, 0.0, 100.0)
+htfUpMoveATR = f_safeDiv(math.max(close - close[1], 0.0), atr)
+htfDnMoveATR = f_safeDiv(math.max(close[1] - close, 0.0), atr)
+
+htfUpResult = mtfDataOk ? f_clamp(f_weighted2(f_gate(htfUpMoveATR, 0.0, mtfResultAtrFull) * 100.0, 0.65, htfCloseLoc, 0.35), 0.0, 100.0) : 0.0
+htfDownResult = mtfDataOk ? f_clamp(f_weighted2(f_gate(htfDnMoveATR, 0.0, mtfResultAtrFull) * 100.0, 0.65, 100.0 - htfCloseLoc, 0.35), 0.0, 100.0) : 0.0
+
+mtfAbsorptionScore = mtfDataOk ? f_clamp(f_weighted3(ltfBearEffort, 0.45, 100.0 - htfDownResult, 0.35, htfCloseLoc, 0.20), 0.0, 100.0) : 0.0
+mtfDistributionScore = mtfDataOk ? f_clamp(f_weighted3(ltfBullEffort, 0.45, 100.0 - htfUpResult, 0.35, 100.0 - htfCloseLoc, 0.20), 0.0, 100.0) : 0.0
+mtfMarkupConfirmScore = mtfDataOk ? f_clamp(f_weighted3(ltfBullEffort, 0.45, htfUpResult, 0.40, htfCloseLoc, 0.15), 0.0, 100.0) : 0.0
+mtfMarkdownConfirmScore = mtfDataOk ? f_clamp(f_weighted3(ltfBearEffort, 0.45, htfDownResult, 0.40, 100.0 - htfCloseLoc, 0.15), 0.0, 100.0) : 0.0
+
+mtfAbsorptionValid = mtfDataOk and ltfBearEffort >= mtfEffortThreshold and mtfAbsorptionScore >= mtfEffortThreshold
+mtfDistributionValid = mtfDataOk and ltfBullEffort >= mtfEffortThreshold and mtfDistributionScore >= mtfEffortThreshold
+mtfMarkupConfirmValid = mtfDataOk and ltfBullEffort >= mtfEffortThreshold and mtfMarkupConfirmScore >= mtfEffortThreshold
+mtfMarkdownConfirmValid = mtfDataOk and ltfBearEffort >= mtfEffortThreshold and mtfMarkdownConfirmScore >= mtfEffortThreshold
+
+mtfTopScore = math.max(math.max(mtfAbsorptionScore, mtfDistributionScore), math.max(mtfMarkupConfirmScore, mtfMarkdownConfirmScore))
+mtfRawWeight = mtfMode == "Off" or mtfMode == "Observe Only" or not mtfDataOk ? 0.0 : mtfMode == "Force On" ? mtfMaxWeight / 100.0 : mtfMaxWeight / 100.0 * f_gate(mtfTopScore, mtfEffortThreshold, 90.0)
+mtfBiasEligibility = witnessStageBiasMode == "Conservative" ? 0.0 : mtfStrictDataOk ? 1.0 : witnessStageBiasMode == "Aggressive" and mtfSoftDataOk ? 0.25 : 0.0
+mtfWeightApplied = mtfRawWeight * mtfBiasEligibility
+mtfActive = mtfRawWeight > 0.0
+
+mtfDemandClue = mtfActive and mtfAbsorptionValid
+mtfSupplyClue = mtfActive and mtfDistributionValid
+
+mtfStatusText = mtfMode == "Off" ? "關閉" : not mtfDataOk ? "fail" : mtfMode == "Observe Only" ? "觀察" : mtfStrictDataOk ? "strict參與" : mtfSoftDataOk ? "soft觀察" : "fail"
+mtfClueText = mtfMode == "Off" ? "MTF關閉" : not mtfDataOk ? mtfFailureReason : mtfTopScore < mtfEffortThreshold ? "MTF中性" : mtfTopScore == mtfAbsorptionScore ? "MTF吸收" : mtfTopScore == mtfDistributionScore ? "MTF派發" : mtfTopScore == mtfMarkupConfirmScore ? "MTF拉升確認" : "MTF崩跌確認"
+mtfDiagnosticsText = "TF " + mtfActiveTf + "｜n " + str.tostring(ltfCount) + "/" + str.tostring(mtfMinIntrabars) + "｜" + mtfDataQualityText + "｜FB " + (mtfFallbackActive ? "on" : "off") + "｜" + mtfFailureReason
+mtfCompactText = mtfStatusText + "｜" + mtfClueText + "｜W " + f_num(mtfWeightApplied * 100.0) + "%｜" + mtfDiagnosticsText
+
+// v0.3.8 Trend Extension Layer
+
+nonRangeScore = 100.0 - rangeScore
+nonPanicScore = 100.0 - panicHeatDn
+nonHeatScore  = 100.0 - heatUp
+
+markupExtensionScore = f_clamp(
+     f_weighted5(bullBg, 0.25, structureStrong, 0.25, nonRangeScore, 0.20, heatUp, 0.20, nonPanicScore, 0.10),
+     0.0,
+     100.0)
+
+markdownExtensionScore = f_clamp(
+     f_weighted5(bearBg, 0.25, structureWeak, 0.25, nonRangeScore, 0.20, panicHeatDn, 0.20, nonHeatScore, 0.10),
+     0.0,
+     100.0)
+
+markupExtensionSupport = f_gate(markupExtensionScore, 35.0, trendExtThreshold)
+markdownExtensionSupport = f_gate(markdownExtensionScore, 35.0, trendExtThreshold)
+
+// v0.3.8 Trend Continuation Layer｜整理後延續 / 均線發散 / 快速切換基礎
+
+prevRangeHigh = ta.highest(high[1], rangeLen)
+prevRangeLow  = ta.lowest(low[1], rangeLen)
+abovePrevRange = not na(prevRangeHigh) and close > prevRangeHigh
+belowPrevRange = not na(prevRangeLow) and close < prevRangeLow
+
+abovePrevRangeScore = f_issue66_softAboveRange(close, prevRangeHigh, atr)
+belowPrevRangeScore = f_issue66_softBelowRange(close, prevRangeLow, atr)
+sustainedAboveRangeScore = ta.lowest(abovePrevRangeScore, continuationHoldBars)
+sustainedBelowRangeScore = ta.lowest(belowPrevRangeScore, continuationHoldBars)
+rangeBreakUpEvidence = nz(recentRangeBreakUpStrength, 0.0) * 0.65
+rangeBreakDnEvidence = nz(recentRangeBreakDnStrength, 0.0) * 0.65
+rangeContinuationUpBase = math.max(rangeBreakUpEvidence, recentMaCrossUp ? 65.0 : close > rangeMid ? 35.0 : 0.0)
+rangeContinuationDnBase = math.max(rangeBreakDnEvidence, recentMaCrossDn ? 65.0 : close < rangeMid ? 35.0 : 0.0)
+rangeContinuationUpScore = math.max(rangeContinuationUpBase, math.max(nz(abovePrevRangeScore, 0.0) * 0.80, nz(sustainedAboveRangeScore, 0.0)))
+rangeContinuationDnScore = math.max(rangeContinuationDnBase, math.max(nz(belowPrevRangeScore, 0.0) * 0.80, nz(sustainedBelowRangeScore, 0.0)))
+
+maSpreadATR = f_safeDiv(maLog - maturityMaLog, symATR)
+maSpreadExpandingUp = maSpreadATR > maSpreadATR[1]
+maSpreadExpandingDn = maSpreadATR < maSpreadATR[1]
+maBullSpreadScore = f_clamp(f_weighted4(ma > maturityMa ? 100.0 : 0.0, 0.35, ma > ma[1] ? 100.0 : 0.0, 0.25, maturityMa >= maturityMa[1] ? 100.0 : 0.0, 0.15, maSpreadExpandingUp ? 100.0 : 0.0, 0.25), 0.0, 100.0)
+maBearSpreadScore = f_clamp(f_weighted4(ma < maturityMa ? 100.0 : 0.0, 0.35, ma < ma[1] ? 100.0 : 0.0, 0.25, maturityMa <= maturityMa[1] ? 100.0 : 0.0, 0.15, maSpreadExpandingDn ? 100.0 : 0.0, 0.25), 0.0, 100.0)
+
+// 拉升 / 崩跌整理後延續分數：當市場已經脫離橫盤並均線發散時，優先辨識為趨勢延續。
+markupContinuationScore = f_clamp(f_weighted5(rangeContinuationUpScore, 0.30, maBullSpreadScore, 0.25, markupExtensionScore, 0.25, 100.0 - math.max(upsideExhaustion, resistanceHolding), 0.10, structureStrong, 0.10), 0.0, 100.0)
+markdownContinuationScore = f_clamp(f_weighted5(rangeContinuationDnScore, 0.30, maBearSpreadScore, 0.25, markdownExtensionScore, 0.25, 100.0 - math.max(downsideExhaustion, supportHolding), 0.10, structureWeak, 0.10), 0.0, 100.0)
+
+rangeContinuationUpGate = f_gate(rangeContinuationUpScore, 55.0, 90.0)
+rangeContinuationDnGate = f_gate(rangeContinuationDnScore, 55.0, 90.0)
+maBullSpreadGate = f_gate(maBullSpreadScore, 50.0, 85.0)
+maBearSpreadGate = f_gate(maBearSpreadScore, 50.0, 85.0)
+markupContinuationSupport = f_gate(markupContinuationScore, 45.0, trendExtThreshold)
+markdownContinuationSupport = f_gate(markdownContinuationScore, 45.0, trendExtThreshold)
+nonMarkupContinuationGate = f_gate(100.0 - markupContinuationScore, 15.0, 60.0)
+nonMarkdownContinuationGate = f_gate(100.0 - markdownContinuationScore, 15.0, 60.0)
+
+// Raw Scores｜六階段原始分數
+
+accRaw0 = f_weighted5(bearMaturityTrace, 0.20, rangeScore, 0.20, downsideExhaustion, 0.25, supportHolding, 0.25, lowVolScore, 0.10)
+
+accTraceForMarkup = ta.highest(accRaw0, absorbLen)
+markupBaseRaw = f_weighted5(breakoutScore, 0.20, heatUp, 0.20, structureStrong, 0.20, markupExtensionScore, 0.25, markupContinuationScore, 0.15)
+markupRaw0 = f_weighted2(markupBaseRaw, 0.85, accTraceForMarkup, 0.15)
+
+reaccRaw0 = f_weighted5(bullBg, 0.20, rangeScore, 0.20, supportHolding, 0.25, 100.0 - panicHeatDn, 0.20, 100.0 - upsideExhaustion, 0.15)
+distRaw0 = f_weighted5(bullMaturityTrace, 0.20, rangeScore, 0.20, upsideExhaustion, 0.25, resistanceHolding, 0.25, lowVolScore, 0.10)
+
+markdownBaseRaw = f_weighted5(explicitBreakdownScore, 0.20, panicHeatDn, 0.20, structureWeak, 0.20, markdownExtensionScore, 0.25, markdownContinuationScore, 0.15)
+distTraceForMarkdown = ta.highest(distRaw0, absorbLen)
+markdownRaw0 = f_weighted2(markdownBaseRaw, 0.85, distTraceForMarkdown, 0.15)
+
+reboundFailure = f_weighted3(heatUp, 0.30, bearStructure, 0.45, 100.0 - bullStructure, 0.25)
+redistRaw0 = f_weighted5(bearBg, 0.20, rangeScore, 0.20, resistanceHolding, 0.25, 100.0 - heatUp, 0.20, 100.0 - downsideExhaustion, 0.15)
+
+accRaw      = f_smooth(f_clamp(accRaw0, 0.0, 100.0), stageSmoothLen)
+markupRaw   = f_smooth(f_clamp(markupRaw0, 0.0, 100.0), stageSmoothLen)
+reaccRaw    = f_smooth(f_clamp(reaccRaw0, 0.0, 100.0), stageSmoothLen)
+distRaw     = f_smooth(f_clamp(distRaw0, 0.0, 100.0), stageSmoothLen)
+markdownRaw = f_smooth(f_clamp(markdownRaw0, 0.0, 100.0), stageSmoothLen)
+redistRaw   = f_smooth(f_clamp(redistRaw0, 0.0, 100.0), stageSmoothLen)
+
+// Gates / Effective Scores
+
+rangeGate = f_gate(rangeScore, 35.0, 70.0)
+uptrendGate = f_gate(bullBg, 45.0, 80.0)
+downtrendGate = f_gate(bearBg, 45.0, 80.0)
+matureBullGate = f_gate(bullMaturityTrace, 60.0, 85.0)  // retained diagnostic compatibility
+bearBackgroundForAccGate = f_gate(math.max(bearBg, bearMaturityTrace), 35.0, 75.0)
+bullBackgroundForDistGate = f_gate(math.max(bullBg, bullMaturityTrace), 35.0, 75.0)
+
+breakoutRecentRangeGate = f_clamp(breakoutRangeEvidence / 100.0, 0.0, 1.0)
+breakoutMaGate = f_clamp(breakoutMaEvidence / 100.0, 0.0, 1.0)
+breakoutRecentGate = math.max(breakoutRecentRangeGate, breakoutMaGate)
+breakoutGate = f_clamp(breakoutScore / 100.0, 0.0, 1.0)
+explicitRecentBreakdownGate = f_clamp(breakdownRangeEvidence / 100.0, 0.0, 1.0)
+explicitBreakdownMaGate = f_clamp(breakdownMaEvidence / 100.0, 0.0, 1.0)
+explicitBreakdownGate = f_clamp(explicitBreakdownScore / 100.0, 0.0, 1.0)
+structureStrongGate = f_gate(structureStrong, 40.0, 100.0)
+structureWeakGate = f_gate(structureWeak, 40.0, 100.0)
+reboundFailureGate = f_gate(reboundFailure, 40.0, 80.0)
+nonEndUpGate = f_gate(nonEndRiskUp, 35.0, 80.0)
+nonEndDnGate = f_gate(100.0 - endRiskDnRaw, 35.0, 80.0)
+
+nonRangeGate = f_gate(nonRangeScore, nonRangeGateStart, nonRangeGateFull)
+nonPanicGate = f_gate(nonPanicScore, 50.0, 85.0)
+nonHeatGate  = f_gate(nonHeatScore, 50.0, 85.0)
+
+breakoutMarkupGate =
+     breakoutGate *
+     structureStrongGate *
+     nonEndUpGate
+
+markupExtensionGate =
+     uptrendGate *
+     structureStrongGate *
+     nonRangeGate *
+     f_gate(heatUp, 45.0, 80.0) *
+     nonPanicGate *
+     markupExtensionSupport
+
+// v0.3.8：整理後延續拉升 Gate。突破整理區、均線發散、上漲延伸高時，拉升優先於再吸籌 / 派發。
+markupContinuationGate =
+     rangeContinuationUpGate *
+     maBullSpreadGate *
+     markupContinuationSupport *
+     structureStrongGate *
+     f_gate(100.0 - math.max(upsideExhaustion, resistanceHolding), 20.0, 70.0)
+
+breakdownMarkdownGate =
+     explicitBreakdownGate *
+     structureWeakGate *
+     nonEndDnGate
+
+markdownExtensionGate =
+     downtrendGate *
+     structureWeakGate *
+     nonRangeGate *
+     f_gate(panicHeatDn, 45.0, 80.0) *
+     nonHeatGate *
+     markdownExtensionSupport
+
+// v0.3.8：整理後延續崩跌 Gate。跌破整理區、均線向下發散、下跌延伸高時，崩跌優先於吸籌 / 再出貨。
+markdownContinuationGate =
+     rangeContinuationDnGate *
+     maBearSpreadGate *
+     markdownContinuationSupport *
+     structureWeakGate *
+     f_gate(100.0 - math.max(downsideExhaustion, supportHolding), 20.0, 70.0)
+
+accGate      = rangeGate * bearBackgroundForAccGate * downsideExhaustionGate * supportHoldingGate * nonMarkdownContinuationGate
+markupGate   = math.max(math.max(breakoutMarkupGate, markupExtensionGate), markupContinuationGate)
+reaccGate    = rangeGate * uptrendGate * supportHoldingGate * nonDistributionGate * f_gate(100.0 - bearPressureRising, 25.0, 75.0) * nonMarkupContinuationGate
+distGate     = rangeGate * bullBackgroundForDistGate * upsideExhaustionGate * resistanceHoldingGate * nonMarkupContinuationGate
+markdownGate = math.max(math.max(breakdownMarkdownGate, markdownExtensionGate), markdownContinuationGate)
+redistGate   = rangeGate * downtrendGate * resistanceHoldingGate * reboundFailureGate * nonAbsorptionGate * nonMarkdownContinuationGate
+
+accEffBase      = accRaw * accGate
+markupEffBase   = markupRaw * markupGate
+reaccEffBase    = reaccRaw * reaccGate
+distEffBase     = distRaw * distGate
+markdownEffBase = markdownRaw * markdownGate
+redistEffBase   = redistRaw * redistGate
+
+
+// v0.5.2 Divergence Witness Layer｜confirmed pivot + risk alignment window + hold.
+bullChaseRisk = endRiskUp
+bearChaseRisk = endRiskDn
+pricePivotHigh = ta.pivothigh(high, divPivotLeft, divPivotRight)
+pricePivotLow = ta.pivotlow(low, divPivotLeft, divPivotRight)
+pricePivotHighNow = divMode != "Off" and not na(pricePivotHigh)
+pricePivotLowNow = divMode != "Off" and not na(pricePivotLow)
+riskWindowLen = divPivotRight + divRiskAlignWindow + 1
+bullRiskAtHighPivot = ta.highest(bullChaseRisk, riskWindowLen)
+bearRiskAtLowPivot = ta.highest(bearChaseRisk, riskWindowLen)
+
+var float prevPivotHigh = na
+var float prevPivotLow = na
+var float prevBullRiskAtHigh = na
+var float prevBearRiskAtLow = na
+var int lastTopDivBar = na
+var int lastBottomDivBar = na
+var int lastTopSoftBar = na
+var int lastBottomSoftBar = na
+var int lastBullResonanceBar = na
+var int lastBearResonanceBar = na
+
+strictTopDivNow = false
+strictBottomDivNow = false
+softTopDivNow = false
+softBottomDivNow = false
+bullResonanceNow = false
+bearResonanceNow = false
+
+if pricePivotHighNow
+    priceMadeHigherHigh = not na(prevPivotHigh) and pricePivotHigh >= prevPivotHigh * (1.0 + divMinPricePct / 100.0)
+    priceNearHigh = not na(prevPivotHigh) and pricePivotHigh >= prevPivotHigh * (1.0 - divNearPricePct / 100.0)
+    riskLowerHigh = not na(prevBullRiskAtHigh) and prevBullRiskAtHigh >= divRiskMin and bullRiskAtHighPivot >= divRiskMin and bullRiskAtHighPivot <= prevBullRiskAtHigh - divMinRiskGap
+    riskConfirmsHigh = not na(prevBullRiskAtHigh) and bullRiskAtHighPivot >= prevBullRiskAtHigh + divMinRiskGap
+    strictTopDivNow := priceMadeHigherHigh and riskLowerHigh
+    softTopDivNow := not strictTopDivNow and priceNearHigh and riskLowerHigh
+    bullResonanceNow := priceMadeHigherHigh and riskConfirmsHigh
+    if strictTopDivNow
+        lastTopDivBar := bar_index
+    if softTopDivNow
+        lastTopSoftBar := bar_index
+    if bullResonanceNow
+        lastBullResonanceBar := bar_index
+    prevPivotHigh := pricePivotHigh
+    prevBullRiskAtHigh := bullRiskAtHighPivot
+
+if pricePivotLowNow
+    priceMadeLowerLow = not na(prevPivotLow) and pricePivotLow <= prevPivotLow * (1.0 - divMinPricePct / 100.0)
+    priceNearLow = not na(prevPivotLow) and pricePivotLow <= prevPivotLow * (1.0 + divNearPricePct / 100.0)
+    riskLowerLow = not na(prevBearRiskAtLow) and prevBearRiskAtLow >= divRiskMin and bearRiskAtLowPivot >= divRiskMin and bearRiskAtLowPivot <= prevBearRiskAtLow - divMinRiskGap
+    riskConfirmsLow = not na(prevBearRiskAtLow) and bearRiskAtLowPivot >= prevBearRiskAtLow + divMinRiskGap
+    strictBottomDivNow := priceMadeLowerLow and riskLowerLow
+    softBottomDivNow := not strictBottomDivNow and priceNearLow and riskLowerLow
+    bearResonanceNow := priceMadeLowerLow and riskConfirmsLow
+    if strictBottomDivNow
+        lastBottomDivBar := bar_index
+    if softBottomDivNow
+        lastBottomSoftBar := bar_index
+    if bearResonanceNow
+        lastBearResonanceBar := bar_index
+    prevPivotLow := pricePivotLow
+    prevBearRiskAtLow := bearRiskAtLowPivot
+
+strictTopDivergence = divMode != "Off" and not na(lastTopDivBar) and bar_index - lastTopDivBar <= divSignalHoldBars
+strictBottomDivergence = divMode != "Off" and not na(lastBottomDivBar) and bar_index - lastBottomDivBar <= divSignalHoldBars
+softTopDivergence = divMode != "Off" and not na(lastTopSoftBar) and bar_index - lastTopSoftBar <= divSignalHoldBars
+softBottomDivergence = divMode != "Off" and not na(lastBottomSoftBar) and bar_index - lastBottomSoftBar <= divSignalHoldBars
+bullOverheatResonance = divMode != "Off" and not na(lastBullResonanceBar) and bar_index - lastBullResonanceBar <= divSignalHoldBars
+bearPanicResonance = divMode != "Off" and not na(lastBearResonanceBar) and bar_index - lastBearResonanceBar <= divSignalHoldBars
+
+divRawWeight = divMode == "Off" or divMode == "Observe Only" ? 0.0 : divMaxWeight / 100.0 * ((strictTopDivergence or strictBottomDivergence) ? 1.0 : (softTopDivergence or softBottomDivergence or bullOverheatResonance or bearPanicResonance) ? 0.25 : 0.0)
+divStageBiasAllowed = witnessStageBiasMode == "Aggressive" and (strictTopDivergence or strictBottomDivergence)
+divWeightApplied = divStageBiasAllowed ? divRawWeight : 0.0
+divClueText = divMode == "Off" ? "背離關閉" : strictTopDivergence ? "Strict頂背離" : strictBottomDivergence ? "Strict底背離" : softTopDivergence ? "Soft高位供給觀察" : softBottomDivergence ? "Soft低位承接觀察" : bullOverheatResonance ? "多頭過熱共振" : bearPanicResonance ? "空頭恐慌共振" : "背離無"
+divCompactText = divClueText + "｜W " + f_num(divWeightApplied * 100.0) + "%"
+
+// v0.5.2 Witness Governance：cap all stage-bias witness weights as a package.
+witnessRawTotalWeight = volumeWeightApplied + mtfWeightApplied + divWeightApplied
+witnessCap = witnessMaxTotalWeight / 100.0
+witnessScale = witnessRawTotalWeight > witnessCap and witnessRawTotalWeight > 0.0 ? witnessCap / witnessRawTotalWeight : 1.0
+volumeWeightGoverned = volumeWeightApplied * witnessScale
+mtfWeightGoverned = mtfWeightApplied * witnessScale
+divWeightGoverned = divWeightApplied * witnessScale
+witnessGovernanceText = witnessStageBiasMode + "｜V " + f_num(volumeWeightGoverned * 100.0) + "% M " + f_num(mtfWeightGoverned * 100.0) + "% D " + f_num(divWeightGoverned * 100.0) + "%｜T/C " + f_num(witnessRawTotalWeight * 100.0) + "/" + f_num(witnessMaxTotalWeight) + "%"
+stageBiasStatusText = witnessStageBiasMode == "Conservative" ? "Observe only：witness不改階段分數" : witnessStageBiasMode == "Balanced" ? "Balanced：僅MTF strict可改分" : "Aggressive：MTF strict/soft(25%) + strict divergence小幅改分"
+
+// v0.4：成交量不接管主引擎，只在品質足夠時以低權重加強對應劇本。
+// v0.5：MTF 同樣不接管主引擎；預設 Observe Only 不參與，Auto / Force On 才以低權重加強 effort/result 一致的劇本。
+accVolMult      = 1.0 + volumeWeightGoverned * f_gate(volumeAbsorptionScore, effortResultThreshold, 90.0)
+markupVolMult   = 1.0 + volumeWeightGoverned * f_gate(volumeBreakoutConfirmation, effortResultThreshold, 90.0)
+reaccVolMult    = 1.0 + volumeWeightGoverned * f_gate(math.max(volumeAbsorptionScore, 100.0 - volumeDistributionScore), 50.0, 90.0) * 0.50
+distVolMult     = 1.0 + volumeWeightGoverned * f_gate(volumeDistributionScore, effortResultThreshold, 90.0)
+markdownVolMult = 1.0 + volumeWeightGoverned * f_gate(volumeBreakdownConfirmation, effortResultThreshold, 90.0)
+redistVolMult   = 1.0 + volumeWeightGoverned * f_gate(math.max(volumeDistributionScore, 100.0 - volumeAbsorptionScore), 50.0, 90.0) * 0.50
+
+accMtfMult      = 1.0 + mtfWeightGoverned * f_gate(mtfAbsorptionScore, mtfEffortThreshold, 90.0)
+markupMtfMult   = 1.0 + mtfWeightGoverned * f_gate(mtfMarkupConfirmScore, mtfEffortThreshold, 90.0)
+reaccMtfMult    = 1.0 + mtfWeightGoverned * f_gate(math.max(mtfAbsorptionScore, 100.0 - mtfDistributionScore), 50.0, 90.0) * 0.50
+distMtfMult     = 1.0 + mtfWeightGoverned * f_gate(mtfDistributionScore, mtfEffortThreshold, 90.0)
+markdownMtfMult = 1.0 + mtfWeightGoverned * f_gate(mtfMarkdownConfirmScore, mtfEffortThreshold, 90.0)
+redistMtfMult   = 1.0 + mtfWeightGoverned * f_gate(math.max(mtfDistributionScore, 100.0 - mtfAbsorptionScore), 50.0, 90.0) * 0.50
+
+accDivMult      = 1.0 + divWeightGoverned * f_gate(strictBottomDivergence ? bullChaseRisk : 0.0, divRiskMin, 100.0) * 0.50
+distDivMult     = 1.0 + divWeightGoverned * f_gate(strictTopDivergence ? bearChaseRisk : 0.0, divRiskMin, 100.0) * 0.50
+
+accEff      = accEffBase * accVolMult * accMtfMult * accDivMult
+markupEff   = markupEffBase * markupVolMult * markupMtfMult
+reaccEff    = reaccEffBase * reaccVolMult * reaccMtfMult
+distEff     = distEffBase * distVolMult * distMtfMult * distDivMult
+markdownEff = markdownEffBase * markdownVolMult * markdownMtfMult
+redistEff   = redistEffBase * redistVolMult * redistMtfMult
+
+effTotal = accEff + markupEff + reaccEff + distEff + markdownEff + redistEff
+hasEnoughEff = not na(effTotal) and effTotal > minEffTotal
+
+accSharp      = math.pow(math.max(nz(accEff), 0.0), regimeGamma)
+markupSharp   = math.pow(math.max(nz(markupEff), 0.0), regimeGamma)
+reaccSharp    = math.pow(math.max(nz(reaccEff), 0.0), regimeGamma)
+distSharp     = math.pow(math.max(nz(distEff), 0.0), regimeGamma)
+markdownSharp = math.pow(math.max(nz(markdownEff), 0.0), regimeGamma)
+redistSharp   = math.pow(math.max(nz(redistEff), 0.0), regimeGamma)
+sharpTotal = accSharp + markupSharp + reaccSharp + distSharp + markdownSharp + redistSharp
+hasSharp = hasEnoughEff and sharpTotal > 0.0
+
+probAcc      = hasSharp ? accSharp / sharpTotal * 100.0 : na
+probMarkup   = hasSharp ? markupSharp / sharpTotal * 100.0 : na
+probReacc    = hasSharp ? reaccSharp / sharpTotal * 100.0 : na
+probDist     = hasSharp ? distSharp / sharpTotal * 100.0 : na
+probMarkdown = hasSharp ? markdownSharp / sharpTotal * 100.0 : na
+probRedist   = hasSharp ? redistSharp / sharpTotal * 100.0 : na
+
+// Dominant / Secondary Regime
+
+p1 = na(probAcc) ? 0.0 : probAcc
+p2 = na(probMarkup) ? 0.0 : probMarkup
+p3 = na(probReacc) ? 0.0 : probReacc
+p4 = na(probDist) ? 0.0 : probDist
+p5 = na(probMarkdown) ? 0.0 : probMarkdown
+p6 = na(probRedist) ? 0.0 : probRedist
+
+float topVal = p1
+int topId = 1
+float secondVal = -1.0
+int secondId = 0
+
+if p2 > topVal
+    secondVal := topVal
+    secondId := topId
+    topVal := p2
+    topId := 2
+else if p2 > secondVal
+    secondVal := p2
+    secondId := 2
+
+if p3 > topVal
+    secondVal := topVal
+    secondId := topId
+    topVal := p3
+    topId := 3
+else if p3 > secondVal
+    secondVal := p3
+    secondId := 3
+
+if p4 > topVal
+    secondVal := topVal
+    secondId := topId
+    topVal := p4
+    topId := 4
+else if p4 > secondVal
+    secondVal := p4
+    secondId := 4
+
+if p5 > topVal
+    secondVal := topVal
+    secondId := topId
+    topVal := p5
+    topId := 5
+else if p5 > secondVal
+    secondVal := p5
+    secondId := 5
+
+if p6 > topVal
+    secondVal := topVal
+    secondId := topId
+    topVal := p6
+    topId := 6
+else if p6 > secondVal
+    secondVal := p6
+    secondId := 6
+
+topGap = topVal - secondVal
+
+// Evidence Strength / State Logic
+
+maxEff = math.max(math.max(math.max(accEff, markupEff), math.max(reaccEff, distEff)), math.max(markdownEff, redistEff))
+effTotalStrength = f_gate(effTotal, minEffTotal, evidenceEffFull) * 100.0
+topEffStrength   = f_gate(maxEff, 0.0, evidenceTopFull) * 100.0
+topGapStrength   = f_gate(topGap, topGapMin, 35.0) * 100.0
+
+stageSupportStrength = topId == 1 ? f_weighted2(downsideExhaustion, 0.50, supportHolding, 0.50) :
+     topId == 2 ? f_weighted3(markupExtensionScore, 0.45, markupContinuationScore, 0.35, math.max(breakoutScore, structureStrong), 0.20) :
+     topId == 3 ? f_weighted2(supportHolding, 0.50, 100.0 - upsideExhaustion, 0.50) :
+     topId == 4 ? f_weighted2(upsideExhaustion, 0.50, resistanceHolding, 0.50) :
+     topId == 5 ? f_weighted3(markdownExtensionScore, 0.45, markdownContinuationScore, 0.35, math.max(explicitBreakdownGate * 100.0, panicHeatDn), 0.20) :
+     topId == 6 ? f_weighted2(resistanceHolding, 0.50, 100.0 - downsideExhaustion, 0.50) : 0.0
+
+volumeSupportStrength = topId == 1 ? volumeAbsorptionScore :
+     topId == 2 ? volumeBreakoutConfirmation :
+     topId == 3 ? f_weighted2(volumeAbsorptionScore, 0.50, 100.0 - volumeDistributionScore, 0.50) :
+     topId == 4 ? volumeDistributionScore :
+     topId == 5 ? volumeBreakdownConfirmation :
+     topId == 6 ? f_weighted2(volumeDistributionScore, 0.50, 100.0 - volumeAbsorptionScore, 0.50) : 0.0
+
+mtfSupportStrength = topId == 1 ? mtfAbsorptionScore :
+     topId == 2 ? mtfMarkupConfirmScore :
+     topId == 3 ? f_weighted2(mtfAbsorptionScore, 0.50, 100.0 - mtfDistributionScore, 0.50) :
+     topId == 4 ? mtfDistributionScore :
+     topId == 5 ? mtfMarkdownConfirmScore :
+     topId == 6 ? f_weighted2(mtfDistributionScore, 0.50, 100.0 - mtfAbsorptionScore, 0.50) : 0.0
+
+witnessSupportStrength =
+     volumeActive and mtfActive ? f_weighted2(volumeSupportStrength, volumeWeightApplied, mtfSupportStrength, mtfWeightApplied) :
+     volumeActive ? volumeSupportStrength :
+     mtfActive ? mtfSupportStrength : 0.0
+
+witnessActive = volumeActive or mtfActive
+
+priceOnlyEvidenceStrength = f_weighted4(effTotalStrength, 0.30, topEffStrength, 0.25, topGapStrength, 0.20, stageSupportStrength, 0.25)
+evidenceStrength = witnessActive ? f_weighted5(effTotalStrength, 0.25, topEffStrength, 0.20, topGapStrength, 0.20, stageSupportStrength, 0.25, witnessSupportStrength, 0.10) : priceOnlyEvidenceStrength
+evidenceLabel = f_evidenceText(evidenceStrength)
+hasEvidence = not na(evidenceStrength) and evidenceStrength >= evidenceMin
+hasHighEvidence = not na(evidenceStrength) and evidenceStrength >= evidenceHigh
+
+// v0.3.8：階段分歧與線索觀察分離。
+// 階段分歧必須由「兩個對立階段權重都達門檻」成立；
+// 若只是鈍化 / 壓力 / 承接線索升高，但對應階段權重未達標，僅顯示線索觀察。
+lowStageDisputeGap = math.abs(p1 - p6)
+highStageDisputeGap = math.abs(p3 - p4)
+trendUpStageDisputeGap = math.abs(p2 - p4)
+trendDnStageDisputeGap = math.abs(p5 - p1)
+
+lowStageDispute = rangeGate > 0.35 and downtrendGate > 0.25 and p1 >= stageDisputeMinWeight and p6 >= stageDisputeMinWeight and lowStageDisputeGap <= stageDisputeMaxGap
+highStageDispute = rangeGate > 0.35 and uptrendGate > 0.25 and p3 >= stageDisputeMinWeight and p4 >= stageDisputeMinWeight and highStageDisputeGap <= stageDisputeMaxGap
+trendStageDispute = (markupExtensionScore >= trendExtThreshold and p2 >= stageDisputeMinWeight and p4 >= stageDisputeMinWeight and trendUpStageDisputeGap <= stageDisputeMaxGap) or
+     (markdownExtensionScore >= trendExtThreshold and p5 >= stageDisputeMinWeight and p1 >= stageDisputeMinWeight and trendDnStageDisputeGap <= stageDisputeMaxGap)
+
+highClueObservation = not highStageDispute and uptrendGate > 0.25 and (upsideExhaustion >= clueObservationLevel or resistanceHolding >= clueObservationLevel or volumeSupplyClue or mtfSupplyClue or strictTopDivergence or softTopDivergence) and p4 < stageNameUseMinWeight
+lowClueObservation = not lowStageDispute and downtrendGate > 0.25 and (downsideExhaustion >= clueObservationLevel or supportHolding >= clueObservationLevel or volumeDemandClue or mtfDemandClue or strictBottomDivergence or softBottomDivergence) and p1 < stageNameUseMinWeight
+trendClueDispute = not trendStageDispute and ((markupExtensionScore >= trendExtThreshold and (upsideExhaustion >= clueObservationLevel or resistanceHolding >= clueObservationLevel or volumeSupplyClue or mtfSupplyClue)) or
+     (markdownExtensionScore >= trendExtThreshold and (downsideExhaustion >= clueObservationLevel or supportHolding >= clueObservationLevel or volumeDemandClue or mtfDemandClue)))
+
+// v0.3.8：若趨勢延續證據夠強，不讓橫盤中的反向鈍化訊號過度壓制拉升 / 崩跌。
+markupContinuationOverride = markupContinuationScore >= trendExtThreshold and markupExtensionScore >= trendExtThreshold and maBullSpreadScore >= 55.0
+markdownContinuationOverride = markdownContinuationScore >= trendExtThreshold and markdownExtensionScore >= trendExtThreshold and maBearSpreadScore >= 55.0
+
+candidateConflict = (topId == 6 and downsideExhaustion >= absorbThreshold and supportHolding >= absorbThreshold and not markdownContinuationOverride) or
+     (topId == 1 and resistanceHolding >= absorbThreshold and upsideExhaustion >= absorbThreshold and not markdownContinuationOverride) or
+     (topId == 4 and supportHolding >= absorbThreshold and downsideExhaustion >= absorbThreshold and not markupContinuationOverride) or
+     (topId == 3 and upsideExhaustion >= absorbThreshold and resistanceHolding >= absorbThreshold and not markupContinuationOverride) or
+     (topId == 2 and upsideExhaustion >= absorbThreshold and resistanceHolding >= absorbThreshold and not markupContinuationOverride) or
+     (topId == 5 and downsideExhaustion >= absorbThreshold and supportHolding >= absorbThreshold and not markdownContinuationOverride)
+
+chaosRaw = not hasSharp or topVal < dominantMin or (evidenceStrength < 25.0 and topVal < highConfidence)
+coexistRaw = (hasSharp and topVal >= dominantMin and topGap < topGapMin and evidenceStrength >= 25.0) or lowStageDispute or highStageDispute
+weakCandidateRaw = hasSharp and topVal >= dominantMin and topGap >= topGapMin and (not hasEvidence or candidateConflict)
+strongCandidate = hasSharp and topVal >= dominantMin and topGap >= topGapMin and hasEvidence and not candidateConflict
+
+// v0.3.8：強候選快速轉正。當候選權重、Gap、證據與趨勢延伸壓倒性領先時，使用較短確認根數。
+fastMarkupSwitch = strongCandidate and topId == 2 and topVal >= fastSwitchWeight and topGap >= fastSwitchGap and evidenceStrength >= fastSwitchEvidence and markupContinuationScore >= fastSwitchExt and markupExtensionScore >= trendExtThreshold and close > ma and close > maturityMa
+fastMarkdownSwitch = strongCandidate and topId == 5 and topVal >= fastSwitchWeight and topGap >= fastSwitchGap and evidenceStrength >= fastSwitchEvidence and markdownContinuationScore >= fastSwitchExt and markdownExtensionScore >= trendExtThreshold and close < ma and close < maturityMa
+fastSwitchActive = fastMarkupSwitch or fastMarkdownSwitch
+activeConfirmBars = fastSwitchActive ? fastSwitchConfirmBars : confirmBars
+candidateRawId = strongCandidate ? topId : 0
+
+// Regime Inertia — Issue #57 Phase-B stale-pressure persistence
+
+candidateDisplayRawId = (strongCandidate or weakCandidateRaw) ? topId : 0
+var int confirmedId = 0
+var int candidateId = 0
+var int candidateBars = 0
+var int stalePressureBars = 0
+int stalePressureReason = 0
+staleLimit = confirmBars * 2
+
+if strongCandidate
+    stalePressureBars := 0
+    stalePressureReason := 0
+    if candidateRawId == candidateId
+        candidateBars += 1
+    else
+        candidateId := candidateRawId
+        candidateBars := 1
+
+    if candidateBars >= activeConfirmBars
+        confirmedId := candidateId
+else
+    candidateId := 0
+    candidateBars := 0
+    weakChallenger = confirmedId != 0 and candidateDisplayRawId != 0 and candidateDisplayRawId != confirmedId
+    coexistPressure = confirmedId != 0 and coexistRaw and candidateDisplayRawId == 0
+    stalePressureReason := chaosRaw and confirmedId != 0 ? 1 : weakChallenger ? 2 : coexistPressure ? 3 : 0
+    if stalePressureReason != 0
+        stalePressureBars += 1
+        if stalePressureBars >= staleLimit
+            confirmedId := 0
+    else
+        stalePressureBars := 0
+
+formalId = confirmedId
+candidateDisplayId = candidateDisplayRawId
+secondaryId = hasSharp ? secondId : 0
+
+f_stageSubtype(id) =>
+    id == 2 ? (markupContinuationGate >= math.max(breakoutMarkupGate, markupExtensionGate) and markupContinuationGate > 0.0 ? "拉升｜整理後延續" :
+         breakoutMarkupGate >= math.max(markupExtensionGate, markupContinuationGate) and endRiskUp < yellowLevel ? "拉升｜突破初段" :
+         endRiskUp >= redLevel ? "拉升｜極端過熱" :
+         endRiskUp >= orangeLevel ? "拉升｜過熱延伸" :
+         endRiskUp >= yellowLevel ? "拉升｜偏熱推進" : "拉升｜健康推進") :
+     id == 5 ? (markdownContinuationGate >= math.max(breakdownMarkdownGate, markdownExtensionGate) and markdownContinuationGate > 0.0 ? "崩跌｜整理後延續" :
+         breakdownMarkdownGate >= math.max(markdownExtensionGate, markdownContinuationGate) and endRiskDn < yellowLevel ? "崩跌｜下破初段" :
+         endRiskDn >= redLevel ? "崩跌｜極端恐慌" :
+         endRiskDn >= orangeLevel ? "崩跌｜恐慌延伸" :
+         endRiskDn >= yellowLevel ? "崩跌｜恐慌推進" : "崩跌｜下跌推進") :
+     f_stageName(id)
+
+formalSubtypeText = f_stageSubtype(formalId)
+candidateSubtypeText = f_stageSubtype(candidateDisplayId)
+
+confidenceText = chaosRaw and formalId == 0 ? "混沌" :
+     lowStageDispute ? "低位階段分歧" :
+     highStageDispute ? "高位階段分歧" :
+     trendStageDispute ? "趨勢階段分歧" :
+     highClueObservation ? "高位鈍化觀察" :
+     lowClueObservation ? "低位鈍化觀察" :
+     trendClueDispute ? "趨勢線索分歧" :
+     weakCandidateRaw ? "弱候選" :
+     coexistRaw ? "並存" :
+     strongCandidate and candidateId != formalId ? "候選" :
+     strongCandidate and topVal >= highConfidence and hasHighEvidence ? "高信心" :
+     strongCandidate ? "主導" : "轉換觀察"
+
+
+// v0.3.8 Dashboard Label Semantics Layer｜操作節奏提示
+// Pace Guide 不是買賣指令，而是把 Dashboard 訊息翻譯成節奏提醒。
+// 它從空手者、多單持有者、空單持有者三種角度，提示目前較合理的風控節奏。
+
+paceStageId = formalId != 0 ? formalId : candidateDisplayId
+
+int paceCode = 0
+string paceTitle = "證據不足，降低動作"
+string flatGuide = "觀望"
+string longGuide = "照原停損管理"
+string shortGuide = "照原停損管理"
+string paceReason = "低證據 / 無明確"
+color paceColor = colPaceNeutral
+
+if lowStageDispute
+    paceCode := 70
+    paceTitle := "低位階段分歧，等方向確認"
+    flatGuide := "等上破 / 下破"
+    longGuide := "小部位需守停損"
+    shortGuide := "不宜低位追空"
+    paceReason := "吸籌 vs 再出貨"
+    paceColor := colPaceDispute
+else if highStageDispute
+    paceCode := 71
+    paceTitle := "高位階段分歧，控部位"
+    flatGuide := "不追高，等確認"
+    longGuide := "降低槓桿 / 提高停利"
+    shortGuide := "等下破確認"
+    paceReason := "再吸籌 vs 派發"
+    paceColor := colPaceDispute
+else if trendStageDispute
+    paceCode := 72
+    paceTitle := "趨勢階段分歧，等待勝負"
+    flatGuide := "等突破延續 / 轉弱"
+    longGuide := "續抱但不加碼"
+    shortGuide := "等待轉弱確認"
+    paceReason := "階段分歧"
+    paceColor := colPaceDispute
+else if trendClueDispute
+    paceCode := 73
+    isBullClue = markupExtensionScore >= trendExtThreshold and (upsideExhaustion >= clueObservationLevel or resistanceHolding >= clueObservationLevel)
+    paceTitle := isBullClue ? "多頭延伸帶鈍化" : "空頭延伸帶承接"
+    flatGuide := isBullClue ? "不追高，等確認" : "不追空，等確認"
+    longGuide := isBullClue ? "續抱但不加碼" : "防守，觀察支撐"
+    shortGuide := isBullClue ? "等轉弱確認" : "續抱但收緊停利"
+    paceReason := isBullClue ? "供給線索，非派發確認" : "承接線索，非吸籌確認"
+    paceColor := colTrendClue
+else if highClueObservation
+    paceCode := 74
+    paceTitle := "高位鈍化觀察"
+    flatGuide := "不追高，等確認"
+    longGuide := "續抱但停止加碼 / 提高停利"
+    shortGuide := "等待轉弱，不預設反轉"
+    paceReason := "供給線索，非派發確認"
+    paceColor := colHighClue
+else if lowClueObservation
+    paceCode := 75
+    paceTitle := "低位鈍化觀察"
+    flatGuide := "等確認"
+    longGuide := "小部位需守停損"
+    shortGuide := "不宜低位追空"
+    paceReason := "承接線索，非吸籌確認"
+    paceColor := colLowClue
+else if chaosRaw or weakCandidateRaw or not hasSharp
+    paceCode := 0
+    paceTitle := "證據不足，降低動作"
+    flatGuide := "觀望"
+    longGuide := "照原停損管理"
+    shortGuide := "照原停損管理"
+    paceReason := chaosRaw ? "混沌" : "弱候選"
+    paceColor := colPaceNeutral
+else if paceStageId == 2
+    if endRiskUp >= orangeLevel
+        paceCode := endRiskUp >= redLevel ? 22 : 21
+        paceTitle := endRiskUp >= redLevel ? "多頭極熱，不宜追高" : "偏多但開始偏熱"
+        flatGuide := "觀望或等降溫"
+        longGuide := endRiskUp >= redLevel ? "分批減碼 / 提高停利" : "續抱但停止加碼"
+        shortGuide := "不可直接逆勢，等轉弱"
+        paceReason := "拉升 + 末段風險升高"
+        paceColor := endRiskUp >= redLevel ? colPaceDefense : colPaceHot
+    else if endRiskUp >= yellowLevel
+        paceCode := 20
+        paceTitle := "偏多推進，但不宜追高"
+        flatGuide := "等回測，不追高"
+        longGuide := "順勢持有，停止衝動加碼"
+        shortGuide := "避免逆勢"
+        paceReason := "拉升 + 黃燈"
+        paceColor := colPaceHot
+    else
+        paceCode := 10
+        paceTitle := "偏多推進"
+        flatGuide := "等回測或突破試多"
+        longGuide := "順勢持有"
+        shortGuide := "避免逆勢"
+        paceReason := "拉升 / 趨勢延續"
+        paceColor := colPaceBull
+else if paceStageId == 3
+    paceCode := 30
+    paceTitle := "多頭整理，等待再啟動"
+    flatGuide := "等區間上破或回測試多"
+    longGuide := "持有，觀察支撐"
+    shortGuide := "不宜追空"
+    paceReason := "再吸籌 / 支撐觀察"
+    paceColor := colReacc
+else if paceStageId == 4
+    paceCode := 40
+    paceTitle := "高位供給升高"
+    flatGuide := "觀望，不追多"
+    longGuide := "減碼 / 提高停利"
+    shortGuide := "等下破確認"
+    paceReason := "派發階段 + 上攻鈍化"
+    paceColor := colPaceDefense
+else if paceStageId == 5
+    if endRiskDn >= orangeLevel
+        paceCode := endRiskDn >= redLevel ? 52 : 51
+        paceTitle := endRiskDn >= redLevel ? "恐慌延伸，不宜追空" : "空頭推進但恐慌升高"
+        flatGuide := "不追空，等反彈 / 止跌"
+        longGuide := "避免情緒化加碼或停損"
+        shortGuide := endRiskDn >= redLevel ? "分批回補 / 收緊停利" : "續抱但收緊停利"
+        paceReason := "崩跌 + 恐慌風險升高"
+        paceColor := endRiskDn >= redLevel ? colPacePanic : colPaceDefense
+    else if endRiskDn >= yellowLevel
+        paceCode := 50
+        paceTitle := "偏空推進，但不宜追空"
+        flatGuide := "避免抄底，等反彈"
+        longGuide := "停損或防守"
+        shortGuide := "順勢持有，避免加碼過度"
+        paceReason := "崩跌 + 黃燈"
+        paceColor := colPaceBear
+    else
+        paceCode := 49
+        paceTitle := "偏空推進"
+        flatGuide := "避免抄底"
+        longGuide := "停損或防守"
+        shortGuide := "順勢持有"
+        paceReason := "崩跌 / 趨勢延續"
+        paceColor := colPaceBear
+else if paceStageId == 1
+    paceCode := 15
+    paceTitle := "低位吸籌，等待確認"
+    flatGuide := "等突破或測試成功"
+    longGuide := "小部位觀察 / 嚴守停損"
+    shortGuide := "減碼或停利檢查"
+    paceReason := "吸籌階段 + 賣壓鈍化"
+    paceColor := colPaceAbsorb
+else if paceStageId == 6
+    paceCode := 60
+    paceTitle := "空頭中繼風險"
+    flatGuide := "等下破確認"
+    longGuide := "避免攤平"
+    shortGuide := "反彈失敗可續抱"
+    paceReason := "再出貨 / 壓力壓回"
+    paceColor := colPacePanic
+
+// v0.3.8 Flat Action Level｜空手行動分級
+// 0 觀望｜1 等待觸發｜2 小部位試多｜3 順勢試多｜4 小部位試空｜5 順勢試空｜6 禁止追多｜7 禁止追空
+// Flat Action 不是買賣命令，而是「空手者是否具備試單條件」的節奏授權。
+
+bullFormalAction = formalId == 2 or formalId == 3
+bearFormalAction = formalId == 5 or formalId == 6
+bullCandidateAction = allowCandidateFlatAction and (candidateDisplayId == 2 or candidateDisplayId == 3)
+bearCandidateAction = allowCandidateFlatAction and (candidateDisplayId == 5 or candidateDisplayId == 6)
+flatBullStage = bullFormalAction or bullCandidateAction
+flatBearStage = bearFormalAction or bearCandidateAction
+
+flatBullTrigger =
+     breakoutModeUp or
+     recentBreakUp or
+     markupExtensionScore >= trendExtThreshold or
+     markupContinuationScore >= trendExtThreshold or
+     close > ma and close > maturityMa
+
+flatBearTrigger =
+     breakdownModeDn or
+     recentBreakDn or
+     markdownExtensionScore >= trendExtThreshold or
+     markdownContinuationScore >= trendExtThreshold or
+     close < ma and close < maturityMa
+
+flatBullTriggerOk = flatTriggerRequired ? flatBullTrigger : true
+flatBearTriggerOk = flatTriggerRequired ? flatBearTrigger : true
+
+flatSupplyConflict =
+     highStageDispute or
+     volumeSupplyClue or
+     mtfSupplyClue or
+     (p4 >= stageNameUseMinWeight and (upsideExhaustion >= clueObservationLevel or resistanceHolding >= clueObservationLevel)) or
+     (upsideExhaustion >= absorbThreshold and resistanceHolding >= absorbThreshold and not markupContinuationOverride)
+
+flatDemandConflict =
+     lowStageDispute or
+     volumeDemandClue or
+     mtfDemandClue or
+     (p1 >= stageNameUseMinWeight and (downsideExhaustion >= clueObservationLevel or supportHolding >= clueObservationLevel)) or
+     (downsideExhaustion >= absorbThreshold and supportHolding >= absorbThreshold and not markdownContinuationOverride)
+
+flatNoChaseLong =
+     (endRiskUp >= flatNoChaseLongLevel or redUp) and
+     (flatBullStage or markupExtensionScore >= trendExtThreshold or heatUp >= orangeLevel)
+
+flatNoChaseShort =
+     (endRiskDn >= flatNoChaseShortLevel or redDn) and
+     (flatBearStage or markdownExtensionScore >= trendExtThreshold or panicHeatDn >= orangeLevel)
+
+flatLongSmallOk =
+     enableFlatAction and
+     flatBullStage and
+     evidenceStrength >= flatSmallEvidence and
+     topGap >= flatSmallGap and
+     endRiskUp < flatSmallLongMaxRisk and
+     not redUp and
+     flatBullTriggerOk and
+     not flatSupplyConflict
+
+flatLongTrendOk =
+     enableFlatAction and
+     flatBullStage and
+     evidenceStrength >= flatTrendEvidence and
+     topGap >= flatTrendGap and
+     endRiskUp < flatTrendLongMaxRisk and
+     not redUp and
+     (markupExtensionScore >= trendExtThreshold or markupContinuationScore >= trendExtThreshold) and
+     flatBullTriggerOk and
+     not flatSupplyConflict and
+     (not requireFormalForTrendAction or bullFormalAction or fastMarkupSwitch)
+
+flatShortSmallOk =
+     enableFlatAction and
+     flatBearStage and
+     evidenceStrength >= flatSmallEvidence and
+     topGap >= flatSmallGap and
+     endRiskDn < flatSmallShortMaxRisk and
+     not redDn and
+     flatBearTriggerOk and
+     not flatDemandConflict
+
+flatShortTrendOk =
+     enableFlatAction and
+     flatBearStage and
+     evidenceStrength >= flatTrendEvidence and
+     topGap >= flatTrendGap and
+     endRiskDn < flatTrendShortMaxRisk and
+     not redDn and
+     (markdownExtensionScore >= trendExtThreshold or markdownContinuationScore >= trendExtThreshold) and
+     flatBearTriggerOk and
+     not flatDemandConflict and
+     (not requireFormalForTrendAction or bearFormalAction or fastMarkdownSwitch)
+
+flatWaitLong = enableFlatAction and not flatNoChaseLong and (flatBullStage or markupExtensionScore >= trendExtThreshold or markupContinuationScore >= trendExtThreshold or breakoutModeUp or recentBreakUp)
+flatWaitShort = enableFlatAction and not flatNoChaseShort and (flatBearStage or markdownExtensionScore >= trendExtThreshold or markdownContinuationScore >= trendExtThreshold or breakdownModeDn or recentBreakDn)
+
+int rawFlatActionLevel = 0
+if not enableFlatAction
+    rawFlatActionLevel := 0
+else if flatNoChaseLong and (not flatNoChaseShort or markupExtensionScore >= markdownExtensionScore)
+    rawFlatActionLevel := 6
+else if flatNoChaseShort
+    rawFlatActionLevel := 7
+else if chaosRaw or weakCandidateRaw or coexistRaw or lowStageDispute or highStageDispute or trendStageDispute
+    rawFlatActionLevel := 0
+else if flatLongTrendOk
+    rawFlatActionLevel := 3
+else if flatShortTrendOk
+    rawFlatActionLevel := 5
+else if flatLongSmallOk
+    rawFlatActionLevel := 2
+else if flatShortSmallOk
+    rawFlatActionLevel := 4
+else if flatWaitLong or flatWaitShort
+    rawFlatActionLevel := 1
+else
+    rawFlatActionLevel := 0
+
+// v0.3.8.2 Pace Context Downgrade｜主節奏與空手行動一致性
+// 先算 rawFlatActionLevel，再由 Pace Title / 節奏原因 / 鈍化線索做最後降級。
+// 方向仍偏多或偏空，不代表追價品質乾淨；若出現供給 / 承接 / 分歧線索，
+// 順勢試單會降級為小試或等待。
+
+bullPaceDowngradeContext = enableActionDowngrade and (highClueObservation or highStageDispute or (trendClueDispute and markupExtensionScore >= trendExtThreshold) or (paceCode == 73 and markupExtensionScore >= trendExtThreshold and (upsideExhaustion >= clueObservationLevel or resistanceHolding >= clueObservationLevel)) or paceCode == 74 or ((upsideExhaustion >= clueObservationLevel or resistanceHolding >= clueObservationLevel or volumeSupplyClue or mtfSupplyClue or strictTopDivergence or softTopDivergence or bullOverheatResonance) and (flatBullStage or markupExtensionScore >= trendExtThreshold or markupContinuationScore >= trendExtThreshold)))
+
+bearPaceDowngradeContext = enableActionDowngrade and (lowClueObservation or lowStageDispute or (trendClueDispute and markdownExtensionScore >= trendExtThreshold) or (paceCode == 73 and markdownExtensionScore >= trendExtThreshold and (downsideExhaustion >= clueObservationLevel or supportHolding >= clueObservationLevel)) or paceCode == 75 or ((downsideExhaustion >= clueObservationLevel or supportHolding >= clueObservationLevel or volumeDemandClue or mtfDemandClue or strictBottomDivergence or softBottomDivergence or bearPanicResonance) and (flatBearStage or markdownExtensionScore >= trendExtThreshold or markdownContinuationScore >= trendExtThreshold)))
+
+bullStrongDowngradeToWait = downgradeStrongClueToWait and (highClueObservation or highStageDispute or volumeSupplyClue or mtfSupplyClue or strictTopDivergence or softTopDivergence or bullOverheatResonance or (upsideExhaustion >= absorbThreshold and resistanceHolding >= absorbThreshold))
+bearStrongDowngradeToWait = downgradeStrongClueToWait and (lowClueObservation or lowStageDispute or volumeDemandClue or mtfDemandClue or strictBottomDivergence or softBottomDivergence or bearPanicResonance or (downsideExhaustion >= absorbThreshold and supportHolding >= absorbThreshold))
+
+int flatActionLevel = rawFlatActionLevel
+string actionDowngradeReason = "無"
+
+if rawFlatActionLevel == 3 and bullPaceDowngradeContext
+    flatActionLevel := 2
+    actionDowngradeReason := "多頭鈍化 / 供給線索"
+else if rawFlatActionLevel == 2 and bullStrongDowngradeToWait
+    flatActionLevel := 1
+    actionDowngradeReason := "多頭鈍化偏強，等回測"
+else if rawFlatActionLevel == 5 and bearPaceDowngradeContext
+    flatActionLevel := 4
+    actionDowngradeReason := "空頭承接 / 支撐線索"
+else if rawFlatActionLevel == 4 and bearStrongDowngradeToWait
+    flatActionLevel := 1
+    actionDowngradeReason := "空頭承接偏強，等反彈失敗"
+else if rawFlatActionLevel == 6
+    actionDowngradeReason := "末段過熱，禁止追多"
+else if rawFlatActionLevel == 7
+    actionDowngradeReason := "恐慌過度，禁止追空"
+
+actionDowngraded = enableActionDowngrade and flatActionLevel != rawFlatActionLevel
+
+flatActionText =
+     flatActionLevel == 1 ? (flatWaitLong and not flatWaitShort ? "等多方觸發" : flatWaitShort and not flatWaitLong ? "等空方觸發" : "等待觸發") :
+     flatActionLevel == 2 ? (actionDowngraded ? "小試多，不追高" : "可小部位試多") :
+     flatActionLevel == 3 ? "可順勢試多" :
+     flatActionLevel == 4 ? (actionDowngraded ? "小試空，不追空" : "可小部位試空") :
+     flatActionLevel == 5 ? "可順勢試空" :
+     flatActionLevel == 6 ? "禁止追多" :
+     flatActionLevel == 7 ? "禁止追空" : "觀望"
+
+flatActionDetail =
+     actionDowngraded ? ("已降級｜" + actionDowngradeReason) :
+     flatActionLevel == 2 or flatActionLevel == 3 ? "偏多條件達標，仍需控部位與停損" :
+     flatActionLevel == 4 or flatActionLevel == 5 ? "偏空條件達標，仍需控部位與停損" :
+     flatActionLevel == 6 ? "方向可偏多，但末段風險過高" :
+     flatActionLevel == 7 ? "方向可偏空，但恐慌風險過高" :
+     flatActionLevel == 1 ? "方向線索存在，但仍缺觸發 / 確認" : "證據不足或劇本分歧"
+
+if enableFlatAction
+    flatGuide := flatActionText
+
+// v0.4：把量能層翻譯成節奏原因，但只在量能模式開啟時補充，不改寫主節奏。
+if volumeMode != "Off"
+    paceReason := paceReason + "｜" + volumeClueText
+if mtfMode != "Off"
+    paceReason := paceReason + "｜" + mtfClueText
+if divMode != "Off"
+    paceReason := paceReason + "｜" + divClueText
+
+paceOneLine = paceTitle + "｜空手:" + flatGuide + "｜多單:" + longGuide + "｜空單:" + shortGuide
+paceChanged = paceCode != paceCode[1]
+flatActionChanged = enableFlatAction and flatActionLevel != flatActionLevel[1]
+
+// ============================================================================
+// Issue #68 FR10Y vs DE10Y Bull-source / S3 Attribution Audit.
+// Shared window: 2022-01-03 -> 2023-12-29, expected Bull yield regime.
+// DISCOVERY ONLY. NO PNL. NO TUNING. FROZEN C-2.
+// ============================================================================
+
+groupIssue68S3 = "Issue #68｜Bull Source / S3 Attribution"
+showIssue68S3Table = input.bool(true, "顯示 Bull Source / S3 統計表", group=groupIssue68S3)
+
+issue68S3Ready = bar_index >= rankLen - 1
+int issue68S3Start = timestamp(2022, 1, 3, 0, 0)
+int issue68S3End = timestamp(2023, 12, 29, 23, 59)
+bool issue68S3InWindow = issue68S3Ready and time >= issue68S3Start and time <= issue68S3End
+
+f_issue68S3Avg(float s, int n) => n > 0 ? s / n : na
+f_issue68S3Pct(int n, int d) => d > 0 ? 100.0 * n / d : na
+
+float issue68BestBullVal = math.max(p2, p3)
+int issue68BestBullId = p2 >= p3 ? 2 : 3
+float issue68BestNonBullVal = p1
+int issue68BestNonBullId = 1
+if p4 > issue68BestNonBullVal
+    issue68BestNonBullVal := p4
+    issue68BestNonBullId := 4
+if p5 > issue68BestNonBullVal
+    issue68BestNonBullVal := p5
+    issue68BestNonBullId := 5
+if p6 > issue68BestNonBullVal
+    issue68BestNonBullVal := p6
+    issue68BestNonBullId := 6
+float issue68BullMargin = issue68BestBullVal - issue68BestNonBullVal
+
+var int issue68Bars = 0
+var int issue68TopS1 = 0
+var int issue68TopS2 = 0
+var int issue68TopS3 = 0
+var int issue68TopS4 = 0
+var int issue68TopS5 = 0
+var int issue68TopS6 = 0
+var int issue68BullLeadS2 = 0
+var int issue68BullLeadS3 = 0
+var float issue68SumS2Gap = 0.0
+var float issue68SumS3Gap = 0.0
+var int issue68S2GapPass = 0
+var int issue68S3GapPass = 0
+var float issue68SumBullMargin = 0.0
+
+var float issue68SumBullBg = 0.0
+var float issue68SumRange = 0.0
+var float issue68SumSupport = 0.0
+var float issue68SumNoPanic = 0.0
+var float issue68SumNoExhaust = 0.0
+var float issue68SumReaccRaw = 0.0
+var float issue68SumReaccGate = 0.0
+var float issue68SumReaccEff = 0.0
+var float issue68SumP2 = 0.0
+var float issue68SumP3 = 0.0
+
+if issue68S3InWindow
+    issue68Bars += 1
+    issue68TopS1 += topId == 1 ? 1 : 0
+    issue68TopS2 += topId == 2 ? 1 : 0
+    issue68TopS3 += topId == 3 ? 1 : 0
+    issue68TopS4 += topId == 4 ? 1 : 0
+    issue68TopS5 += topId == 5 ? 1 : 0
+    issue68TopS6 += topId == 6 ? 1 : 0
+    issue68BullLeadS2 += issue68BestBullId == 2 ? 1 : 0
+    issue68BullLeadS3 += issue68BestBullId == 3 ? 1 : 0
+    if topId == 2
+        issue68SumS2Gap += topGap
+        issue68S2GapPass += topGap >= topGapMin ? 1 : 0
+    if topId == 3
+        issue68SumS3Gap += topGap
+        issue68S3GapPass += topGap >= topGapMin ? 1 : 0
+    issue68SumBullMargin += issue68BullMargin
+
+    issue68SumBullBg += bullBg
+    issue68SumRange += rangeScore
+    issue68SumSupport += supportHolding
+    issue68SumNoPanic += 100.0 - panicHeatDn
+    issue68SumNoExhaust += 100.0 - upsideExhaustion
+    issue68SumReaccRaw += reaccRaw
+    issue68SumReaccGate += reaccGate
+    issue68SumReaccEff += reaccEff
+    issue68SumP2 += p2
+    issue68SumP3 += p3
+
+int issue68BullTopBars = issue68TopS2 + issue68TopS3
+float issue68TopS2Pct = f_issue68S3Pct(issue68TopS2, issue68Bars)
+float issue68TopS3Pct = f_issue68S3Pct(issue68TopS3, issue68Bars)
+float issue68BullTopPct = f_issue68S3Pct(issue68BullTopBars, issue68Bars)
+float issue68BullLeadS2Pct = f_issue68S3Pct(issue68BullLeadS2, issue68Bars)
+float issue68BullLeadS3Pct = f_issue68S3Pct(issue68BullLeadS3, issue68Bars)
+float issue68S2AvgGap = f_issue68S3Avg(issue68SumS2Gap, issue68TopS2)
+float issue68S3AvgGap = f_issue68S3Avg(issue68SumS3Gap, issue68TopS3)
+float issue68S2GapPassPct = f_issue68S3Pct(issue68S2GapPass, issue68TopS2)
+float issue68S3GapPassPct = f_issue68S3Pct(issue68S3GapPass, issue68TopS3)
+float issue68AvgBullMargin = f_issue68S3Avg(issue68SumBullMargin, issue68Bars)
+
+float issue68AvgBullBg = f_issue68S3Avg(issue68SumBullBg, issue68Bars)
+float issue68AvgRange = f_issue68S3Avg(issue68SumRange, issue68Bars)
+float issue68AvgSupport = f_issue68S3Avg(issue68SumSupport, issue68Bars)
+float issue68AvgNoPanic = f_issue68S3Avg(issue68SumNoPanic, issue68Bars)
+float issue68AvgNoExhaust = f_issue68S3Avg(issue68SumNoExhaust, issue68Bars)
+float issue68AvgReaccRaw = f_issue68S3Avg(issue68SumReaccRaw, issue68Bars)
+float issue68AvgReaccGate = f_issue68S3Avg(issue68SumReaccGate, issue68Bars)
+float issue68AvgReaccEff = f_issue68S3Avg(issue68SumReaccEff, issue68Bars)
+float issue68AvgP2 = f_issue68S3Avg(issue68SumP2, issue68Bars)
+float issue68AvgP3 = f_issue68S3Avg(issue68SumP3, issue68Bars)
+
+// Minimal plot-safe lanes: only three plots.
+plot(issue68S3InWindow ? 3.0 : na, "EXPECTED Bull", color=colGreen, linewidth=4, style=plot.style_linebr, display=display.pane)
+plot(issue68S3InWindow ? 2.0 : na, "Bull TOP source", color=topId == 2 ? colGreen : topId == 3 ? colYellow : colRed, linewidth=4, style=plot.style_linebr, display=display.pane)
+plot(issue68S3InWindow ? 1.0 : na, "Bull margin sign", color=issue68BullMargin >= 0 ? colGreen : colRed, linewidth=4, style=plot.style_linebr, display=display.pane)
+
+var table t = table.new(position.bottom_right, 4, 25, border_width=1)
+if barstate.islast
+    if showIssue68S3Table
+        table.cell(t, 0, 0, "BULL SOURCE / S3", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 0, syminfo.ticker, bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 0, "2022-2023 BULL", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 3, 0, str.tostring(issue68Bars) + " bars", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 1, "TOP SOURCE", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 1, 1, "SHARE", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 2, 1, "AVG GAP", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 3, 1, "GAP PASS", bgcolor=colGreen, text_color=color.white)
+
+        table.cell(t, 0, 2, "S2 Markup TOP", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 2, str.tostring(issue68TopS2Pct, "#.1") + "%", bgcolor=issue68TopS2 > 0 ? colGreen : colNeutral, text_color=color.white)
+        table.cell(t, 2, 2, str.tostring(issue68S2AvgGap, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 2, str.tostring(issue68S2GapPassPct, "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 3, "S3 Reacc TOP", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 3, str.tostring(issue68TopS3Pct, "#.1") + "%", bgcolor=issue68TopS3 > 0 ? colGreen : colNeutral, text_color=color.white)
+        table.cell(t, 2, 3, str.tostring(issue68S3AvgGap, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 3, str.tostring(issue68S3GapPassPct, "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 4, "Bull TOP total", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 4, str.tostring(issue68BullTopPct, "#.1") + "%", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 2, 4, "S2+S3", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 4, "final TOP", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 5, "Bull sibling leader S2", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 5, str.tostring(issue68BullLeadS2Pct, "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 5, "p2>=p3", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 5, "inside Bull", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 6, "Bull sibling leader S3", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 6, str.tostring(issue68BullLeadS3Pct, "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 6, "p3>p2", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 6, "inside Bull", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 7, "Best Bull - best nonBull", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 7, str.tostring(issue68AvgBullMargin, "#.1"), bgcolor=issue68AvgBullMargin >= 0 ? colGreen : colRed, text_color=color.white)
+        table.cell(t, 2, 7, "avg score", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 7, "global margin", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 8, "NON-BULL TOP", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 8, "SHARE", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 8, "ROLE", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 8, "COUNT", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 9, "S1 Acc", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 9, str.tostring(f_issue68S3Pct(issue68TopS1, issue68Bars), "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 9, "Neutral", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 9, str.tostring(issue68TopS1), bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 10, "S4 Dist", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 10, str.tostring(f_issue68S3Pct(issue68TopS4, issue68Bars), "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 10, "Neutral", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 10, str.tostring(issue68TopS4), bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 11, "S5 Markdown", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 11, str.tostring(f_issue68S3Pct(issue68TopS5, issue68Bars), "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 11, "Bear", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 11, str.tostring(issue68TopS5), bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 12, "S6 Redist", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 12, str.tostring(f_issue68S3Pct(issue68TopS6, issue68Bars), "#.1") + "%", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 12, "Bear", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 12, str.tostring(issue68TopS6), bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 13, "S3 REACC ENGINE", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 1, 13, "AVG", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 2, 13, "ROLE", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 3, 13, "FROZEN", bgcolor=colGreen, text_color=color.white)
+
+        table.cell(t, 0, 14, "Bull background", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 14, str.tostring(issue68AvgBullBg, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 14, "RAW input", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 14, "20%", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 15, "Range score", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 15, str.tostring(issue68AvgRange, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 15, "RAW input", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 15, "20%", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 16, "Support holding", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 16, str.tostring(issue68AvgSupport, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 16, "RAW input", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 16, "25%", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 17, "No panicDn", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 17, str.tostring(issue68AvgNoPanic, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 17, "RAW input", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 17, "20%", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 18, "No upside exhaust", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 18, str.tostring(issue68AvgNoExhaust, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 18, "RAW input", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 18, "15%", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 19, "S3 Reacc RAW", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 19, str.tostring(issue68AvgReaccRaw, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 19, "raw", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 19, "smoothed", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 20, "S3 gate", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 20, str.tostring(issue68AvgReaccGate, "#.3"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 20, "0-1", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 20, "gate stack", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 21, "S3 effective", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 21, str.tostring(issue68AvgReaccEff, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 21, "eff", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 21, "post gate", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 22, "Avg p2 / p3", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 22, str.tostring(issue68AvgP2, "#.1") + " / " + str.tostring(issue68AvgP3, "#.1"), bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 22, "TOP probs", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 22, "S2 / S3", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 23, "MODE", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 23, "DISCOVERY", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 2, 23, "NO TUNING", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 3, 23, "FROZEN C-2", bgcolor=colNeutral, text_color=color.white)
+
+        table.cell(t, 0, 24, "READ", bgcolor=colNeutral, text_color=color.white)
+        table.cell(t, 1, 24, "Green=S2", bgcolor=colGreen, text_color=color.white)
+        table.cell(t, 2, 24, "Yellow=S3", bgcolor=colYellow, text_color=color.white)
+        table.cell(t, 3, 24, "Red=nonBull", bgcolor=colRed, text_color=color.white)
+    else
+        table.clear(t, 0, 0, 3, 24)

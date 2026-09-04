@@ -1,0 +1,1054 @@
+{
+  "aggregate": {
+    "continuation_target_on_loss": 4088,
+    "exact_competitor_winner_counts": {
+      "1": 2390,
+      "2": 1488,
+      "3": 12,
+      "4": 2074,
+      "5": 1653,
+      "6": 3
+    },
+    "exact_winner_accounting_delta": 0,
+    "fresh_target_on_loss": 3532,
+    "fresh_target_share_on_loss": 0.46351706036745405,
+    "minimum_exact_raw_winner_stage_mirror_agreement": 0.9955456570155902,
+    "minimum_reciprocal_boolean_agreement": 0.9948032665181886,
+    "pairwise_suppression_counts": {
+      "1": 6454,
+      "2": 2636,
+      "3": 2548,
+      "4": 6517,
+      "5": 2646,
+      "6": 2472
+    },
+    "raw_loss_bars": 7620,
+    "target_tie_priority": 0,
+    "unexplained": 0,
+    "usable_direction_observations": 10776
+  },
+  "boundary": "Exact raw-stage competitor and target-substage attribution only. No classifier formula, weight, threshold, gate, persistence, Core Bias, Exposure, or strategy-performance rule is changed or optimized.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 302,
+            "2": 356,
+            "3": 4,
+            "4": 214
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6807720861172977,
+        "pairwise_competitor_suppression": {
+          "1": 722,
+          "2": 579,
+          "3": 565,
+          "4": 711
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 722,
+            "mean_target_minus_competitor": -20.943526352194798,
+            "median_target_minus_competitor": -21.507606689553242
+          },
+          "2": {
+            "bars": 579,
+            "mean_target_minus_competitor": -32.848461002767145,
+            "median_target_minus_competitor": -30.06610884048954
+          },
+          "3": {
+            "bars": 565,
+            "mean_target_minus_competitor": -23.850335787662328,
+            "median_target_minus_competitor": -23.84180058893861
+          },
+          "4": {
+            "bars": 711,
+            "mean_target_minus_competitor": -15.799164895968222,
+            "median_target_minus_competitor": -17.59606636311213
+          }
+        },
+        "raw_adv_bars": 471,
+        "raw_loss_bars": 876,
+        "raw_loss_share": 0.6503340757238307,
+        "target_substage_on_loss": {
+          "continuation": 430,
+          "continuation_stage": 6,
+          "fresh": 446,
+          "fresh_share": 0.5091324200913242,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 302,
+            "4": 214,
+            "5": 471,
+            "6": 0
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.5567928730512249,
+        "pairwise_competitor_suppression": {
+          "1": 872,
+          "4": 830,
+          "5": 750,
+          "6": 674
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 872,
+            "mean_target_minus_competitor": -18.38918989287017,
+            "median_target_minus_competitor": -18.653971192902222
+          },
+          "4": {
+            "bars": 830,
+            "mean_target_minus_competitor": -23.05060292314682,
+            "median_target_minus_competitor": -24.15731105707325
+          },
+          "5": {
+            "bars": 750,
+            "mean_target_minus_competitor": -32.925687482733075,
+            "median_target_minus_competitor": -34.009436454902314
+          },
+          "6": {
+            "bars": 674,
+            "mean_target_minus_competitor": -23.226481018423094,
+            "median_target_minus_competitor": -23.15314830274501
+          }
+        },
+        "raw_adv_bars": 360,
+        "raw_loss_bars": 987,
+        "raw_loss_share": 0.732739420935412,
+        "target_substage_on_loss": {
+          "continuation": 593,
+          "continuation_stage": 3,
+          "fresh": 394,
+          "fresh_share": 0.39918946301925023,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 212,
+            "2": 470,
+            "3": 0,
+            "4": 305
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.5515961395694136,
+        "pairwise_competitor_suppression": {
+          "1": 827,
+          "2": 751,
+          "3": 672,
+          "4": 873
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 827,
+            "mean_target_minus_competitor": -23.10411706786631,
+            "median_target_minus_competitor": -24.231561739247226
+          },
+          "2": {
+            "bars": 751,
+            "mean_target_minus_competitor": -32.871953321240916,
+            "median_target_minus_competitor": -34.10694673841934
+          },
+          "3": {
+            "bars": 672,
+            "mean_target_minus_competitor": -23.274419754172122,
+            "median_target_minus_competitor": -23.23255139701597
+          },
+          "4": {
+            "bars": 873,
+            "mean_target_minus_competitor": -18.391977464733774,
+            "median_target_minus_competitor": -18.657541866010444
+          }
+        },
+        "raw_adv_bars": 360,
+        "raw_loss_bars": 987,
+        "raw_loss_share": 0.732739420935412,
+        "target_substage_on_loss": {
+          "continuation": 600,
+          "continuation_stage": 6,
+          "fresh": 387,
+          "fresh_share": 0.39209726443769,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 212,
+            "4": 305,
+            "5": 356,
+            "6": 4
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.682256867112101,
+        "pairwise_competitor_suppression": {
+          "1": 712,
+          "4": 723,
+          "5": 577,
+          "6": 566
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 712,
+            "mean_target_minus_competitor": -15.757628612084691,
+            "median_target_minus_competitor": -17.521939805533762
+          },
+          "4": {
+            "bars": 723,
+            "mean_target_minus_competitor": -20.94814639144952,
+            "median_target_minus_competitor": -21.582414853346954
+          },
+          "5": {
+            "bars": 577,
+            "mean_target_minus_competitor": -32.9538345239216,
+            "median_target_minus_competitor": -30.206817129675457
+          },
+          "6": {
+            "bars": 566,
+            "mean_target_minus_competitor": -23.825514544516935,
+            "median_target_minus_competitor": -23.743578445309627
+          }
+        },
+        "raw_adv_bars": 470,
+        "raw_loss_bars": 877,
+        "raw_loss_share": 0.6510764662212324,
+        "target_substage_on_loss": {
+          "continuation": 428,
+          "continuation_stage": 3,
+          "fresh": 449,
+          "fresh_share": 0.5119726339794755,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "exact_raw_winner_stage": {
+          "agreement": 0.9955456570155902,
+          "bars": 1347,
+          "mismatch_bars": 6
+        },
+        "fresh_target": {
+          "agreement": 0.9948032665181886,
+          "bars": 1347,
+          "mismatch_bars": 7
+        },
+        "pairwise": {
+          "bull_vs_s1__inverse_bear_vs_s4": {
+            "agreement": 0.9992576095025983,
+            "bars": 1347,
+            "mismatch_bars": 1
+          },
+          "bull_vs_s4__inverse_bear_vs_s1": {
+            "agreement": 0.9977728285077951,
+            "bars": 1347,
+            "mismatch_bars": 3
+          },
+          "bull_vs_s5__inverse_bear_vs_s2": {
+            "agreement": 0.9992576095025983,
+            "bars": 1347,
+            "mismatch_bars": 1
+          },
+          "bull_vs_s6__inverse_bear_vs_s3": {
+            "agreement": 0.9985152190051967,
+            "bars": 1347,
+            "mismatch_bars": 2
+          }
+        },
+        "raw_adv": {
+          "agreement": 0.9985152190051967,
+          "bars": 1347,
+          "mismatch_bars": 2
+        }
+      },
+      "warmup": 755
+    },
+    "EURUSD": {
+      "bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 328,
+            "2": 355,
+            "3": 0,
+            "4": 226
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6614699331848553,
+        "pairwise_competitor_suppression": {
+          "1": 793,
+          "2": 595,
+          "3": 593,
+          "4": 786
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 793,
+            "mean_target_minus_competitor": -20.670945553156763,
+            "median_target_minus_competitor": -21.316902965273044
+          },
+          "2": {
+            "bars": 595,
+            "mean_target_minus_competitor": -35.06558395017806,
+            "median_target_minus_competitor": -36.985246604461764
+          },
+          "3": {
+            "bars": 593,
+            "mean_target_minus_competitor": -25.459078387501723,
+            "median_target_minus_competitor": -25.879799493462095
+          },
+          "4": {
+            "bars": 786,
+            "mean_target_minus_competitor": -17.750688957271116,
+            "median_target_minus_competitor": -19.084187500392865
+          }
+        },
+        "raw_adv_bars": 438,
+        "raw_loss_bars": 909,
+        "raw_loss_share": 0.6748329621380846,
+        "target_substage_on_loss": {
+          "continuation": 456,
+          "continuation_stage": 6,
+          "fresh": 453,
+          "fresh_share": 0.49834983498349833,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 328,
+            "4": 226,
+            "5": 438,
+            "6": 0
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.5612472160356348,
+        "pairwise_competitor_suppression": {
+          "1": 853,
+          "4": 842,
+          "5": 722,
+          "6": 694
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 853,
+            "mean_target_minus_competitor": -18.76318588966685,
+            "median_target_minus_competitor": -20.784342613376936
+          },
+          "4": {
+            "bars": 842,
+            "mean_target_minus_competitor": -22.231768951343113,
+            "median_target_minus_competitor": -22.463065825879124
+          },
+          "5": {
+            "bars": 722,
+            "mean_target_minus_competitor": -30.910749008589487,
+            "median_target_minus_competitor": -31.299465631650794
+          },
+          "6": {
+            "bars": 694,
+            "mean_target_minus_competitor": -21.33065322693854,
+            "median_target_minus_competitor": -20.56763591665481
+          }
+        },
+        "raw_adv_bars": 355,
+        "raw_loss_bars": 992,
+        "raw_loss_share": 0.7364513734224202,
+        "target_substage_on_loss": {
+          "continuation": 591,
+          "continuation_stage": 3,
+          "fresh": 401,
+          "fresh_share": 0.40423387096774194,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 227,
+            "2": 437,
+            "3": 0,
+            "4": 329
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.5582776540460282,
+        "pairwise_competitor_suppression": {
+          "1": 843,
+          "2": 722,
+          "3": 690,
+          "4": 853
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 843,
+            "mean_target_minus_competitor": -22.214685566317147,
+            "median_target_minus_competitor": -22.488068060648708
+          },
+          "2": {
+            "bars": 722,
+            "mean_target_minus_competitor": -30.91899519760884,
+            "median_target_minus_competitor": -31.304984384147552
+          },
+          "3": {
+            "bars": 690,
+            "mean_target_minus_competitor": -21.46630481116371,
+            "median_target_minus_competitor": -20.645128456598684
+          },
+          "4": {
+            "bars": 853,
+            "mean_target_minus_competitor": -18.76592183275437,
+            "median_target_minus_competitor": -20.790528157854723
+          }
+        },
+        "raw_adv_bars": 354,
+        "raw_loss_bars": 993,
+        "raw_loss_share": 0.7371937639198218,
+        "target_substage_on_loss": {
+          "continuation": 595,
+          "continuation_stage": 6,
+          "fresh": 398,
+          "fresh_share": 0.40080563947633435,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 227,
+            "4": 329,
+            "5": 354,
+            "6": 0
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6614699331848553,
+        "pairwise_competitor_suppression": {
+          "1": 786,
+          "4": 794,
+          "5": 595,
+          "6": 594
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 786,
+            "mean_target_minus_competitor": -17.742181740924643,
+            "median_target_minus_competitor": -19.096036465917354
+          },
+          "4": {
+            "bars": 794,
+            "mean_target_minus_competitor": -20.638641925692877,
+            "median_target_minus_competitor": -21.386943096033164
+          },
+          "5": {
+            "bars": 595,
+            "mean_target_minus_competitor": -35.04228024267248,
+            "median_target_minus_competitor": -37.01061408102778
+          },
+          "6": {
+            "bars": 594,
+            "mean_target_minus_competitor": -25.412767846292343,
+            "median_target_minus_competitor": -25.82219764077858
+          }
+        },
+        "raw_adv_bars": 437,
+        "raw_loss_bars": 910,
+        "raw_loss_share": 0.6755753526354863,
+        "target_substage_on_loss": {
+          "continuation": 456,
+          "continuation_stage": 3,
+          "fresh": 454,
+          "fresh_share": 0.4989010989010989,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "exact_raw_winner_stage": {
+          "agreement": 0.9985152190051967,
+          "bars": 1347,
+          "mismatch_bars": 2
+        },
+        "fresh_target": {
+          "agreement": 0.9970304380103935,
+          "bars": 1347,
+          "mismatch_bars": 4
+        },
+        "pairwise": {
+          "bull_vs_s1__inverse_bear_vs_s4": {
+            "agreement": 1.0,
+            "bars": 1347,
+            "mismatch_bars": 0
+          },
+          "bull_vs_s4__inverse_bear_vs_s1": {
+            "agreement": 0.9992576095025983,
+            "bars": 1347,
+            "mismatch_bars": 1
+          },
+          "bull_vs_s5__inverse_bear_vs_s2": {
+            "agreement": 1.0,
+            "bars": 1347,
+            "mismatch_bars": 0
+          },
+          "bull_vs_s6__inverse_bear_vs_s3": {
+            "agreement": 0.9970304380103935,
+            "bars": 1347,
+            "mismatch_bars": 4
+          }
+        },
+        "raw_adv": {
+          "agreement": 0.9992576095025983,
+          "bars": 1347,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    },
+    "GBPUSD": {
+      "bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 230,
+            "2": 440,
+            "3": 8,
+            "4": 297
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6636971046770601,
+        "pairwise_competitor_suppression": {
+          "1": 806,
+          "2": 734,
+          "3": 697,
+          "4": 846
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 806,
+            "mean_target_minus_competitor": -20.2357517763897,
+            "median_target_minus_competitor": -20.13087130910269
+          },
+          "2": {
+            "bars": 734,
+            "mean_target_minus_competitor": -31.47147621834851,
+            "median_target_minus_competitor": -30.968658327503764
+          },
+          "3": {
+            "bars": 697,
+            "mean_target_minus_competitor": -23.73459086023703,
+            "median_target_minus_competitor": -22.97661626184425
+          },
+          "4": {
+            "bars": 846,
+            "mean_target_minus_competitor": -18.279911398206558,
+            "median_target_minus_competitor": -18.911366855940813
+          }
+        },
+        "raw_adv_bars": 372,
+        "raw_loss_bars": 975,
+        "raw_loss_share": 0.7238307349665924,
+        "target_substage_on_loss": {
+          "continuation": 450,
+          "continuation_stage": 6,
+          "fresh": 525,
+          "fresh_share": 0.5384615384615384,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 230,
+            "4": 297,
+            "5": 369,
+            "6": 3
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6577579806978471,
+        "pairwise_competitor_suppression": {
+          "1": 724,
+          "4": 760,
+          "5": 596,
+          "6": 548
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 724,
+            "mean_target_minus_competitor": -15.463621917294033,
+            "median_target_minus_competitor": -14.647853640377434
+          },
+          "4": {
+            "bars": 760,
+            "mean_target_minus_competitor": -21.327527248480894,
+            "median_target_minus_competitor": -21.277275483866354
+          },
+          "5": {
+            "bars": 596,
+            "mean_target_minus_competitor": -30.09482817693649,
+            "median_target_minus_competitor": -29.85182052136087
+          },
+          "6": {
+            "bars": 548,
+            "mean_target_minus_competitor": -20.515183262286342,
+            "median_target_minus_competitor": -20.518537111872906
+          }
+        },
+        "raw_adv_bars": 448,
+        "raw_loss_bars": 899,
+        "raw_loss_share": 0.6674090571640683,
+        "target_substage_on_loss": {
+          "continuation": 453,
+          "continuation_stage": 3,
+          "fresh": 446,
+          "fresh_share": 0.4961067853170189,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 298,
+            "2": 368,
+            "3": 3,
+            "4": 229
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6547884187082406,
+        "pairwise_competitor_suppression": {
+          "1": 758,
+          "2": 596,
+          "3": 548,
+          "4": 723
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 758,
+            "mean_target_minus_competitor": -21.37247079554499,
+            "median_target_minus_competitor": -21.263214744586367
+          },
+          "2": {
+            "bars": 596,
+            "mean_target_minus_competitor": -30.10882330572724,
+            "median_target_minus_competitor": -29.72887227308715
+          },
+          "3": {
+            "bars": 548,
+            "mean_target_minus_competitor": -20.505437545582467,
+            "median_target_minus_competitor": -20.54156522337922
+          },
+          "4": {
+            "bars": 723,
+            "mean_target_minus_competitor": -15.47720011388191,
+            "median_target_minus_competitor": -14.662452201791936
+          }
+        },
+        "raw_adv_bars": 449,
+        "raw_loss_bars": 898,
+        "raw_loss_share": 0.6666666666666666,
+        "target_substage_on_loss": {
+          "continuation": 455,
+          "continuation_stage": 6,
+          "fresh": 443,
+          "fresh_share": 0.4933184855233853,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 298,
+            "4": 229,
+            "5": 439,
+            "6": 10
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6659242761692651,
+        "pairwise_competitor_suppression": {
+          "1": 844,
+          "4": 809,
+          "5": 735,
+          "6": 696
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 844,
+            "mean_target_minus_competitor": -18.308733158939095,
+            "median_target_minus_competitor": -18.96063404848733
+          },
+          "4": {
+            "bars": 809,
+            "mean_target_minus_competitor": -20.18227180189382,
+            "median_target_minus_competitor": -20.081802982585458
+          },
+          "5": {
+            "bars": 735,
+            "mean_target_minus_competitor": -31.41582328324023,
+            "median_target_minus_competitor": -30.84377737830411
+          },
+          "6": {
+            "bars": 696,
+            "mean_target_minus_competitor": -23.790565059889236,
+            "median_target_minus_competitor": -23.178218455087478
+          }
+        },
+        "raw_adv_bars": 371,
+        "raw_loss_bars": 976,
+        "raw_loss_share": 0.7245731254639941,
+        "target_substage_on_loss": {
+          "continuation": 447,
+          "continuation_stage": 3,
+          "fresh": 529,
+          "fresh_share": 0.5420081967213115,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "exact_raw_winner_stage": {
+          "agreement": 0.9962880475129918,
+          "bars": 1347,
+          "mismatch_bars": 5
+        },
+        "fresh_target": {
+          "agreement": 0.9970304380103935,
+          "bars": 1347,
+          "mismatch_bars": 4
+        },
+        "pairwise": {
+          "bull_vs_s1__inverse_bear_vs_s4": {
+            "agreement": 0.9992576095025983,
+            "bars": 1347,
+            "mismatch_bars": 1
+          },
+          "bull_vs_s4__inverse_bear_vs_s1": {
+            "agreement": 0.9970304380103935,
+            "bars": 1347,
+            "mismatch_bars": 4
+          },
+          "bull_vs_s5__inverse_bear_vs_s2": {
+            "agreement": 1.0,
+            "bars": 1347,
+            "mismatch_bars": 0
+          },
+          "bull_vs_s6__inverse_bear_vs_s3": {
+            "agreement": 0.9985152190051967,
+            "bars": 1347,
+            "mismatch_bars": 2
+          }
+        },
+        "raw_adv": {
+          "agreement": 0.9992576095025983,
+          "bars": 1347,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    },
+    "USDJPY": {
+      "bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 335,
+            "2": 337,
+            "3": 0,
+            "4": 300
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.5671863400148478,
+        "pairwise_competitor_suppression": {
+          "1": 852,
+          "2": 728,
+          "3": 693,
+          "4": 887
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 852,
+            "mean_target_minus_competitor": -22.39847518291758,
+            "median_target_minus_competitor": -23.870779235128502
+          },
+          "2": {
+            "bars": 728,
+            "mean_target_minus_competitor": -29.057934720685967,
+            "median_target_minus_competitor": -26.416309602013783
+          },
+          "3": {
+            "bars": 693,
+            "mean_target_minus_competitor": -21.320684583280677,
+            "median_target_minus_competitor": -19.84977780497249
+          },
+          "4": {
+            "bars": 887,
+            "mean_target_minus_competitor": -18.532090928637615,
+            "median_target_minus_competitor": -19.82848513088696
+          }
+        },
+        "raw_adv_bars": 375,
+        "raw_loss_bars": 972,
+        "raw_loss_share": 0.7216035634743875,
+        "target_substage_on_loss": {
+          "continuation": 583,
+          "continuation_stage": 6,
+          "fresh": 389,
+          "fresh_share": 0.4002057613168724,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 335,
+            "4": 300,
+            "5": 375,
+            "6": 0
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6050482553823311,
+        "pairwise_competitor_suppression": {
+          "1": 832,
+          "4": 855,
+          "5": 578,
+          "6": 556
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 832,
+            "mean_target_minus_competitor": -15.676059879678935,
+            "median_target_minus_competitor": -15.908711204371514
+          },
+          "4": {
+            "bars": 855,
+            "mean_target_minus_competitor": -18.999725629213277,
+            "median_target_minus_competitor": -18.067531531744486
+          },
+          "5": {
+            "bars": 578,
+            "mean_target_minus_competitor": -30.356255300108657,
+            "median_target_minus_competitor": -29.526391677537994
+          },
+          "6": {
+            "bars": 556,
+            "mean_target_minus_competitor": -20.621838422146336,
+            "median_target_minus_competitor": -19.806255583928795
+          }
+        },
+        "raw_adv_bars": 337,
+        "raw_loss_bars": 1010,
+        "raw_loss_share": 0.7498144023756496,
+        "target_substage_on_loss": {
+          "continuation": 532,
+          "continuation_stage": 3,
+          "fresh": 478,
+          "fresh_share": 0.47326732673267324,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "direction": "bear",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 299,
+            "2": 375,
+            "3": 0,
+            "4": 335
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.6035634743875279,
+        "pairwise_competitor_suppression": {
+          "1": 853,
+          "2": 577,
+          "3": 557,
+          "4": 833
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 853,
+            "mean_target_minus_competitor": -19.010856164030855,
+            "median_target_minus_competitor": -17.89435739292935
+          },
+          "2": {
+            "bars": 577,
+            "mean_target_minus_competitor": -30.37818814688155,
+            "median_target_minus_competitor": -29.791979898207316
+          },
+          "3": {
+            "bars": 557,
+            "mean_target_minus_competitor": -20.560968709606325,
+            "median_target_minus_competitor": -19.90114392623299
+          },
+          "4": {
+            "bars": 833,
+            "mean_target_minus_competitor": -15.669654994829022,
+            "median_target_minus_competitor": -15.898313297926904
+          }
+        },
+        "raw_adv_bars": 338,
+        "raw_loss_bars": 1009,
+        "raw_loss_share": 0.749072011878248,
+        "target_substage_on_loss": {
+          "continuation": 534,
+          "continuation_stage": 6,
+          "fresh": 475,
+          "fresh_share": 0.4707631318136769,
+          "fresh_stage": 5
+        },
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "direction": "bull",
+        "exact_raw_winner_on_loss": {
+          "competitor_stage_counts": {
+            "1": 299,
+            "4": 335,
+            "5": 338,
+            "6": 0
+          },
+          "target_tie_priority": 0,
+          "unexplained": 0
+        },
+        "fresh_target_lead_share_all_scored": 0.5679287305122495,
+        "pairwise_competitor_suppression": {
+          "1": 886,
+          "4": 852,
+          "5": 728,
+          "6": 692
+        },
+        "pairwise_margin_on_suppression": {
+          "1": {
+            "bars": 886,
+            "mean_target_minus_competitor": -18.528670500915847,
+            "median_target_minus_competitor": -19.84408313432122
+          },
+          "4": {
+            "bars": 852,
+            "mean_target_minus_competitor": -22.41616567878709,
+            "median_target_minus_competitor": -23.817224860591153
+          },
+          "5": {
+            "bars": 728,
+            "mean_target_minus_competitor": -29.056324409240926,
+            "median_target_minus_competitor": -26.356309658062422
+          },
+          "6": {
+            "bars": 692,
+            "mean_target_minus_competitor": -21.355988893366284,
+            "median_target_minus_competitor": -19.979129607108057
+          }
+        },
+        "raw_adv_bars": 375,
+        "raw_loss_bars": 972,
+        "raw_loss_share": 0.7216035634743875,
+        "target_substage_on_loss": {
+          "continuation": 582,
+          "continuation_stage": 3,
+          "fresh": 390,
+          "fresh_share": 0.4012345679012346,
+          "fresh_stage": 2
+        },
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "exact_raw_winner_stage": {
+          "agreement": 0.9992576095025983,
+          "bars": 1347,
+          "mismatch_bars": 1
+        },
+        "fresh_target": {
+          "agreement": 0.9970304380103935,
+          "bars": 1347,
+          "mismatch_bars": 4
+        },
+        "pairwise": {
+          "bull_vs_s1__inverse_bear_vs_s4": {
+            "agreement": 0.9992576095025983,
+            "bars": 1347,
+            "mismatch_bars": 1
+          },
+          "bull_vs_s4__inverse_bear_vs_s1": {
+            "agreement": 0.9970304380103935,
+            "bars": 1347,
+            "mismatch_bars": 4
+          },
+          "bull_vs_s5__inverse_bear_vs_s2": {
+            "agreement": 0.9992576095025983,
+            "bars": 1347,
+            "mismatch_bars": 1
+          },
+          "bull_vs_s6__inverse_bear_vs_s3": {
+            "agreement": 0.9992576095025983,
+            "bars": 1347,
+            "mismatch_bars": 1
+          }
+        },
+        "raw_adv": {
+          "agreement": 0.9992576095025983,
+          "bars": 1347,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    }
+  },
+  "phase": "B3.9",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "RAW_FORMULATION_ATTRIBUTION_NO_PERFORMANCE"
+}

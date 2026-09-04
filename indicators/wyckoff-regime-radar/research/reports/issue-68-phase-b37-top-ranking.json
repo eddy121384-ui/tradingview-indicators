@@ -1,0 +1,316 @@
+{
+  "aggregate": {
+    "competitor_opposite_range": 2176,
+    "competitor_opposite_trend": 3212,
+    "competitor_other": 0,
+    "competitor_precursor_range": 2176,
+    "gate_flip_share": 0.06253305129561079,
+    "gate_layer_flip": 473,
+    "raw_layer_loss": 7091,
+    "raw_loss_share": 0.9374669487043892,
+    "target_top_loss_bars": 7564,
+    "top_reproduction_agreement": 1.0,
+    "unexplained_loss": 0,
+    "usable_bars": 10776
+  },
+  "boundary": "Ranking attribution only. No classifier threshold or strategy-performance metric is changed or optimized.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "bear": {
+        "competitor": {
+          "opposite_range": 250,
+          "opposite_trend": 377,
+          "other": 0,
+          "precursor_range": 211,
+          "stage_counts": {
+            "1": 250,
+            "2": 376,
+            "3": 1,
+            "4": 211,
+            "5": 0,
+            "6": 0
+          }
+        },
+        "direction": "bear",
+        "gate_layer_flip": 53,
+        "raw_layer_loss": 785,
+        "target_top_bars": 509,
+        "target_top_loss_bars": 838,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "competitor": {
+          "opposite_range": 211,
+          "opposite_trend": 509,
+          "other": 0,
+          "precursor_range": 250,
+          "stage_counts": {
+            "1": 250,
+            "2": 0,
+            "3": 0,
+            "4": 211,
+            "5": 508,
+            "6": 1
+          }
+        },
+        "direction": "bull",
+        "gate_layer_flip": 36,
+        "raw_layer_loss": 934,
+        "target_top_bars": 377,
+        "target_top_loss_bars": 970,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_loss_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "bull_gate_flip_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9987841945288753,
+          "mismatch_bars": 2
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9987841945288753,
+          "mismatch_bars": 2
+        },
+        "bull_raw_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9987841945288753,
+          "mismatch_bars": 2
+        }
+      },
+      "warmup": 755
+    },
+    "EURUSD": {
+      "bear": {
+        "competitor": {
+          "opposite_range": 307,
+          "opposite_trend": 354,
+          "other": 0,
+          "precursor_range": 227,
+          "stage_counts": {
+            "1": 307,
+            "2": 350,
+            "3": 4,
+            "4": 227,
+            "5": 0,
+            "6": 0
+          }
+        },
+        "direction": "bear",
+        "gate_layer_flip": 63,
+        "raw_layer_loss": 825,
+        "target_top_bars": 459,
+        "target_top_loss_bars": 888,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "competitor": {
+          "opposite_range": 227,
+          "opposite_trend": 459,
+          "other": 0,
+          "precursor_range": 307,
+          "stage_counts": {
+            "1": 307,
+            "2": 0,
+            "3": 0,
+            "4": 227,
+            "5": 458,
+            "6": 1
+          }
+        },
+        "direction": "bull",
+        "gate_layer_flip": 38,
+        "raw_layer_loss": 955,
+        "target_top_bars": 354,
+        "target_top_loss_bars": 993,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_loss_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_gate_flip_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9975683890577508,
+          "mismatch_bars": 4
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.998176291793313,
+          "mismatch_bars": 3
+        },
+        "bull_raw_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    },
+    "GBPUSD": {
+      "bear": {
+        "competitor": {
+          "opposite_range": 217,
+          "opposite_trend": 435,
+          "other": 0,
+          "precursor_range": 353,
+          "stage_counts": {
+            "1": 217,
+            "2": 429,
+            "3": 6,
+            "4": 353,
+            "5": 0,
+            "6": 0
+          }
+        },
+        "direction": "bear",
+        "gate_layer_flip": 73,
+        "raw_layer_loss": 932,
+        "target_top_bars": 342,
+        "target_top_loss_bars": 1005,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "competitor": {
+          "opposite_range": 353,
+          "opposite_trend": 342,
+          "other": 0,
+          "precursor_range": 217,
+          "stage_counts": {
+            "1": 217,
+            "2": 0,
+            "3": 0,
+            "4": 353,
+            "5": 341,
+            "6": 1
+          }
+        },
+        "direction": "bull",
+        "gate_layer_flip": 93,
+        "raw_layer_loss": 819,
+        "target_top_bars": 435,
+        "target_top_loss_bars": 912,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_loss_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "bull_gate_flip_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.998176291793313,
+          "mismatch_bars": 3
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.998176291793313,
+          "mismatch_bars": 3
+        },
+        "bull_raw_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        }
+      },
+      "warmup": 755
+    },
+    "USDJPY": {
+      "bear": {
+        "competitor": {
+          "opposite_range": 321,
+          "opposite_trend": 354,
+          "other": 0,
+          "precursor_range": 290,
+          "stage_counts": {
+            "1": 321,
+            "2": 354,
+            "3": 0,
+            "4": 290,
+            "5": 0,
+            "6": 0
+          }
+        },
+        "direction": "bear",
+        "gate_layer_flip": 52,
+        "raw_layer_loss": 913,
+        "target_top_bars": 382,
+        "target_top_loss_bars": 965,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "competitor": {
+          "opposite_range": 290,
+          "opposite_trend": 382,
+          "other": 0,
+          "precursor_range": 321,
+          "stage_counts": {
+            "1": 321,
+            "2": 0,
+            "3": 0,
+            "4": 290,
+            "5": 382,
+            "6": 0
+          }
+        },
+        "direction": "bull",
+        "gate_layer_flip": 65,
+        "raw_layer_loss": 928,
+        "target_top_bars": 354,
+        "target_top_loss_bars": 993,
+        "top_reproduction_agreement": 1.0,
+        "unexplained_loss": 0,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_loss_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_gate_flip_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "bull_raw_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    }
+  },
+  "phase": "B3.7",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "TOP_FORMATION_RANKING_AUDIT_NO_PERFORMANCE"
+}

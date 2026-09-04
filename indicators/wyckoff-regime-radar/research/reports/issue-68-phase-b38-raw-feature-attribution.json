@@ -1,0 +1,594 @@
+{
+  "aggregate": {
+    "fresh_pair_largest_negative_component_counts": {
+      "break": 1103,
+      "continuation": 17,
+      "extension": 7,
+      "heat": 325,
+      "structure": 1223,
+      "trace": 9
+    },
+    "max_component_mirror_mae": 0.059394883940352514,
+    "max_stage2_vs5_reconstruction_error": 2.842170943040401e-14,
+    "minimum_boolean_mirror_agreement": 0.998176291793313,
+    "raw_loss_bars": 7620,
+    "usable_direction_observations": 10776,
+    "winner_group_shares": {
+      "opposite_range": 0.2929133858267717,
+      "opposite_trend": 0.4141732283464567,
+      "precursor_range": 0.2929133858267717
+    },
+    "winner_opposite_range": 2232,
+    "winner_opposite_trend": 3156,
+    "winner_precursor_range": 2232,
+    "winner_unexplained": 0
+  },
+  "boundary": "Raw-stage attribution only. No classifier weight, threshold, gate, persistence, exposure rule, or strategy-performance metric is changed or optimized.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "bear": {
+        "direction": "bear",
+        "raw_adv_bars": 471,
+        "raw_loss_bars": 876,
+        "raw_loss_share": 0.6503340757238307,
+        "target_substage_on_loss": {
+          "5": 446,
+          "6": 430
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 302,
+          "opposite_trend": 360,
+          "precursor_range": 214,
+          "stage_counts": {
+            "1": 302,
+            "2": 356,
+            "3": 4,
+            "4": 214,
+            "5": 0,
+            "6": 0
+          },
+          "unexplained": 0
+        }
+      },
+      "bull": {
+        "direction": "bull",
+        "raw_adv_bars": 360,
+        "raw_loss_bars": 987,
+        "raw_loss_share": 0.732739420935412,
+        "target_substage_on_loss": {
+          "2": 394,
+          "3": 593
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 214,
+          "opposite_trend": 471,
+          "precursor_range": 302,
+          "stage_counts": {
+            "1": 302,
+            "2": 0,
+            "3": 0,
+            "4": 214,
+            "5": 471,
+            "6": 0
+          },
+          "unexplained": 0
+        }
+      },
+      "component_mirror": {
+        "break": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.0469636210306762
+        },
+        "continuation": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 0.016576831834128482
+        },
+        "extension": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 5.395026025308132e-16
+        },
+        "heat": {
+          "bars": 1584,
+          "mae_to_negative_inverse": 9.258517073097225e-16
+        },
+        "structure": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.0
+        },
+        "trace": {
+          "bars": 1347,
+          "mae_to_negative_inverse": 0.01691722314002796
+        }
+      },
+      "fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": -0.7844506588531465,
+          "continuation": -1.0545072057030387,
+          "extension": -1.1588789621164812,
+          "heat": 0.15385159260437656,
+          "structure": -2.902746844840386,
+          "trace": 0.004323781704323846
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 340,
+          "continuation": 3,
+          "extension": 1,
+          "heat": 64,
+          "structure": 333,
+          "trace": 1
+        },
+        "markup_raw0_below_markdown_raw0_bars": 742,
+        "max_abs_reconstruction_error": 2.842170943040401e-14,
+        "mean_abs_reconstruction_error": 6.837721018775278e-15
+      },
+      "inverse_fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": 0.8308335365626696,
+          "continuation": 1.0528351721223372,
+          "extension": 1.158878962116481,
+          "heat": -0.15385159260437656,
+          "structure": 2.902746844840386,
+          "trace": 0.0032720747993886658
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 305,
+          "continuation": 2,
+          "extension": 2,
+          "heat": 130,
+          "structure": 162,
+          "trace": 2
+        },
+        "markup_raw0_below_markdown_raw0_bars": 603,
+        "max_abs_reconstruction_error": 2.842170943040401e-14,
+        "mean_abs_reconstruction_error": 7.0886132895220466e-15
+      },
+      "mirror": {
+        "bear_raw_adv_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 0.998176291793313,
+          "mismatch_bars": 3
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9987841945288753,
+          "mismatch_bars": 2
+        },
+        "bull_raw_adv_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9987841945288753,
+          "mismatch_bars": 2
+        }
+      },
+      "warmup": 755
+    },
+    "EURUSD": {
+      "bear": {
+        "direction": "bear",
+        "raw_adv_bars": 438,
+        "raw_loss_bars": 909,
+        "raw_loss_share": 0.6748329621380846,
+        "target_substage_on_loss": {
+          "5": 453,
+          "6": 456
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 328,
+          "opposite_trend": 355,
+          "precursor_range": 226,
+          "stage_counts": {
+            "1": 328,
+            "2": 355,
+            "3": 0,
+            "4": 226,
+            "5": 0,
+            "6": 0
+          },
+          "unexplained": 0
+        }
+      },
+      "bull": {
+        "direction": "bull",
+        "raw_adv_bars": 355,
+        "raw_loss_bars": 992,
+        "raw_loss_share": 0.7364513734224202,
+        "target_substage_on_loss": {
+          "2": 401,
+          "3": 591
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 226,
+          "opposite_trend": 438,
+          "precursor_range": 328,
+          "stage_counts": {
+            "1": 328,
+            "2": 0,
+            "3": 0,
+            "4": 226,
+            "5": 438,
+            "6": 0
+          },
+          "unexplained": 0
+        }
+      },
+      "component_mirror": {
+        "break": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.02625954018004591
+        },
+        "continuation": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 0.006774101102896348
+        },
+        "extension": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 5.317977891959903e-16
+        },
+        "heat": {
+          "bars": 1584,
+          "mae_to_negative_inverse": 9.210516486006276e-16
+        },
+        "structure": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.0
+        },
+        "trace": {
+          "bars": 1347,
+          "mae_to_negative_inverse": 0.015187871522114219
+        }
+      },
+      "fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": 0.573172544783683,
+          "continuation": -0.4600502431084034,
+          "extension": -0.5377945564413179,
+          "heat": 0.2105276078921216,
+          "structure": -1.880475129918337,
+          "trace": -0.03878032348897285
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 251,
+          "continuation": 7,
+          "extension": 2,
+          "heat": 73,
+          "structure": 383,
+          "trace": 1
+        },
+        "markup_raw0_below_markdown_raw0_bars": 717,
+        "max_abs_reconstruction_error": 2.842170943040401e-14,
+        "mean_abs_reconstruction_error": 6.766590917049107e-15
+      },
+      "inverse_fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": -0.5467300889145034,
+          "continuation": 0.4610194075768588,
+          "extension": 0.5377945564413178,
+          "heat": -0.2105276078921216,
+          "structure": 1.880475129918337,
+          "trace": 0.05039442933152828
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 316,
+          "continuation": 2,
+          "extension": 8,
+          "heat": 112,
+          "structure": 191,
+          "trace": 1
+        },
+        "markup_raw0_below_markdown_raw0_bars": 630,
+        "max_abs_reconstruction_error": 4.263256414560601e-14,
+        "mean_abs_reconstruction_error": 6.902422212118317e-15
+      },
+      "mirror": {
+        "bear_raw_adv_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_raw_adv_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    },
+    "GBPUSD": {
+      "bear": {
+        "direction": "bear",
+        "raw_adv_bars": 372,
+        "raw_loss_bars": 975,
+        "raw_loss_share": 0.7238307349665924,
+        "target_substage_on_loss": {
+          "5": 525,
+          "6": 450
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 230,
+          "opposite_trend": 448,
+          "precursor_range": 297,
+          "stage_counts": {
+            "1": 230,
+            "2": 440,
+            "3": 8,
+            "4": 297,
+            "5": 0,
+            "6": 0
+          },
+          "unexplained": 0
+        }
+      },
+      "bull": {
+        "direction": "bull",
+        "raw_adv_bars": 448,
+        "raw_loss_bars": 899,
+        "raw_loss_share": 0.6674090571640683,
+        "target_substage_on_loss": {
+          "2": 446,
+          "3": 453
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 297,
+          "opposite_trend": 372,
+          "precursor_range": 230,
+          "stage_counts": {
+            "1": 230,
+            "2": 0,
+            "3": 0,
+            "4": 297,
+            "5": 369,
+            "6": 3
+          },
+          "unexplained": 0
+        }
+      },
+      "component_mirror": {
+        "break": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.059394883940352514
+        },
+        "continuation": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 0.026143424002941923
+        },
+        "extension": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 4.83422413979408e-16
+        },
+        "heat": {
+          "bars": 1584,
+          "mae_to_negative_inverse": 9.294087665584427e-16
+        },
+        "structure": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.0
+        },
+        "trace": {
+          "bars": 1347,
+          "mae_to_negative_inverse": 0.021801225975603262
+        }
+      },
+      "fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": 0.08545859778644788,
+          "continuation": 0.46293159160376157,
+          "extension": 1.4381429325112045,
+          "heat": 0.6302723473287691,
+          "structure": 1.388270230141054,
+          "trace": -0.4073167523860821
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 313,
+          "continuation": 4,
+          "extension": 2,
+          "heat": 89,
+          "structure": 200,
+          "trace": 0
+        },
+        "markup_raw0_below_markdown_raw0_bars": 608,
+        "max_abs_reconstruction_error": 2.842170943040401e-14,
+        "mean_abs_reconstruction_error": 6.809697571977018e-15
+      },
+      "inverse_fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": -0.04018202413504311,
+          "continuation": -0.46849731790422466,
+          "extension": -1.4381429325112045,
+          "heat": -0.6302723473287691,
+          "structure": -1.388270230141054,
+          "trace": 0.40467788623701495
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 290,
+          "continuation": 11,
+          "extension": 4,
+          "heat": 121,
+          "structure": 310,
+          "trace": 2
+        },
+        "markup_raw0_below_markdown_raw0_bars": 738,
+        "max_abs_reconstruction_error": 2.842170943040401e-14,
+        "mean_abs_reconstruction_error": 6.774173732065107e-15
+      },
+      "mirror": {
+        "bear_raw_adv_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_raw_adv_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    },
+    "USDJPY": {
+      "bear": {
+        "direction": "bear",
+        "raw_adv_bars": 375,
+        "raw_loss_bars": 972,
+        "raw_loss_share": 0.7216035634743875,
+        "target_substage_on_loss": {
+          "5": 389,
+          "6": 583
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 335,
+          "opposite_trend": 337,
+          "precursor_range": 300,
+          "stage_counts": {
+            "1": 335,
+            "2": 337,
+            "3": 0,
+            "4": 300,
+            "5": 0,
+            "6": 0
+          },
+          "unexplained": 0
+        }
+      },
+      "bull": {
+        "direction": "bull",
+        "raw_adv_bars": 337,
+        "raw_loss_bars": 1010,
+        "raw_loss_share": 0.7498144023756496,
+        "target_substage_on_loss": {
+          "2": 478,
+          "3": 532
+        },
+        "usable_bars": 1347,
+        "winner_group": {
+          "opposite_range": 300,
+          "opposite_trend": 375,
+          "precursor_range": 335,
+          "stage_counts": {
+            "1": 335,
+            "2": 0,
+            "3": 0,
+            "4": 300,
+            "5": 375,
+            "6": 0
+          },
+          "unexplained": 0
+        }
+      },
+      "component_mirror": {
+        "break": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.02521773637824747
+        },
+        "continuation": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 0.011115575088108502
+        },
+        "extension": {
+          "bars": 1445,
+          "mae_to_negative_inverse": 5.520526365916171e-16
+        },
+        "heat": {
+          "bars": 1584,
+          "mae_to_negative_inverse": 1.0058603518706048e-15
+        },
+        "structure": {
+          "bars": 1645,
+          "mae_to_negative_inverse": 0.0
+        },
+        "trace": {
+          "bars": 1347,
+          "mae_to_negative_inverse": 0.014984875526554926
+        }
+      },
+      "fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": 0.46820186311169754,
+          "continuation": 0.4139642387744162,
+          "extension": 0.8431767586602407,
+          "heat": 0.2713353798171913,
+          "structure": 0.9591685226429102,
+          "trace": -0.14207017271142977
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 199,
+          "continuation": 3,
+          "extension": 2,
+          "heat": 99,
+          "structure": 307,
+          "trace": 7
+        },
+        "markup_raw0_below_markdown_raw0_bars": 617,
+        "max_abs_reconstruction_error": 2.842170943040401e-14,
+        "mean_abs_reconstruction_error": 6.775162794893281e-15
+      },
+      "inverse_fresh_stage2_vs5": {
+        "component_delta_mean": {
+          "break": -0.4397567860369388,
+          "continuation": -0.41671526415982435,
+          "extension": -0.8431767586602407,
+          "heat": -0.27133537981719125,
+          "structure": -0.9591685226429102,
+          "trace": 0.1422936306583824
+        },
+        "finite_bars": 1347,
+        "largest_negative_component_counts": {
+          "break": 260,
+          "continuation": 10,
+          "extension": 18,
+          "heat": 74,
+          "structure": 368,
+          "trace": 0
+        },
+        "markup_raw0_below_markdown_raw0_bars": 730,
+        "max_abs_reconstruction_error": 2.842170943040401e-14,
+        "mean_abs_reconstruction_error": 6.945425839668293e-15
+      },
+      "mirror": {
+        "bear_raw_adv_vs_inverse_bull": {
+          "bars": 1645,
+          "mirror_agreement": 1.0,
+          "mismatch_bars": 0
+        },
+        "bull_loss_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        },
+        "bull_raw_adv_vs_inverse_bear": {
+          "bars": 1645,
+          "mirror_agreement": 0.9993920972644377,
+          "mismatch_bars": 1
+        }
+      },
+      "warmup": 755
+    }
+  },
+  "phase": "B3.8",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "RAW_FEATURE_ATTRIBUTION_NO_PERFORMANCE"
+}
