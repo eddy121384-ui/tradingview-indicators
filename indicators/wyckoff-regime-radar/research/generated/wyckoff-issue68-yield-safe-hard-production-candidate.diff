@@ -1,0 +1,142 @@
+--- issue68-hard-production-candidate.pine
++++ issue68-yield-safe-hard-production-candidate.pine
+@@ -8,6 +8,7 @@
+ 
+ // Input Groups
+ 
++groupRepresentation = "參數｜資料表示"
+ groupHeat      = "參數｜即時熱度"
+ groupMaturity  = "參數｜趨勢成熟度"
+ groupRange     = "參數｜突破與區間"
+@@ -23,6 +24,10 @@
+ groupPace      = "顯示｜Pace Guide / Flat Action v0.5"
+ groupColors    = "顯示｜Dashboard 顏色自訂"
+ groupAlert     = "警示｜門檻設定"
++
++// === 資料表示 ===
++representationMode = input.string("Auto", "資料表示模式", options=["Auto", "Price Log", "Yield Level"], group=groupRepresentation)
++// Auto：TradingView bond + currency NONE 視為殖利率 level series；其他資產保留 Issue #66 Price Log。
+ 
+ // === 即時熱度 ===
+ speedLen = input.int(20, "速度斜率天期", minval=2, group=groupHeat)
+@@ -350,25 +355,38 @@
+ 
+ // Core Calculation｜即時熱度
+ 
++// Issue #68 yield-safe representation domain split.
++// Price Log preserves Issue #66 reciprocal-safe behavior for positive price assets.
++// Yield Level supports zero/negative bond-yield datasets without log-domain NA.
++autoYieldLevel = syminfo.type == "bond" and syminfo.currency == "NONE"
++useYieldLevel = representationMode == "Yield Level" or (representationMode == "Auto" and autoYieldLevel)
++
+ safeClose = close > 0 ? close : na
+ logPrice  = math.log(safeClose)
+ logRet    = math.log(safeClose / safeClose[1])
+-vol       = ta.stdev(logRet, volLen)
+-
+-speedZ = f_slopeZ(logPrice, speedLen, vol)
+-shortZ = f_slopeZ(logPrice, shortLen, vol)
+-longZ  = f_slopeZ(logPrice, longLen, vol)
++levelRet  = close - close[1]
++modelPrice = useYieldLevel ? close : logPrice
++modelRet   = useYieldLevel ? levelRet : logRet
++vol        = ta.stdev(modelRet, volLen)
++
++speedZ = f_slopeZ(modelPrice, speedLen, vol)
++shortZ = f_slopeZ(modelPrice, shortLen, vol)
++longZ  = f_slopeZ(modelPrice, longLen, vol)
+ accelZ = shortZ - longZ
+ 
+-// Issue #66 B-1: geometric MA and log-space ATR representation.
++// Issue #66 Price Log path + Issue #68 Yield Level path.
+ logHigh = math.log(high > 0 ? high : na)
+ logLow  = math.log(low > 0 ? low : na)
+ maLog   = ta.sma(logPrice, maLen)
+-ma      = math.exp(maLog)
++maLevel = ta.sma(close, maLen)
++maModel = useYieldLevel ? maLevel : maLog
++ma      = useYieldLevel ? maLevel : math.exp(maLog)
+ atr     = ta.atr(atrLen)  // retained for accepted v0.6 boundary primitives
+ logTR   = na(logPrice[1]) ? logHigh - logLow : math.max(logHigh - logLow, math.max(math.abs(logHigh - logPrice[1]), math.abs(logLow - logPrice[1])))
+-symATR  = ta.rma(logTR, atrLen)
+-distATR = f_safeDiv(logPrice - maLog, symATR)
++levelTR = na(close[1]) ? high - low : math.max(high - low, math.max(math.abs(high - close[1]), math.abs(low - close[1])))
++modelTR = useYieldLevel ? levelTR : logTR
++symATR  = ta.rma(modelTR, atrLen)
++distATR = f_safeDiv(modelPrice - maModel, symATR)
+ 
+ speedRank = ta.percentrank(speedZ, rankLen)
+ accelRank = ta.percentrank(accelZ, rankLen)
+@@ -379,14 +397,16 @@
+ 
+ // Trend Maturity / End Risk
+ 
+-maturitySlopeZ = f_slopeZ(logPrice, maturitySlopeLen, vol)
++maturitySlopeZ = f_slopeZ(modelPrice, maturitySlopeLen, vol)
+ longSlopeRank  = ta.percentrank(maturitySlopeZ, rankLen)
+ 
+ maturityMaLog    = ta.sma(logPrice, maturityMaLen)
+-maturityMa       = math.exp(maturityMaLog)
++maturityMaLevel  = ta.sma(close, maturityMaLen)
++maturityMaModel  = useYieldLevel ? maturityMaLevel : maturityMaLog
++maturityMa       = useYieldLevel ? maturityMaLevel : math.exp(maturityMaLog)
+ maturityAtr      = ta.atr(maturityAtrLen)  // retained diagnostic compatibility
+-maturitySymATR   = ta.rma(logTR, maturityAtrLen)
+-maturityDistATR  = f_safeDiv(logPrice - maturityMaLog, maturitySymATR)
++maturitySymATR   = ta.rma(modelTR, maturityAtrLen)
++maturityDistATR  = f_safeDiv(modelPrice - maturityMaModel, maturitySymATR)
+ maturityDistRank = ta.percentrank(maturityDistATR, rankLen)
+ 
+ maturityUp = f_weighted2(longSlopeRank, wMatSlope, maturityDistRank, wMatDist)
+@@ -397,7 +417,7 @@
+ 
+ // Breakout / Breakdown / Low-vol Exemption
+ 
+-atrPct     = symATR * 100.0
++atrPct     = useYieldLevel ? symATR : symATR * 100.0
+ atrPctRank = ta.percentrank(atrPct, rankLen)
+ lowVolRecentlyBase = ta.lowest(atrPctRank[1], breakoutBars)
+ lowVolRecently = not na(lowVolRecentlyBase) and lowVolRecentlyBase <= lowVolLevel
+@@ -406,8 +426,8 @@
+ rangeLowBreak  = ta.lowest(low[1], breakoutBars)
+ rangeBreakUp   = not na(rangeHighBreak) and close > rangeHighBreak and close[1] <= rangeHighBreak[1]
+ rangeBreakDn   = not na(rangeLowBreak) and close < rangeLowBreak and close[1] >= rangeLowBreak[1]
+-maCrossUp      = ta.crossover(logPrice, maLog)
+-maCrossDn      = ta.crossunder(logPrice, maLog)
++maCrossUp      = ta.crossover(modelPrice, maModel)
++maCrossDn      = ta.crossunder(modelPrice, maModel)
+ 
+ recentBreakUp = f_recent(rangeBreakUp or maCrossUp, breakoutBars)
+ recentBreakDn = f_recent(rangeBreakDn or maCrossDn, breakoutBars)
+@@ -437,7 +457,8 @@
+ rangeMid  = (rangeHigh + rangeLow) / 2.0
+ rangeW    = rangeHigh - rangeLow
+ rangeWidthLog = math.log(rangeHigh) - math.log(rangeLow)
+-rangeWidthATR = f_safeDiv(rangeWidthLog, symATR)
++rangeWidthModel = useYieldLevel ? rangeW : rangeWidthLog
++rangeWidthATR = f_safeDiv(rangeWidthModel, symATR)
+ rangeWidthRank = ta.percentrank(rangeWidthATR, rankLen)
+ 
+ absSpeedZ = math.abs(speedZ)
+@@ -468,10 +489,10 @@
+ structureWeak   = bearStructure
+ 
+ breakoutRangeEvidence = f_clamp(nz(recentRangeBreakUpStrength, 0.0), 0.0, 100.0)
+-breakoutMaEvidence = recentMaCrossUp ? 70.0 : logPrice > maLog ? 35.0 : 0.0
++breakoutMaEvidence = recentMaCrossUp ? 70.0 : modelPrice > maModel ? 35.0 : 0.0
+ breakoutScore = breakoutModeUp ? 100.0 : math.max(breakoutRangeEvidence, breakoutMaEvidence)
+ breakdownRangeEvidence = f_clamp(nz(recentRangeBreakDnStrength, 0.0), 0.0, 100.0)
+-breakdownMaEvidence = recentMaCrossDn ? 70.0 : logPrice < maLog ? 35.0 : 0.0
++breakdownMaEvidence = recentMaCrossDn ? 70.0 : modelPrice < maModel ? 35.0 : 0.0
+ explicitBreakdownScore = breakdownModeDn ? 100.0 : math.max(breakdownRangeEvidence, breakdownMaEvidence)
+ 
+ // v0.3.3 Absorption vs Distribution Layer
+@@ -713,7 +734,7 @@
+ rangeContinuationUpScore = math.max(rangeContinuationUpBase, math.max(nz(abovePrevRangeScore, 0.0) * 0.80, nz(sustainedAboveRangeScore, 0.0)))
+ rangeContinuationDnScore = math.max(rangeContinuationDnBase, math.max(nz(belowPrevRangeScore, 0.0) * 0.80, nz(sustainedBelowRangeScore, 0.0)))
+ 
+-maSpreadATR = f_safeDiv(maLog - maturityMaLog, symATR)
++maSpreadATR = f_safeDiv(maModel - maturityMaModel, symATR)
+ maSpreadExpandingUp = maSpreadATR > maSpreadATR[1]
+ maSpreadExpandingDn = maSpreadATR < maSpreadATR[1]
+ maBullSpreadScore = f_clamp(f_weighted4(ma > maturityMa ? 100.0 : 0.0, 0.35, ma > ma[1] ? 100.0 : 0.0, 0.25, maturityMa >= maturityMa[1] ? 100.0 : 0.0, 0.15, maSpreadExpandingUp ? 100.0 : 0.0, 0.25), 0.0, 100.0)
