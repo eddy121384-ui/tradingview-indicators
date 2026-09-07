@@ -1554,7 +1554,7 @@ dnColor = f_riskColor(endRiskDn, redDn, false, breakdownModeDn)
 formalColor = f_stageColor(formalId)
 
 plot(endRiskUp, "上漲末段風險", color=upColor, linewidth=2)
-plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2)
+plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2, linestyle=plot.linestyle_dashed)
 plot(showInstantHeat ? heatUp : na, "上漲即時熱度", color=color.new(colOrange, 35), linewidth=1)
 plot(showInstantHeat ? panicHeatDn : na, "下跌即時恐慌熱度", color=color.new(colReacc, 35), linewidth=1)
 plot(showMaturity ? maturityUp : na, "上漲趨勢成熟度", color=color.new(color.blue, 30), linewidth=1)

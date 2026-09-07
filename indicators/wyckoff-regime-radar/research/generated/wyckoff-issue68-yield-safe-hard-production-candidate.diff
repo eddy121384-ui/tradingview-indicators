@@ -140,3 +140,12 @@
  maSpreadExpandingUp = maSpreadATR > maSpreadATR[1]
  maSpreadExpandingDn = maSpreadATR < maSpreadATR[1]
  maBullSpreadScore = f_clamp(f_weighted4(ma > maturityMa ? 100.0 : 0.0, 0.35, ma > ma[1] ? 100.0 : 0.0, 0.25, maturityMa >= maturityMa[1] ? 100.0 : 0.0, 0.15, maSpreadExpandingUp ? 100.0 : 0.0, 0.25), 0.0, 100.0)
+@@ -1533,7 +1554,7 @@
+ formalColor = f_stageColor(formalId)
+ 
+ plot(endRiskUp, "上漲末段風險", color=upColor, linewidth=2)
+-plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2)
++plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2, linestyle=plot.linestyle_dashed)
+ plot(showInstantHeat ? heatUp : na, "上漲即時熱度", color=color.new(colOrange, 35), linewidth=1)
+ plot(showInstantHeat ? panicHeatDn : na, "下跌即時恐慌熱度", color=color.new(colReacc, 35), linewidth=1)
+ plot(showMaturity ? maturityUp : na, "上漲趨勢成熟度", color=color.new(color.blue, 30), linewidth=1)
