@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "issue": 74,
   "phase": "C",
   "study": "macro_pressure_map_v66_severe_inflation_commodity_satellite",
@@ -71,11 +71,18 @@
     "interpretation": "Phase C remains inferior even with zero transaction cost; failure is not caused by execution cost."
   },
   "realized_weight_attribution": {
-    "method": "sum over assets of (Phase C realized invested weight - Phase B realized invested weight) times asset return; includes within-episode drift and reconciles to gross asset-mix return difference",
-    "full_annualized_arithmetic_gross_delta": -0.001165910013563907,
-    "pre2020_annualized_arithmetic_gross_delta": -0.0014663130128765242,
-    "post2019_annualized_arithmetic_gross_delta": -0.0005761230064949359,
+    "method": "sum over all segment rows and assets of (Phase C realized invested weight - Phase B realized invested weight) times asset return; includes active-state drift plus post-activation residual drift and reconciles to gross asset-mix return difference",
+    "full_annualized_arithmetic_gross_delta": -0.0011423423243562,
+    "pre2020_annualized_arithmetic_gross_delta": -0.0014195939895747,
+    "post2019_annualized_arithmetic_gross_delta": -0.0005980087783921,
+    "full_cumulative_gross_delta": -0.0223391387874116,
+    "full_cumulative_active_state_gross_delta": -0.0228000180430275,
+    "full_cumulative_inactive_residual_gross_delta": 0.0004608792556158,
+    "full_inactive_rows_with_nonzero_gross_delta": 42,
+    "pre2020_inactive_rows_with_nonzero_gross_delta": 15,
+    "post2019_inactive_rows_with_nonzero_gross_delta": 27,
     "max_abs_daily_reconciliation": 3.469446951953614e-18,
+    "prior_active_rows_only_attribution_superseded": true,
     "prior_fixed_20pct_target_approximation_superseded": true
   },
   "episode_concentration": {
@@ -92,10 +99,11 @@
   },
   "review_hardening": {
     "phase_c_gate_full_validation": true,
-    "realized_weight_attribution": true,
+    "realized_weight_attribution_includes_post_activation_residual": true,
     "github_pr_trigger_sha_fail_closed_guard": true,
-    "workflow_branch_checkout_itself_pinned": false,
-    "provenance_interpretation": "Artifacts fail closed if GitHub PR checked-out HEAD differs from the triggering pull_request.head.sha."
+    "workflow_pr_checkout_pinned_to_trigger_sha": true,
+    "workflow_branch_checkout_itself_pinned": true,
+    "provenance_interpretation": "PR validation checks out immutable github.event.pull_request.head.sha before checked-out research code executes; Python SHA guard remains defense in depth."
   },
   "verdict": "preregistered_gsg_satellite_does_not_add_historical_value_over_deep_cash_in_v66_severe_stagflation",
   "decision": {
@@ -107,9 +115,10 @@
     "rescue_tuning_permitted": false
   },
   "provenance": {
-    "github_actions_run": 33728936711,
-    "head_sha": "5f1c87e6cf1d23725db676b26f876c0d7a6ebf05",
-    "phase_c_artifact_id": 9883140294,
-    "phase_c_artifact_digest": "sha256:f5ba2d135b308ad491e613e461d315e566e63dbbd9d35e1e8f9a44e84d4ab6bb"
+    "role": "latest evidence-producing evaluator head after post-activation drift correction",
+    "github_actions_run": 34073743809,
+    "head_sha": "00dbc6f8035b05e263718e6379741459690f6088",
+    "phase_c_artifact_id": 10001351985,
+    "phase_c_artifact_digest": "sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573"
   }
 }
