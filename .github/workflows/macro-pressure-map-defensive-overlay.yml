@@ -85,19 +85,39 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/issue-74-outcome-prices-manifest.json data/issue-74-outcome-prices-*.b64
           git commit -m "Freeze Issue 74 outcome price snapshot"
+          frozen_commit="$(git rev-parse HEAD)"
           git push origin "HEAD:${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}"
           echo "created=true" >> "$GITHUB_OUTPUT"
-          echo "frozen_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "frozen_commit=$frozen_commit" >> "$GITHUB_OUTPUT"
 
-      - name: Defer PR research to frozen-snapshot head
-        if: github.event_name == 'pull_request' && steps.freeze.outputs.created == 'true'
+      - name: Checkout exact frozen snapshot commit
+        if: steps.freeze.outputs.created == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.freeze.outputs.frozen_commit }}
+          fetch-depth: 0
+
+      - name: Pin Issue 74 validation checkout
+        shell: bash
+        env:
+          SNAPSHOT_CREATED: ${{ steps.freeze.outputs.created }}
+          FROZEN_COMMIT: ${{ steps.freeze.outputs.frozen_commit }}
+          PR_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
         run: |
-          echo "Outcome snapshot was created and pushed as a new commit."
-          echo "This triggering checkout must remain tied to the original pull_request.head.sha, so no research evidence is generated in this run."
-          echo "The pushed commit will trigger a new PR run that validates and evaluates the committed frozen snapshot at its own exact head."
+          set -euo pipefail
+          if [[ "$SNAPSHOT_CREATED" == "true" ]]; then
+            expected="$FROZEN_COMMIT"
+          elif [[ -n "$PR_HEAD_SHA" ]]; then
+            expected="$PR_HEAD_SHA"
+          else
+            expected="$(git rev-parse HEAD)"
+          fi
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+          echo "ISSUE_74_EXPECTED_CHECKOUT_SHA=$expected" >> "$GITHUB_ENV"
+          echo "Issue #74 validation checkout pinned to $expected"
 
       - name: Verify committed/frozen outcome panel
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           python - <<'PY'
@@ -115,7 +135,6 @@ jobs:
           PY
 
       - name: Generate preregistered Phase A/B evidence from frozen data
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           rm -rf generated/issue-74-phase-ab
@@ -123,7 +142,6 @@ jobs:
             --output-dir generated/issue-74-phase-ab
 
       - name: Generate preregistered Phase C evidence from frozen data
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           rm -rf generated/issue-74-phase-c
@@ -131,7 +149,6 @@ jobs:
             --output-dir generated/issue-74-phase-c
 
       - name: Generate post-hoc same-window Gold vs Cash comparator
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           rm -rf generated/issue-74-legacy-gold-cash
@@ -140,7 +157,6 @@ jobs:
             --cost-bps 5
 
       - name: Validate Issue 74 evidence
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m json.tool generated/issue-74-phase-ab/issue-74-phase-ab-manifest.json > /dev/null
@@ -178,7 +194,6 @@ jobs:
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-report.md
 
       - name: Upload Issue 74 Phase A/B evidence
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-74-phase-ab
@@ -187,7 +202,6 @@ jobs:
           retention-days: 30
 
       - name: Upload Issue 74 Phase C evidence
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-74-phase-c
@@ -196,7 +210,6 @@ jobs:
           retention-days: 30
 
       - name: Upload Issue 74 legacy Gold vs Cash diagnostic
-        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-74-legacy-gold-cash
