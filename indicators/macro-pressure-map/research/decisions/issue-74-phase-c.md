@@ -28,7 +28,7 @@ The operator supplied a new TradingView source capture, `pine-logs-MPM V6.6 PHAS
 - maximum absolute IPI difference: `2.0430569236395968e-08`
 - frozen parity gate: `5e-08`
 
-This satisfies the preregistered `equivalently exact verified reconstruction` path. The gate now performs full manifest/SHA/content validation before reporting Phase C ready. Production V6.6 is unchanged.
+This satisfies the preregistered `equivalently exact verified reconstruction` path. The gate performs full manifest/SHA/content validation before reporting Phase C ready. Production V6.6 is unchanged.
 
 ## Outcome window
 
@@ -60,17 +60,26 @@ This is not a transaction-cost artifact. At **0 bp**, full-history Phase C minus
 
 ## Realized-weight attribution
 
-The original diagnostic used a fixed `20% × (GSG - SHV)` target-weight approximation. Codex review correctly noted that this ignores within-episode drift after the entry rebalance.
+The first diagnostic used a fixed `20% × (GSG - SHV)` target-weight approximation. A later version improved this by using realized invested weights, but still summed only the rows where the severe-inflation Phase C state was active.
 
-The reviewed attribution therefore uses each simulation's **actual invested weights on every row**, including drift, and reconciles the asset-level weight-difference contributions to the realized gross Phase C-minus-Phase B asset-mix return difference to floating-point precision.
+Codex review identified one remaining accounting detail: when a severe episode ends between month starts, Phase C event-rebalances back to the Phase B target while Phase B itself may not rebalance on that row. The two simulations can therefore retain slightly different realized weights for several subsequent inactive rows.
 
-Annualized arithmetic realized gross Phase C-minus-Phase B contribution over the corresponding segment:
+The reviewed attribution now uses each simulation's **actual invested weights on every row in each evaluation segment**, including:
 
-- full history: **-0.1166 pp/year**
-- pre-2020: **-0.1466 pp/year**
-- post-2019 reused: **-0.0576 pp/year**
+- drift while Phase C is active; and
+- post-activation residual drift on inactive rows until the portfolios reconverge.
 
-The revised attribution remains negative in every era split and strengthens, rather than reverses, the conclusion that the commodity substitution did not add historical value under this exact V6.6 severe-Stagflation condition.
+Asset-level weight-difference contributions reconcile to the realized gross Phase C-minus-Phase B asset-mix return difference to floating-point precision.
+
+Annualized arithmetic realized gross Phase C-minus-Phase B contribution over each complete segment:
+
+- full history: **-0.114234 pp/year**
+- pre-2020: **-0.141959 pp/year**
+- post-2019 reused: **-0.059801 pp/year**
+
+Across the full sample, 42 inactive rows retain a nonzero realized gross difference after Phase C deactivation. Their cumulative residual is about **+0.0461%**, partially offsetting the active-state cumulative gross difference of about **-2.2800%**; the complete gross difference is about **-2.2339%**.
+
+The corrected attribution remains negative in every era split. It changes only the attribution accounting, not the primary Phase C strategy metrics or verdict.
 
 ## Episode evidence
 
@@ -98,17 +107,20 @@ Interpretation:
 
 ## Review hardening
 
-Three Codex P2 review findings were addressed in the reviewed evidence path:
+The Codex review findings are now addressed in the evidence path:
 
-1. Severe-inflation availability now means **full evidence validation**, not mere file existence.
-2. Phase C attribution now uses **realized invested weights including drift**, not a fixed target-weight approximation.
-3. GitHub PR execution now **fails closed if the checked-out SHA differs from the triggering `pull_request.head.sha`**, preventing artifacts from being mislabeled as exact-head evidence even though the workflow's branch-name checkout remains mutable.
+1. Severe-inflation availability means **full evidence validation**, not mere file existence.
+2. Phase C attribution uses **realized invested weights**, not a fixed target-weight approximation.
+3. Attribution covers **all segment rows**, including post-activation inactive residual drift, and reconciles to the complete realized gross return difference.
+4. GitHub pull-request validation checks out the immutable **`github.event.pull_request.head.sha`** before any checked-out research code executes. The Python SHA guard remains defense in depth.
 
 ## Provenance
 
-Reviewed GitHub Actions run: `33728936711` on head `5f1c87e6cf1d23725db676b26f876c0d7a6ebf05` — success.
+Latest evidence-producing evaluator head after the post-activation drift correction:
 
-Reviewed Phase C artifact:
+- head: `00dbc6f8035b05e263718e6379741459690f6088`
+- GitHub Actions run: `34073743809` — success
+- Phase C artifact ID: `10001351985`
+- artifact digest: `sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573`
 
-- ID `9883140294`
-- digest `sha256:f5ba2d135b308ad491e613e461d315e566e63dbbd9d35e1e8f9a44e84d4ab6bb`
+The decision-record commit is documentation-only relative to that evidence-producing evaluator head; it does not alter the frozen Phase C rule, outcome data, or evaluator logic.
