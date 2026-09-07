@@ -123,10 +123,12 @@ Evidence-producing evaluator head after the post-activation drift correction:
 - Phase C artifact ID: `10001351985`
 - artifact digest: `sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573`
 
-The documentation-only decision update was then revalidated on pinned PR head `4b68979951a3c2108ce1e0323be0dad805c507c0`:
+The documentation-only decision update was revalidated on pinned PR head `4b68979951a3c2108ce1e0323be0dad805c507c0`:
 
 - GitHub Actions run: `34073940013` — success
 - Phase C artifact ID: `10001422754`
 - artifact digest: `sha256:ea02f1cf0d1ddb7813a34943919a21b22a8b9c6b54ac76b61b98283b7a6910c6`
+
+The latest narrative/provenance-only head `a2345e280b2081e981532c118aded77e0eaa0c9b` was also validated by pinned PR workflow run `34074113847` — success, with Phase C artifact `10001482402` (`sha256:fe84a4dc17be3c91b44b0c27e812f6728c54f4826fd72688d06336959bea4f7b`).
 
 These documentation/provenance commits do not alter the frozen Phase C rule, outcome data, evaluator logic, or verdict.
