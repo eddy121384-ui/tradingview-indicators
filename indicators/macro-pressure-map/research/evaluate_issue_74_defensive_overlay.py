@@ -248,7 +248,7 @@ def episode_concentration(
                 "observations": len(dates),
                 "active_log_return": float(active_log.loc[dates].sum()),
             })
-        total = float(active_log.loc[seg_dates].sum()) if len(seg_dates) else np.nan
+        total = float(active_log.loc[stag_dates].sum()) if len(stag_dates) else np.nan
         if episodes:
             winner = max(episodes, key=lambda item: item["active_log_return"])
             removed = total - float(winner["active_log_return"])
