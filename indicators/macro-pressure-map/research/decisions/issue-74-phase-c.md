@@ -116,11 +116,17 @@ The Codex review findings are now addressed in the evidence path:
 
 ## Provenance
 
-Latest evidence-producing evaluator head after the post-activation drift correction:
+Evidence-producing evaluator head after the post-activation drift correction:
 
 - head: `00dbc6f8035b05e263718e6379741459690f6088`
 - GitHub Actions run: `34073743809` — success
 - Phase C artifact ID: `10001351985`
 - artifact digest: `sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573`
 
-The decision-record commit is documentation-only relative to that evidence-producing evaluator head; it does not alter the frozen Phase C rule, outcome data, or evaluator logic.
+The documentation-only decision update was then revalidated on pinned PR head `4b68979951a3c2108ce1e0323be0dad805c507c0`:
+
+- GitHub Actions run: `34073940013` — success
+- Phase C artifact ID: `10001422754`
+- artifact digest: `sha256:ea02f1cf0d1ddb7813a34943919a21b22a8b9c6b54ac76b61b98283b7a6910c6`
+
+These documentation/provenance commits do not alter the frozen Phase C rule, outcome data, evaluator logic, or verdict.
