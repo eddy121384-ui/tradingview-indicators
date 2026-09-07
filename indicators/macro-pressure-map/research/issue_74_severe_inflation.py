@@ -18,12 +18,10 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 DATA_DIR = HERE / "data"
 
-# Legacy full-daily artifact path retained for backwards compatibility.
 DEFAULT_DATA = DATA_DIR / "issue-74-frozen-severe-inflation.csv"
 DEFAULT_MANIFEST = DATA_DIR / "issue-74-frozen-severe-inflation-manifest.json"
 EXPECTED_SOURCE_LOG_SHA256 = "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d"
 
-# Verified-reconstruction compact evidence committed for Phase C.
 POSITIVE_DATA = DATA_DIR / "issue-74-severe-inflation-positive-dates.csv"
 POSITIVE_MANIFEST = DATA_DIR / "issue-74-severe-inflation-positive-dates-manifest.json"
 EXPECTED_RECONSTRUCTION_SOURCE_SHA256 = "6c5aa03419d2e5325d28fb33bf9c83a9744d7170da84f72a614676a7fc1aad4d"
@@ -40,40 +38,28 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def compact_available(
-    data_path: Path = POSITIVE_DATA,
-    manifest_path: Path = POSITIVE_MANIFEST,
-) -> bool:
+def compact_available(data_path: Path = POSITIVE_DATA, manifest_path: Path = POSITIVE_MANIFEST) -> bool:
     return data_path.exists() and manifest_path.exists()
 
 
-def legacy_available(
-    data_path: Path = DEFAULT_DATA,
-    manifest_path: Path = DEFAULT_MANIFEST,
-) -> bool:
+def legacy_available(data_path: Path = DEFAULT_DATA, manifest_path: Path = DEFAULT_MANIFEST) -> bool:
     return data_path.exists() and manifest_path.exists()
 
 
 def available() -> bool:
-    """Return true only when at least one frozen evidence path fully validates."""
-    if compact_available():
-        try:
-            load_severe_positive_dates()
-            return True
-        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
-            pass
-    if legacy_available():
-        try:
-            load_daily_ipi()
-            return True
-        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
-            pass
-    return False
+    """Return true only when one preregistered evidence path fully validates."""
+    try:
+        load_severe_positive_dates()
+        return True
+    except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+        return False
 
 
 def load_severe_positive_dates(
     data_path: Path = POSITIVE_DATA,
     manifest_path: Path = POSITIVE_MANIFEST,
+    legacy_data_path: Path = DEFAULT_DATA,
+    legacy_manifest_path: Path = DEFAULT_MANIFEST,
 ) -> tuple[pd.Series, dict]:
     """Load validated severe-positive dates from either preregistered evidence path.
 
@@ -113,8 +99,8 @@ def load_severe_positive_dates(
             raise ValueError("Issue #74 compact severe-row count mismatch")
         return frame.set_index("date")["IPI"], manifest
 
-    if legacy_available():
-        daily, legacy_manifest = load_daily_ipi()
+    if legacy_available(legacy_data_path, legacy_manifest_path):
+        daily, legacy_manifest = load_daily_ipi(legacy_data_path, legacy_manifest_path)
         positive = daily.loc[daily.ge(INFLATION_EXTREME_THRESHOLD)].copy()
         manifest = dict(legacy_manifest)
         manifest["evidence_mode"] = "exact prior full-daily artifact"
