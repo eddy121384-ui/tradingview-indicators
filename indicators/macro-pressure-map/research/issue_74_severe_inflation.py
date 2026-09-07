@@ -3,7 +3,7 @@
 
 Phase C needs the historical V6.6 severe-inflation condition (raw IPI >= +60).
 The preregistration permits either the exact prior hash-matching Pine parity log
-or an equivalently exact verified reconstruction.  The compact committed format
+or an equivalently exact verified reconstruction. The compact committed format
 stores every positive severe-inflation source date plus raw IPI and treats every
 other source date within the verified coverage window as false.
 """
@@ -75,39 +75,55 @@ def load_severe_positive_dates(
     data_path: Path = POSITIVE_DATA,
     manifest_path: Path = POSITIVE_MANIFEST,
 ) -> tuple[pd.Series, dict]:
-    """Load verified positive severe-inflation dates as raw IPI observations."""
-    if not compact_available(data_path, manifest_path):
-        raise FileNotFoundError("Issue #74 verified severe-inflation reconstruction is not frozen")
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("issue") != 74:
-        raise ValueError("unexpected Issue #74 severe-inflation manifest identity")
-    if manifest.get("evidence_mode") != "equivalently exact verified reconstruction":
-        raise ValueError("Issue #74 compact evidence is not a verified reconstruction")
-    if manifest.get("source_log_sha256") != EXPECTED_RECONSTRUCTION_SOURCE_SHA256:
-        raise ValueError("Issue #74 reconstruction source SHA mismatch")
-    if manifest.get("parity_pass") is not True:
-        raise ValueError("Issue #74 reconstruction did not pass parity")
-    if int(manifest.get("parity_checkpoints", 0)) < RECONSTRUCTION_MIN_CHECKPOINTS:
-        raise ValueError("Issue #74 reconstruction parity checkpoint count is insufficient")
-    if float(manifest.get("parity_max_abs_ipi_error")) > RECONSTRUCTION_PARITY_MAX_ERROR:
-        raise ValueError("Issue #74 reconstruction parity error exceeds frozen gate")
-    if float(manifest.get("inflation_extreme_threshold")) != INFLATION_EXTREME_THRESHOLD:
-        raise ValueError("Issue #74 severe-inflation threshold differs from frozen V6.6 +60")
-    if sha256_file(data_path) != str(manifest.get("positive_dates_csv_sha256")):
-        raise ValueError("Issue #74 severe-inflation positive-date CSV SHA mismatch")
+    """Load validated severe-positive dates from either preregistered evidence path.
 
-    frame = pd.read_csv(data_path)
-    if list(frame.columns) != ["date", "IPI"]:
-        raise ValueError(f"unexpected Issue #74 compact evidence columns: {list(frame.columns)}")
-    frame["date"] = pd.to_datetime(frame["date"], errors="raise").dt.normalize()
-    frame["IPI"] = pd.to_numeric(frame["IPI"], errors="raise").astype(float)
-    if frame["date"].duplicated().any() or not frame["date"].is_monotonic_increasing:
-        raise ValueError("Issue #74 severe-inflation positive dates must be unique and increasing")
-    if not frame["IPI"].ge(INFLATION_EXTREME_THRESHOLD).all():
-        raise ValueError("Issue #74 compact evidence contains non-severe IPI values")
-    if len(frame) != int(manifest.get("severe_rows")):
-        raise ValueError("Issue #74 compact severe-row count mismatch")
-    return frame.set_index("date")["IPI"], manifest
+    Prefer the compact verified reconstruction when present. If it is absent but
+    the exact prior full-daily artifact is available, validate that legacy path
+    and derive the same positive-date series from raw IPI >= +60.
+    """
+    if compact_available(data_path, manifest_path):
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest.get("issue") != 74:
+            raise ValueError("unexpected Issue #74 severe-inflation manifest identity")
+        if manifest.get("evidence_mode") != "equivalently exact verified reconstruction":
+            raise ValueError("Issue #74 compact evidence is not a verified reconstruction")
+        if manifest.get("source_log_sha256") != EXPECTED_RECONSTRUCTION_SOURCE_SHA256:
+            raise ValueError("Issue #74 reconstruction source SHA mismatch")
+        if manifest.get("parity_pass") is not True:
+            raise ValueError("Issue #74 reconstruction did not pass parity")
+        if int(manifest.get("parity_checkpoints", 0)) < RECONSTRUCTION_MIN_CHECKPOINTS:
+            raise ValueError("Issue #74 reconstruction parity checkpoint count is insufficient")
+        if float(manifest.get("parity_max_abs_ipi_error")) > RECONSTRUCTION_PARITY_MAX_ERROR:
+            raise ValueError("Issue #74 reconstruction parity error exceeds frozen gate")
+        if float(manifest.get("inflation_extreme_threshold")) != INFLATION_EXTREME_THRESHOLD:
+            raise ValueError("Issue #74 severe-inflation threshold differs from frozen V6.6 +60")
+        if sha256_file(data_path) != str(manifest.get("positive_dates_csv_sha256")):
+            raise ValueError("Issue #74 severe-inflation positive-date CSV SHA mismatch")
+
+        frame = pd.read_csv(data_path)
+        if list(frame.columns) != ["date", "IPI"]:
+            raise ValueError(f"unexpected Issue #74 compact evidence columns: {list(frame.columns)}")
+        frame["date"] = pd.to_datetime(frame["date"], errors="raise").dt.normalize()
+        frame["IPI"] = pd.to_numeric(frame["IPI"], errors="raise").astype(float)
+        if frame["date"].duplicated().any() or not frame["date"].is_monotonic_increasing:
+            raise ValueError("Issue #74 severe-inflation positive dates must be unique and increasing")
+        if not frame["IPI"].ge(INFLATION_EXTREME_THRESHOLD).all():
+            raise ValueError("Issue #74 compact evidence contains non-severe IPI values")
+        if len(frame) != int(manifest.get("severe_rows")):
+            raise ValueError("Issue #74 compact severe-row count mismatch")
+        return frame.set_index("date")["IPI"], manifest
+
+    if legacy_available():
+        daily, legacy_manifest = load_daily_ipi()
+        positive = daily.loc[daily.ge(INFLATION_EXTREME_THRESHOLD)].copy()
+        manifest = dict(legacy_manifest)
+        manifest["evidence_mode"] = "exact prior full-daily artifact"
+        manifest["raw_ipi_coverage_first_date"] = daily.index.min().date().isoformat()
+        manifest["raw_ipi_coverage_last_date"] = daily.index.max().date().isoformat()
+        manifest["severe_rows"] = int(len(positive))
+        return positive, manifest
+
+    raise FileNotFoundError("Issue #74 severe-inflation evidence is not frozen on either validated path")
 
 
 def severe_flag_on_calendar(calendar: pd.DatetimeIndex) -> tuple[pd.Series, dict]:
