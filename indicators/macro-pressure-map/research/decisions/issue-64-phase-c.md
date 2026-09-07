@@ -1,8 +1,12 @@
 # Issue #64 Phase C — Stagflation gold-over-equity robustness checkpoint
 
-## Verdict
+## Final interpretation category
 
-`stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated`
+`risk_management_value_only`
+
+Detailed rationale: `stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated`.
+
+This uses the bounded final-verdict contract defined in `issue-64-asset-allocation-spec.md`. The detailed rationale is retained separately because the historical Stagflation override improves risk outcomes but fails the episode-concentration robustness gate required for a stronger production-allocation claim.
 
 Phase C kept the preregistered templates unchanged:
 
@@ -42,7 +46,7 @@ That distinction strengthens the risk-overlay interpretation: the Stagflation ru
 
 The contribution tables reconcile to the portfolio arithmetic net return to floating-point precision. Maximum absolute asset-plus-cost reconciliation error and regime reconciliation error are both `2.78e-17` across full/pre-2020/post-2019 segments and all Phase C comparison strategies.
 
-These diagnostics do not overturn the existing Phase C verdict. They make the mechanism more auditable while the leave-largest-episode-out robustness failure still stands.
+These diagnostics do not overturn the final interpretation category. They make the mechanism more auditable while the leave-largest-episode-out robustness failure still stands.
 
 ## Realized-exposure attribution
 
@@ -82,7 +86,7 @@ Thus the attractive recent result is indeed strongly tied to the 2021-22 inflati
 
 ## Interpretation
 
-Phase C is stronger as a **historical risk-management / crisis-overlay candidate** than as evidence for a robust production allocation rule. The contribution audit sharpens that interpretation because the Stagflation state remains negative in absolute return contribution even after the defensive override; the improvement comes from losing less in those rows. The exposure-matched attribution says the state contains some timing information, especially after 2019, but the leave-largest-episode-out test says that information has not been broadly distributed across episodes.
+Phase C is stronger as a **historical risk-management / crisis-overlay candidate** than as evidence for a robust production allocation rule. That is why the formal final category is `risk_management_value_only`. The contribution audit sharpens that interpretation because the Stagflation state remains negative in absolute return contribution even after the defensive override; the improvement comes from losing less in those rows. The exposure-matched attribution says the state contains some timing information, especially after 2019, but the leave-largest-episode-out test says that information has not been broadly distributed across episodes.
 
 Do not tune the 20/40/40 weights or thresholds to rescue the result. All history used here has already been inspected and remains development/reused exploratory evidence, not untouched OOS confirmation.
 
@@ -96,6 +100,7 @@ The artifact contains `phase-c-asset-contribution.csv`, `phase-c-regime-allocati
 
 ## Decision
 
+- Final interpretation category: `risk_management_value_only`.
 - Do not call V6.6 a validated production allocator.
 - Keep the Reflation and Stagflation relationships as distinct exploratory allocation/risk-overlay findings.
 - Treat the Stagflation result primarily as historical loss mitigation, not evidence that Stagflation rows are positively returning after the override.
