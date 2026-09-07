@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "issue": 64,
   "phase": "A",
   "artifact_role": "durable curated Phase A decision evidence",
@@ -25,15 +25,28 @@
     "assets": ["SPY", "TLT", "GLD"],
     "price_semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close",
     "horizons_trading_rows": {"1M": 21, "3M": 63, "6M": 126},
-    "inference": "deterministic bootstrap 95% intervals on horizon-embargoed starts within each regime"
+    "inference": "deterministic bootstrap 95% intervals on horizon-embargoed starts within each regime",
+    "frozen_snapshot": {
+      "manifest": "data/issue-64-outcome-prices-manifest.json",
+      "rows": 4941,
+      "first_date": "2007-01-03",
+      "last_date": "2026-08-24",
+      "csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+      "archive_sha256": "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240",
+      "source_artifact_run": 32794998567,
+      "source_phase_a_artifact": 9544547838,
+      "acquisition_mode": "Issue #64 bootstrap run subsequently frozen for durable reproducibility"
+    }
   },
   "latest_verified_workflow": {
-    "run_id": 32439125598,
-    "artifact_id": 9431783095,
-    "artifact_sha256": "4f5fe53b8dd8bec8d7ef862673d1296c6261b143150cc010e4fec5c1addd9df9",
-    "focused_tests_passed": 10,
+    "run_id": 33603653668,
+    "artifact_id": 9836364304,
+    "artifact_sha256": "6034810515f734ef68765b2cad69a18bdef49a07fa87e7e5522b4b919ec98e48",
+    "exact_head_sha": "fcc4c6b1ae083bda5b9c9b1dd865bd42f9015f8e",
+    "frozen_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
     "strict_json_validation_passed": true,
-    "artifact_upload_passed": true
+    "artifact_upload_passed": true,
+    "note": "This current-head run regenerated Phase A from the committed hash-verified frozen outcome panel; later documentation-only provenance updates must not replace this evidence-producing run unless they regenerate the same evidence."
   },
   "temporal_stability": {
     "development_segment": "2007-01-04 through 2019-12-31; forward price panel truncated at 2019-12-31 so horizons cannot leak into 2020",
