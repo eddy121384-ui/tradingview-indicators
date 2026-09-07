@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "issue": 74,
   "phase": "C",
   "study": "macro_pressure_map_v66_severe_inflation_commodity_satellite",
@@ -86,20 +86,24 @@
     "prior_fixed_20pct_target_approximation_superseded": true
   },
   "episode_concentration": {
-    "full_active_log_return": -0.024770,
+    "scope": "active Phase C rows only; post-activation inactive residual/cost rows are excluded here and accounted separately in realized_weight_attribution",
+    "full_active_log_return": -0.024419475395269258,
     "largest_winning_episode": {
       "start": "2022-03-02",
       "end": "2022-04-04",
       "observations": 24,
-      "active_log_return": 0.009965
+      "active_log_return": 0.009964954520676559
     },
-    "active_log_return_ex_largest_winner": -0.034735,
-    "pre2020_active_log_return": -0.019243,
-    "post2019_active_log_return": -0.005527
+    "active_log_return_ex_largest_winner": -0.03438442991594581,
+    "pre2020_active_log_return": -0.019445011190500024,
+    "pre2020_active_log_return_ex_largest_winner": -0.02198287172112901,
+    "post2019_active_log_return": -0.004974464204769231,
+    "post2019_active_log_return_ex_largest_winner": -0.01493941872544579
   },
   "review_hardening": {
     "phase_c_gate_full_validation": true,
     "realized_weight_attribution_includes_post_activation_residual": true,
+    "episode_concentration_restricted_to_active_rows": true,
     "github_pr_trigger_sha_fail_closed_guard": true,
     "workflow_pr_checkout_pinned_to_trigger_sha": true,
     "workflow_branch_checkout_itself_pinned": true,
@@ -115,14 +119,10 @@
     "rescue_tuning_permitted": false
   },
   "provenance": {
-    "evidence_producing_evaluator_head": "00dbc6f8035b05e263718e6379741459690f6088",
-    "evidence_producing_run": 34073743809,
-    "evidence_producing_phase_c_artifact_id": 10001351985,
-    "evidence_producing_phase_c_artifact_digest": "sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573",
-    "decision_record_validation_head": "4b68979951a3c2108ce1e0323be0dad805c507c0",
-    "decision_record_validation_run": 34073940013,
-    "decision_record_validation_phase_c_artifact_id": 10001422754,
-    "decision_record_validation_phase_c_artifact_digest": "sha256:ea02f1cf0d1ddb7813a34943919a21b22a8b9c6b54ac76b61b98283b7a6910c6",
-    "interpretation": "The evaluator evidence was produced on the evaluator-fix head; the documentation-only decision commit was then revalidated by an exact-head pinned-PR workflow run with the same Phase C results."
+    "evidence_producing_evaluator_head": "e2e817a0d4f00bd1b6a512f70b8491c98d42941a",
+    "evidence_producing_run": 34074979688,
+    "evidence_producing_phase_c_artifact_id": 10001752814,
+    "evidence_producing_phase_c_artifact_digest": "sha256:caff04c06434367d24f5025b4ff755dc3277d2499e023fc02ef4632d23b1b15c",
+    "interpretation": "This pinned exact-head artifact is the reviewed source of truth for the active-only episode concentration and complete all-row realized-weight attribution."
   }
 }
