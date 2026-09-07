@@ -4,92 +4,117 @@
 
 Does the preregistered broad-commodity sleeve improve the existing Phase B defensive allocation when frozen Macro Pressure Map V6.6 is simultaneously in **lagged Stagflation Pressure** and **lagged raw IPI >= +60**?
 
-Frozen Phase C rule:
+Frozen rule:
 
-- ordinary Stagflation defense: SPY/TLT/SHV/GSG = **20/20/60/0**
+- ordinary Stagflation: SPY/TLT/SHV/GSG = **20/20/60/0**
 - severe-inflation Stagflation: **20/20/40/20**
-- the 20% commodity sleeve is GSG and comes entirely from SHV at each target rebalance
 - one-bar signal lag
-- monthly plus lagged-template-change rebalance
+- month-start plus lagged-template-change rebalance
 - 5 bp primary one-way-turnover cost
-- no threshold tuning, weight sweep, commodity momentum filter, oil-only rescue test, or production V6.6 modification
+- no threshold tuning, weight sweep, commodity momentum, oil-only rescue, extra rescue asset, or production V6.6 change
 
 All history is reused/development evidence, not untouched OOS confirmation.
 
 ## Signal evidence gate
 
-The operator supplied a new TradingView source capture, `pine-logs-MPM V6.6 PHASE C SRC.csv`.
+The executed Phase C path uses the operator TradingView capture `pine-logs-MPM V6.6 PHASE C SRC.csv`:
 
-- SHA256: `6c5aa03419d2e5325d28fb33bf9c83a9744d7170da84f72a614676a7fc1aad4d`
-- 5,458 raw rows; 5,451 unique source dates
-- raw IPI reconstruction finite on 5,137 dates
-- 194 source dates have raw IPI >= +60
-- all 51 frozen Issue #64 axis-audit checkpoints matched
-- maximum absolute IPI difference: `2.0430569236395968e-08`
-- frozen parity gate: `5e-08`
+- source SHA256 `6c5aa03419d2e5325d28fb33bf9c83a9744d7170da84f72a614676a7fc1aad4d`
+- 5,458 raw rows; 5,451 unique dates
+- reconstructed raw IPI finite on 5,137 dates
+- 194 source dates with raw IPI >= +60
+- 51/51 frozen Issue #64 audit checkpoints matched
+- maximum absolute IPI difference `2.0430569236395968e-08`, below the frozen `5e-08` gate
 
-This satisfies the preregistered `equivalently exact verified reconstruction` path. The gate performs full manifest/SHA/content validation before reporting Phase C ready. Production V6.6 is unchanged.
+This is the preregistered **equivalently exact verified reconstruction** route. Codex review also identified that the code advertised the old exact full-daily artifact as an accepted route without allowing Phase C to execute through it. The reviewed loader and CI now support both preregistered evidence paths:
 
-## Outcome window
+1. equivalently exact verified reconstruction; or
+2. exact prior full-daily artifact with source SHA `c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d`.
 
-Frozen SPY/TLT/SHV/GSG adjusted-price panel:
-
-- evaluation: 2007-01-12 through 2026-08-14
-- 4,928 common return rows
-- price CSV SHA256: `eba5c4d82c647536a23856e091b874f7a82940d7358bc5235ed066a20ae9566c`
-- archive SHA256: `e2a76e4aa6c43f64c9574000723ebf96309f7f129d148b805e26123c11643398`
-
-The combined lagged Stagflation + lagged IPI >= +60 rule activates on **74 outcome rows across 11 episodes**.
+Each selected path must fully validate before Phase C can run.
 
 ## Primary result — Phase C fails
 
+The rule activates on **74 outcome rows across 11 episodes**.
+
 At 5 bp, Phase C minus Phase B on full reused history:
 
-- Delta CAGR: **-0.1362 percentage points/year**
-- Delta Sharpe: **-0.0228**
-- Delta maximum drawdown: **-0.8831 percentage points** (worse)
-- Delta Calmar: **-0.0254**
-- Delta annualized turnover: **+0.144x/year**
+- ΔCAGR **-0.1362 pp/year**
+- ΔSharpe **-0.0228**
+- Δmaximum drawdown **-0.8831 pp** worse
+- ΔCalmar **-0.0254**
+- Δannualized turnover **+0.144x/year**
 
-The result is negative in both era splits:
+Both era slices are negative. At 0 bp, full-history ΔCAGR is still about **-0.1287 pp/year** and ΔSharpe **-0.0222**, so the failure is not caused by transaction costs.
 
-- pre-2020: Delta CAGR **-0.1598 pp**, Delta Sharpe **-0.0243**, max drawdown **-0.8831 pp** worse
-- post-2019 reused: Delta CAGR **-0.0898 pp**, Delta Sharpe **-0.0182**, max drawdown **-0.2977 pp** worse
+## Complete realized attribution: gross, cost, net
 
-This is not a transaction-cost artifact. At **0 bp**, full-history Phase C minus Phase B still has Delta CAGR **-0.1287 pp**, Delta Sharpe **-0.0222**, and maximum drawdown **-0.8312 pp** worse.
+The reviewed accounting separates three different objects instead of calling all post-activation effects “gross attribution”:
 
-## Realized-weight attribution
+1. **Gross asset-mix effect:** each asset return times the difference in realized invested weights between Phase C and Phase B.
+2. **Transaction-cost residual:** the difference between each simulation's net return and gross asset-mix return.
+3. **Net effect:** Phase C net return minus Phase B net return.
 
-The first diagnostic used a fixed `20% × (GSG - SHV)` target-weight approximation. A later version improved this by using realized invested weights, but still summed only the rows where the severe-inflation Phase C state was active.
+Gross plus cost residual reconciles exactly to the arithmetic net-return difference.
 
-Codex review identified one remaining accounting detail: when a severe episode ends between month starts, Phase C event-rebalances back to the Phase B target while Phase B itself may not rebalance on that row. The two simulations can therefore retain slightly different realized weights for several subsequent inactive rows.
+Full reused history:
 
-The reviewed attribution now uses each simulation's **actual invested weights on every row in each evaluation segment**, including:
+- cumulative gross allocation effect: **-2.2339%**
+- annualized arithmetic gross effect: **-0.114234 pp/year**
+- active-state gross effect: **-2.2800%**
+- inactive post-deactivation gross drift: **+0.0461%**
+- cumulative transaction-cost residual difference: about **-0.1407%**
+  - active-state cost residual: about **-0.0605%**
+  - inactive exit/reconvergence cost residual: about **-0.0802%**
+- cumulative arithmetic net difference: about **-2.3746%**
+- annualized arithmetic net difference: about **-0.1214 pp/year**
 
-- drift while Phase C is active; and
-- post-activation residual drift on inactive rows until the portfolios reconverge.
+There are 42 inactive rows with nonzero gross allocation difference, 15 inactive rows with nonzero cost difference, and 49 inactive rows with nonzero net difference. Maximum daily gross reconciliation is about `3.47e-18`; net reconciliation is exact to reported precision.
 
-Asset-level weight-difference contributions reconcile to the realized gross Phase C-minus-Phase B asset-mix return difference to floating-point precision.
+Era-level annualized arithmetic net effects remain negative:
 
-Annualized arithmetic realized gross Phase C-minus-Phase B contribution over each complete segment:
+- pre-2020: about **-0.1466 pp/year**
+- post-2019 reused: about **-0.0720 pp/year**
 
-- full history: **-0.114234 pp/year**
-- pre-2020: **-0.141959 pp/year**
-- post-2019 reused: **-0.059801 pp/year**
+This accounting correction does not change the primary Phase C strategy metrics or verdict.
 
-Across the full sample, 42 inactive rows retain a nonzero realized gross difference after Phase C deactivation. Their cumulative residual is about **+0.0461%**, partially offsetting the active-state cumulative gross difference of about **-2.2800%**; the complete gross difference is about **-2.2339%**.
+## Preregistered regime reporting
 
-The corrected attribution remains negative in every era split. It changes only the attribution accounting, not the primary Phase C strategy metrics or verdict.
+The preregistration explicitly required `average_allocation_by_regime`, `asset_contribution`, and `regime_contribution`. Codex correctly identified that the earlier Phase C artifact did not emit those tables.
 
-## Episode evidence
+The reviewed evaluator now produces:
 
-Episode concentration is deliberately a different diagnostic from complete realized-weight attribution. It now uses **active Phase C rows only** so episode totals, episode winners, and leave-largest-winner-out calculations all share the same scope. Post-activation inactive residual/cost rows are excluded from this section and remain accounted for in the realized-weight attribution above.
+- `issue-74-phase-c-asset-contribution.csv`
+- `issue-74-phase-c-regime-contribution.csv`
+- `issue-74-phase-c-reporting-reconciliation.csv`
 
-There is one important positive episode: **2022-03-02 through 2022-04-04**, where Phase C contributes **+0.996495% active log return** versus Phase B.
+On all full-history Stagflation rows:
 
-The full active-only result is **-2.441948% log return**. Removing that largest winning episode makes the active-only result more negative at **-3.438443%**.
+**Phase B**
 
-The pre-2020 active-only result is **-1.944501%** and the post-2019 reused active-only result is **-0.497446%**. The 2022 commodity success is therefore not evidence for a stable general rule.
+- 468 observations
+- annualized net contribution about **-0.3242 pp/year**
+- realized average allocation ≈ 19.88% SPY / 19.90% TLT / 60.23% SHV / 0% GSG
+
+**Phase C**
+
+- 468 observations
+- annualized net contribution about **-0.4456 pp/year**
+- realized average allocation ≈ 19.93% SPY / 19.89% TLT / 56.96% SHV / 3.22% GSG
+
+The average GSG weight is far below 20% because the +60 severe-inflation condition is active only on a subset of Stagflation rows. The full-sample Stagflation contribution is worse under Phase C than Phase B.
+
+## Episode concentration
+
+Episode concentration remains intentionally **active-state only**. Inactive post-deactivation drift and exit costs are not assigned to an episode; they are represented in the complete gross/cost/net attribution and overall strategy metrics above.
+
+- full active-only log return: **-2.441948%**
+- best episode 2022-03-02 → 2022-04-04: **+0.996495%**
+- excluding that winner: **-3.438443%**
+- pre-2020 active-only: **-1.944501%**
+- post-2019 reused active-only: **-0.497446%**
+
+So 2022 was a genuine commodity success, but it does not generalize into a stable `Stagflation + IPI >= +60 → 20% GSG` rule.
 
 ## Decision
 
@@ -100,30 +125,30 @@ Verdict:
 Interpretation:
 
 - Phase C **does not pass**.
-- Broad commodities are **not supported as a default 20% satellite** under the frozen `Stagflation + IPI >= +60` rule.
-- The earlier Phase A evidence for **cash / very-short Treasuries as the cleaner core defensive role** remains intact.
-- This does **not** rescue Phase B into a universal 60% Cash rule; Phase B remains highly 2021-22-sensitive as previously documented.
-- This also does **not** prove commodities are useless. It rejects this specific preregistered GSG sleeve and conditioning rule.
-- No momentum filter, threshold change, weight sweep, oil-only replacement, or extra asset may now be added to rescue Phase C inside Issue #74.
-- Macro Pressure Map V6.6 is still **not a validated production allocator**.
+- Broad commodities are not supported as a default 20% satellite under this frozen severe-Stagflation rule.
+- Phase A's Cash / very-short Treasury core defensive evidence remains intact.
+- Phase B does not become a universal 60% Cash rule.
+- This result rejects this specific GSG allocation and conditioning rule; it does not prove commodities are useless in every portfolio or inflation shock.
+- No rescue tuning is permitted inside Issue #74.
+- V6.6 remains a risk-overlay candidate, not a validated production allocator.
 
 ## Review hardening
 
-The Codex review findings are now addressed in the evidence path:
+Current code and CI now enforce the Codex findings:
 
-1. Severe-inflation availability means **full evidence validation**, not mere file existence.
-2. Phase C attribution uses **realized invested weights**, not a fixed target-weight approximation.
-3. Attribution covers **all segment rows**, including post-activation inactive residual drift, and reconciles to the complete realized gross return difference.
-4. Episode concentration is restricted to **active Phase C rows only**, so episode totals and leave-largest-winner-out calculations use one consistent scope.
-5. GitHub pull-request validation checks out the immutable **`github.event.pull_request.head.sha`** before any checked-out research code executes. The Python SHA guard remains defense in depth.
+1. Severe-inflation readiness requires full validation, not file existence.
+2. Both preregistered severe-evidence routes can actually drive Phase C.
+3. Realized gross attribution uses actual invested weights.
+4. Gross allocation, transaction-cost residual and net effects are explicitly separated and reconciled.
+5. Episode concentration is active-only.
+6. Average allocation by regime, asset contribution and regime contribution are emitted for Phase B and Phase C.
+7. PR validation checks out immutable `github.event.pull_request.head.sha` before checked-out research code executes.
+8. Focused regression tests protect the reviewed episode scopes and legacy evidence fallback.
 
-## Provenance
+## Reviewed provenance
 
-The reviewed source of truth for both the corrected active-only episode concentration and the complete all-row realized-weight attribution is the pinned exact-head Phase C artifact produced after the episode-scope fix:
+Reviewed research code head `5765b2304bf128b74b8bcce902334ee483c8f46c`, pinned GitHub Actions run `34077133711` — success.
 
-- evaluator head: `e2e817a0d4f00bd1b6a512f70b8491c98d42941a`
-- GitHub Actions run: `34074979688` — success
-- Phase C artifact ID: `10001752814`
-- artifact digest: `sha256:caff04c06434367d24f5025b4ff755dc3277d2499e023fc02ef4632d23b1b15c`
+Phase C artifact `10002497479`, digest `sha256:e25c47f42e48215af872662b58159ed387c03db3c17639d6e648d0836abfbf25`.
 
-This correction changes only episode-concentration accounting scope. It does not alter the frozen Phase C rule, outcome data, primary strategy metrics, realized-weight attribution, or verdict.
+This artifact contains the corrected active-only episode analysis, complete gross/cost/net attribution, and preregistered regime reporting. Subsequent decision/test-only heads should reproduce the same evidence under pinned PR validation.
