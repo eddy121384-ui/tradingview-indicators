@@ -164,7 +164,7 @@ def run(output_dir: Path, cost_bps: float = 5.0) -> None:
             for eid in episode_id.loc[stag_dates].unique():
                 dates_e = stag_dates[episode_id.loc[stag_dates].eq(eid).to_numpy()]
                 episodes.append((dates_e.min(), dates_e.max(), float(active.loc[dates_e].sum())))
-            total = float(active.loc[era_dates].sum())
+            total = float(active.loc[stag_dates].sum())
             if episodes:
                 winner = max(episodes, key=lambda item: item[2])
                 removed = total - winner[2]
