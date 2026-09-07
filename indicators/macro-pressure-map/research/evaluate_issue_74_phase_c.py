@@ -79,6 +79,81 @@ def episode_concentration(active_log: pd.Series, active_mask: pd.Series) -> pd.D
     return pd.DataFrame(rows)
 
 
+def reporting_tables(
+    sims: dict[str, pd.DataFrame],
+    returns: pd.DataFrame,
+    lagged_regime: pd.Series,
+    assets: tuple[str, ...],
+    annualization: int,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Emit preregistered asset/regime allocation and contribution diagnostics."""
+    segments = {
+        "full_reused_history": (None, None),
+        "development_pre2020": (None, "2019-12-31"),
+        "post2019_reused_exploratory": ("2020-01-01", None),
+    }
+    asset_rows: list[dict] = []
+    regime_rows: list[dict] = []
+    recon_rows: list[dict] = []
+    for strategy, sim in sims.items():
+        gross_asset_daily = pd.DataFrame(index=sim.index)
+        for asset in assets:
+            gross_asset_daily[asset] = sim[f"invested_weight_{asset}"] * returns.loc[sim.index, asset]
+        asset_recon = gross_asset_daily.sum(axis=1) - sim["gross_asset_mix_return"]
+        cost_residual = sim["net_return"] - sim["gross_asset_mix_return"]
+        for segment, (start, end) in segments.items():
+            mask = pd.Series(True, index=sim.index)
+            if start is not None:
+                mask &= sim.index >= pd.Timestamp(start)
+            if end is not None:
+                mask &= sim.index <= pd.Timestamp(end)
+            dates = sim.index[mask.to_numpy()]
+            if len(dates) == 0:
+                continue
+            for asset in assets:
+                series = gross_asset_daily.loc[dates, asset]
+                asset_rows.append({
+                    "strategy": strategy,
+                    "segment": segment,
+                    "asset": asset,
+                    "annualized_arithmetic_contribution": float(series.mean() * annualization),
+                    "cumulative_arithmetic_contribution": float(series.sum()),
+                })
+            cost = cost_residual.loc[dates]
+            asset_rows.append({
+                "strategy": strategy,
+                "segment": segment,
+                "asset": "transaction_cost_residual",
+                "annualized_arithmetic_contribution": float(cost.mean() * annualization),
+                "cumulative_arithmetic_contribution": float(cost.sum()),
+            })
+            segment_regime = lagged_regime.loc[dates]
+            for regime in sorted(segment_regime.dropna().unique()):
+                rdates = dates[segment_regime.eq(regime).to_numpy()]
+                if len(rdates) == 0:
+                    continue
+                row = {
+                    "strategy": strategy,
+                    "segment": segment,
+                    "regime": regime,
+                    "observations": int(len(rdates)),
+                    "annualized_net_contribution": float(sim.loc[rdates, "net_return"].sum() / len(dates) * annualization),
+                    "cumulative_net_contribution": float(sim.loc[rdates, "net_return"].sum()),
+                }
+                for asset in assets:
+                    row[f"average_invested_weight_{asset}"] = float(sim.loc[rdates, f"invested_weight_{asset}"].mean())
+                regime_rows.append(row)
+            net = sim.loc[dates, "net_return"]
+            accounted = gross_asset_daily.loc[dates].sum(axis=1) + cost_residual.loc[dates]
+            recon_rows.append({
+                "strategy": strategy,
+                "segment": segment,
+                "max_abs_daily_asset_mix_reconciliation": float(asset_recon.loc[dates].abs().max()),
+                "max_abs_daily_net_reconciliation": float((net - accounted).abs().max()),
+            })
+    return pd.DataFrame(asset_rows), pd.DataFrame(regime_rows), pd.DataFrame(recon_rows)
+
+
 def run(output_dir: Path) -> dict:
     contract = load_contract()
     prices, price_manifest = load_frozen_prices(start="2007-01-01", end="2026-08-25")
@@ -89,8 +164,6 @@ def run(output_dir: Path) -> dict:
     returns = returns_all.loc[eval_index, list(assets)]
 
     severe_flag_full, severe_manifest = severe_evidence.severe_flag_on_calendar(regimes.index)
-    # build_severe_inflation_targets uses only >= threshold, so preserve the
-    # verified binary state with 60.0 on positive dates and 0.0 otherwise.
     threshold = float(contract["source_dependency"]["v66_inflation_extreme_threshold"])
     raw_ipi_gate = severe_flag_full.astype(float) * threshold
 
@@ -155,10 +228,6 @@ def run(output_dir: Path) -> dict:
     active_log = np.log1p(sims["phase_c_severe_inflation_commodity"]["net_return"]) - np.log1p(sims["phase_b_defensive_cash_4asset"]["net_return"])
     concentration = episode_concentration(active_log, activation)
 
-    # Realized gross attribution uses each simulation's actual invested weights
-    # on every evaluation row. This captures both within-episode drift and the
-    # post-activation residual caused when Phase C event-rebalances back to the
-    # Phase B target while Phase B itself does not rebalance on that same row.
     phase_b_sim = sims["phase_b_defensive_cash_4asset"]
     phase_c_sim = sims["phase_c_severe_inflation_commodity"]
     realized_asset_delta = pd.DataFrame(index=eval_index)
@@ -167,9 +236,17 @@ def run(output_dir: Path) -> dict:
             phase_c_sim[f"invested_weight_{asset}"] - phase_b_sim[f"invested_weight_{asset}"]
         ) * returns[asset]
     realized_gross_delta = phase_c_sim["gross_asset_mix_return"] - phase_b_sim["gross_asset_mix_return"]
+    realized_cost_delta = (
+        (phase_c_sim["net_return"] - phase_c_sim["gross_asset_mix_return"])
+        - (phase_b_sim["net_return"] - phase_b_sim["gross_asset_mix_return"])
+    )
+    realized_net_delta = phase_c_sim["net_return"] - phase_b_sim["net_return"]
     attribution_recon = realized_asset_delta.sum(axis=1) - realized_gross_delta
+    net_recon = realized_gross_delta + realized_cost_delta - realized_net_delta
     if float(attribution_recon.abs().max()) > 2e-12:
         raise AssertionError("Phase C realized-weight attribution does not reconcile to gross return difference")
+    if float(net_recon.abs().max()) > 2e-12:
+        raise AssertionError("Phase C gross plus cost attribution does not reconcile to net return difference")
 
     attribution_rows: list[dict] = []
     for segment, (start, end) in {
@@ -185,24 +262,40 @@ def run(output_dir: Path) -> dict:
         segment_dates = eval_index[segment_mask.to_numpy()]
         active_dates = segment_dates[activation.loc[segment_dates].to_numpy()]
         inactive_dates = segment_dates[~activation.loc[segment_dates].to_numpy()]
-        nonzero_inactive_dates = inactive_dates[
-            realized_gross_delta.loc[inactive_dates].abs().to_numpy() > 1e-15
-        ]
+        nonzero_inactive_gross_dates = inactive_dates[realized_gross_delta.loc[inactive_dates].abs().to_numpy() > 1e-15]
+        nonzero_inactive_cost_dates = inactive_dates[realized_cost_delta.loc[inactive_dates].abs().to_numpy() > 1e-15]
+        nonzero_inactive_net_dates = inactive_dates[realized_net_delta.loc[inactive_dates].abs().to_numpy() > 1e-15]
 
         gross_all = realized_gross_delta.loc[segment_dates]
         gross_active = realized_gross_delta.loc[active_dates]
         gross_inactive = realized_gross_delta.loc[inactive_dates]
+        cost_all = realized_cost_delta.loc[segment_dates]
+        cost_active = realized_cost_delta.loc[active_dates]
+        cost_inactive = realized_cost_delta.loc[inactive_dates]
+        net_all = realized_net_delta.loc[segment_dates]
+        net_active = realized_net_delta.loc[active_dates]
+        net_inactive = realized_net_delta.loc[inactive_dates]
         row = {
             "segment": segment,
             "segment_rows": int(len(segment_dates)),
             "activation_rows": int(len(active_dates)),
-            "inactive_rows_with_nonzero_realized_gross_delta": int(len(nonzero_inactive_dates)),
+            "inactive_rows_with_nonzero_realized_gross_delta": int(len(nonzero_inactive_gross_dates)),
+            "inactive_rows_with_nonzero_cost_delta": int(len(nonzero_inactive_cost_dates)),
+            "inactive_rows_with_nonzero_net_delta": int(len(nonzero_inactive_net_dates)),
             "mean_daily_realized_gross_phase_c_minus_phase_b": float(gross_all.mean()) if len(segment_dates) else np.nan,
             "cumulative_arithmetic_realized_gross_phase_c_minus_phase_b": float(gross_all.sum()) if len(segment_dates) else 0.0,
             "annualized_arithmetic_realized_gross_phase_c_minus_phase_b_over_all_segment_rows": float(gross_all.mean() * annualization) if len(segment_dates) else np.nan,
             "cumulative_active_state_realized_gross_delta": float(gross_active.sum()) if len(active_dates) else 0.0,
             "cumulative_inactive_residual_realized_gross_delta": float(gross_inactive.sum()) if len(inactive_dates) else 0.0,
+            "cumulative_transaction_cost_residual_delta": float(cost_all.sum()) if len(segment_dates) else 0.0,
+            "cumulative_active_state_transaction_cost_residual_delta": float(cost_active.sum()) if len(active_dates) else 0.0,
+            "cumulative_inactive_transaction_cost_residual_delta": float(cost_inactive.sum()) if len(inactive_dates) else 0.0,
+            "cumulative_arithmetic_net_phase_c_minus_phase_b": float(net_all.sum()) if len(segment_dates) else 0.0,
+            "cumulative_active_state_net_delta": float(net_active.sum()) if len(active_dates) else 0.0,
+            "cumulative_inactive_net_delta": float(net_inactive.sum()) if len(inactive_dates) else 0.0,
+            "annualized_arithmetic_net_phase_c_minus_phase_b_over_all_segment_rows": float(net_all.mean() * annualization) if len(segment_dates) else np.nan,
             "max_abs_daily_attribution_reconciliation": float(attribution_recon.loc[segment_dates].abs().max()) if len(segment_dates) else 0.0,
+            "max_abs_daily_net_reconciliation": float(net_recon.loc[segment_dates].abs().max()) if len(segment_dates) else 0.0,
         }
         for asset in assets:
             contribution_all = realized_asset_delta.loc[segment_dates, asset]
@@ -214,24 +307,37 @@ def run(output_dir: Path) -> dict:
         attribution_rows.append(row)
     attribution = pd.DataFrame(attribution_rows)
 
+    lagged_regime = regimes.shift(1).loc[eval_index]
+    asset_contrib, regime_contrib, reporting_recon = reporting_tables(
+        sims, returns, lagged_regime, assets, annualization
+    )
+    if reporting_recon[["max_abs_daily_asset_mix_reconciliation", "max_abs_daily_net_reconciliation"]].to_numpy(float).max() > 2e-12:
+        raise AssertionError("Issue #74 Phase C preregistered reporting tables do not reconcile")
+
     output_dir.mkdir(parents=True, exist_ok=True)
     summary.to_csv(output_dir / "issue-74-phase-c-summary.csv", index=False)
     comparison.to_csv(output_dir / "issue-74-phase-c-comparison.csv", index=False)
     sensitivity.to_csv(output_dir / "issue-74-phase-c-cost-sensitivity.csv", index=False)
     concentration.to_csv(output_dir / "issue-74-phase-c-episode-concentration.csv", index=False)
     attribution.to_csv(output_dir / "issue-74-phase-c-attribution.csv", index=False)
+    asset_contrib.to_csv(output_dir / "issue-74-phase-c-asset-contribution.csv", index=False)
+    regime_contrib.to_csv(output_dir / "issue-74-phase-c-regime-contribution.csv", index=False)
+    reporting_recon.to_csv(output_dir / "issue-74-phase-c-reporting-reconciliation.csv", index=False)
     pd.DataFrame({
         "date": eval_index,
         "core_regime": regimes.loc[eval_index].to_numpy(),
         "severe_inflation_today": severe_flag_full.loc[eval_index].to_numpy(),
         "phase_c_template": c_template.to_numpy(),
         "phase_c_active": activation.to_numpy(),
-        "phase_b_net_return": sims["phase_b_defensive_cash_4asset"]["net_return"].to_numpy(),
-        "phase_c_net_return": sims["phase_c_severe_inflation_commodity"]["net_return"].to_numpy(),
+        "phase_b_net_return": phase_b_sim["net_return"].to_numpy(),
+        "phase_c_net_return": phase_c_sim["net_return"].to_numpy(),
+        "phase_c_minus_phase_b_gross_delta": realized_gross_delta.to_numpy(),
+        "phase_c_minus_phase_b_cost_residual_delta": realized_cost_delta.to_numpy(),
+        "phase_c_minus_phase_b_net_delta": realized_net_delta.to_numpy(),
     }).to_csv(output_dir / "issue-74-phase-c-daily.csv", index=False, date_format="%Y-%m-%d")
 
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "issue": 74,
         "phase": "C",
         "purpose": "preregistered severe-inflation commodity satellite",
@@ -247,6 +353,14 @@ def run(output_dir: Path) -> dict:
         "threshold_source": "existing V6.6 inflationExtremeThreshold",
         "severe_evidence": severe_manifest,
         "price_data": price_manifest,
+        "reporting_contract_completed": {
+            "average_allocation_by_regime": True,
+            "asset_contribution": True,
+            "regime_contribution": True,
+            "episode_concentration": True,
+            "leave_largest_winning_episode_out": True,
+            "exposure_matched_attribution_where_feasible": True,
+        },
         "v66_parameters_modified": False,
         "optimizer_used": False,
         "weight_sweep_performed": False,
@@ -273,7 +387,11 @@ def run(output_dir: Path) -> dict:
         f"- ΔCalmar {full.delta_Calmar:.6f}",
         f"- Δannualized turnover {full.delta_annualized_turnover:.6f}x/year",
         "",
-        "Attribution uses realized invested weights from both simulations on every evaluation row, including active-state drift and post-activation residual drift, and reconciles to their gross asset-mix return difference.",
+        "Gross attribution uses realized invested weights from both simulations on every evaluation row. Transaction-cost residual and net-return deltas are reported separately, including inactive exit/reconvergence rows.",
+        "",
+        "Episode concentration is deliberately active-state only; inactive exit costs are not assigned to episodes and remain represented in the complete net/cost attribution and overall strategy metrics.",
+        "",
+        "Per-regime average invested allocations and net contributions are emitted for both Phase B and Phase C, together with standalone asset contribution and reconciliation tables, as required by the preregistered reporting contract.",
         "",
         "No thresholds, weights, V6.6 formulas, commodity momentum filters, or rescue assets were changed after seeing results.",
     ]
