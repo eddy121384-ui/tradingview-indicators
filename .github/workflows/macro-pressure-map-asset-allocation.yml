@@ -141,7 +141,7 @@ jobs:
             --phase-dir generated/issue-64-phase-c \
             --phase-prefix phase-c
 
-      - name: Validate Phase C evidence JSON
+      - name: Validate Phase C evidence JSON and final verdict contract
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m json.tool generated/issue-64-phase-c/phase-c-manifest.json > /dev/null
@@ -150,6 +150,28 @@ jobs:
           test -s generated/issue-64-phase-c/phase-c-asset-contribution.csv
           test -s generated/issue-64-phase-c/phase-c-regime-allocation-contribution.csv
           test -s generated/issue-64-phase-c/phase-c-contribution-reconciliation.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          decision = json.loads(Path("decisions/issue-64-phase-c.json").read_text())
+          allowed = {
+              "useful_for_regime_asset_allocation",
+              "risk_management_value_only",
+              "descriptive_cross_asset_structure_only",
+              "no_material_allocation_value",
+              "inconclusive_insufficient_evidence",
+          }
+          assert decision["verdict"] in allowed
+          assert decision["verdict"] == "risk_management_value_only"
+          assert decision["verdict_rationale"] == "stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated"
+          assert decision["decision"]["production_allocator_validated"] is False
+          assert decision["decision"]["retain_as_exploratory_risk_overlay_candidate"] is True
+          print({
+              "final_verdict": decision["verdict"],
+              "rationale": decision["verdict_rationale"],
+          })
+          PY
 
       - name: Upload Phase A research artifact
         uses: actions/upload-artifact@v4
