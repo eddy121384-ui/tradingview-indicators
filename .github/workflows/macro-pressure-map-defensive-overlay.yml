@@ -39,7 +39,8 @@ jobs:
         run: |
           python -m pytest -q \
             test_issue_74_outcome_snapshot.py \
-            test_issue_74_portfolio.py
+            test_issue_74_portfolio.py \
+            test_issue_74_review_hardening.py
           python - <<'PY'
           import issue_74_severe_inflation as severe
           positive, manifest = severe.load_severe_positive_dates()
