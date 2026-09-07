@@ -52,11 +52,46 @@ jobs:
           python asset_allocation_phase_a_segments.py \
             --output-dir generated/issue-64-phase-a
 
-      - name: Validate Phase A manifest
+      - name: Validate Phase A manifest and durable decision provenance
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m json.tool generated/issue-64-phase-a/phase-a-manifest.json > /dev/null
           python -m json.tool generated/issue-64-phase-a/phase-a-outcome-prices-manifest.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          decision = json.loads(Path("decisions/issue-64-phase-a.json").read_text())
+          frozen = json.loads(Path("data/issue-64-outcome-prices-manifest.json").read_text())
+          generated = json.loads(Path("generated/issue-64-phase-a/phase-a-outcome-prices-manifest.json").read_text())
+
+          bound = decision["outcomes"]["frozen_snapshot"]
+          assert bound["csv_sha256"] == frozen["csv_sha256"]
+          assert bound["archive_sha256"] == frozen["archive_sha256"]
+          assert bound["rows"] == frozen["rows"]
+          assert bound["first_date"] == frozen["first_date"]
+          assert bound["last_date"] == frozen["last_date"]
+          assert bound["source_artifact_run"] == frozen["source"]["source_artifact_run"]
+          assert bound["source_phase_a_artifact"] == frozen["source"]["source_phase_a_artifact"]
+          assert decision["latest_verified_workflow"]["frozen_snapshot_csv_sha256"] == frozen["csv_sha256"]
+
+          assert generated["csv_sha256"] == frozen["csv_sha256"]
+          assert generated["rows"] == frozen["rows"]
+          assert generated["first_date"] == frozen["first_date"]
+          assert generated["last_date"] == frozen["last_date"]
+          source = generated["source"]
+          assert source["acquisition_mode"] == "committed_frozen_snapshot"
+          runtime = source["runtime_manifest"]
+          assert runtime["snapshot_csv_sha256"] == frozen["csv_sha256"]
+          assert runtime["snapshot_archive_sha256"] == frozen["archive_sha256"]
+
+          print({
+              "decision_snapshot_sha256": bound["csv_sha256"],
+              "source_artifact_run": bound["source_artifact_run"],
+              "generated_snapshot_sha256": generated["csv_sha256"],
+              "acquisition_mode": source["acquisition_mode"],
+          })
+          PY
 
       - name: Generate preregistered Phase B evidence
         working-directory: indicators/macro-pressure-map/research
