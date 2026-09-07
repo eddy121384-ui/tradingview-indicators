@@ -5,6 +5,10 @@ The upstream full HARD candidate is generated mechanically first. This module
 then changes only the Issue #66 B-1 representation family so bond-yield level
 series can cross zero without invalidating log(price). Positive price assets
 remain on the exact Issue #66 log-space path under Auto.
+
+A presentation-only default requested during TradingView runtime review is also
+applied: the bearish/downside panic-risk plot is dashed by default. This changes
+no calculation, threshold, state, alert, or plot-count footprint.
 """
 from __future__ import annotations
 
@@ -128,6 +132,9 @@ breakdownMaEvidence = recentMaCrossDn ? 70.0 : modelPrice < maModel ? 35.0 : 0.0
 MA_SPREAD_OLD = 'maSpreadATR = f_safeDiv(maLog - maturityMaLog, symATR)'
 MA_SPREAD_NEW = 'maSpreadATR = f_safeDiv(maModel - maturityMaModel, symATR)'
 
+DOWN_RISK_PLOT_OLD = 'plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2)'
+DOWN_RISK_PLOT_NEW = 'plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2, linestyle=plot.linestyle_dashed)'
+
 
 def apply_yield_safe_representation(hard_candidate: str) -> str:
     text = replace_once(hard_candidate, GROUP_OLD, GROUP_NEW)
@@ -139,6 +146,7 @@ def apply_yield_safe_representation(hard_candidate: str) -> str:
     text = replace_once(text, RANGE_WIDTH_OLD, RANGE_WIDTH_NEW)
     text = replace_once(text, BREAK_MA_OLD, BREAK_MA_NEW)
     text = replace_once(text, MA_SPREAD_OLD, MA_SPREAD_NEW)
+    text = replace_once(text, DOWN_RISK_PLOT_OLD, DOWN_RISK_PLOT_NEW)
     return text
 
 
@@ -159,6 +167,7 @@ def validate(hard_candidate: str, candidate: str) -> None:
         'ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)',
         'accGate      = rangeGate * bearBackgroundForAccGate * ctxDownExGate * supportHoldingGate * nonMarkdownContinuationGate',
         'distGate     = rangeGate * bullBackgroundForDistGate * ctxUpExGate * resistanceHoldingGate * nonMarkupContinuationGate',
+        DOWN_RISK_PLOT_NEW,
         'volumeMode = input.string("Auto", "Volume Mode"',
         'mtfMode = input.string("Observe Only", "MTF Mode"',
         'divMode = input.string("Observe Only", "Divergence Mode"',
@@ -169,6 +178,9 @@ def validate(hard_candidate: str, candidate: str) -> None:
     for token in required:
         if token not in candidate:
             raise RuntimeError(f"yield-safe candidate missing required token: {token}")
+
+    if DOWN_RISK_PLOT_OLD in candidate:
+        raise RuntimeError("bearish panic-risk plot default remained solid")
 
     # Auto routing must be static metadata only. Historical-price inference is forbidden.
     auto_line = 'autoYieldLevel = syminfo.type == "bond" and syminfo.currency == "NONE"'
