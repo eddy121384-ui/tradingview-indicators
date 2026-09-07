@@ -83,11 +83,13 @@ The corrected attribution remains negative in every era split. It changes only t
 
 ## Episode evidence
 
-There is one important positive episode: **2022-03-02 through 2022-04-04**, where Phase C contributes about **+0.9965% active log return** versus Phase B.
+Episode concentration is deliberately a different diagnostic from complete realized-weight attribution. It now uses **active Phase C rows only** so episode totals, episode winners, and leave-largest-winner-out calculations all share the same scope. Post-activation inactive residual/cost rows are excluded from this section and remain accounted for in the realized-weight attribution above.
 
-But the full active result is **-2.4770% log return**. Removing that largest winning episode makes the result even more negative at **-3.4735%**.
+There is one important positive episode: **2022-03-02 through 2022-04-04**, where Phase C contributes **+0.996495% active log return** versus Phase B.
 
-The pre-2020 active result is negative (**-1.9243%**) and the post-2019 reused active result is also negative (**-0.5527%**). The 2022 commodity success is therefore not evidence for a stable general rule.
+The full active-only result is **-2.441948% log return**. Removing that largest winning episode makes the active-only result more negative at **-3.438443%**.
+
+The pre-2020 active-only result is **-1.944501%** and the post-2019 reused active-only result is **-0.497446%**. The 2022 commodity success is therefore not evidence for a stable general rule.
 
 ## Decision
 
@@ -112,23 +114,16 @@ The Codex review findings are now addressed in the evidence path:
 1. Severe-inflation availability means **full evidence validation**, not mere file existence.
 2. Phase C attribution uses **realized invested weights**, not a fixed target-weight approximation.
 3. Attribution covers **all segment rows**, including post-activation inactive residual drift, and reconciles to the complete realized gross return difference.
-4. GitHub pull-request validation checks out the immutable **`github.event.pull_request.head.sha`** before any checked-out research code executes. The Python SHA guard remains defense in depth.
+4. Episode concentration is restricted to **active Phase C rows only**, so episode totals and leave-largest-winner-out calculations use one consistent scope.
+5. GitHub pull-request validation checks out the immutable **`github.event.pull_request.head.sha`** before any checked-out research code executes. The Python SHA guard remains defense in depth.
 
 ## Provenance
 
-Evidence-producing evaluator head after the post-activation drift correction:
+The reviewed source of truth for both the corrected active-only episode concentration and the complete all-row realized-weight attribution is the pinned exact-head Phase C artifact produced after the episode-scope fix:
 
-- head: `00dbc6f8035b05e263718e6379741459690f6088`
-- GitHub Actions run: `34073743809` — success
-- Phase C artifact ID: `10001351985`
-- artifact digest: `sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573`
+- evaluator head: `e2e817a0d4f00bd1b6a512f70b8491c98d42941a`
+- GitHub Actions run: `34074979688` — success
+- Phase C artifact ID: `10001752814`
+- artifact digest: `sha256:caff04c06434367d24f5025b4ff755dc3277d2499e023fc02ef4632d23b1b15c`
 
-The documentation-only decision update was revalidated on pinned PR head `4b68979951a3c2108ce1e0323be0dad805c507c0`:
-
-- GitHub Actions run: `34073940013` — success
-- Phase C artifact ID: `10001422754`
-- artifact digest: `sha256:ea02f1cf0d1ddb7813a34943919a21b22a8b9c6b54ac76b61b98283b7a6910c6`
-
-The latest narrative/provenance-only head `a2345e280b2081e981532c118aded77e0eaa0c9b` was also validated by pinned PR workflow run `34074113847` — success, with Phase C artifact `10001482402` (`sha256:fe84a4dc17be3c91b44b0c27e812f6728c54f4826fd72688d06336959bea4f7b`).
-
-These documentation/provenance commits do not alter the frozen Phase C rule, outcome data, evaluator logic, or verdict.
+This correction changes only episode-concentration accounting scope. It does not alter the frozen Phase C rule, outcome data, primary strategy metrics, realized-weight attribution, or verdict.
