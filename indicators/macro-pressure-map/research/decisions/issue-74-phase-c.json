@@ -115,10 +115,14 @@
     "rescue_tuning_permitted": false
   },
   "provenance": {
-    "role": "latest evidence-producing evaluator head after post-activation drift correction",
-    "github_actions_run": 34073743809,
-    "head_sha": "00dbc6f8035b05e263718e6379741459690f6088",
-    "phase_c_artifact_id": 10001351985,
-    "phase_c_artifact_digest": "sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573"
+    "evidence_producing_evaluator_head": "00dbc6f8035b05e263718e6379741459690f6088",
+    "evidence_producing_run": 34073743809,
+    "evidence_producing_phase_c_artifact_id": 10001351985,
+    "evidence_producing_phase_c_artifact_digest": "sha256:4e4cf277f2d6f5bd20b0f4a699ca35e1192a85153aa85cd9e28f01212303f573",
+    "decision_record_validation_head": "4b68979951a3c2108ce1e0323be0dad805c507c0",
+    "decision_record_validation_run": 34073940013,
+    "decision_record_validation_phase_c_artifact_id": 10001422754,
+    "decision_record_validation_phase_c_artifact_digest": "sha256:ea02f1cf0d1ddb7813a34943919a21b22a8b9c6b54ac76b61b98283b7a6910c6",
+    "interpretation": "The evaluator evidence was produced on the evaluator-fix head; the documentation-only decision commit was then revalidated by an exact-head pinned-PR workflow run with the same Phase C results."
   }
 }
