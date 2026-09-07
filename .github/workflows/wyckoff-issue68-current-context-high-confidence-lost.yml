@@ -1,0 +1,75 @@
+name: Wyckoff Issue 68 High Confidence Lost Semantics
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_current_context_high_confidence_lost_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-current-context-high-confidence-lost-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-current-context-high-confidence-lost.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_current_context_high_confidence_lost_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-current-context-high-confidence-lost-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-current-context-high-confidence-lost.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  high-confidence-lost-semantics:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile generator
+        run: python -m py_compile generate_issue68_current_context_high_confidence_lost_audit_pine.py
+      - name: Generate TradingView high-confidence lost semantic audit
+        run: |
+          python generate_issue68_current_context_high_confidence_lost_audit_pine.py \
+            --output generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          test -s generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          grep -q 'HC LOST SEMANTICS' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          grep -q 'Trace advantage avg' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          grep -q 'Trace > current share' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          grep -q 'Historical bg gate avg' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          grep -q 'Prod eff / CTX eff' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          grep -q 'HC LOST dest B/N/R' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          grep -q 'EXACT MIRROR' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          ! grep -q 'strategy\.entry' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          ! grep -q 'strategy\.close' generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          echo 'High-confidence lost semantic audit contract PASS'
+      - name: Commit generated artifact on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-current-context-high-confidence-lost-audit.pine
+          if git diff --cached --quiet; then
+            echo "High-confidence lost artifact already current."
+            exit 0
+          fi
+          git commit -m "research: generate Issue 68 high-confidence lost audit [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1
