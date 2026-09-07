@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "issue": 64,
   "phase": "C",
   "purpose": "Stagflation gold-over-equity override robustness checkpoint",
@@ -87,7 +87,8 @@
     "five_bps": {"phase_c_CAGR": 0.093047, "phase_b_CAGR": 0.090633, "phase_c_Sharpe": 0.962452, "phase_b_Sharpe": 0.942191},
     "ten_bps": {"phase_c_CAGR": 0.091332, "phase_b_CAGR": 0.089661, "phase_c_Sharpe": 0.946231, "phase_b_Sharpe": 0.932971}
   },
-  "verdict": "stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated",
+  "verdict": "risk_management_value_only",
+  "verdict_rationale": "stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated",
   "decision": {
     "production_allocator_validated": false,
     "retain_as_exploratory_risk_overlay_candidate": true,
