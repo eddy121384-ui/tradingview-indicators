@@ -89,7 +89,15 @@ jobs:
           echo "created=true" >> "$GITHUB_OUTPUT"
           echo "frozen_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      - name: Defer PR research to frozen-snapshot head
+        if: github.event_name == 'pull_request' && steps.freeze.outputs.created == 'true'
+        run: |
+          echo "Outcome snapshot was created and pushed as a new commit."
+          echo "This triggering checkout must remain tied to the original pull_request.head.sha, so no research evidence is generated in this run."
+          echo "The pushed commit will trigger a new PR run that validates and evaluates the committed frozen snapshot at its own exact head."
+
       - name: Verify committed/frozen outcome panel
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           python - <<'PY'
@@ -107,6 +115,7 @@ jobs:
           PY
 
       - name: Generate preregistered Phase A/B evidence from frozen data
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           rm -rf generated/issue-74-phase-ab
@@ -114,6 +123,7 @@ jobs:
             --output-dir generated/issue-74-phase-ab
 
       - name: Generate preregistered Phase C evidence from frozen data
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           rm -rf generated/issue-74-phase-c
@@ -121,6 +131,7 @@ jobs:
             --output-dir generated/issue-74-phase-c
 
       - name: Generate post-hoc same-window Gold vs Cash comparator
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           rm -rf generated/issue-74-legacy-gold-cash
@@ -129,6 +140,7 @@ jobs:
             --cost-bps 5
 
       - name: Validate Issue 74 evidence
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m json.tool generated/issue-74-phase-ab/issue-74-phase-ab-manifest.json > /dev/null
@@ -166,6 +178,7 @@ jobs:
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-report.md
 
       - name: Upload Issue 74 Phase A/B evidence
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-74-phase-ab
@@ -174,6 +187,7 @@ jobs:
           retention-days: 30
 
       - name: Upload Issue 74 Phase C evidence
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-74-phase-c
@@ -182,6 +196,7 @@ jobs:
           retention-days: 30
 
       - name: Upload Issue 74 legacy Gold vs Cash diagnostic
+        if: steps.freeze.outputs.created != 'true' || github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-74-legacy-gold-cash
