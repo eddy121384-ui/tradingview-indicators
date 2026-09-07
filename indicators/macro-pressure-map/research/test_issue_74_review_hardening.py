@@ -8,6 +8,7 @@ import pandas as pd
 
 from evaluate_issue_74_defensive_overlay import episode_concentration as phase_ab_episode_concentration
 from evaluate_issue_74_phase_c import episode_concentration as phase_c_episode_concentration
+import issue_74_outcome_snapshot as outcome
 import issue_74_severe_inflation as severe
 
 
@@ -79,3 +80,17 @@ def test_legacy_full_daily_evidence_can_drive_positive_dates(tmp_path: Path) -> 
     assert loaded["evidence_mode"] == "exact prior full-daily artifact"
     assert list(positive.index) == [pd.Timestamp("2007-01-05"), pd.Timestamp("2007-01-08")]
     assert positive.tolist() == [60.0, 61.0]
+
+
+def test_explicit_validation_sha_override_supersedes_pr_event_head(monkeypatch, tmp_path: Path) -> None:
+    event_head = "a" * 40
+    validation_head = "b" * 40
+    event_path = tmp_path / "event.json"
+    event_path.write_text(json.dumps({"pull_request": {"head": {"sha": event_head}}}), encoding="utf-8")
+
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+    monkeypatch.setenv("ISSUE_74_EXPECTED_CHECKOUT_SHA", validation_head)
+    monkeypatch.setattr(outcome.subprocess, "check_output", lambda *args, **kwargs: validation_head + "\n")
+
+    outcome._assert_github_pr_checkout_matches_trigger()
