@@ -155,10 +155,10 @@ def run(output_dir: Path) -> dict:
     active_log = np.log1p(sims["phase_c_severe_inflation_commodity"]["net_return"]) - np.log1p(sims["phase_b_defensive_cash_4asset"]["net_return"])
     concentration = episode_concentration(active_log, activation)
 
-    # Realized gross attribution uses each simulation's actual invested weights,
-    # including within-episode drift between rebalances.  This is the realized
-    # Phase C-minus-Phase B gross asset-mix contribution, not a fixed 20% target
-    # weight approximation.
+    # Realized gross attribution uses each simulation's actual invested weights
+    # on every evaluation row. This captures both within-episode drift and the
+    # post-activation residual caused when Phase C event-rebalances back to the
+    # Phase B target while Phase B itself does not rebalance on that same row.
     phase_b_sim = sims["phase_b_defensive_cash_4asset"]
     phase_c_sim = sims["phase_c_severe_inflation_commodity"]
     realized_asset_delta = pd.DataFrame(index=eval_index)
@@ -184,18 +184,33 @@ def run(output_dir: Path) -> dict:
             segment_mask &= eval_index <= pd.Timestamp(end)
         segment_dates = eval_index[segment_mask.to_numpy()]
         active_dates = segment_dates[activation.loc[segment_dates].to_numpy()]
-        gross = realized_gross_delta.loc[active_dates]
+        inactive_dates = segment_dates[~activation.loc[segment_dates].to_numpy()]
+        nonzero_inactive_dates = inactive_dates[
+            realized_gross_delta.loc[inactive_dates].abs().to_numpy() > 1e-15
+        ]
+
+        gross_all = realized_gross_delta.loc[segment_dates]
+        gross_active = realized_gross_delta.loc[active_dates]
+        gross_inactive = realized_gross_delta.loc[inactive_dates]
         row = {
             "segment": segment,
+            "segment_rows": int(len(segment_dates)),
             "activation_rows": int(len(active_dates)),
-            "mean_daily_realized_gross_phase_c_minus_phase_b": float(gross.mean()) if len(active_dates) else np.nan,
-            "cumulative_arithmetic_realized_gross_phase_c_minus_phase_b": float(gross.sum()) if len(active_dates) else 0.0,
-            "annualized_arithmetic_realized_gross_phase_c_minus_phase_b_over_all_segment_rows": float(gross.sum() / max(1, len(segment_dates)) * annualization),
-            "max_abs_daily_attribution_reconciliation": float(attribution_recon.loc[active_dates].abs().max()) if len(active_dates) else 0.0,
+            "inactive_rows_with_nonzero_realized_gross_delta": int(len(nonzero_inactive_dates)),
+            "mean_daily_realized_gross_phase_c_minus_phase_b": float(gross_all.mean()) if len(segment_dates) else np.nan,
+            "cumulative_arithmetic_realized_gross_phase_c_minus_phase_b": float(gross_all.sum()) if len(segment_dates) else 0.0,
+            "annualized_arithmetic_realized_gross_phase_c_minus_phase_b_over_all_segment_rows": float(gross_all.mean() * annualization) if len(segment_dates) else np.nan,
+            "cumulative_active_state_realized_gross_delta": float(gross_active.sum()) if len(active_dates) else 0.0,
+            "cumulative_inactive_residual_realized_gross_delta": float(gross_inactive.sum()) if len(inactive_dates) else 0.0,
+            "max_abs_daily_attribution_reconciliation": float(attribution_recon.loc[segment_dates].abs().max()) if len(segment_dates) else 0.0,
         }
         for asset in assets:
-            contribution = realized_asset_delta.loc[active_dates, asset]
-            row[f"cumulative_realized_weight_delta_contribution_{asset}"] = float(contribution.sum()) if len(active_dates) else 0.0
+            contribution_all = realized_asset_delta.loc[segment_dates, asset]
+            contribution_active = realized_asset_delta.loc[active_dates, asset]
+            contribution_inactive = realized_asset_delta.loc[inactive_dates, asset]
+            row[f"cumulative_realized_weight_delta_contribution_{asset}"] = float(contribution_all.sum()) if len(segment_dates) else 0.0
+            row[f"cumulative_active_state_weight_delta_contribution_{asset}"] = float(contribution_active.sum()) if len(active_dates) else 0.0
+            row[f"cumulative_inactive_residual_weight_delta_contribution_{asset}"] = float(contribution_inactive.sum()) if len(inactive_dates) else 0.0
         attribution_rows.append(row)
     attribution = pd.DataFrame(attribution_rows)
 
@@ -258,7 +273,7 @@ def run(output_dir: Path) -> dict:
         f"- ΔCalmar {full.delta_Calmar:.6f}",
         f"- Δannualized turnover {full.delta_annualized_turnover:.6f}x/year",
         "",
-        "Attribution uses realized invested weights from both simulations and reconciles to their gross asset-mix return difference.",
+        "Attribution uses realized invested weights from both simulations on every evaluation row, including active-state drift and post-activation residual drift, and reconciles to their gross asset-mix return difference.",
         "",
         "No thresholds, weights, V6.6 formulas, commodity momentum filters, or rescue assets were changed after seeing results.",
     ]
