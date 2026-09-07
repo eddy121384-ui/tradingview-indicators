@@ -43,15 +43,22 @@ jobs:
           python - <<'PY'
           import issue_74_severe_inflation as severe
           positive, manifest = severe.load_severe_positive_dates()
-          assert manifest["parity_pass"] is True
-          assert manifest["parity_checkpoints"] >= 51
-          assert manifest["parity_max_abs_ipi_error"] <= 5e-8
+          mode = manifest["evidence_mode"]
+          if mode == "equivalently exact verified reconstruction":
+              assert manifest["parity_pass"] is True
+              assert manifest["parity_checkpoints"] >= 51
+              assert manifest["parity_max_abs_ipi_error"] <= 5e-8
+              assert manifest["source_log_sha256"] == severe.EXPECTED_RECONSTRUCTION_SOURCE_SHA256
+          elif mode == "exact prior full-daily artifact":
+              assert manifest["source_log_sha256"] == severe.EXPECTED_SOURCE_LOG_SHA256
+          else:
+              raise AssertionError(f"unexpected severe-inflation evidence mode: {mode}")
           assert (positive >= 60.0).all()
           print({
-              "evidence_mode": manifest["evidence_mode"],
+              "evidence_mode": mode,
               "source_sha256": manifest["source_log_sha256"],
               "positive_rows": len(positive),
-              "parity_max_abs_ipi_error": manifest["parity_max_abs_ipi_error"],
+              "parity_max_abs_ipi_error": manifest.get("parity_max_abs_ipi_error"),
           })
           PY
 
@@ -137,7 +144,22 @@ jobs:
           test -s generated/issue-74-phase-c/issue-74-phase-c-cost-sensitivity.csv
           test -s generated/issue-74-phase-c/issue-74-phase-c-episode-concentration.csv
           test -s generated/issue-74-phase-c/issue-74-phase-c-attribution.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-asset-contribution.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-regime-contribution.csv
+          test -s generated/issue-74-phase-c/issue-74-phase-c-reporting-reconciliation.csv
           test -s generated/issue-74-phase-c/issue-74-phase-c-report.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path("generated/issue-74-phase-c/issue-74-phase-c-manifest.json").read_text())
+          required = manifest["reporting_contract_completed"]
+          assert required["average_allocation_by_regime"] is True
+          assert required["asset_contribution"] is True
+          assert required["regime_contribution"] is True
+          assert required["episode_concentration"] is True
+          assert required["leave_largest_winning_episode_out"] is True
+          assert required["exposure_matched_attribution_where_feasible"] is True
+          PY
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-incremental.csv
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-episodes.csv
           test -s generated/issue-74-legacy-gold-cash/issue-74-legacy-gold-cash-report.md
