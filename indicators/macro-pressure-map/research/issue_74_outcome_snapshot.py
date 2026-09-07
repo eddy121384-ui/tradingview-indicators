@@ -15,6 +15,7 @@ import io
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 
 import numpy as np
@@ -42,25 +43,41 @@ def display_path(path: Path) -> str:
 
 
 def _assert_github_pr_checkout_matches_trigger() -> None:
-    """Fail closed if a PR run checked out a tip newer than its triggering SHA."""
-    if os.environ.get("GITHUB_EVENT_NAME") != "pull_request":
+    """Fail closed unless the checkout matches the workflow-declared validation SHA.
+
+    Normal PR validation defaults to the immutable triggering pull_request.head.sha.
+    The freeze-bootstrap workflow may explicitly set ISSUE_74_EXPECTED_CHECKOUT_SHA
+    after committing the snapshot and re-checking out that exact frozen commit in
+    the same run. The override must itself be a full Git SHA and is still compared
+    against git rev-parse HEAD before frozen prices or PnL can be used.
+    """
+    override = os.environ.get("ISSUE_74_EXPECTED_CHECKOUT_SHA", "").strip()
+    event_name = os.environ.get("GITHUB_EVENT_NAME")
+
+    if override:
+        if re.fullmatch(r"[0-9a-fA-F]{40}", override) is None:
+            raise RuntimeError("Issue #74 validation SHA override is not a full 40-character Git SHA")
+        expected = override.lower()
+    elif event_name == "pull_request":
+        event_path = os.environ.get("GITHUB_EVENT_PATH")
+        if not event_path:
+            raise RuntimeError("GitHub PR run is missing GITHUB_EVENT_PATH")
+        payload = json.loads(Path(event_path).read_text(encoding="utf-8"))
+        expected = str(payload.get("pull_request", {}).get("head", {}).get("sha", "")).strip().lower()
+        if re.fullmatch(r"[0-9a-f]{40}", expected) is None:
+            raise RuntimeError("GitHub PR event does not declare a valid pull_request.head.sha")
+    else:
         return
-    event_path = os.environ.get("GITHUB_EVENT_PATH")
-    if not event_path:
-        raise RuntimeError("GitHub PR run is missing GITHUB_EVENT_PATH")
-    payload = json.loads(Path(event_path).read_text(encoding="utf-8"))
-    expected = str(payload.get("pull_request", {}).get("head", {}).get("sha", "")).strip()
-    if not expected:
-        raise RuntimeError("GitHub PR event does not declare pull_request.head.sha")
+
     actual = subprocess.check_output(
         ["git", "rev-parse", "HEAD"],
         cwd=HERE,
         text=True,
-    ).strip()
+    ).strip().lower()
     if actual != expected:
         raise RuntimeError(
             "Issue #74 exact-head provenance failure: "
-            f"triggered SHA {expected}, checked-out SHA {actual}"
+            f"expected validation SHA {expected}, checked-out SHA {actual}"
         )
 
 
