@@ -62,7 +62,7 @@ def episode_concentration(active_log: pd.Series, active_mask: pd.Series) -> pd.D
                 "observations": len(edates),
                 "active_log_return": float(active_log.loc[edates].sum()),
             })
-        total = float(active_log.loc[dates].sum()) if len(dates) else np.nan
+        total = float(active_log.loc[active_dates].sum()) if len(active_dates) else np.nan
         winner = max(episodes, key=lambda x: x["active_log_return"]) if episodes else None
         removed = total - float(winner["active_log_return"]) if winner else total
         rows.append({
