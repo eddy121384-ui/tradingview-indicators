@@ -13,12 +13,19 @@ HERE = Path(__file__).resolve().parent
 
 
 def generate(source: Path) -> str:
-    base = si.generate(source)
-    if base.count(v1.SI_PLOT_MARKER) != 1:
-        raise RuntimeError("expected one support-invariant plot marker")
-    core = base.split(v1.SI_PLOT_MARKER, 1)[0].rstrip()
-    core = replace_once(core, si.AUDIT_DECL, v1.AUDIT_DECL)
-    out = core + "\n\n" + v1.BODY + "\n"
+    # Build the production D1 core directly instead of calling si.generate(),
+    # because the legacy SI generator has a stale token-contract assertion.
+    d1_text = si.phase_b.d1.generate(source)
+    if d1_text.count(si.phase_b.D1_EXPORT_MARKER) != 1:
+        raise RuntimeError("expected exactly one D1 parity export marker")
+    core = d1_text.split(si.phase_b.D1_EXPORT_MARKER, 1)[0].rstrip()
+    core = replace_once(core, si.phase_b.D1_INDICATOR_DECL, v1.AUDIT_DECL)
+
+    if si.BODY.count(v1.SI_PLOT_MARKER) != 1:
+        raise RuntimeError("expected one support-invariant plot marker in SI BODY")
+    si_prefix = si.BODY.split(v1.SI_PLOT_MARKER, 1)[0].rstrip()
+
+    out = core + "\n\n" + si_prefix + "\n\n" + v1.BODY + "\n"
     for token in (
         "DownEx Current-Context Counterfactual",
         "issue68CCCurrentBearGate",
