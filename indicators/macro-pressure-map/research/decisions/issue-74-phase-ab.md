@@ -1,4 +1,4 @@
-# Issue #74 — Cash defensive overlay Phase A/B checkpoint
+# Issue #74 — Cash defensive overlay Phase A/B decision
 
 ## Verdict
 
@@ -14,142 +14,122 @@ Overall:
 
 `cash_is_a_credible_defensive_asset_role_but_60pct_cash_requires_stronger_conditioning_than_core_stagflation`
 
-All results are reused/development historical evidence. They are not untouched OOS confirmation and do not validate a production allocator.
+All results are reused/development historical evidence, not untouched OOS confirmation. Macro Pressure Map V6.6 production formulas, weights, lookbacks, thresholds and Pine are unchanged.
 
-## Frozen boundary
+## Frozen data and execution
 
-The Issue #74 hypothesis ladder was committed before Issue #74 portfolio PnL was viewed. V6.6 formulas, component weights, lookbacks, thresholds, 3x3 regime semantics, FCPI role, and production Pine remain unchanged. No optimizer, threshold search, allocation-weight sweep, commodity momentum filter, or rescue asset was used.
+The SPY/TLT/SHV/GSG outcome panel was frozen before Issue #74 PnL in commit `5b407ebf1df7f88b4c3ab720234bf2b587a01027`.
 
-The outcome panel was frozen **before** portfolio evaluation by Actions into commit `5b407ebf1df7f88b4c3ab720234bf2b587a01027`:
+- 4,935 common adjusted-price rows, 2007-01-11 through 2026-08-24
+- CSV SHA256 `eba5c4d82c647536a23856e091b874f7a82940d7358bc5235ed066a20ae9566c`
+- archive SHA256 `e2a76e4aa6c43f64c9574000723ebf96309f7f129d148b805e26123c11643398`
+- portfolio evaluation 2007-01-12 through 2026-08-14, 4,928 rows
+- one-bar signal lag
+- month-start plus lagged-template-change rebalance
+- primary cost 5 bp per 100% one-way turnover, with 0/10 bp sensitivity
 
-- SPY / TLT / SHV / GSG;
-- 4,935 common adjusted-price rows;
-- 2007-01-11 through 2026-08-24;
-- CSV SHA-256 `eba5c4d82c647536a23856e091b874f7a82940d7358bc5235ed066a20ae9566c`;
-- gzip/archive SHA-256 `e2a76e4aa6c43f64c9574000723ebf96309f7f129d148b805e26123c11643398`.
+## Phase A — Gold to Cash substitution
 
-The portfolio comparison window is 2007-01-12 through 2026-08-14, 4,928 rows. Primary cost is 5 bp per 100% one-way turnover with 0/10 bp sensitivity.
+Stagflation changes from the neutral 40/40/20 SPY/TLT/SHV mix to **20/40/40**. Against the matching Reflation-only baseline, full reused-history Phase A adds about:
 
-## Phase A — Gold -> Cash substitution
+- +0.33 pp/year CAGR
+- +0.057 Sharpe
+- +2.58 pp maximum-drawdown improvement
+- +0.053 Calmar
 
-Preregistered SPY/TLT/SHV templates:
+The incremental result is positive in both eras. At 10 bp, the full-history CAGR edge remains positive at about +0.26 pp/year.
 
-- Neutral: 40/40/20;
-- Reflation: 60/20/20;
-- Stagflation cash substitution: 20/40/40.
+Executed Stagflation allocation averages about 19.91% SPY / 39.86% TLT / 40.23% SHV. The overlay reduces historical Stagflation losses; it does not turn Stagflation into an absolute-return engine.
 
-Against the same-universe Reflation-only baseline, the Phase A Stagflation cash overlay improves full reused-history results:
+### Reviewed episode robustness
 
-- CAGR: +0.33 percentage points per year;
-- Sharpe: +0.057;
-- maximum drawdown: +2.58 percentage points;
-- Calmar: +0.053.
+Codex review identified that the earlier concentration helper mixed non-Stagflation residual rows into the total while individual episodes were Stagflation-only. The reviewed episode diagnostic now uses **Stagflation-active rows only** for the total, winner, and leave-largest-winner-out calculation.
 
-The incremental result is positive in both era slices:
+Phase A minus Reflation-only:
 
-- pre-2020: +0.14 pp CAGR, +0.031 Sharpe;
-- post-2019 reused exploratory history: +0.70 pp CAGR, +0.087 Sharpe and +2.58 pp max-drawdown improvement.
+- full active log return: **+6.3655%**; removing the largest winner leaves **+3.5004%**
+- pre-2020: **+1.8568%**; largest 2007-09-17 → 2008-01-17 winner +2.2338%; excluding it gives **-0.3770%**
+- post-2019 reused: **+4.5087%**; largest 2021-12-29 → 2022-06-06 winner +2.8651%; excluding it still leaves **+1.6437%**
 
-At 10 bp costs, the full-history Phase A CAGR edge remains positive at about +0.26 pp/year.
+So the recent Phase A result is not solely a 2021-22 artifact, while the older era remains episode-concentrated.
 
-### What Phase A is actually doing
+## Phase B — Deep Cash defense
 
-Executed Stagflation rows realize approximately 19.91% SPY / 39.86% TLT / 40.23% SHV. Stagflation remains a negative absolute contributor after 2019; the overlay is a damage-reduction mechanism, not a Stagflation profit engine.
-
-Across the full sample, Stagflation rows contribute about -0.71 pp/year under the Reflation-only strategy and about -0.40 pp/year under Phase A. Thus the cash substitution reduces the historical loss burden by roughly +0.31 pp/year.
-
-### Episode robustness
-
-Phase A still has an older-era concentration problem. In 2007-2019 its largest winning Stagflation episode is 2007-09-17 through 2008-01-17; removing that episode turns the active log return slightly negative.
-
-The post-2019 result is materially more robust. The largest winning episode is 2021-12-29 through 2022-06-06, but removing that entire episode leaves active log return **positive** at about +0.01463. Therefore the recent cash-substitution result is not solely a 2021-22 artifact.
-
-## Phase B — Deep cash defense
-
-Preregistered Stagflation template changes from Phase A 20/40/40 to **20 SPY / 20 TLT / 60 SHV**, explicitly reducing both equity and duration risk.
+Phase B changes the Stagflation template from Phase A 20/40/40 to **20 SPY / 20 TLT / 60 SHV**, cutting both equity and duration exposure.
 
 Full reused history versus Phase A:
 
-- CAGR: +0.06 pp/year;
-- Sharpe: +0.022;
-- maximum drawdown: +2.49 pp;
-- Calmar: +0.051.
+- +0.06 pp/year CAGR
+- +0.022 Sharpe
+- +2.49 pp maximum-drawdown improvement
+- +0.051 Calmar
 
-But the era split is the critical result:
+But the era split is decisive:
 
-### 2007-2019
+- pre-2020: CAGR -0.25 pp/year, Sharpe -0.023
+- post-2019: CAGR +0.66 pp/year, Sharpe +0.084, max-drawdown improvement +4.01 pp
 
-Phase B is worse than Phase A on return and risk-adjusted return:
+Reviewed Stagflation-active episode totals show the recent edge remains highly concentrated:
 
-- CAGR: -0.25 pp/year;
-- Sharpe: -0.023;
-- Calmar: -0.006;
-- only a small +0.31 pp max-drawdown improvement remains.
+- full Phase B minus Phase A active log return: **+1.7420%**; removing 2021-22 leaves **-3.3232%**
+- pre-2020: already negative at **-2.5270%**
+- post-2019: **+4.2690%**; the 2021-12-29 → 2022-06-06 winner contributes +5.0652%; excluding it leaves **-0.7962%**
 
-### Post-2019 reused history
-
-Phase B is much better than Phase A:
-
-- CAGR: +0.66 pp/year;
-- Sharpe: +0.084;
-- maximum drawdown: +4.01 pp;
-- Calmar: +0.112.
-
-That attractive recent result is **not robust across Stagflation episodes**. The 2021-12-29 through 2022-06-06 episode contributes about +0.05065 active log return; after removing it, Phase B minus Phase A turns negative at about -0.01024. Full-history Phase B minus Phase A also flips negative after removing this single winner.
-
-This makes the mechanism economically intuitive but narrow: cutting long duration aggressively was highly valuable in a 2021-22-style inflation / tightening shock, but the data do not support making 60% cash the default response to every V6.6 core Stagflation state.
-
-Cost sensitivity tells the same story. At 10 bp costs, Phase B minus Phase A full-history CAGR becomes slightly negative (about -0.01 pp/year), although Sharpe and drawdown remain better. Annualized turnover is about 4.43x for Phase B versus 3.09x for Phase A and 1.74x for the Reflation-only baseline.
+At 10 bp, the full-history Phase B-minus-A CAGR edge also becomes slightly negative. The deep-cash rule therefore remains a 2021-22-style tightening-shock result, not a stable default for every core Stagflation regime.
 
 ## Same-window Gold vs Cash diagnostic
 
-After the preregistered Phase A/B result was known, a **post-hoc diagnostic** compared the already-frozen Issue #64 Gold Stagflation overlay with the Issue #74 Cash Stagflation overlay on the exact same 2007-01-12 through 2026-08-14 dates. This comparison does not create a new rule and cannot establish universal asset superiority.
+This remains a post-hoc diagnostic, not a new rule. Each already-frozen overlay is compared with its own matching Reflation-only baseline on identical 2007-01-12 through 2026-08-14 dates.
 
-Each overlay is measured against its own matching Reflation-only baseline.
+Full-history marginal effect:
 
-Full-history marginal Stagflation effect:
+- Gold: +0.24 pp CAGR, +0.020 Sharpe, +2.36 pp max-drawdown improvement
+- Cash: +0.33 pp CAGR, +0.057 Sharpe, +2.58 pp max-drawdown improvement
 
-- Gold: +0.24 pp CAGR, +0.020 Sharpe, +2.36 pp max-drawdown improvement, +0.047 Calmar;
-- Cash: +0.33 pp CAGR, +0.057 Sharpe, +2.58 pp max-drawdown improvement, +0.053 Calmar.
+Reviewed Stagflation-active leave-largest-winner-out results:
 
-So Cash exceeds Gold by about +0.09 pp incremental CAGR and +0.036 Sharpe on the identical window.
+- Gold pre-2020: +1.4821% active, **-4.6765%** ex largest winner
+- Gold post-2019: +3.0849% active, **-0.1856%** ex 2021-22
+- Cash pre-2020: +1.8568% active, **-0.3770%** ex largest winner
+- Cash post-2019: +4.5087% active, **+1.6437%** ex 2021-22
 
-The more important difference is recent episode robustness:
+The corrected diagnostic still supports Cash as the cleaner historical core defensive role, especially post-2019. It does not establish universal superiority over Gold.
 
-- Gold pre-2020: removing the largest winner flips the active result negative;
-- Gold post-2019: removing 2021-22 also flips negative;
-- Cash pre-2020: removing the largest winner flips negative;
-- **Cash post-2019: removing 2021-22 still leaves +0.01463 active log return.**
+## Phase C status
 
-This supports Cash as a credible core defensive role and rejects the assumption that Gold is required for the historical Stagflation loss-mitigation effect. It does **not** imply Gold has no useful satellite or portfolio role.
+Phase C is no longer blocked. The operator supplied an equivalently exact verified V6.6 raw-IPI reconstruction, the preregistered evidence gate passed, and the frozen rule was executed:
 
-## Accounting audit
+- activation: lagged Stagflation Pressure AND lagged raw IPI >= +60
+- severe allocation: 20 SPY / 20 TLT / 40 SHV / 20 GSG
+- 74 active outcome rows across 11 episodes
 
-Portfolio asset contribution, regime contribution, transaction-cost residual and exact daily reconciliation were generated from the frozen price snapshot. Maximum reconciliation error is approximately `3.47e-18`.
+Phase C **failed** versus Phase B: full-history ΔCAGR -0.1362 pp/year, ΔSharpe -0.0228, and maximum drawdown worsened by 0.8831 pp. Zero-cost results remain negative, so the failure is not caused by execution costs.
 
-## Phase C remains blocked, deliberately
+Durable Phase C details are in `decisions/issue-74-phase-c.md` and `.json`. No threshold, weight, momentum, oil-only, or new-asset rescue is permitted inside Issue #74.
 
-The preregistered Phase C question is whether the existing V6.6 **severe inflation** state can justify a conditional 20% GSG commodity sleeve while retaining Cash as the defensive core.
+## Review hardening
 
-The required condition is lagged Stagflation Pressure **and lagged raw IPI >= +60**, where +60 is the already-existing V6.6 `inflationExtremeThreshold`.
+The current evidence path now locks the Codex findings into code and CI:
 
-Issue #64 committed the full 3x3 core regime transition history but did not commit every historical raw IPI value required to reconstruct `IPI >= +60` exactly. Therefore Phase C currently fails closed. No Phase C portfolio PnL has been calculated.
+- Phase A/B and legacy Gold/Cash episode totals are Stagflation-active only
+- both preregistered severe-inflation evidence paths are executable and validated
+- Phase C emits preregistered average allocation by regime, asset contribution and regime contribution
+- Phase C separates gross allocation effect, transaction-cost residual and net effect
+- pull-request CI checks out immutable `github.event.pull_request.head.sha`
+- focused regression tests protect the episode scopes and legacy evidence fallback
 
-The expected prior TradingView Pine parity log SHA-256 is `c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d`. Phase C should proceed only when that exact evidence is recovered or an equivalently exact verified reconstruction is established. Do not substitute mutable network reconstruction merely to obtain a result.
+## Reviewed provenance
 
-## Provenance
+Reviewed research code head `5765b2304bf128b74b8bcce902334ee483c8f46c`, pinned workflow run `34077133711` — success.
 
-Primary evidence workflow: Actions run `33708354990`, source code head `be3a687fb80f28a0cb4d09e88c2fc027617b706d`, conclusion `success`.
-
-Phase A/B artifact: `9876055030`, digest `sha256:ce44a90523cff50ec9586724dcae9814a94a09d86b82788648e317d5c762aa95`.
-
-Same-window Gold/Cash diagnostic artifact: `9876055349`, digest `sha256:44189ade884cbba297b120435e10d07aa435de3f81b24b9134c9c0947cb75489`.
+- Phase A/B artifact `10002497312`, digest `sha256:870bcbd38d4f7fa744e63bb6b42d42ef3d92c0b701118d1d84285ccac19524e1`
+- Phase C artifact `10002497479`, digest `sha256:e25c47f42e48215af872662b58159ed387c03db3c17639d6e648d0836abfbf25`
+- Gold/Cash artifact `10002497650`, digest `sha256:81b7270f6ee1f6742ed252cd8f4f5a249c54ce89c00791bef97037fac48973d9`
 
 ## Decision
 
-- Do not call V6.6 a validated production allocator.
-- Gold is **not required** to obtain the historical Stagflation defensive effect.
-- Cash/very-short Treasury exposure is supported as a cleaner core defensive asset role.
-- Do **not** automatically use 60% Cash in every Stagflation regime; that deeper duration cut is strongly tied to the 2021-22 hiking shock and is cost-sensitive.
-- Keep Phase C preregistered: broad commodities remain a conditional inflation satellite candidate, not a default core holding.
-- Do not tune V6.6 thresholds, portfolio weights or add a momentum filter to rescue Phase C.
+- Cash / very-short Treasuries retain the cleaner core defensive role.
+- Gold is not required for the historical Stagflation loss-mitigation effect.
+- Do not automatically use 60% Cash in every Stagflation regime.
+- The preregistered Phase C GSG satellite failed and should not be rescued by tuning.
+- Macro Pressure Map V6.6 remains a risk-overlay candidate, not a validated production allocator.
