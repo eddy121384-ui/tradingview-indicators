@@ -23,19 +23,29 @@ Signal state is not rebuilt from a fresh FRED download. It is derived from the e
 - the committed `issue-64-frozen-axis-audit.csv` preserves 51 deterministic raw GPI / IPI / FCPI checkpoints (every 100th derived row plus the final row), SHA-256 `9021844c7ed0b927ce95ca3de117ac3749eb3c5541e5d6c46557aa5624fa08c1`;
 - the committed derived transition file has SHA-256 `80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af`;
 - frozen regime history: 2007-01-04 through 2026-08-14, 4,934 daily rows represented by 739 transitions;
-- outcomes: adjusted-price SPY / TLT / GLD proxies from Yahoo Finance using `auto_adjust=True`;
 - signal is never forward-filled past 2026-08-14. Later outcome prices may only complete forward windows that started while a frozen signal existed.
 
-The operator-local Pine log remains intentionally uncommitted. The committed axis audit is inspectable evidence, while the verification script provides the reproducible full-axis cross-check path for a checkout that has the hash-matching source log.
+Phase A outcomes are now durably bound to the committed Issue #64 SPY / TLT / GLD adjusted-price snapshot rather than generic live Yahoo semantics:
 
-Latest verified workflow:
+- frozen outcome CSV SHA-256: `3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57`;
+- deterministic gzip archive SHA-256: `d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240`;
+- 4,941 strict-common-calendar rows, 2007-01-03 through 2026-08-24;
+- frozen snapshot source run: `32794998567`;
+- source Phase A artifact: `9544547838`;
+- price semantics: Yahoo Finance `yfinance auto_adjust=True` adjusted Close, frozen in the committed snapshot;
+- the current workflow regenerates Phase A from that committed panel and fails if the decision JSON, committed snapshot manifest, and generated Phase A outcome manifest disagree on SHA, coverage, source run, or acquisition mode.
 
-- run `32439125598`;
-- artifact `9431783095`;
-- artifact SHA-256 `4f5fe53b8dd8bec8d7ef862673d1296c6261b143150cc010e4fec5c1addd9df9`;
-- 10 focused tests passed;
-- strict JSON validation passed;
-- evidence artifact upload passed.
+The operator-local Pine log remains intentionally uncommitted. The committed axis audit is inspectable signal evidence, while the verification script provides the reproducible full-axis cross-check path for a checkout that has the hash-matching source log. The committed outcome snapshot makes the price side independently reproducible without future Yahoo revisions.
+
+Evidence-producing frozen-panel verification:
+
+- exact head `fcc4c6b1ae083bda5b9c9b1dd865bd42f9015f8e`;
+- workflow run `33603653668`;
+- Phase A artifact `9836364304`;
+- artifact SHA-256 `6034810515f734ef68765b2cad69a18bdef49a07fa87e7e5522b4b919ec98e48`;
+- Phase A was regenerated from the committed `3a7f590c...` panel before artifact upload.
+
+Later provenance-only documentation commits must not replace that evidence-producing run unless they regenerate the same frozen evidence.
 
 ## Regime occupancy
 
