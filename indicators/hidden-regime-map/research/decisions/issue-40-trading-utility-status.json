@@ -1,0 +1,95 @@
+{
+  "schema_version": 2,
+  "issue": 40,
+  "status": "complete_negative_result",
+  "outcome": "no_incremental_value",
+  "can_start_issue_41": false,
+  "input_sha256": "016448a0492769c527a8dc8e24d60fbda4c4e0e4bbdbcf27506caf30b76dddc4",
+  "split": {
+    "usable_rows": 4064,
+    "fit_rows": 2438,
+    "exploratory_rows": 812,
+    "final_rows": 814,
+    "feature_start": "2010-05-26T00:00:00+00:00",
+    "fit_end": "2020-01-31T00:00:00+00:00",
+    "exploratory_start": "2020-02-03T00:00:00+00:00",
+    "exploratory_end": "2023-04-24T00:00:00+00:00",
+    "final_start": "2023-04-25T00:00:00+00:00",
+    "final_end": "2026-07-23T00:00:00+00:00"
+  },
+  "experiment": {
+    "cost_bps": 5.0,
+    "execution_lag_bars": 1,
+    "candidates": [
+      "k3_baseline",
+      "k8_baseline_er_downside"
+    ],
+    "baselines": [
+      "buy_and_hold",
+      "trend_100",
+      "momentum_63"
+    ],
+    "hmm_roles": [
+      "favorable_filter",
+      "size_modifier",
+      "defensive_switch"
+    ],
+    "simple_non_hmm_filter": "sma200_filter"
+  },
+  "decision": {
+    "outcome": "no_incremental_value",
+    "reason": "All predeclared experiments completed, but no single HMM candidate/role cleared the trading-value or risk-value gate across two or more baselines.",
+    "trading_winners": [],
+    "risk_winners": [],
+    "minimum_supporting_baselines": 2
+  },
+  "closest_hmm_result": {
+    "candidate": "k8_baseline_er_downside",
+    "role": "defensive_switch",
+    "baseline": "buy_and_hold",
+    "final_metrics": {
+      "annualized_return": 0.1453627210967796,
+      "sharpe": 1.3706873766969236,
+      "calmar": 1.7394597781971814,
+      "maximum_drawdown": -0.08356773920201654,
+      "active_days": 646,
+      "completed_round_trips": 14,
+      "trade_episode_count": 16,
+      "top_3_positive_trades_share": 0.7061286980145187
+    },
+    "versus_no_hmm": {
+      "annualized_return_delta": -0.06722401361562524,
+      "sharpe_delta": 0.016609105370638755,
+      "drawdown_improvement": 0.10398452340420994
+    }
+  },
+  "validation": {
+    "workflow": "Hidden Regime Trading Utility",
+    "acceptance_contract": [
+      "research tests pass",
+      "frozen input checksum passes",
+      "evaluation and strict JSON validation pass",
+      "regenerated outcome, split, closest-case metrics, and exact nine-row key-metric set match committed evidence",
+      "Hidden Regime Market Validation also passes on the final PR head"
+    ],
+    "corrected_evaluation_reference": {
+      "run_number": 21,
+      "run_id": 30520180024,
+      "evaluated_head_sha": "fe3ed42dbf7befbccf8ff389d8b50b48154486fb",
+      "evaluation_steps": "pass",
+      "evidence_check": "failed_as_expected_before_committed_trade_payoff_refresh",
+      "artifact_name": "hidden-regime-issue-40-trading-utility",
+      "artifact_id": 8750426116,
+      "artifact_digest": "sha256:145e486e0487d39e2e7a731b5d39778162fc5f7ecb54948cb98429e92f1617aa"
+    },
+    "final_pr_head_result": "Record the final successful workflow run and Codex review in PR #49 after all committed evidence matches regenerated output."
+  },
+  "limitations": [
+    "SPY 1D only",
+    "one frozen sample and one chronological 60/20/20 split",
+    "two HMM candidates and one predeclared state-risk mapping",
+    "three long-only HMM roles",
+    "fixed 5 bps turnover cost",
+    "no formal sampling-confidence intervals"
+  ]
+}

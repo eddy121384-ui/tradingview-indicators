@@ -1,0 +1,170 @@
+name: Hidden Regime Trading Utility
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - indicators/hidden-regime-map/research/evaluate_trading_utility.py
+      - indicators/hidden-regime-map/research/test_evaluate_trading_utility.py
+      - indicators/hidden-regime-map/research/issue-40-experiment-spec.md
+      - indicators/hidden-regime-map/research/train_hmm.py
+      - indicators/hidden-regime-map/research/compare_state_counts.py
+      - indicators/hidden-regime-map/research/compare_feature_sets.py
+      - indicators/hidden-regime-map/requirements-research.txt
+      - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz
+      - indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256
+      - indicators/hidden-regime-map/research/decisions/issue-40-trading-utility.md
+      - indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-status.json
+      - indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-key-metrics.csv
+      - .github/workflows/hidden-regime-trading-utility.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate-spy-1d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Install research dependencies
+        run: python -m pip install -r indicators/hidden-regime-map/requirements-research.txt
+
+      - name: Run Hidden Regime research tests
+        run: python -m unittest discover -s indicators/hidden-regime-map/research -p 'test_*.py'
+
+      - name: Verify frozen Issue 40 input
+        run: |
+          expected="$(awk '{print $1}' indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256)"
+          actual="$(gzip -dc indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz | sha256sum | awk '{print $1}')"
+          test "$actual" = "$expected"
+          echo "verified frozen input: $actual"
+
+      - name: Run predeclared trading-utility evaluation
+        run: |
+          mkdir -p artifacts/issue-40
+          python indicators/hidden-regime-map/research/evaluate_trading_utility.py \
+            --input indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.csv.gz \
+            --sha256-file indicators/hidden-regime-map/research/data/issue-40-spy-1d-run58.sha256 \
+            --output-dir artifacts/issue-40 \
+            --symbol SPY \
+            --timeframe 1D \
+            | tee artifacts/issue-40-run.log
+
+      - name: Validate machine-readable results
+        run: |
+          python -m json.tool artifacts/issue-40/issue-40-trading-utility.json > /dev/null
+          python -m json.tool indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-status.json > /dev/null
+
+      - name: Verify committed Issue 40 decision evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          import numpy as np
+          import pandas as pd
+
+          generated_path = Path("artifacts/issue-40/issue-40-trading-utility.json")
+          status_path = Path("indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-status.json")
+          key_path = Path("indicators/hidden-regime-map/research/decisions/issue-40-trading-utility-key-metrics.csv")
+          generated_csv_path = Path("artifacts/issue-40/issue-40-trading-utility-metrics.csv")
+
+          generated = json.loads(generated_path.read_text(encoding="utf-8"))
+          status = json.loads(status_path.read_text(encoding="utf-8"))
+
+          assert status["outcome"] == generated["decision"]["outcome"]
+          assert status["outcome"] == "no_incremental_value"
+          assert status["can_start_issue_41"] is False
+          assert status["input_sha256"] == generated["input"]["sha256"]
+          for key in ("usable_rows", "fit_rows", "exploratory_rows", "final_rows"):
+              assert status["split"][key] == generated["split"][key]
+          assert generated["decision"]["trading_winners"] == []
+          assert generated["decision"]["risk_winners"] == []
+
+          closest = status["closest_hmm_result"]
+          generated_rows = pd.DataFrame(
+              [
+                  {
+                      "candidate": row["candidate"],
+                      "baseline": row["baseline"],
+                      "role": row["role"],
+                      "period": row["period"],
+                      **row["metrics"],
+                  }
+                  for row in generated["metrics"]
+              ]
+          )
+          matched = generated_rows[
+              (generated_rows["candidate"] == closest["candidate"])
+              & (generated_rows["baseline"] == closest["baseline"])
+              & (generated_rows["role"] == closest["role"])
+              & (generated_rows["period"] == "final")
+          ]
+          assert len(matched) == 1
+          matched = matched.iloc[0]
+          for key, expected in closest["final_metrics"].items():
+              assert np.isclose(float(matched[key]), float(expected), rtol=0.0, atol=1e-9)
+
+          committed = pd.read_csv(key_path)
+          regenerated = pd.read_csv(generated_csv_path)
+          keys = ["candidate", "baseline", "role", "period"]
+          expected_keys = {
+              ("non_hmm", "buy_and_hold", "no_hmm", "final"),
+              ("non_hmm", "buy_and_hold", "sma200_filter", "final"),
+              ("non_hmm", "trend_100", "no_hmm", "final"),
+              ("non_hmm", "momentum_63", "no_hmm", "final"),
+              ("k8_baseline_er_downside", "buy_and_hold", "defensive_switch", "final"),
+              ("k8_baseline_er_downside", "trend_100", "defensive_switch", "final"),
+              ("k8_baseline_er_downside", "momentum_63", "defensive_switch", "final"),
+              ("k3_baseline", "buy_and_hold", "size_modifier", "final"),
+              ("k8_baseline_er_downside", "trend_100", "size_modifier", "final"),
+          }
+          committed_keys = set(committed[keys].itertuples(index=False, name=None))
+          assert committed_keys == expected_keys
+          regenerated_keys = pd.MultiIndex.from_frame(regenerated[keys])
+          projection = regenerated.loc[regenerated_keys.isin(expected_keys), committed.columns]
+          projection_keys = set(projection[keys].itertuples(index=False, name=None))
+          assert projection_keys == expected_keys
+          committed = committed.sort_values(keys).reset_index(drop=True)
+          projection = projection.sort_values(keys).reset_index(drop=True)
+          numeric = [column for column in committed.columns if column not in keys]
+          for column in numeric:
+              left = committed[column].to_numpy(dtype=float)
+              right = projection[column].to_numpy(dtype=float)
+              assert np.allclose(left, right, rtol=0.0, atol=1e-9, equal_nan=True), column
+
+          print("committed Issue #40 decision evidence matches regenerated output")
+          PY
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          if [ -f artifacts/issue-40/issue-40-trading-utility.md ]; then
+            cat artifacts/issue-40/issue-40-trading-utility.md >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f artifacts/issue-40-run.log ]; then
+            {
+              echo "## Issue #40 evaluation failed before producing a report"
+              echo
+              echo '```text'
+              tail -100 artifacts/issue-40-run.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hidden-regime-issue-40-trading-utility
+          path: artifacts
+          retention-days: 90
+          if-no-files-found: warn
