@@ -6,9 +6,10 @@ then changes only the Issue #66 B-1 representation family so bond-yield level
 series can cross zero without invalidating log(price). Positive price assets
 remain on the exact Issue #66 log-space path under Auto.
 
-A presentation-only default requested during TradingView runtime review is also
-applied: the bearish/downside panic-risk plot is dashed by default. This changes
-no calculation, threshold, state, alert, or plot-count footprint.
+Presentation-only defaults requested during TradingView runtime review are also
+applied: the bearish/downside panic-risk plot is dashed by default, and the six
+phase colors use a clearer semantic palette. These changes affect no
+calculation, threshold, state, alert, or plot-count footprint.
 """
 from __future__ import annotations
 
@@ -132,6 +133,19 @@ breakdownMaEvidence = recentMaCrossDn ? 70.0 : modelPrice < maModel ? 35.0 : 0.0
 MA_SPREAD_OLD = 'maSpreadATR = f_safeDiv(maLog - maturityMaLog, symATR)'
 MA_SPREAD_NEW = 'maSpreadATR = f_safeDiv(maModel - maturityMaModel, symATR)'
 
+PHASE_PALETTE_OLD = '''colAcc      = input.color(color.rgb(40, 170, 120), "吸籌顏色", group=groupColors)
+colMarkup   = input.color(color.rgb(40, 160, 90), "拉升顏色", group=groupColors)
+colReacc    = input.color(color.rgb(45, 180, 180), "再吸籌顏色", group=groupColors)
+colDist     = input.color(color.rgb(255, 150, 35), "派發顏色", group=groupColors)
+colMarkdown = input.color(color.rgb(220, 50, 47), "崩跌顏色", group=groupColors)
+colRedist   = input.color(color.rgb(150, 70, 170), "再出貨顏色", group=groupColors)'''
+PHASE_PALETTE_NEW = '''colAcc      = input.color(color.rgb(110, 190, 135), "吸籌顏色", group=groupColors)
+colMarkup   = input.color(color.rgb(30, 130, 75), "拉升顏色", group=groupColors)
+colReacc    = input.color(color.rgb(90, 175, 225), "再吸籌顏色", group=groupColors)
+colDist     = input.color(color.rgb(240, 205, 80), "派發顏色", group=groupColors)
+colMarkdown = input.color(color.rgb(220, 50, 47), "崩跌顏色", group=groupColors)
+colRedist   = input.color(color.rgb(245, 140, 45), "再出貨顏色", group=groupColors)'''
+
 DOWN_RISK_PLOT_OLD = 'plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2)'
 DOWN_RISK_PLOT_NEW = 'plot(showDownRiskLine ? endRiskDn : na, "下跌末段恐慌風險", color=dnColor, linewidth=2, linestyle=plot.linestyle_dashed)'
 
@@ -146,6 +160,7 @@ def apply_yield_safe_representation(hard_candidate: str) -> str:
     text = replace_once(text, RANGE_WIDTH_OLD, RANGE_WIDTH_NEW)
     text = replace_once(text, BREAK_MA_OLD, BREAK_MA_NEW)
     text = replace_once(text, MA_SPREAD_OLD, MA_SPREAD_NEW)
+    text = replace_once(text, PHASE_PALETTE_OLD, PHASE_PALETTE_NEW)
     text = replace_once(text, DOWN_RISK_PLOT_OLD, DOWN_RISK_PLOT_NEW)
     return text
 
@@ -167,6 +182,12 @@ def validate(hard_candidate: str, candidate: str) -> None:
         'ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)',
         'accGate      = rangeGate * bearBackgroundForAccGate * ctxDownExGate * supportHoldingGate * nonMarkdownContinuationGate',
         'distGate     = rangeGate * bullBackgroundForDistGate * ctxUpExGate * resistanceHoldingGate * nonMarkupContinuationGate',
+        'colAcc      = input.color(color.rgb(110, 190, 135), "吸籌顏色", group=groupColors)',
+        'colMarkup   = input.color(color.rgb(30, 130, 75), "拉升顏色", group=groupColors)',
+        'colReacc    = input.color(color.rgb(90, 175, 225), "再吸籌顏色", group=groupColors)',
+        'colDist     = input.color(color.rgb(240, 205, 80), "派發顏色", group=groupColors)',
+        'colMarkdown = input.color(color.rgb(220, 50, 47), "崩跌顏色", group=groupColors)',
+        'colRedist   = input.color(color.rgb(245, 140, 45), "再出貨顏色", group=groupColors)',
         DOWN_RISK_PLOT_NEW,
         'volumeMode = input.string("Auto", "Volume Mode"',
         'mtfMode = input.string("Observe Only", "MTF Mode"',
@@ -179,6 +200,8 @@ def validate(hard_candidate: str, candidate: str) -> None:
         if token not in candidate:
             raise RuntimeError(f"yield-safe candidate missing required token: {token}")
 
+    if PHASE_PALETTE_OLD in candidate:
+        raise RuntimeError("old phase palette remained in yield-safe candidate")
     if DOWN_RISK_PLOT_OLD in candidate:
         raise RuntimeError("bearish panic-risk plot default remained solid")
 
