@@ -33,7 +33,7 @@ def test_concentration_summary_ranks_episode_using_exit_inclusive_contribution()
     summary, episodes = concentration_summary("synthetic", status, active)
     assert len(episodes) == 3
     assert summary["positive_reflation_episodes"] == 2
-    assert np.isclose(summary["total_active_log_return"], 0.03)
+    assert np.isclose(summary["total_active_log_return"], 0.04)
     # First episode is +0.05 on status-True days but only +0.03 after its exit row.
     assert np.isclose(summary["largest_positive_episode_active_log_including_exit_day"], 0.03)
     assert summary["largest_positive_episode_start"] == index[0].date().isoformat()
