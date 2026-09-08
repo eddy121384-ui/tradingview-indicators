@@ -171,12 +171,12 @@ downgradeStrongClueToWait = input.bool(false, "v0.5｜鈍化線索很強時降�
 showDowngradeReason = input.bool(true, "v0.5｜完整模式顯示降級原因", group=groupPace)
 
 // === Dashboard 顏色自訂 ===
-colAcc      = input.color(color.rgb(40, 170, 120), "吸籌顏色", group=groupColors)
-colMarkup   = input.color(color.rgb(40, 160, 90), "拉升顏色", group=groupColors)
-colReacc    = input.color(color.rgb(45, 180, 180), "再吸籌顏色", group=groupColors)
-colDist     = input.color(color.rgb(255, 150, 35), "派發顏色", group=groupColors)
+colAcc      = input.color(color.rgb(110, 190, 135), "吸籌顏色", group=groupColors)
+colMarkup   = input.color(color.rgb(30, 130, 75), "拉升顏色", group=groupColors)
+colReacc    = input.color(color.rgb(90, 175, 225), "再吸籌顏色", group=groupColors)
+colDist     = input.color(color.rgb(240, 205, 80), "派發顏色", group=groupColors)
 colMarkdown = input.color(color.rgb(220, 50, 47), "崩跌顏色", group=groupColors)
-colRedist   = input.color(color.rgb(150, 70, 170), "再出貨顏色", group=groupColors)
+colRedist   = input.color(color.rgb(245, 140, 45), "再出貨顏色", group=groupColors)
 colNeutral  = input.color(color.rgb(120, 120, 120), "無明確 / 混沌顏色", group=groupColors)
 colCoexist  = input.color(color.rgb(120, 130, 165), "並存 / 弱候選顏色", group=groupColors)
 colLowDispute = input.color(color.rgb(45, 150, 130), "低位階段分歧顏色", group=groupColors)
