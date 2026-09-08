@@ -1,0 +1,117 @@
+name: Wyckoff Issue 68 Phase B3.1 Entry Hold
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/issue68_lifecycle_v31_entry_hold.py"
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b31_entry_hold.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b31_entry_hold_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b31_entry_hold.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b31_entry_hold_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b31-entry-hold-separation.md"
+      - ".github/workflows/wyckoff-issue68-phase-b31-entry-hold.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/issue68_lifecycle_v31_entry_hold.py"
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b31_entry_hold.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b31_entry_hold_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b31_entry_hold.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b31_entry_hold_audit_pine.py"
+      - ".github/workflows/wyckoff-issue68-phase-b31-entry-hold.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  entry-hold-semantic-contract:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile B3.1 tooling
+        run: |
+          python -m py_compile issue68_lifecycle_v31_entry_hold.py
+          python -m py_compile diagnose_issue68_phase_b31_entry_hold.py
+          python -m py_compile generate_issue68_phase_b31_entry_hold_audit_pine.py
+          python -m py_compile test_issue68_phase_b31_entry_hold.py
+          python -m py_compile test_issue68_phase_b31_entry_hold_audit_pine.py
+      - name: Run v3.1 state-machine contract
+        run: python -m unittest -v test_issue68_phase_b31_entry_hold
+      - name: Run v3.1 Pine transport contract
+        run: python -m unittest -v test_issue68_phase_b31_entry_hold_audit_pine
+      - name: Run burned-data semantic diagnostic
+        run: |
+          python diagnose_issue68_phase_b31_entry_hold.py \
+            --json reports/issue-68-phase-b31-entry-hold.json \
+            --md reports/issue-68-phase-b31-entry-hold.md
+      - name: Enforce no performance metric keys
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('reports/issue-68-phase-b31-entry-hold.json').read_text())
+          forbidden = ('pnl', 'return', 'sharpe', 'drawdown', 'hit_rate', 'transaction_cost', 'profit')
+          bad = []
+          def walk(x, path=''):
+              if isinstance(x, dict):
+                  for k, v in x.items():
+                      lk = str(k).lower()
+                      if any(t in lk for t in forbidden):
+                          bad.append(path + '/' + str(k))
+                      walk(v, path + '/' + str(k))
+              elif isinstance(x, list):
+                  for i, v in enumerate(x):
+                      walk(v, path + f'/{i}')
+          walk(data)
+          if bad:
+              raise SystemExit('forbidden performance keys: ' + ', '.join(bad))
+          PY
+      - name: Generate clean B3.1 TradingView audit Pine
+        run: |
+          python generate_issue68_phase_b31_entry_hold_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+          test -s generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+          grep -q 'Issue #68 Entry/Hold v3.1 Audit' generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+          grep -q 'strongCandidate ? topId : 0' generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+          ! grep -q 'issue68EarlyFail' generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+          ! grep -q 'issue68ArmedDir' generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+      - name: Commit B3.1 report and audit artifact on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b31-entry-hold.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b31-entry-hold.md
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b31-entry-hold-audit.pine
+          if git diff --cached --quiet; then
+            echo "B3.1 artifacts already current."
+            exit 0
+          fi
+          git commit -m "research: record Issue 68 B3.1 entry-hold artifacts [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1

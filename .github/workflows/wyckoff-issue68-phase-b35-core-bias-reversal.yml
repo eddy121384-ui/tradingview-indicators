@@ -1,0 +1,111 @@
+name: Wyckoff Issue 68 Phase B3.5 Core Bias Reversal
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b35_core_bias_reversal.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b35_reversal_stack_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b35_reversal_audit.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b35-core-bias-reversal-audit-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-phase-b35-core-bias-reversal.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b35_core_bias_reversal.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b35_reversal_stack_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b35_reversal_audit.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b35-core-bias-reversal-audit-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-phase-b35-core-bias-reversal.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  reversal-forensic-contract:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile B3.5 tooling
+        run: |
+          python -m py_compile diagnose_issue68_phase_b35_core_bias_reversal.py
+          python -m py_compile generate_issue68_phase_b35_reversal_stack_audit_pine.py
+          python -m py_compile test_issue68_phase_b35_reversal_audit.py
+      - name: Run B3.5 forensic and Pine contracts
+        run: python -m unittest -v test_issue68_phase_b35_reversal_audit
+      - name: Run burned-data reversal forensic
+        run: |
+          python diagnose_issue68_phase_b35_core_bias_reversal.py \
+            --json reports/issue-68-phase-b35-core-bias-reversal.json \
+            --md reports/issue-68-phase-b35-core-bias-reversal.md
+      - name: Enforce no performance metric keys
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('reports/issue-68-phase-b35-core-bias-reversal.json').read_text())
+          forbidden = ('pnl', 'return', 'sharpe', 'drawdown', 'hit_rate', 'transaction_cost', 'profit')
+          bad = []
+          def walk(x, path=''):
+              if isinstance(x, dict):
+                  for k, v in x.items():
+                      lk = str(k).lower()
+                      if any(t in lk for t in forbidden):
+                          bad.append(path + '/' + str(k))
+                      walk(v, path + '/' + str(k))
+              elif isinstance(x, list):
+                  for i, v in enumerate(x):
+                      walk(v, path + f'/{i}')
+          walk(data)
+          if bad:
+              raise SystemExit('forbidden performance keys: ' + ', '.join(bad))
+          PY
+      - name: Generate B3.5 TradingView reversal stack
+        run: |
+          python generate_issue68_phase_b35_reversal_stack_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          test -s generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          grep -q 'Issue #68 B3.5 Reversal Stack' generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          grep -q 'TOP direction band' generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          grep -q 'STRONG direction band' generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          grep -q 'FORMAL direction band' generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          grep -q 'CORE direction memory band' generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+      - name: Commit B3.5 report and audit artifact on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b35-core-bias-reversal.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b35-core-bias-reversal.md
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b35-reversal-stack-audit.pine
+          if git diff --cached --quiet; then
+            echo "B3.5 artifacts already current."
+            exit 0
+          fi
+          git commit -m "research: record Issue 68 B3.5 reversal forensic artifacts [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1

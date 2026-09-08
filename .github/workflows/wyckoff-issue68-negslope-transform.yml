@@ -1,0 +1,74 @@
+name: Wyckoff Issue 68 NegSlope Transform
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_negslope_transform_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-negslope-transform-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-negslope-transform.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_negslope_transform_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-negslope-transform-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-negslope-transform.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  negslope-transform:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile generator
+        run: python -m py_compile generate_issue68_negslope_transform_audit_pine.py
+      - name: Generate TradingView NegSlope transform audit
+        run: |
+          python generate_issue68_negslope_transform_audit_pine.py \
+            --output generated/wyckoff-issue68-negslope-transform-audit.pine
+          test -s generated/wyckoff-issue68-negslope-transform-audit.pine
+          grep -q 'NegSlopeDull Transformation Audit' generated/wyckoff-issue68-negslope-transform-audit.pine
+          grep -q '20D bp slope' generated/wyckoff-issue68-negslope-transform-audit.pine
+          grep -q 'BP rank pos-support' generated/wyckoff-issue68-negslope-transform-audit.pine
+          grep -q 'Log slope rank' generated/wyckoff-issue68-negslope-transform-audit.pine
+          grep -q 'Valid speedZ %756' generated/wyckoff-issue68-negslope-transform-audit.pine
+          grep -q 'Shift posBP -> log' generated/wyckoff-issue68-negslope-transform-audit.pine
+          grep -q 'Recon max / READ' generated/wyckoff-issue68-negslope-transform-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-negslope-transform-audit.pine
+          echo 'NegSlope transform audit contract PASS'
+      - name: Commit generated artifact on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-negslope-transform-audit.pine
+          if git diff --cached --quiet; then
+            echo "NegSlope transform artifact already current."
+            exit 0
+          fi
+          git commit -m "research: generate Issue 68 NegSlope transform audit [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1

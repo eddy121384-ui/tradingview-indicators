@@ -1,0 +1,79 @@
+name: Wyckoff Issue 68 Yield-Safe HARD A-B Regression
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_yield_safe_hard_ab_regression_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-hard-six-market-regression-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-yield-safe-hard-ab-regression.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_yield_safe_hard_ab_regression_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-hard-six-market-regression-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-yield-safe-hard-ab-regression.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  hard-ab-regression:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile A-B generator
+        run: python -m py_compile generate_issue68_yield_safe_hard_ab_regression_pine.py
+
+      - name: Generate A-B regression Pine
+        run: |
+          python generate_issue68_yield_safe_hard_ab_regression_pine.py \
+            --output generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+
+          test -s generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          grep -q 'issue68ABBaseAccGate = rangeGate \* bearBackgroundForAccGate \* downsideExhaustionGate' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          grep -q 'issue68ABBaseDistGate = rangeGate \* bullBackgroundForDistGate \* upsideExhaustionGate' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          grep -q 'ctxDownExGate = math.min(downsideExhaustionGate, currentBearGate)' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          grep -q 'ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          grep -q 'issue68ABNoBindParityViolation' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          grep -q '#68 A Baseline TOP' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          grep -q '#68 B HARD TOP' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          ! grep -q 'strategy\.entry' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          ! grep -q 'strategy\.close' generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          echo 'Issue #68 yield-safe HARD A/B regression contract PASS'
+
+      - name: Commit generated A-B Pine on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-yield-safe-hard-ab-regression.pine
+          if git diff --cached --quiet; then
+            echo "A/B artifact already current."
+            exit 0
+          fi
+          git commit -m "research: generate Issue 68 yield-safe HARD A-B regression [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1

@@ -1,0 +1,1828 @@
+{
+  "aggregate": {
+    "cumulative_negative_edge": {
+      "break": -45643.53949590766,
+      "continuation": -26404.34503256397,
+      "extension": -44323.713086970914,
+      "heat": -32175.43452380953,
+      "structure": -66419.0,
+      "trace": -3320.3504680965098
+    },
+    "final_blocker_counts": {
+      "break": 106,
+      "continuation": 14,
+      "extension": 14,
+      "heat": 93,
+      "structure": 140,
+      "trace": 6
+    },
+    "handoff_driver_counts": {
+      "break": 36,
+      "continuation": 19,
+      "extension": 0,
+      "heat": 38,
+      "structure": 279,
+      "trace": 1
+    },
+    "handoff_events": 373,
+    "largest_negative_component_counts": {
+      "break": 2274,
+      "continuation": 42,
+      "extension": 40,
+      "heat": 763,
+      "structure": 2254,
+      "trace": 15
+    },
+    "max_reconstruction_error": 2.842170943040401e-14,
+    "minimum_event_mirror_agreement": 0.998176291793313,
+    "minimum_final_blocker_mirror_agreement": 0.975609756097561,
+    "minimum_handoff_driver_mirror_agreement": 0.9814814814814815,
+    "negative_edge_counts": {
+      "break": 3985,
+      "continuation": 4780,
+      "extension": 5026,
+      "heat": 4433,
+      "structure": 3907,
+      "trace": 2491
+    },
+    "negative_edge_share": {
+      "break": 0.7396065330363771,
+      "continuation": 0.8871566443949518,
+      "extension": 0.9328136599851522,
+      "heat": 0.8227542687453601,
+      "structure": 0.7251299183370453,
+      "trace": 0.4623236822568671
+    },
+    "pooled_comparable_handoffs": 370,
+    "pooled_final_blocker_agreement": 0.9972972972972973,
+    "pooled_final_blocker_matches": 369,
+    "pooled_handoff_driver_agreement": 0.9972972972972973,
+    "pooled_handoff_driver_matches": 369,
+    "target_losing_bars": 5388,
+    "usable_direction_observations": 10776
+  },
+  "boundary": "Exact frozen S2-vs-S5 raw duel attribution only; no model or performance rule is changed.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 20,
+            "positive": 11,
+            "zero": 11
+          },
+          "continuation": {
+            "negative": 11,
+            "positive": 31,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 7,
+            "positive": 35,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 21,
+            "positive": 21,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 27,
+            "zero": 15
+          },
+          "trace": {
+            "negative": 27,
+            "positive": 15,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5873.182756550508,
+          "continuation": -2852.282638211401,
+          "extension": -4851.093915343916,
+          "heat": -4117.395502645503,
+          "structure": -6647.0,
+          "trace": -367.7311637548934
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 15,
+          "continuation": 0,
+          "extension": 1,
+          "heat": 15,
+          "structure": 9,
+          "trace": 2
+        },
+        "handoff_driver_counts": {
+          "break": 3,
+          "continuation": 3,
+          "extension": 0,
+          "heat": 2,
+          "structure": 34,
+          "trace": 0
+        },
+        "handoff_events": 42,
+        "largest_negative_component_counts": {
+          "break": 305,
+          "continuation": 2,
+          "extension": 2,
+          "heat": 131,
+          "structure": 162,
+          "trace": 3
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -9.293208133356098,
+          "continuation": -4.445403055345086,
+          "extension": -7.969441096571781,
+          "heat": -6.314378634833181,
+          "structure": -10.986776859504133,
+          "trace": 0.0729423711496813
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.95,
+          "continuation": -5.3883750419181755,
+          "extension": -9.748015873015875,
+          "heat": -7.139550264550267,
+          "structure": -17.0,
+          "trace": 0.1643014971139969
+        },
+        "negative_edge_counts": {
+          "break": 467,
+          "continuation": 513,
+          "extension": 582,
+          "heat": 516,
+          "structure": 391,
+          "trace": 271
+        },
+        "negative_edge_share": {
+          "break": 0.771900826446281,
+          "continuation": 0.8479338842975207,
+          "extension": 0.9619834710743802,
+          "heat": 0.8528925619834711,
+          "structure": 0.6462809917355372,
+          "trace": 0.4479338842975207
+        },
+        "target_losing_bars": 605,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 14,
+            "positive": 18,
+            "zero": 11
+          },
+          "continuation": {
+            "negative": 25,
+            "positive": 18,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 5,
+            "positive": 38,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 11,
+            "positive": 32,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 9,
+            "zero": 34
+          },
+          "trace": {
+            "negative": 16,
+            "positive": 27,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -7051.710985130056,
+          "continuation": -4189.319812581736,
+          "extension": -6449.545056216932,
+          "heat": -4222.363756613757,
+          "structure": -10557.0,
+          "trace": -448.43930204603254
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 11,
+          "continuation": 1,
+          "extension": 0,
+          "heat": 8,
+          "structure": 23,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 5,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 4,
+          "structure": 32,
+          "trace": 0
+        },
+        "handoff_events": 43,
+        "largest_negative_component_counts": {
+          "break": 340,
+          "continuation": 3,
+          "extension": 1,
+          "heat": 64,
+          "structure": 333,
+          "trace": 1
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -9.00140964711001,
+          "continuation": -5.53893538351182,
+          "extension": -8.60178143584478,
+          "heat": -4.869219648026925,
+          "structure": -14.227762803234501,
+          "trace": 0.06732381199633601
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.95,
+          "continuation": -6.136676395186962,
+          "extension": -9.582175925925926,
+          "heat": -5.419312169312171,
+          "structure": -17.0,
+          "trace": 0.5242618698162858
+        },
+        "negative_edge_counts": {
+          "break": 573,
+          "continuation": 686,
+          "extension": 687,
+          "heat": 591,
+          "structure": 621,
+          "trace": 304
+        },
+        "negative_edge_share": {
+          "break": 0.7722371967654986,
+          "continuation": 0.9245283018867925,
+          "extension": 0.9258760107816711,
+          "heat": 0.7964959568733153,
+          "structure": 0.8369272237196765,
+          "trace": 0.40970350404312667
+        },
+        "target_losing_bars": 742,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 15,
+            "positive": 15,
+            "zero": 12
+          },
+          "continuation": {
+            "negative": 24,
+            "positive": 18,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 3,
+            "positive": 39,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 11,
+            "positive": 31,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 9,
+            "zero": 33
+          },
+          "trace": {
+            "negative": 16,
+            "positive": 26,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -7076.816970132641,
+          "continuation": -4192.534405603748,
+          "extension": -6450.1978753306885,
+          "heat": -4222.363756613757,
+          "structure": -10557.0,
+          "trace": -449.2782833286496
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 12,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 8,
+          "structure": 20,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 5,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 5,
+          "structure": 30,
+          "trace": 0
+        },
+        "handoff_events": 42,
+        "largest_negative_component_counts": {
+          "break": 359,
+          "continuation": 5,
+          "extension": 1,
+          "heat": 64,
+          "structure": 314,
+          "trace": 1
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -9.026481994588975,
+          "continuation": -5.528304836451926,
+          "extension": -8.579535812514225,
+          "heat": -4.849284576435114,
+          "structure": -14.189516129032258,
+          "trace": 0.06247567202555285
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.95,
+          "continuation": -6.139580912828757,
+          "extension": -9.580770502645501,
+          "heat": -5.419312169312171,
+          "structure": -17.0,
+          "trace": 0.5163314311880597
+        },
+        "negative_edge_counts": {
+          "break": 576,
+          "continuation": 688,
+          "extension": 689,
+          "heat": 591,
+          "structure": 621,
+          "trace": 309
+        },
+        "negative_edge_share": {
+          "break": 0.7741935483870968,
+          "continuation": 0.9247311827956989,
+          "extension": 0.9260752688172043,
+          "heat": 0.7943548387096774,
+          "structure": 0.8346774193548387,
+          "trace": 0.4153225806451613
+        },
+        "target_losing_bars": 744,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 19,
+            "positive": 12,
+            "zero": 10
+          },
+          "continuation": {
+            "negative": 11,
+            "positive": 30,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 7,
+            "positive": 34,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 20,
+            "positive": 21,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 27,
+            "zero": 14
+          },
+          "trace": {
+            "negative": 26,
+            "positive": 15,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5852.849639850172,
+          "continuation": -2850.350975043364,
+          "extension": -4851.093915343916,
+          "heat": -4112.30224867725,
+          "structure": -6647.0,
+          "trace": -362.0491208612834
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 15,
+          "continuation": 0,
+          "extension": 1,
+          "heat": 15,
+          "structure": 9,
+          "trace": 1
+        },
+        "handoff_driver_counts": {
+          "break": 3,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 2,
+          "structure": 34,
+          "trace": 0
+        },
+        "handoff_events": 41,
+        "largest_negative_component_counts": {
+          "break": 305,
+          "continuation": 2,
+          "extension": 2,
+          "heat": 130,
+          "structure": 162,
+          "trace": 2
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -9.281210332046903,
+          "continuation": -4.4691373490405395,
+          "extension": -7.996956355787203,
+          "heat": -6.326875323558575,
+          "structure": -11.023217247097843,
+          "trace": 0.08439367287195339
+        },
+        "median_edge_on_target_loss": {
+          "break": -6.145423624104797,
+          "continuation": -5.443150903232045,
+          "extension": -9.814070767195766,
+          "heat": -7.15079365079365,
+          "structure": -17.0,
+          "trace": 0.17781186480893255
+        },
+        "negative_edge_counts": {
+          "break": 464,
+          "continuation": 515,
+          "extension": 582,
+          "heat": 514,
+          "structure": 391,
+          "trace": 269
+        },
+        "negative_edge_share": {
+          "break": 0.7694859038142621,
+          "continuation": 0.8540630182421227,
+          "extension": 0.9651741293532339,
+          "heat": 0.8524046434494196,
+          "structure": 0.648424543946932,
+          "trace": 0.4461028192371476
+        },
+        "target_losing_bars": 603,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "bars": 1645,
+          "comparable_handoffs": 41,
+          "event_agreement": 0.9993920972644377,
+          "event_matches": 1644,
+          "event_mismatch_bars": 1,
+          "final_blocker_agreement": 1.0,
+          "final_blocker_matches": 41,
+          "handoff_driver_agreement": 1.0,
+          "handoff_driver_matches": 41
+        },
+        "bull_vs_inverse_bear": {
+          "bars": 1645,
+          "comparable_handoffs": 41,
+          "event_agreement": 0.998176291793313,
+          "event_matches": 1642,
+          "event_mismatch_bars": 3,
+          "final_blocker_agreement": 0.975609756097561,
+          "final_blocker_matches": 40,
+          "handoff_driver_agreement": 1.0,
+          "handoff_driver_matches": 41
+        }
+      },
+      "warmup": 755
+    },
+    "EURUSD": {
+      "bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 17,
+            "positive": 19,
+            "zero": 18
+          },
+          "continuation": {
+            "negative": 16,
+            "positive": 38,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 16,
+            "positive": 38,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 29,
+            "positive": 25,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 30,
+            "zero": 24
+          },
+          "trace": {
+            "negative": 33,
+            "positive": 21,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5872.91043807729,
+          "continuation": -3140.4470186881163,
+          "extension": -5387.896040013228,
+          "heat": -4207.43253968254,
+          "structure": -7276.0,
+          "trace": -334.7691314300316
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 14,
+          "continuation": 1,
+          "extension": 3,
+          "heat": 20,
+          "structure": 16,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 4,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 7,
+          "structure": 41,
+          "trace": 0
+        },
+        "handoff_events": 54,
+        "largest_negative_component_counts": {
+          "break": 316,
+          "continuation": 2,
+          "extension": 8,
+          "heat": 112,
+          "structure": 191,
+          "trace": 1
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -8.984240291498741,
+          "continuation": -4.747039049849582,
+          "extension": -8.479048038968674,
+          "heat": -6.225766355925087,
+          "structure": -11.549206349206349,
+          "trace": 0.33004410523579575
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.95,
+          "continuation": -5.2957721808429294,
+          "extension": -10.155939980158735,
+          "heat": -6.937169312169312,
+          "structure": -17.0,
+          "trace": -0.011449364006866245
+        },
+        "negative_edge_counts": {
+          "break": 475,
+          "continuation": 544,
+          "extension": 580,
+          "heat": 535,
+          "structure": 428,
+          "trace": 315
+        },
+        "negative_edge_share": {
+          "break": 0.753968253968254,
+          "continuation": 0.8634920634920635,
+          "extension": 0.9206349206349206,
+          "heat": 0.8492063492063492,
+          "structure": 0.6793650793650794,
+          "trace": 0.5
+        },
+        "target_losing_bars": 630,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 17,
+            "positive": 17,
+            "zero": 20
+          },
+          "continuation": {
+            "negative": 21,
+            "positive": 33,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 18,
+            "positive": 36,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 15,
+            "positive": 39,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 17,
+            "zero": 37
+          },
+          "trace": {
+            "negative": 19,
+            "positive": 35,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5231.34330434312,
+          "continuation": -3682.646948600601,
+          "extension": -6141.845899470901,
+          "heat": -4013.9788359788363,
+          "structure": -9809.0,
+          "trace": -431.7445355239326
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 16,
+          "continuation": 2,
+          "extension": 1,
+          "heat": 10,
+          "structure": 25,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 5,
+          "continuation": 4,
+          "extension": 0,
+          "heat": 5,
+          "structure": 40,
+          "trace": 0
+        },
+        "handoff_events": 54,
+        "largest_negative_component_counts": {
+          "break": 251,
+          "continuation": 7,
+          "extension": 2,
+          "heat": 73,
+          "structure": 383,
+          "trace": 1
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -6.817305391660511,
+          "continuation": -5.035316985874835,
+          "extension": -8.46054328044173,
+          "heat": -5.074828614228894,
+          "structure": -13.680613668061367,
+          "trace": 0.21714182783668728
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -5.715081269708775,
+          "extension": -9.571635251322753,
+          "heat": -4.947089947089946,
+          "structure": -17.0,
+          "trace": 0.7690530391489233
+        },
+        "negative_edge_counts": {
+          "break": 498,
+          "continuation": 661,
+          "extension": 659,
+          "heat": 581,
+          "structure": 577,
+          "trace": 243
+        },
+        "negative_edge_share": {
+          "break": 0.694560669456067,
+          "continuation": 0.9218967921896792,
+          "extension": 0.9191073919107392,
+          "heat": 0.810320781032078,
+          "structure": 0.8047419804741981,
+          "trace": 0.3389121338912134
+        },
+        "target_losing_bars": 717,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 17,
+            "positive": 17,
+            "zero": 20
+          },
+          "continuation": {
+            "negative": 21,
+            "positive": 33,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 18,
+            "positive": 36,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 15,
+            "positive": 39,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 17,
+            "zero": 37
+          },
+          "trace": {
+            "negative": 19,
+            "positive": 35,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5242.0874730840405,
+          "continuation": -3683.253253021402,
+          "extension": -6141.845899470901,
+          "heat": -4013.9788359788363,
+          "structure": -9809.0,
+          "trace": -439.7816138601489
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 16,
+          "continuation": 2,
+          "extension": 1,
+          "heat": 10,
+          "structure": 25,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 5,
+          "continuation": 4,
+          "extension": 0,
+          "heat": 5,
+          "structure": 40,
+          "trace": 0
+        },
+        "handoff_events": 54,
+        "largest_negative_component_counts": {
+          "break": 252,
+          "continuation": 7,
+          "extension": 2,
+          "heat": 73,
+          "structure": 382,
+          "trace": 1
+        },
+        "max_reconstruction_error": 4.263256414560601e-14,
+        "mean_edge_on_target_loss": {
+          "break": -6.8390829615975886,
+          "continuation": -5.036229620248116,
+          "extension": -8.46054328044173,
+          "heat": -5.074828614228894,
+          "structure": -13.680613668061367,
+          "trace": 0.20443751709199293
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -5.715546831448165,
+          "extension": -9.571635251322753,
+          "heat": -4.947089947089946,
+          "structure": -17.0,
+          "trace": 0.7632011706783991
+        },
+        "negative_edge_counts": {
+          "break": 498,
+          "continuation": 661,
+          "extension": 659,
+          "heat": 581,
+          "structure": 577,
+          "trace": 247
+        },
+        "negative_edge_share": {
+          "break": 0.694560669456067,
+          "continuation": 0.9218967921896792,
+          "extension": 0.9191073919107392,
+          "heat": 0.810320781032078,
+          "structure": 0.8047419804741981,
+          "trace": 0.34449093444909346
+        },
+        "target_losing_bars": 717,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 17,
+            "positive": 19,
+            "zero": 18
+          },
+          "continuation": {
+            "negative": 16,
+            "positive": 38,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 16,
+            "positive": 38,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 29,
+            "positive": 25,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 30,
+            "zero": 24
+          },
+          "trace": {
+            "negative": 33,
+            "positive": 21,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5854.985275015116,
+          "continuation": -3138.6001153819375,
+          "extension": -5387.896040013228,
+          "heat": -4207.43253968254,
+          "structure": -7276.0,
+          "trace": -332.15286578176847
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 14,
+          "continuation": 1,
+          "extension": 3,
+          "heat": 20,
+          "structure": 16,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 5,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 6,
+          "structure": 41,
+          "trace": 0
+        },
+        "handoff_events": 54,
+        "largest_negative_component_counts": {
+          "break": 316,
+          "continuation": 2,
+          "extension": 8,
+          "heat": 112,
+          "structure": 191,
+          "trace": 1
+        },
+        "max_reconstruction_error": 4.263256414560601e-14,
+        "mean_edge_on_target_loss": {
+          "break": -8.952488751163981,
+          "continuation": -4.7460055487489985,
+          "extension": -8.479048038968674,
+          "heat": -6.225766355925087,
+          "structure": -11.549206349206349,
+          "trace": 0.34041745407067864
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.95,
+          "continuation": -5.29334902500525,
+          "extension": -10.155939980158731,
+          "heat": -6.937169312169313,
+          "structure": -17.0,
+          "trace": -0.005021379854130002
+        },
+        "negative_edge_counts": {
+          "break": 475,
+          "continuation": 544,
+          "extension": 580,
+          "heat": 535,
+          "structure": 428,
+          "trace": 315
+        },
+        "negative_edge_share": {
+          "break": 0.753968253968254,
+          "continuation": 0.8634920634920635,
+          "extension": 0.9206349206349206,
+          "heat": 0.8492063492063492,
+          "structure": 0.6793650793650794,
+          "trace": 0.5
+        },
+        "target_losing_bars": 630,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "bars": 1645,
+          "comparable_handoffs": 54,
+          "event_agreement": 1.0,
+          "event_matches": 1645,
+          "event_mismatch_bars": 0,
+          "final_blocker_agreement": 1.0,
+          "final_blocker_matches": 54,
+          "handoff_driver_agreement": 0.9814814814814815,
+          "handoff_driver_matches": 53
+        },
+        "bull_vs_inverse_bear": {
+          "bars": 1645,
+          "comparable_handoffs": 54,
+          "event_agreement": 1.0,
+          "event_matches": 1645,
+          "event_mismatch_bars": 0,
+          "final_blocker_agreement": 1.0,
+          "final_blocker_matches": 54,
+          "handoff_driver_agreement": 1.0,
+          "handoff_driver_matches": 54
+        }
+      },
+      "warmup": 755
+    },
+    "GBPUSD": {
+      "bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 12,
+            "positive": 13,
+            "zero": 16
+          },
+          "continuation": {
+            "negative": 15,
+            "positive": 26,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 13,
+            "positive": 28,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 10,
+            "positive": 31,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 19,
+            "zero": 22
+          },
+          "trace": {
+            "negative": 15,
+            "positive": 26,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -6086.039371991551,
+          "continuation": -3462.724299457508,
+          "extension": -6349.939194775134,
+          "heat": -4518.447089947091,
+          "structure": -8738.0,
+          "trace": -371.7507623245873
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 13,
+          "continuation": 3,
+          "extension": 1,
+          "heat": 7,
+          "structure": 16,
+          "trace": 1
+        },
+        "handoff_driver_counts": {
+          "break": 9,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 3,
+          "structure": 27,
+          "trace": 0
+        },
+        "handoff_events": 41,
+        "largest_negative_component_counts": {
+          "break": 290,
+          "continuation": 11,
+          "extension": 5,
+          "heat": 121,
+          "structure": 310,
+          "trace": 2
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -7.8183392436243215,
+          "continuation": -4.523408374184733,
+          "extension": -8.551262766608675,
+          "heat": -5.644149465529709,
+          "structure": -11.824086603518268,
+          "trace": 0.36335292320318846
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -4.836013181014764,
+          "extension": -10.022776124338625,
+          "heat": -5.958994708994709,
+          "structure": -17.0,
+          "trace": 0.41756750147752725
+        },
+        "negative_edge_counts": {
+          "break": 567,
+          "continuation": 645,
+          "extension": 717,
+          "heat": 612,
+          "structure": 514,
+          "trace": 309
+        },
+        "negative_edge_share": {
+          "break": 0.7672530446549392,
+          "continuation": 0.8728010825439784,
+          "extension": 0.9702300405953992,
+          "heat": 0.8281461434370772,
+          "structure": 0.6955345060893099,
+          "trace": 0.4181326116373478
+        },
+        "target_losing_bars": 739,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 12,
+            "positive": 11,
+            "zero": 18
+          },
+          "continuation": {
+            "negative": 12,
+            "positive": 29,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 4,
+            "positive": 37,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 17,
+            "positive": 24,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 18,
+            "zero": 23
+          },
+          "trace": {
+            "negative": 23,
+            "positive": 18,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5887.705195526241,
+          "continuation": -2848.749911146387,
+          "extension": -4449.295345568784,
+          "heat": -3657.619708994709,
+          "structure": -6868.0,
+          "trace": -529.4700756540715
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 16,
+          "continuation": 1,
+          "extension": 1,
+          "heat": 8,
+          "structure": 15,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 6,
+          "continuation": 0,
+          "extension": 0,
+          "heat": 5,
+          "structure": 30,
+          "trace": 0
+        },
+        "handoff_events": 41,
+        "largest_negative_component_counts": {
+          "break": 313,
+          "continuation": 4,
+          "extension": 2,
+          "heat": 89,
+          "structure": 200,
+          "trace": 0
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -9.313552581940836,
+          "continuation": -4.47241765564515,
+          "extension": -7.207573444788188,
+          "heat": -5.46389737364244,
+          "structure": -11.296052631578947,
+          "trace": -0.46075305134357963
+        },
+        "median_edge_on_target_loss": {
+          "break": -11.9,
+          "continuation": -5.072671000189149,
+          "extension": -8.556919642857146,
+          "heat": -5.869047619047619,
+          "structure": -17.0,
+          "trace": -0.41403349986379895
+        },
+        "negative_edge_counts": {
+          "break": 458,
+          "continuation": 512,
+          "extension": 540,
+          "heat": 511,
+          "structure": 404,
+          "trace": 383
+        },
+        "negative_edge_share": {
+          "break": 0.7532894736842105,
+          "continuation": 0.8421052631578947,
+          "extension": 0.8881578947368421,
+          "heat": 0.8404605263157895,
+          "structure": 0.6644736842105263,
+          "trace": 0.6299342105263158
+        },
+        "target_losing_bars": 608,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 12,
+            "positive": 11,
+            "zero": 19
+          },
+          "continuation": {
+            "negative": 12,
+            "positive": 30,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 4,
+            "positive": 38,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 18,
+            "positive": 24,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 18,
+            "zero": 24
+          },
+          "trace": {
+            "negative": 24,
+            "positive": 18,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5908.603757149814,
+          "continuation": -2845.9881627833947,
+          "extension": -4449.295345568784,
+          "heat": -3659.9583333333335,
+          "structure": -6868.0,
+          "trace": -534.739695036865
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 16,
+          "continuation": 1,
+          "extension": 1,
+          "heat": 9,
+          "structure": 15,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 6,
+          "continuation": 1,
+          "extension": 0,
+          "heat": 5,
+          "structure": 30,
+          "trace": 0
+        },
+        "handoff_events": 42,
+        "largest_negative_component_counts": {
+          "break": 313,
+          "continuation": 4,
+          "extension": 2,
+          "heat": 90,
+          "structure": 200,
+          "trace": 0
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -9.336059998074454,
+          "continuation": -4.455006434774619,
+          "extension": -7.192235175519762,
+          "heat": -5.458765562419093,
+          "structure": -11.277504105090312,
+          "trace": -0.46444888142076246
+        },
+        "median_edge_on_target_loss": {
+          "break": -11.9,
+          "continuation": -5.070293814269211,
+          "extension": -8.522486772486776,
+          "heat": -5.857804232804233,
+          "structure": -17.0,
+          "trace": -0.4241698840007125
+        },
+        "negative_edge_counts": {
+          "break": 458,
+          "continuation": 513,
+          "extension": 540,
+          "heat": 512,
+          "structure": 404,
+          "trace": 391
+        },
+        "negative_edge_share": {
+          "break": 0.7520525451559934,
+          "continuation": 0.8423645320197044,
+          "extension": 0.8866995073891626,
+          "heat": 0.8407224958949097,
+          "structure": 0.6633825944170771,
+          "trace": 0.6420361247947455
+        },
+        "target_losing_bars": 609,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 13,
+            "positive": 13,
+            "zero": 16
+          },
+          "continuation": {
+            "negative": 16,
+            "positive": 26,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 14,
+            "positive": 28,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 10,
+            "positive": 32,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 19,
+            "zero": 23
+          },
+          "trace": {
+            "negative": 15,
+            "positive": 27,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -6055.443971659668,
+          "continuation": -3460.693061084905,
+          "extension": -6347.805762235451,
+          "heat": -4518.447089947091,
+          "structure": -8738.0,
+          "trace": -379.64174702370696
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 14,
+          "continuation": 3,
+          "extension": 1,
+          "heat": 7,
+          "structure": 16,
+          "trace": 1
+        },
+        "handoff_driver_counts": {
+          "break": 10,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 3,
+          "structure": 27,
+          "trace": 0
+        },
+        "handoff_events": 42,
+        "largest_negative_component_counts": {
+          "break": 290,
+          "continuation": 11,
+          "extension": 4,
+          "heat": 121,
+          "structure": 310,
+          "trace": 2
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -7.7774874327062955,
+          "continuation": -4.531388626009124,
+          "extension": -8.559959013528628,
+          "heat": -5.654966232202005,
+          "structure": -11.840108401084011,
+          "trace": 0.3553546666341663
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -4.839992661969037,
+          "extension": -10.028397817460316,
+          "heat": -5.958994708994711,
+          "structure": -17.0,
+          "trace": 0.43122525698915554
+        },
+        "negative_edge_counts": {
+          "break": 559,
+          "continuation": 644,
+          "extension": 716,
+          "heat": 612,
+          "structure": 514,
+          "trace": 309
+        },
+        "negative_edge_share": {
+          "break": 0.7574525745257452,
+          "continuation": 0.8726287262872628,
+          "extension": 0.9701897018970189,
+          "heat": 0.8292682926829268,
+          "structure": 0.6964769647696477,
+          "trace": 0.4186991869918699
+        },
+        "target_losing_bars": 738,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "bars": 1645,
+          "comparable_handoffs": 41,
+          "event_agreement": 0.9993920972644377,
+          "event_matches": 1644,
+          "event_mismatch_bars": 1,
+          "final_blocker_agreement": 1.0,
+          "final_blocker_matches": 41,
+          "handoff_driver_agreement": 1.0,
+          "handoff_driver_matches": 41
+        },
+        "bull_vs_inverse_bear": {
+          "bars": 1645,
+          "comparable_handoffs": 41,
+          "event_agreement": 0.9993920972644377,
+          "event_matches": 1644,
+          "event_mismatch_bars": 1,
+          "final_blocker_agreement": 1.0,
+          "final_blocker_matches": 41,
+          "handoff_driver_agreement": 1.0,
+          "handoff_driver_matches": 41
+        }
+      },
+      "warmup": 755
+    },
+    "USDJPY": {
+      "bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 17,
+            "positive": 11,
+            "zero": 21
+          },
+          "continuation": {
+            "negative": 27,
+            "positive": 22,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 19,
+            "positive": 30,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 9,
+            "positive": 40,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 18,
+            "zero": 31
+          },
+          "trace": {
+            "negative": 19,
+            "positive": 30,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5160.553861454621,
+          "continuation": -3362.153823061526,
+          "extension": -5908.946180555557,
+          "heat": -4002.656746031746,
+          "structure": -8908.0,
+          "trace": -477.060676037615
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 9,
+          "continuation": 6,
+          "extension": 6,
+          "heat": 6,
+          "structure": 22,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 3,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 8,
+          "structure": 35,
+          "trace": 1
+        },
+        "handoff_events": 49,
+        "largest_negative_component_counts": {
+          "break": 260,
+          "continuation": 10,
+          "extension": 18,
+          "heat": 74,
+          "structure": 368,
+          "trace": 0
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -6.622943422177493,
+          "continuation": -4.531727098341401,
+          "extension": -8.051123206131768,
+          "heat": -4.802804957599479,
+          "structure": -12.202739726027398,
+          "trace": 0.06884944480348405
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -4.925627285883184,
+          "extension": -9.184089781746035,
+          "heat": -5.098875661375663,
+          "structure": -17.0,
+          "trace": 0.12740773084955315
+        },
+        "negative_edge_counts": {
+          "break": 518,
+          "continuation": 689,
+          "extension": 693,
+          "heat": 577,
+          "structure": 524,
+          "trace": 363
+        },
+        "negative_edge_share": {
+          "break": 0.7095890410958904,
+          "continuation": 0.9438356164383561,
+          "extension": 0.9493150684931507,
+          "heat": 0.7904109589041096,
+          "structure": 0.7178082191780822,
+          "trace": 0.49726027397260275
+        },
+        "target_losing_bars": 730,
+        "usable_bars": 1347
+      },
+      "bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 15,
+            "positive": 14,
+            "zero": 20
+          },
+          "continuation": {
+            "negative": 10,
+            "positive": 39,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 5,
+            "positive": 44,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 23,
+            "positive": 26,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 30,
+            "zero": 19
+          },
+          "trace": {
+            "negative": 32,
+            "positive": 17,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -4480.093582834272,
+          "continuation": -2866.020580816697,
+          "extension": -4785.1514550264565,
+          "heat": -3435.5403439153442,
+          "structure": -7616.0,
+          "trace": -359.38482132534614
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 12,
+          "continuation": 0,
+          "extension": 1,
+          "heat": 19,
+          "structure": 14,
+          "trace": 3
+        },
+        "handoff_driver_counts": {
+          "break": 1,
+          "continuation": 4,
+          "extension": 0,
+          "heat": 4,
+          "structure": 40,
+          "trace": 0
+        },
+        "handoff_events": 49,
+        "largest_negative_component_counts": {
+          "break": 199,
+          "continuation": 3,
+          "extension": 2,
+          "heat": 99,
+          "structure": 307,
+          "trace": 7
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -6.8137452002886745,
+          "continuation": -4.457943196369666,
+          "extension": -7.68486360868857,
+          "heat": -5.090046778661042,
+          "structure": -12.343598055105348,
+          "trace": -0.22870085564951773
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -5.042880066429515,
+          "extension": -9.062169312169315,
+          "heat": -5.351851851851851,
+          "structure": -17.0,
+          "trace": 0.060226582584497375
+        },
+        "negative_edge_counts": {
+          "break": 429,
+          "continuation": 530,
+          "extension": 568,
+          "heat": 510,
+          "structure": 448,
+          "trace": 303
+        },
+        "negative_edge_share": {
+          "break": 0.6952998379254457,
+          "continuation": 0.8589951377633711,
+          "extension": 0.9205834683954619,
+          "heat": 0.826580226904376,
+          "structure": 0.7260940032414911,
+          "trace": 0.49108589951377635
+        },
+        "target_losing_bars": 617,
+        "usable_bars": 1347
+      },
+      "inverse_bear": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 15,
+            "positive": 14,
+            "zero": 20
+          },
+          "continuation": {
+            "negative": 10,
+            "positive": 39,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 5,
+            "positive": 44,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 23,
+            "positive": 26,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 30,
+            "zero": 19
+          },
+          "trace": {
+            "negative": 32,
+            "positive": 17,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -4494.053584247217,
+          "continuation": -2861.5235412834527,
+          "extension": -4785.151455026456,
+          "heat": -3435.5403439153442,
+          "structure": -7616.0,
+          "trace": -360.68210602182717
+        },
+        "direction": "bear_s2_to_s5",
+        "final_blocker_counts": {
+          "break": 12,
+          "continuation": 0,
+          "extension": 1,
+          "heat": 19,
+          "structure": 14,
+          "trace": 3
+        },
+        "handoff_driver_counts": {
+          "break": 1,
+          "continuation": 4,
+          "extension": 0,
+          "heat": 4,
+          "structure": 40,
+          "trace": 0
+        },
+        "handoff_events": 49,
+        "largest_negative_component_counts": {
+          "break": 199,
+          "continuation": 3,
+          "extension": 2,
+          "heat": 99,
+          "structure": 307,
+          "trace": 7
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -6.837626246658437,
+          "continuation": -4.4510453943023505,
+          "extension": -7.68486360868857,
+          "heat": -5.090046778661042,
+          "structure": -12.343598055105348,
+          "trace": -0.23321442184968422
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -5.043591965851136,
+          "extension": -9.062169312169315,
+          "heat": -5.351851851851851,
+          "structure": -17.0,
+          "trace": 0.0542471900592183
+        },
+        "negative_edge_counts": {
+          "break": 429,
+          "continuation": 531,
+          "extension": 568,
+          "heat": 510,
+          "structure": 448,
+          "trace": 303
+        },
+        "negative_edge_share": {
+          "break": 0.6952998379254457,
+          "continuation": 0.8606158833063209,
+          "extension": 0.9205834683954619,
+          "heat": 0.826580226904376,
+          "structure": 0.7260940032414911,
+          "trace": 0.49108589951377635
+        },
+        "target_losing_bars": 617,
+        "usable_bars": 1347
+      },
+      "inverse_bull": {
+        "component_sign_at_handoff": {
+          "break": {
+            "negative": 17,
+            "positive": 11,
+            "zero": 21
+          },
+          "continuation": {
+            "negative": 26,
+            "positive": 23,
+            "zero": 0
+          },
+          "extension": {
+            "negative": 19,
+            "positive": 30,
+            "zero": 0
+          },
+          "heat": {
+            "negative": 9,
+            "positive": 40,
+            "zero": 0
+          },
+          "structure": {
+            "negative": 0,
+            "positive": 18,
+            "zero": 31
+          },
+          "trace": {
+            "negative": 19,
+            "positive": 30,
+            "zero": 0
+          }
+        },
+        "cumulative_negative_edge": {
+          "break": -5143.33584858719,
+          "continuation": -3361.7512530284575,
+          "extension": -5908.946180555557,
+          "heat": -4002.6567460317465,
+          "structure": -8908.0,
+          "trace": -479.9882776751084
+        },
+        "direction": "bull_s5_to_s2",
+        "final_blocker_counts": {
+          "break": 9,
+          "continuation": 6,
+          "extension": 6,
+          "heat": 6,
+          "structure": 22,
+          "trace": 0
+        },
+        "handoff_driver_counts": {
+          "break": 3,
+          "continuation": 2,
+          "extension": 0,
+          "heat": 8,
+          "structure": 35,
+          "trace": 1
+        },
+        "handoff_events": 49,
+        "largest_negative_component_counts": {
+          "break": 260,
+          "continuation": 10,
+          "extension": 18,
+          "heat": 74,
+          "structure": 368,
+          "trace": 0
+        },
+        "max_reconstruction_error": 2.842170943040401e-14,
+        "mean_edge_on_target_loss": {
+          "break": -6.590640801342483,
+          "continuation": -4.530973245353197,
+          "extension": -8.051123206131768,
+          "heat": -4.802804957599479,
+          "structure": -12.202739726027398,
+          "trace": 0.06544687974737795
+        },
+        "median_edge_on_target_loss": {
+          "break": -5.1000000000000005,
+          "continuation": -4.924003049935454,
+          "extension": -9.184089781746033,
+          "heat": -5.098875661375663,
+          "structure": -17.0,
+          "trace": 0.1015060318198259
+        },
+        "negative_edge_counts": {
+          "break": 516,
+          "continuation": 689,
+          "extension": 693,
+          "heat": 577,
+          "structure": 524,
+          "trace": 361
+        },
+        "negative_edge_share": {
+          "break": 0.7068493150684931,
+          "continuation": 0.9438356164383561,
+          "extension": 0.9493150684931507,
+          "heat": 0.7904109589041096,
+          "structure": 0.7178082191780822,
+          "trace": 0.4945205479452055
+        },
+        "target_losing_bars": 730,
+        "usable_bars": 1347
+      },
+      "mirror": {
+        "bear_vs_inverse_bull": {
+          "bars": 1645,
+          "comparable_handoffs": 49,
+          "event_agreement": 1.0,
+          "event_matches": 1645,
+          "event_mismatch_bars": 0,
+          "final_blocker_agreement": 1.0,
+          "final_blocker_matches": 49,
+          "handoff_driver_agreement": 1.0,
+          "handoff_driver_matches": 49
+        },
+        "bull_vs_inverse_bear": {
+          "bars": 1645,
+          "comparable_handoffs": 49,
+          "event_agreement": 1.0,
+          "event_matches": 1645,
+          "event_mismatch_bars": 0,
+          "final_blocker_agreement": 1.0,
+          "final_blocker_matches": 49,
+          "handoff_driver_agreement": 1.0,
+          "handoff_driver_matches": 49
+        }
+      },
+      "warmup": 755
+    }
+  },
+  "phase": "B3.10",
+  "primary_gate_pass": true,
+  "schema_version": 2,
+  "status": "S5_VS_S2_LOCAL_FORMULA_DUEL_NO_PERFORMANCE"
+}

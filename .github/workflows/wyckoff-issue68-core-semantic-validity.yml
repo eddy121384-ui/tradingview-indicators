@@ -1,0 +1,80 @@
+name: Wyckoff Issue 68 Core Semantic Validity Gate
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b34_exposure_bakeoff_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_core_semantic_validity_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-core-semantic-validity-gate-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-core-semantic-validity.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_core_semantic_validity_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-core-semantic-validity-gate-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-core-semantic-validity.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  core-semantic-validity-static-contract:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile generators
+        run: |
+          python -m py_compile generate_issue68_phase_b34_exposure_bakeoff_audit_pine.py
+          python -m py_compile generate_issue68_core_semantic_validity_audit_pine.py
+      - name: Generate Core semantic validity audit Pine
+        run: |
+          python generate_issue68_core_semantic_validity_audit_pine.py \
+            --output generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          test -s generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'Issue #68 Core Semantic Validity Gate' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'FR10Y｜2022-2023 Bull｜DISCOVERY' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'JGB10Y｜2022-2024 Bull｜VALIDATION' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'US10Y｜2020-2023 Bull｜VALIDATION' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'EURUSD｜2021-2022 Bear｜VALIDATION' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'SPX｜2022 Bear｜VALIDATION' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'issue68CoreGateOppositePct > 50.0' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'issue68CoreGateMaxOppRun > 63' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'EXPECTED major regime' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          grep -q 'CORE opposite expected' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          echo 'Core semantic validity static contract PASS'
+      - name: Commit generated audit on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-core-semantic-validity-audit.pine
+          if git diff --cached --quiet; then
+            echo "Core semantic validity artifact already current."
+            exit 0
+          fi
+          git commit -m "research: generate Issue 68 Core semantic validity audit [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1

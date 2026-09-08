@@ -1,0 +1,438 @@
+{
+  "aggregate": {
+    "blocked_formal_trend_entry_bars": 0,
+    "entry_events": 124,
+    "mean_pair_flat_share": 0.4372340425531915,
+    "position_mirror_agreement": 0.9966565349544073,
+    "position_mirror_gate": 0.99,
+    "position_mismatch_bars": 22
+  },
+  "boundary": "Semantic lifecycle diagnostic only. No return, Sharpe, drawdown, hit-rate, cost, sizing, stop, target, or Strategy Tester metric is computed.",
+  "issue": 68,
+  "pairs": {
+    "AUDUSD": {
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 326,
+            "mirror_agreement": 0.9877300613496932
+          },
+          "1": {
+            "bars": 182,
+            "mirror_agreement": 0.9945054945054945
+          },
+          "2": {
+            "bars": 409,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 134,
+            "mirror_agreement": 0.9776119402985075
+          },
+          "5": {
+            "bars": 594,
+            "mirror_agreement": 0.9983164983164983
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9945288753799392,
+        "mismatch_bars": 9
+      },
+      "rows": 2400,
+      "strong_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 543,
+            "mirror_agreement": 0.9852670349907919
+          },
+          "1": {
+            "bars": 154,
+            "mirror_agreement": 0.987012987012987
+          },
+          "2": {
+            "bars": 355,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 1,
+            "mirror_agreement": 1.0
+          },
+          "4": {
+            "bars": 129,
+            "mirror_agreement": 0.9767441860465116
+          },
+          "5": {
+            "bars": 463,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.99209726443769,
+        "mismatch_bars": 13
+      },
+      "v31": {
+        "event_counts": {
+          "blocked_long_entry": 0,
+          "blocked_short_entry": 0,
+          "enter_long": 12,
+          "enter_short": 20,
+          "exit_long": 12,
+          "exit_short": 20,
+          "flip_long_to_short": 3,
+          "flip_short_to_long": 3,
+          "hold_long_reaccumulation": 0,
+          "hold_short_redistribution": 0
+        },
+        "holding": {
+          "episodes": 32,
+          "max_bars": 83,
+          "mean_bars": 32.0625,
+          "median_bars": 28.0
+        },
+        "occupancy": {
+          "bars": 1645,
+          "flat_share": 0.3762917933130699,
+          "long_share": 0.25227963525835867,
+          "short_share": 0.37142857142857144
+        }
+      },
+      "v31_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9957446808510638,
+        "mismatch_bars": 7
+      },
+      "warmup_bars": 755
+    },
+    "EURUSD": {
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 309,
+            "mirror_agreement": 1.0
+          },
+          "1": {
+            "bars": 278,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 375,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 168,
+            "mirror_agreement": 1.0
+          },
+          "5": {
+            "bars": 515,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "rows": 2400,
+      "strong_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 561,
+            "mirror_agreement": 0.9982174688057041
+          },
+          "1": {
+            "bars": 198,
+            "mirror_agreement": 0.9949494949494949
+          },
+          "2": {
+            "bars": 339,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 2,
+            "mirror_agreement": 0.5
+          },
+          "4": {
+            "bars": 130,
+            "mirror_agreement": 0.9846153846153847
+          },
+          "5": {
+            "bars": 415,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9969604863221885,
+        "mismatch_bars": 5
+      },
+      "v31": {
+        "event_counts": {
+          "blocked_long_entry": 0,
+          "blocked_short_entry": 0,
+          "enter_long": 9,
+          "enter_short": 20,
+          "exit_long": 9,
+          "exit_short": 19,
+          "flip_long_to_short": 3,
+          "flip_short_to_long": 4,
+          "hold_long_reaccumulation": 0,
+          "hold_short_redistribution": 0
+        },
+        "holding": {
+          "episodes": 29,
+          "max_bars": 84,
+          "mean_bars": 31.06896551724138,
+          "median_bars": 25.0
+        },
+        "occupancy": {
+          "bars": 1645,
+          "flat_share": 0.4522796352583587,
+          "long_share": 0.22796352583586627,
+          "short_share": 0.31975683890577505
+        }
+      },
+      "v31_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "warmup_bars": 755
+    },
+    "GBPUSD": {
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 342,
+            "mirror_agreement": 1.0
+          },
+          "1": {
+            "bars": 181,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 504,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 3,
+            "mirror_agreement": 1.0
+          },
+          "4": {
+            "bars": 232,
+            "mirror_agreement": 1.0
+          },
+          "5": {
+            "bars": 383,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "rows": 2400,
+      "strong_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 566,
+            "mirror_agreement": 0.991166077738516
+          },
+          "1": {
+            "bars": 139,
+            "mirror_agreement": 0.9856115107913669
+          },
+          "2": {
+            "bars": 398,
+            "mirror_agreement": 0.9974874371859297
+          },
+          "3": {
+            "bars": 4,
+            "mirror_agreement": 1.0
+          },
+          "4": {
+            "bars": 232,
+            "mirror_agreement": 0.9870689655172413
+          },
+          "5": {
+            "bars": 305,
+            "mirror_agreement": 0.9967213114754099
+          },
+          "6": {
+            "bars": 1,
+            "mirror_agreement": 1.0
+          }
+        },
+        "mirror_agreement": 0.9927051671732523,
+        "mismatch_bars": 12
+      },
+      "v31": {
+        "event_counts": {
+          "blocked_long_entry": 0,
+          "blocked_short_entry": 0,
+          "enter_long": 17,
+          "enter_short": 16,
+          "exit_long": 17,
+          "exit_short": 15,
+          "flip_long_to_short": 3,
+          "flip_short_to_long": 2,
+          "hold_long_reaccumulation": 3,
+          "hold_short_redistribution": 0
+        },
+        "holding": {
+          "episodes": 33,
+          "max_bars": 135,
+          "mean_bars": 27.606060606060606,
+          "median_bars": 21.0
+        },
+        "occupancy": {
+          "bars": 1645,
+          "flat_share": 0.4462006079027356,
+          "long_share": 0.31246200607902735,
+          "short_share": 0.2413373860182371
+        }
+      },
+      "v31_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 1.0,
+        "mismatch_bars": 0
+      },
+      "warmup_bars": 755
+    },
+    "USDJPY": {
+      "formal_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 347,
+            "mirror_agreement": 0.9884726224783862
+          },
+          "1": {
+            "bars": 273,
+            "mirror_agreement": 1.0
+          },
+          "2": {
+            "bars": 426,
+            "mirror_agreement": 0.9859154929577465
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 204,
+            "mirror_agreement": 0.9754901960784313
+          },
+          "5": {
+            "bars": 395,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9908814589665653,
+        "mismatch_bars": 15
+      },
+      "rows": 2400,
+      "strong_stage_mirror": {
+        "bars": 1645,
+        "by_original_stage": {
+          "0": {
+            "bars": 625,
+            "mirror_agreement": 0.984
+          },
+          "1": {
+            "bars": 210,
+            "mirror_agreement": 0.9904761904761905
+          },
+          "2": {
+            "bars": 325,
+            "mirror_agreement": 1.0
+          },
+          "3": {
+            "bars": 0,
+            "mirror_agreement": null
+          },
+          "4": {
+            "bars": 142,
+            "mirror_agreement": 0.9859154929577465
+          },
+          "5": {
+            "bars": 343,
+            "mirror_agreement": 1.0
+          },
+          "6": {
+            "bars": 0,
+            "mirror_agreement": null
+          }
+        },
+        "mirror_agreement": 0.9914893617021276,
+        "mismatch_bars": 14
+      },
+      "v31": {
+        "event_counts": {
+          "blocked_long_entry": 0,
+          "blocked_short_entry": 0,
+          "enter_long": 20,
+          "enter_short": 10,
+          "exit_long": 19,
+          "exit_short": 10,
+          "flip_long_to_short": 4,
+          "flip_short_to_long": 3,
+          "hold_long_reaccumulation": 0,
+          "hold_short_redistribution": 0
+        },
+        "holding": {
+          "episodes": 30,
+          "max_bars": 132,
+          "mean_bars": 28.833333333333332,
+          "median_bars": 20.0
+        },
+        "occupancy": {
+          "bars": 1645,
+          "flat_share": 0.47416413373860183,
+          "long_share": 0.2735562310030395,
+          "short_share": 0.25227963525835867
+        }
+      },
+      "v31_position_mirror": {
+        "bars": 1645,
+        "mirror_agreement": 0.9908814589665653,
+        "mismatch_bars": 15
+      },
+      "warmup_bars": 755
+    }
+  },
+  "phase": "B3.1",
+  "primary_gate_pass": true,
+  "schema_version": 1,
+  "status": "ENTRY_HOLD_SEPARATION_SEMANTIC_DIAGNOSTIC_NO_PNL"
+}

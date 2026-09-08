@@ -1,0 +1,637 @@
+{
+  "issue": 68,
+  "phase": "B3.16",
+  "status": "COUNTERFACTUAL_STALE_RANGE_RELEASE_NO_PERFORMANCE",
+  "primary_gate_pass": true,
+  "aggregate": {
+    "break_events": 106,
+    "expected_break_events": 106,
+    "primary": 20,
+    "expected_primary": 20,
+    "max_break_err": 0.0,
+    "max_obs_err": 2.842170943040401e-14,
+    "max_shadow_err": 2.842170943040401e-14,
+    "shadow_break_signs": {
+      "neutral": 14,
+      "target": 6
+    },
+    "shadow_total_signs": {
+      "target": 16,
+      "old": 4
+    },
+    "shadow_break_positive": 6,
+    "shadow_total_positive": 16,
+    "overlap_observations": 55,
+    "observed_old_break_overlap": 46,
+    "shadow_break_overlap_signs": {
+      "neutral": 39,
+      "target": 16
+    },
+    "new_range_release_observations": 2,
+    "min_sign_mirror": 1.0,
+    "lead_matches": 16,
+    "lead_comparable": 16,
+    "break_reproduction_delta": 0,
+    "primary_reproduction_delta": 0,
+    "shadow_break_positive_share": 0.3,
+    "shadow_total_positive_share": 0.8,
+    "lead_observed": 16,
+    "lead_median": 1.0,
+    "lead_p75": 2.0,
+    "lead_max": 7,
+    "lead_mirror_agreement": 1.0
+  },
+  "pairs": {
+    "EURUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull",
+        "break_events": 16,
+        "expected_break_events": 16,
+        "primary": 3,
+        "expected_primary": 3,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "neutral": 3
+        },
+        "shadow_total_signs": {
+          "target": 2,
+          "old": 1
+        },
+        "shadow_break_positive": 0,
+        "shadow_total_positive": 2,
+        "overlap_observations": 5,
+        "observed_old_break_overlap": 5,
+        "shadow_break_overlap_signs": {
+          "neutral": 5
+        },
+        "new_range_release_observations": 0,
+        "leads": [
+          1,
+          2
+        ],
+        "events": [
+          {
+            "index": 1487,
+            "blocker_index": 1486,
+            "ma_flip": 1485,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 1877,
+            "blocker_index": 1876,
+            "ma_flip": 1876,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "old",
+            "shadow_break_positive": false,
+            "shadow_total_positive": false,
+            "shadow_total_lead_bars": null,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2388,
+            "blocker_index": 2387,
+            "ma_flip": 2386,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 2,
+            "new_range_at_blocker": false
+          }
+        ]
+      },
+      "bear": {
+        "direction": "bear",
+        "break_events": 14,
+        "expected_break_events": 14,
+        "primary": 1,
+        "expected_primary": 1,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "target": 1
+        },
+        "shadow_total_signs": {
+          "target": 1
+        },
+        "shadow_break_positive": 1,
+        "shadow_total_positive": 1,
+        "overlap_observations": 3,
+        "observed_old_break_overlap": 3,
+        "shadow_break_overlap_signs": {
+          "neutral": 2,
+          "target": 1
+        },
+        "new_range_release_observations": 1,
+        "leads": [
+          1
+        ],
+        "events": [
+          {
+            "index": 2051,
+            "blocker_index": 2050,
+            "ma_flip": 2048,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "target",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": true,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": true
+          }
+        ]
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "comparable": 3,
+          "sign_agreement": 1.0,
+          "lead_comparable": 2,
+          "lead_matches": 2,
+          "lead_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "comparable": 1,
+          "sign_agreement": 1.0,
+          "lead_comparable": 1,
+          "lead_matches": 1,
+          "lead_agreement": 1.0
+        }
+      }
+    },
+    "USDJPY": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull",
+        "break_events": 12,
+        "expected_break_events": 12,
+        "primary": 3,
+        "expected_primary": 3,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "neutral": 3
+        },
+        "shadow_total_signs": {
+          "old": 1,
+          "target": 2
+        },
+        "shadow_break_positive": 0,
+        "shadow_total_positive": 2,
+        "overlap_observations": 15,
+        "observed_old_break_overlap": 13,
+        "shadow_break_overlap_signs": {
+          "target": 2,
+          "neutral": 13
+        },
+        "new_range_release_observations": 0,
+        "leads": [
+          6,
+          1
+        ],
+        "events": [
+          {
+            "index": 1641,
+            "blocker_index": 1640,
+            "ma_flip": 1637,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "old",
+            "shadow_break_positive": false,
+            "shadow_total_positive": false,
+            "shadow_total_lead_bars": null,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 1647,
+            "blocker_index": 1646,
+            "ma_flip": 1637,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 6,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2035,
+            "blocker_index": 2034,
+            "ma_flip": 2034,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          }
+        ]
+      },
+      "bear": {
+        "direction": "bear",
+        "break_events": 9,
+        "expected_break_events": 9,
+        "primary": 3,
+        "expected_primary": 3,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "neutral": 2,
+          "target": 1
+        },
+        "shadow_total_signs": {
+          "old": 1,
+          "target": 2
+        },
+        "shadow_break_positive": 1,
+        "shadow_total_positive": 2,
+        "overlap_observations": 3,
+        "observed_old_break_overlap": 3,
+        "shadow_break_overlap_signs": {
+          "neutral": 2,
+          "target": 1
+        },
+        "new_range_release_observations": 1,
+        "leads": [
+          1,
+          1
+        ],
+        "events": [
+          {
+            "index": 1876,
+            "blocker_index": 1875,
+            "ma_flip": 1875,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "old",
+            "shadow_break_positive": false,
+            "shadow_total_positive": false,
+            "shadow_total_lead_bars": null,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2332,
+            "blocker_index": 2331,
+            "ma_flip": 2331,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "target",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": true,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": true
+          },
+          {
+            "index": 2344,
+            "blocker_index": 2343,
+            "ma_flip": 2343,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          }
+        ]
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "comparable": 3,
+          "sign_agreement": 1.0,
+          "lead_comparable": 2,
+          "lead_matches": 2,
+          "lead_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "comparable": 3,
+          "sign_agreement": 1.0,
+          "lead_comparable": 2,
+          "lead_matches": 2,
+          "lead_agreement": 1.0
+        }
+      }
+    },
+    "GBPUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull",
+        "break_events": 16,
+        "expected_break_events": 16,
+        "primary": 3,
+        "expected_primary": 3,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "neutral": 2,
+          "target": 1
+        },
+        "shadow_total_signs": {
+          "target": 3
+        },
+        "shadow_break_positive": 1,
+        "shadow_total_positive": 3,
+        "overlap_observations": 18,
+        "observed_old_break_overlap": 11,
+        "shadow_break_overlap_signs": {
+          "neutral": 9,
+          "target": 9
+        },
+        "new_range_release_observations": 0,
+        "leads": [
+          1,
+          2,
+          7
+        ],
+        "events": [
+          {
+            "index": 1943,
+            "blocker_index": 1942,
+            "ma_flip": 1940,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": true
+          },
+          {
+            "index": 2301,
+            "blocker_index": 2300,
+            "ma_flip": 2299,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "target",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": true,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 2,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2388,
+            "blocker_index": 2387,
+            "ma_flip": 2375,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 7,
+            "new_range_at_blocker": false
+          }
+        ]
+      },
+      "bear": {
+        "direction": "bear",
+        "break_events": 13,
+        "expected_break_events": 13,
+        "primary": 1,
+        "expected_primary": 1,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "target": 1
+        },
+        "shadow_total_signs": {
+          "target": 1
+        },
+        "shadow_break_positive": 1,
+        "shadow_total_positive": 1,
+        "overlap_observations": 1,
+        "observed_old_break_overlap": 1,
+        "shadow_break_overlap_signs": {
+          "target": 1
+        },
+        "new_range_release_observations": 0,
+        "leads": [
+          1
+        ],
+        "events": [
+          {
+            "index": 1257,
+            "blocker_index": 1256,
+            "ma_flip": 1256,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "target",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": true,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          }
+        ]
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "comparable": 3,
+          "sign_agreement": 1.0,
+          "lead_comparable": 3,
+          "lead_matches": 3,
+          "lead_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "comparable": 1,
+          "sign_agreement": 1.0,
+          "lead_comparable": 1,
+          "lead_matches": 1,
+          "lead_agreement": 1.0
+        }
+      }
+    },
+    "AUDUSD": {
+      "warmup": 755,
+      "bull": {
+        "direction": "bull",
+        "break_events": 11,
+        "expected_break_events": 11,
+        "primary": 3,
+        "expected_primary": 3,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "target": 1,
+          "neutral": 2
+        },
+        "shadow_total_signs": {
+          "target": 3
+        },
+        "shadow_break_positive": 1,
+        "shadow_total_positive": 3,
+        "overlap_observations": 6,
+        "observed_old_break_overlap": 6,
+        "shadow_break_overlap_signs": {
+          "target": 1,
+          "neutral": 5
+        },
+        "new_range_release_observations": 0,
+        "leads": [
+          1,
+          2,
+          1
+        ],
+        "events": [
+          {
+            "index": 2269,
+            "blocker_index": 2268,
+            "ma_flip": 2268,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "target",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": true,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2297,
+            "blocker_index": 2296,
+            "ma_flip": 2293,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 2,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2388,
+            "blocker_index": 2387,
+            "ma_flip": 2387,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          }
+        ]
+      },
+      "bear": {
+        "direction": "bear",
+        "break_events": 15,
+        "expected_break_events": 15,
+        "primary": 3,
+        "expected_primary": 3,
+        "break_err": 0.0,
+        "obs_err": 2.842170943040401e-14,
+        "shadow_err": 2.842170943040401e-14,
+        "shadow_break_signs": {
+          "neutral": 2,
+          "target": 1
+        },
+        "shadow_total_signs": {
+          "old": 1,
+          "target": 2
+        },
+        "shadow_break_positive": 1,
+        "shadow_total_positive": 2,
+        "overlap_observations": 4,
+        "observed_old_break_overlap": 4,
+        "shadow_break_overlap_signs": {
+          "neutral": 3,
+          "target": 1
+        },
+        "new_range_release_observations": 0,
+        "leads": [
+          1,
+          1
+        ],
+        "events": [
+          {
+            "index": 1249,
+            "blocker_index": 1248,
+            "ma_flip": 1248,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "old",
+            "shadow_break_positive": false,
+            "shadow_total_positive": false,
+            "shadow_total_lead_bars": null,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2024,
+            "blocker_index": 2023,
+            "ma_flip": 2023,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "target",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": true,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          },
+          {
+            "index": 2140,
+            "blocker_index": 2139,
+            "ma_flip": 2138,
+            "observed_break_sign": "old",
+            "shadow_break_sign": "neutral",
+            "observed_total_sign": "old",
+            "shadow_total_sign": "target",
+            "shadow_break_positive": false,
+            "shadow_total_positive": true,
+            "shadow_total_lead_bars": 1,
+            "new_range_at_blocker": false
+          }
+        ]
+      },
+      "mirror": {
+        "bull_vs_inverse_bear": {
+          "comparable": 3,
+          "sign_agreement": 1.0,
+          "lead_comparable": 3,
+          "lead_matches": 3,
+          "lead_agreement": 1.0
+        },
+        "bear_vs_inverse_bull": {
+          "comparable": 3,
+          "sign_agreement": 1.0,
+          "lead_comparable": 2,
+          "lead_matches": 2,
+          "lead_agreement": 1.0
+        }
+      }
+    }
+  },
+  "boundary": "One fixed shadow removes only old-direction range-memory evidence during MA-target stale overlap; production C-2 and parameters unchanged."
+}

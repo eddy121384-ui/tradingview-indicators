@@ -1,0 +1,96 @@
+name: Wyckoff Issue 68 Phase A Lifecycle
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/issue68_lifecycle_v2.py"
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_a_lifecycle_transplant.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_a_lifecycle_transplant.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-a-*.md"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_c2_stage14_conflict_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b7_stage14_gate_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b6_stage14_raw_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b5_stage36_raw_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b3_trend_entry_gate_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b2_break_evidence_core.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue66_phase_b1_representation_core.py"
+      - "indicators/wyckoff-regime-radar/research/pine_math.py"
+      - ".github/workflows/wyckoff-issue68-phase-a-lifecycle.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/issue68_lifecycle_v2.py"
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_a_lifecycle_transplant.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_a_lifecycle_transplant.py"
+      - ".github/workflows/wyckoff-issue68-phase-a-lifecycle.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  phase-a-lifecycle-contract:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile Phase A lifecycle tooling
+        run: |
+          python -m py_compile issue68_lifecycle_v2.py
+          python -m py_compile diagnose_issue68_phase_a_lifecycle_transplant.py
+          python -m py_compile test_issue68_phase_a_lifecycle_transplant.py
+      - name: Run lifecycle semantic and symmetry contracts
+        run: python -m unittest -v test_issue68_phase_a_lifecycle_transplant
+      - name: Generate Phase A semantic report
+        run: |
+          python diagnose_issue68_phase_a_lifecycle_transplant.py \
+            --json-output reports/issue-68-phase-a-lifecycle-transplant.json \
+            --md-output reports/issue-68-phase-a-lifecycle-transplant.md
+      - name: Assert no performance payload entered Phase A report
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("reports/issue-68-phase-a-lifecycle-transplant.json").read_text())
+          forbidden = {
+              "gross_ann_return", "net_2bp_ann_return", "gross_sharpe", "net_2bp_sharpe",
+              "gross_max_drawdown", "net_2bp_max_drawdown", "profit_factor", "strategy_metrics",
+          }
+
+          def keys(node):
+              if isinstance(node, dict):
+                  for key, value in node.items():
+                      yield str(key)
+                      yield from keys(value)
+              elif isinstance(node, list):
+                  for value in node:
+                      yield from keys(value)
+
+          found = forbidden.intersection(keys(payload))
+          if found:
+              raise SystemExit(f"Forbidden Phase-A performance keys: {sorted(found)}")
+          print("No performance metric keys found in Phase-A JSON payload.")
+          PY
+      - name: Commit Phase A reports on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-a-lifecycle-transplant.json
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-a-lifecycle-transplant.md
+          if git diff --cached --quiet; then
+            echo "Phase A lifecycle reports already current."
+          else
+            git commit -m "research: record Issue 68 Phase A lifecycle audit [skip ci]"
+            git push
+          fi

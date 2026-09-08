@@ -1,0 +1,27 @@
+--- full-c2-baseline.pine
++++ issue68-hard-production-candidate.pine
+@@ -765,6 +765,11 @@
+ matureBullGate = f_gate(bullMaturityTrace, 60.0, 85.0)  // retained diagnostic compatibility
+ bearBackgroundForAccGate = f_gate(math.max(bearBg, bearMaturityTrace), 35.0, 75.0)
+ bullBackgroundForDistGate = f_gate(math.max(bullBg, bullMaturityTrace), 35.0, 75.0)
++// Issue #68 HARD current-context cap — exact symmetric production candidate.
++currentBearGate = f_gate(bearBg, 35.0, 75.0)
++currentBullGate = f_gate(bullBg, 35.0, 75.0)
++ctxDownExGate = math.min(downsideExhaustionGate, currentBearGate)
++ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)
+ 
+ breakoutRecentRangeGate = f_clamp(breakoutRangeEvidence / 100.0, 0.0, 1.0)
+ breakoutMaGate = f_clamp(breakoutMaEvidence / 100.0, 0.0, 1.0)
+@@ -825,10 +830,10 @@
+      structureWeakGate *
+      f_gate(100.0 - math.max(downsideExhaustion, supportHolding), 20.0, 70.0)
+ 
+-accGate      = rangeGate * bearBackgroundForAccGate * downsideExhaustionGate * supportHoldingGate * nonMarkdownContinuationGate
++accGate      = rangeGate * bearBackgroundForAccGate * ctxDownExGate * supportHoldingGate * nonMarkdownContinuationGate
+ markupGate   = math.max(math.max(breakoutMarkupGate, markupExtensionGate), markupContinuationGate)
+ reaccGate    = rangeGate * uptrendGate * supportHoldingGate * nonDistributionGate * f_gate(100.0 - bearPressureRising, 25.0, 75.0) * nonMarkupContinuationGate
+-distGate     = rangeGate * bullBackgroundForDistGate * upsideExhaustionGate * resistanceHoldingGate * nonMarkupContinuationGate
++distGate     = rangeGate * bullBackgroundForDistGate * ctxUpExGate * resistanceHoldingGate * nonMarkupContinuationGate
+ markdownGate = math.max(math.max(breakdownMarkdownGate, markdownExtensionGate), markdownContinuationGate)
+ redistGate   = rangeGate * downtrendGate * resistanceHoldingGate * reboundFailureGate * nonAbsorptionGate * nonMarkdownContinuationGate
+ 

@@ -1,0 +1,69 @@
+name: Wyckoff Issue 68 Phase B3.14 Break Evidence Memory
+on:
+  push:
+    branches: [research/issue-68-lifecycle-retest-symmetry-repaired]
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b314_break_evidence_memory.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b314_break_evidence_memory.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b314_break_evidence_memory_audit_pine.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b314-break-evidence-memory-preregistration.md'
+      - '.github/workflows/wyckoff-issue68-phase-b314-break-evidence-memory.yml'
+  pull_request:
+    paths:
+      - 'indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b314_break_evidence_memory.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue68_phase_b314_break_evidence_memory.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue68_phase_b314_break_evidence_memory_audit_pine.py'
+      - '.github/workflows/wyckoff-issue68-phase-b314-break-evidence-memory.yml'
+permissions: {contents: write}
+jobs:
+  break-evidence-memory-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy pandas
+      - name: Compile and synthetic contracts
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python -m py_compile diagnose_issue68_phase_b314_break_evidence_memory.py test_issue68_phase_b314_break_evidence_memory.py generate_issue68_phase_b314_break_evidence_memory_audit_pine.py
+          python test_issue68_phase_b314_break_evidence_memory.py
+      - name: Frozen-FX Break evidence-memory forensic
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python diagnose_issue68_phase_b314_break_evidence_memory.py \
+            --report-json reports/issue-68-phase-b314-break-evidence-memory.json \
+            --report-md reports/issue-68-phase-b314-break-evidence-memory.md
+      - name: Generate TradingView Break visual audit
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python generate_issue68_phase_b314_break_evidence_memory_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b314-break-evidence-memory-audit.pine
+          python - <<'PY'
+          p='generated/wyckoff-issue68-phase-b314-break-evidence-memory-audit.pine'
+          s=open(p,encoding='utf-8').read()
+          assert 'strategy.' not in s
+          assert 'B314 BREAK EDGE band' in s
+          assert 'B314 OLD RANGE MEMORY band' in s
+          assert 'B314 BREAK FINAL BLOCKER band' in s
+          print('B3.14 Pine diagnostic contract PASS')
+          PY
+      - name: Diagnostic-only guard
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python - <<'PY'
+          import json
+          data=json.load(open('reports/issue-68-phase-b314-break-evidence-memory.json'))
+          text=json.dumps(data).lower()
+          bad=[x for x in ('sharpe','sortino','profit_factor','net_profit','strategy_return') if x in text]
+          assert not bad,bad
+          print('B3.14 diagnostic-only boundary PASS')
+          PY
+      - name: Commit refreshed B3.14 artifacts
+        if: github.event_name == 'push'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add indicators/wyckoff-regime-radar/research/reports/issue-68-phase-b314-break-evidence-memory.* \
+                  indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-phase-b314-break-evidence-memory-audit.pine
+          git diff --cached --quiet || (git commit -m 'research(issue-68): refresh B3.14 Break evidence artifacts' && git push)

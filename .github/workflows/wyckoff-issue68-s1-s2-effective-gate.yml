@@ -1,0 +1,72 @@
+name: Wyckoff Issue 68 S1 S2 Effective Gate Attribution
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_cross_market_s1_s2_effective_gate_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-cross-market-s1-s2-effective-gate-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-s1-s2-effective-gate.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_cross_market_s1_s2_effective_gate_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-cross-market-s1-s2-effective-gate-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-s1-s2-effective-gate.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  s1-s2-effective-gate-attribution:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile generator
+        run: python -m py_compile generate_issue68_cross_market_s1_s2_effective_gate_audit_pine.py
+      - name: Generate TradingView S1-S2 effective-gate audit
+        run: |
+          python generate_issue68_cross_market_s1_s2_effective_gate_audit_pine.py \
+            --output generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          test -s generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          grep -q 'S1/S2 Effective-Gate Attribution Audit' generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          grep -q 'RAW S2 -> EFF S1' generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          grep -q 'S1 ACC PIPE' generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          grep -q 'S2 MARKUP PIPE' generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          grep -q 'ORDER INVARIANCE' generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          echo 'S1-S2 effective-gate attribution audit contract PASS'
+      - name: Commit generated artifact on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-cross-market-s1-s2-effective-gate-audit.pine
+          if git diff --cached --quiet; then
+            echo "S1-S2 effective-gate artifact already current."
+            exit 0
+          fi
+          git commit -m "research: generate Issue 68 S1-S2 effective gate audit [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1

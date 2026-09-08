@@ -1,0 +1,93 @@
+name: Wyckoff Issue 68 Phase B3.10 S5 vs S2 Local Duel
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b310_s5_vs_s2_local_duel.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b310_s5_vs_s2_local_duel_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b310_s5_vs_s2_local_duel.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b310-s5-vs-s2-local-duel-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel.yml"
+  pull_request:
+    paths:
+      - "indicators/wyckoff-regime-radar/research/diagnose_issue68_phase_b310_s5_vs_s2_local_duel.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_phase_b310_s5_vs_s2_local_duel_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/test_issue68_phase_b310_s5_vs_s2_local_duel.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-phase-b310-s5-vs-s2-local-duel-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  local-duel:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue-68-lifecycle-retest-symmetry-repaired
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Compile B3.10 tooling
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python -m py_compile diagnose_issue68_phase_b310_s5_vs_s2_local_duel.py
+          python -m py_compile generate_issue68_phase_b310_s5_vs_s2_local_duel_audit_pine.py
+          python -m py_compile test_issue68_phase_b310_s5_vs_s2_local_duel.py
+      - name: Run B3.10 contracts
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m unittest -v test_issue68_phase_b310_s5_vs_s2_local_duel
+      - name: Run burned-data local raw duel forensic
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python diagnose_issue68_phase_b310_s5_vs_s2_local_duel.py \
+            --json reports/issue-68-phase-b310-s5-vs-s2-local-duel.json \
+            --md reports/issue-68-phase-b310-s5-vs-s2-local-duel.md
+      - name: Enforce no performance metric keys
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('reports/issue-68-phase-b310-s5-vs-s2-local-duel.json').read_text())
+          forbidden = ('pnl', 'return', 'sharpe', 'drawdown', 'hit_rate', 'transaction_cost', 'profit')
+          bad=[]
+          def walk(x,path=''):
+              if isinstance(x,dict):
+                  for k,v in x.items():
+                      if any(t in str(k).lower() for t in forbidden): bad.append(path+'/'+str(k))
+                      walk(v,path+'/'+str(k))
+              elif isinstance(x,list):
+                  for i,v in enumerate(x): walk(v,path+f'/{i}')
+          walk(data)
+          if bad: raise SystemExit('forbidden performance keys: '+', '.join(bad))
+          PY
+      - name: Generate B3.10 TradingView audit Pine
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python generate_issue68_phase_b310_s5_vs_s2_local_duel_audit_pine.py \
+            --output generated/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel-audit.pine
+          test -s generated/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel-audit.pine
+          grep -q 'Issue #68 B3.10 S5 vs S2 Duel' generated/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel-audit.pine
+          grep -q 'B310 S2>S5 RAW band' generated/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel-audit.pine
+          grep -q 'B310 TRACE EDGE band' generated/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel-audit.pine
+      - name: Commit B3.10 report and audit artifact on branch push
+        if: github.event_name == 'push'
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/issue-68-phase-b310-s5-vs-s2-local-duel.json reports/issue-68-phase-b310-s5-vs-s2-local-duel.md generated/wyckoff-issue68-phase-b310-s5-vs-s2-local-duel-audit.pine
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "research(issue-68): refresh B3.10 local duel artifacts"
+          git pull --rebase origin research/issue-68-lifecycle-retest-symmetry-repaired
+          git push origin HEAD:research/issue-68-lifecycle-retest-symmetry-repaired

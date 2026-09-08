@@ -1,0 +1,74 @@
+name: Wyckoff Issue 68 Cross-Market Formal-Path Attribution
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_cross_market_formal_path_attribution_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-cross-market-formal-path-attribution-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-cross-market-formal-path-attribution.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_cross_market_formal_path_attribution_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-cross-market-formal-path-attribution-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-cross-market-formal-path-attribution.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  formal-path-static-contract:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile generator
+        run: python -m py_compile generate_issue68_cross_market_formal_path_attribution_audit_pine.py
+      - name: Generate cross-market path audit Pine
+        run: |
+          python generate_issue68_cross_market_formal_path_attribution_audit_pine.py \
+            --output generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          test -s generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          grep -q 'Cross-Market Formal-Path Attribution' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          grep -q 'RAW path' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          grep -q 'TOP path' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          grep -q 'STRONG path' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          grep -q 'FORMAL path' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          grep -q 'MAX NON-BULL' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          ! grep -q 'strategy\.' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          ! grep -q 'issue68B34A' generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          echo 'Cross-market formal-path static contract PASS'
+      - name: Commit generated audit on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-cross-market-formal-path-attribution-audit.pine
+          if git diff --cached --quiet; then
+            echo "Cross-market path artifact already current."
+            exit 0
+          fi
+          git commit -m "research: generate Issue 68 cross-market formal-path audit [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1
