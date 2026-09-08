@@ -1,0 +1,86 @@
+name: Wyckoff Issue 68 Yield-Safe HARD Regression Audit
+
+on:
+  push:
+    branches:
+      - research/issue-68-lifecycle-retest-symmetry-repaired
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_yield_safe_hard_regression_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_yield_safe_hard_production_candidate_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-yield-safe-hard-six-market-regression-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-yield-safe-hard-regression-audit.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_yield_safe_hard_regression_audit_pine.py"
+      - "indicators/wyckoff-regime-radar/research/generate_issue68_yield_safe_hard_production_candidate_pine.py"
+      - "indicators/wyckoff-regime-radar/research/decisions/issue-68-yield-safe-hard-six-market-regression-preregistration.md"
+      - ".github/workflows/wyckoff-issue68-yield-safe-hard-regression-audit.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  regression-audit:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: indicators/wyckoff-regime-radar/research
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile generator
+        run: python -m py_compile generate_issue68_yield_safe_hard_regression_audit_pine.py
+
+      - name: Generate final A/B regression audit
+        run: |
+          python generate_issue68_yield_safe_hard_regression_audit_pine.py \
+            --output generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+
+          test -s generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'A C2 Baseline TOP' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'B HARD Formal' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'issue68BaseAccGate = rangeGate \* bearBackgroundForAccGate \* downsideExhaustionGate' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'issue68BaseDistGate = rangeGate \* bullBackgroundForDistGate \* upsideExhaustionGate' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'ctxDownExGate = math.min(downsideExhaustionGate, currentBearGate)' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'autoYieldLevel = syminfo.type == "bond" and syminfo.currency == "NONE"' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'issue68MonotonicViolation' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'issue68NonBindTopParityViolation' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          grep -q 'issue68BaseFormalId = issue68BaseConfirmedId' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          ! grep -q 'strategy\.entry' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          ! grep -q 'strategy\.close' generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+
+          echo 'Issue #68 final yield-safe HARD regression audit contract PASS'
+
+      - name: Commit generated audit on branch push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/research/issue-68-lifecycle-retest-symmetry-repaired'
+        working-directory: .
+        env:
+          TARGET_BRANCH: research/issue-68-lifecycle-retest-symmetry-repaired
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue68-yield-safe-hard-regression-audit.pine
+          if git diff --cached --quiet; then
+            echo "Issue #68 regression audit artifact already current."
+            exit 0
+          fi
+          git commit -m "research: generate Issue 68 yield-safe HARD regression audit [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin "${TARGET_BRANCH}"
+            git rebase "origin/${TARGET_BRANCH}"
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+            echo "push race on attempt ${attempt}; retrying"
+            sleep $((attempt * 2))
+          done
+          exit 1
