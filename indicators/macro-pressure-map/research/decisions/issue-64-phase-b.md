@@ -35,7 +35,7 @@ A causal 63-day inverse-volatility benchmark is stronger on risk-adjusted metric
 
 ## Portfolio contribution audit
 
-The required Issue #64 allocation/contribution diagnostics are now generated from the exact daily portfolio evidence using the committed frozen outcome-price snapshot. Asset return contribution is `invested_weight × asset_return`; transaction cost and the cost/return interaction are retained as a separate residual. Regime attribution uses the prior-bar V6.6 regime available to the portfolio on that return row, not the future-known same-day state.
+The required Issue #64 allocation/contribution diagnostics are generated from the exact daily portfolio evidence using the committed frozen outcome-price snapshot. Asset return contribution is `invested_weight × asset_return`; transaction cost and the cost/return interaction are retained as a separate residual. Regime attribution uses the prior-bar V6.6 regime available to the portfolio on that return row, not the future-known same-day state.
 
 For the full reused history, the V6.6 Reflation strategy's annualized arithmetic contribution is:
 
@@ -47,59 +47,67 @@ For the full reused history, the V6.6 Reflation strategy's annualized arithmetic
 
 Within executed Reflation / Inflation Rising rows, realized average allocation is approximately 60.34% SPY / 19.70% TLT / 19.96% GLD. That regime contributes about +2.58 percentage points per year to the strategy's full-history arithmetic net return, versus about +1.71 percentage points for fixed 40/40/20 on the same regime rows. The largest positive regime contribution overall is Slowdown / Disinflation at about +4.04 percentage points per year.
 
-The contribution accounting reconciles exactly up to floating-point precision: maximum absolute asset-plus-cost reconciliation error and regime reconciliation error are both `2.78e-17` across the full/pre-2020/post-2019 segments and all Phase B comparison strategies.
-
-These diagnostics increase attribution transparency but do not change the Phase B verdict. They show that the historical Reflation advantage is genuinely concentrated in the intended Reflation rows, while the separate exposure-matched and episode tests still limit how strongly that historical advantage can be generalized.
+The contribution accounting reconciles to floating-point precision. These diagnostics increase attribution transparency but do not change the Phase B verdict.
 
 ## Realized-exposure-matched attribution
 
 The Reflation strategy's realized average invested weights are about 44.38% SPY / 35.57% TLT / 20.05% GLD over the full sample. Its improvement versus 40/40/20 therefore cannot automatically be called timing alpha.
 
-The post-hoc attribution control is deliberately noncausal. For the full sample and for each temporal segment separately, a static monthly-rebalanced target is solved on the realized return path so that the control's **actual average invested weights after drift and rebalance** match the V6.6 strategy's actual average invested weights. This addresses the review concern that matching only average target templates could leave residual exposure bias.
+The post-hoc attribution control is deliberately noncausal. For the full sample and for each temporal segment separately, a static monthly-rebalanced target is solved on the realized return path so that the control's **actual average invested weights after drift and rebalance** match the V6.6 strategy's actual average invested weights.
 
-The realized-weight mismatch is effectively zero:
+Versus this stricter control, the durable interpretation remains approximately:
 
-- full history max absolute mismatch: `2.50e-16`;
-- 2007–2019: `2.54e-13`;
-- post-2019: `8.33e-17`.
+- full history: +0.51% CAGR and +0.056 Sharpe;
+- 2007–2019: +0.81% CAGR and +0.097 Sharpe;
+- post-2019 reused history: only +0.10% CAGR and +0.011 Sharpe, with slightly worse Calmar.
 
-Versus this stricter control:
+The primary +0.88% CAGR improvement versus 40/40/20 therefore mixes higher average equity exposure with regime timing. After stripping out realized average exposure, timing looks materially stronger in the older development era than in the post-2019 reused sample.
 
-- full history: +0.51% CAGR, +0.056 Sharpe, +0.012 Calmar;
-- 2007–2019: +0.81% CAGR, +0.097 Sharpe, +0.090 Calmar;
-- post-2019 reused history: only +0.10% CAGR, +0.011 Sharpe, while Calmar is -0.003 lower.
+## Episode concentration — corrected whole-path counterfactual
 
-This means the primary +0.88% CAGR improvement versus 40/40/20 mixes two effects: higher average equity exposure and regime timing. After stripping out realized average exposure, timing still looks material in the older development era but is economically very small in the post-2019 reused sample.
+The episode diagnostic now treats a Reflation episode as a complete trading intervention rather than only the dates on which lagged Reflation status is `True`.
 
-## Episode concentration
+The earlier diagnostic omitted the first following non-Reflation row from the episode contribution even though the portfolio performs an event-driven exit rebalance on that row. That left exit turnover/cost and subsequent drift in the supposed leave-one-episode-out result.
 
-To check whether the residual timing result is merely one lucky macro episode, active log return versus the era-piecewise realized-exposure-matched control was decomposed by contiguous Reflation episodes.
+The corrected procedure therefore:
+
+1. screens contiguous Reflation episodes using active log contribution **including the first following exit row when present**;
+2. selects the largest positive episode within each era;
+3. disables that entire Reflation override episode, replacing it with the neutral 40/40/20 target;
+4. reruns the portfolio from inception so entry/exit event rebalances, transaction costs, and all subsequent drift are recomputed;
+5. compares the rerun with the same era-piecewise realized-exposure-matched control.
+
+A replay guard first reconstructs the unmodified Phase B strategy and requires its daily net-return path to match the official Phase B daily evidence within `1e-12`; the exact-head evidence run passed that guard.
 
 ### Development, 2007–2019
 
 - 49 Reflation episodes;
-- 24 positive timing-contribution episodes;
+- 22 positive exit-inclusive timing-contribution episodes;
 - total active log return: +0.0943;
-- largest winner: 2010-10-01 through 2011-05-03, contribution +0.0405;
-- that episode is 27.1% of gross positive Reflation-episode contribution;
-- after removing that largest winner, cumulative active log return remains +0.0538.
+- largest winner: **2010-10-01 through 2011-05-03**;
+- exit-inclusive contribution of that episode: +0.04084;
+- that episode is 27.6% of gross positive Reflation-episode contribution;
+- after fully disabling that episode and rerunning the portfolio, cumulative active log return remains **+0.04156**;
+- leaveout result versus the exposure-matched control remains positive: **ΔCAGR +0.354%/yr, ΔSharpe +0.0519**.
 
-The old-era result is concentrated, but not dependent on one single episode.
+So the older-era timing evidence is concentrated, but it does **not** depend on one single winner.
 
 ### Post-2019 reused exploratory sample
 
 - 31 Reflation episodes;
-- 12 positive timing-contribution episodes;
-- total active log return: only +0.0058;
-- largest winner: 2020-11-23 through 2021-05-21, contribution +0.0509;
-- that single episode is 61.2% of gross positive Reflation-episode contribution;
-- after removing it, cumulative active log return falls to -0.0450.
+- 12 positive exit-inclusive timing-contribution episodes;
+- total active log return: only +0.00583;
+- largest winner: **2020-11-23 through 2021-05-21**;
+- exit-inclusive contribution: +0.05060;
+- that episode accounts for **63.8%** of gross positive Reflation-episode contribution;
+- after fully disabling it and rerunning the portfolio, cumulative active log return becomes **-0.05691**;
+- leaveout result versus the exposure-matched control becomes **ΔCAGR -0.934%/yr, ΔSharpe -0.0685**.
 
-Therefore the recent-history timing case is not robust. The small post-2019 net benefit is heavily dependent on the 2020–2021 reflation/reopening episode.
+The corrected counterfactual therefore strengthens the prior warning: the small post-2019 timing benefit is highly dependent on the 2020–2021 reflation/reopening episode. The previous status-row-only leaveout understated that dependence because it retained the episode's exit-day rebalance effect.
 
 ## Drawdown accounting correction
 
-Portfolio drawdown is now explicitly seeded with each evaluated segment's pre-return starting wealth of `1.0`. This prevents a negative first return in a segment from being omitted from the running peak. A focused regression test locks this behavior. The correction does not change CAGR, Sharpe, regime timing, exposure matching, or episode attribution, and it does not change the full-history primary max-drawdown / Calmar conclusion.
+Portfolio drawdown is explicitly seeded with each evaluated segment's pre-return starting wealth of `1.0`. This prevents a negative first return in a segment from being omitted from the running peak. A focused regression test locks this behavior.
 
 ## Decision boundary
 
@@ -113,8 +121,10 @@ Phase C was therefore tested as a separately preregistered Stagflation gold-over
 
 ## Reproducibility
 
-Contribution-audit source workflow: `33492086706` on code head `51a9998ac0b370bdda8e2ccb5dc6e0e5e79e8b0e`, conclusion `success`.
+The corrected whole-path Phase B episode diagnostic was generated in Actions run `34178007282` from evidence-producing code head `fc565d311933fbb7e7c2b5bafe1dff4762a30997`.
 
-Phase B artifact: `9794325559`, digest `sha256:cd381e633323c620f1c5c51bebe823711199212f7f166eea2bcfe6610f839712`.
+Phase B artifact: `10038044071`, digest `sha256:b5c5615cbc1db0e05e1273130e55d518f4490a35eae5fc6adde6cf1635ab19de`.
 
-The artifact contains `phase-b-asset-contribution.csv`, `phase-b-regime-allocation-contribution.csv`, `phase-b-contribution-reconciliation.csv`, and `phase-b-contribution-manifest.json` in addition to the existing Phase B evidence. The contribution manifest confirms `committed_frozen_snapshot`, frozen CSV SHA-256 `3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57`, and maximum reconciliation error `2.78e-17`.
+That run completed successfully with 37 focused tests, the Phase B replay guard, exact whole-path episode counterfactuals, Phase A/B/C generation and validation, final-verdict contract validation, and all artifact uploads. The frozen outcome source remains CSV SHA-256 `3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57`.
+
+No preregistered Phase B allocation rule, V6.6 formula/threshold, or primary Phase B return result changed. Only the post-hoc robustness attribution was corrected and made stricter.
