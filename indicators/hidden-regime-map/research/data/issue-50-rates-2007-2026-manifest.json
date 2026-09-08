@@ -1,0 +1,37 @@
+{
+  "accepted_fred_date_columns": [
+    "DATE",
+    "observation_date"
+  ],
+  "columns": [
+    "Date",
+    "DGS3MO",
+    "DGS2",
+    "DGS5",
+    "DGS10",
+    "DGS30",
+    "SHY",
+    "IEF",
+    "TLT"
+  ],
+  "contract": "issue-50-rates-v1",
+  "end": "2026-07-31",
+  "etf_source": "yfinance auto_adjust=True",
+  "etf_tickers": [
+    "SHY",
+    "IEF",
+    "TLT"
+  ],
+  "first_date": "2007-01-03",
+  "fred_series": {
+    "DGS10": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2007-01-01&coed=2026-07-31",
+    "DGS2": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2&cosd=2007-01-01&coed=2026-07-31",
+    "DGS30": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS30&cosd=2007-01-01&coed=2026-07-31",
+    "DGS3MO": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS3MO&cosd=2007-01-01&coed=2026-07-31",
+    "DGS5": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS5&cosd=2007-01-01&coed=2026-07-31"
+  },
+  "join": "inner common observed dates; no yield interpolation",
+  "last_date": "2026-07-30",
+  "rows": 4888,
+  "start": "2007-01-01"
+}
