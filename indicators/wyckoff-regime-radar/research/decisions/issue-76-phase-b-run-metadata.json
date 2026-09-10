@@ -1,0 +1,17 @@
+{
+  "accepted_formal_stage_events": 68118,
+  "horizons": [1, 5, 10, 20],
+  "regime_age_buckets": ["age0", "age1_4", "age5_9", "age10_19", "age20p"],
+  "nonfinite_rv_repairs": 10,
+  "unknown_regime_age_rows": 1,
+  "de10y_possible_10000_log_cap_caveat": true,
+  "yield_splice_diagnostic_rule": "abs(move1)>100bp and abs(norm1)>20ATR",
+  "yield_splice_diagnostic_bars": {
+    "TVC:DE10Y": [4837],
+    "TVC:FR10Y": [1155],
+    "TVC:GB10Y": [2620]
+  },
+  "primary_sample_policy": "retain all accepted observations",
+  "sensitivity_policy": "add a splice_screened view excluding only forward windows crossing diagnostic bars; do not replace the primary sample",
+  "production_classifier_changes": 0
+}
