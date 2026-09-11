@@ -3,7 +3,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from asset_allocation_phase_b_diagnostics import mean_invested_weights
 from asset_allocation_phase_b_episode_diagnostics import (
+    build_leaveout_realized_exposure_matched_control,
     concentration_summary,
     reflation_episode_table,
     simulate_reflation_path,
@@ -75,3 +77,47 @@ def test_counterfactual_replay_removes_entry_and_exit_rebalance_costs() -> None:
     assert leaveout["trade"].sum() == 0
     assert np.isclose(leaveout["net_return"].sum(), 0.0)
     assert original["net_return"].sum() < 0.0
+
+
+def test_leaveout_control_rematches_realized_exposure_of_counterfactual_path() -> None:
+    index = pd.date_range("2020-01-02", periods=80, freq="B")
+    x = np.arange(len(index), dtype=float)
+    returns = pd.DataFrame(
+        {
+            "SPY": 0.0005 + 0.0008 * np.sin(x / 7.0),
+            "TLT": 0.0002 - 0.0005 * np.sin(x / 9.0),
+            "GLD": 0.0001 + 0.0004 * np.cos(x / 11.0),
+        },
+        index=index,
+    )
+    neutral = {"SPY": 0.4, "TLT": 0.4, "GLD": 0.2}
+    reflation = {"SPY": 0.6, "TLT": 0.2, "GLD": 0.2}
+    status = pd.Series(False, index=index)
+    status.iloc[10:28] = True
+    status.iloc[45:60] = True
+    leaveout_status = status.copy()
+    leaveout_status.iloc[10:28] = False
+
+    leaveout = simulate_reflation_path(
+        returns,
+        leaveout_status,
+        neutral_weights=neutral,
+        reflation_weights=reflation,
+        cost_bps=5.0,
+        name="leaveout",
+    )
+    leaveout_seg, matched, meta = build_leaveout_realized_exposure_matched_control(
+        leaveout,
+        returns,
+        segment_start=None,
+        segment_end=None,
+        cost_bps=5.0,
+        name="leaveout_match",
+    )
+
+    desired = mean_invested_weights(leaveout_seg)
+    actual = mean_invested_weights(matched)
+    assert meta["matching_basis"] == "leaveout realized average invested_weight_* exposure"
+    assert meta["max_abs_invested_weight_mismatch"] <= 1e-9
+    for asset in ("SPY", "TLT", "GLD"):
+        assert np.isclose(actual[asset], desired[asset], atol=1e-9)
