@@ -1,0 +1,30 @@
+{
+  "schema_version": 3,
+  "issue": 74,
+  "role": "frozen severe-inflation positive dates from verified daily raw IPI reconstruction",
+  "evidence_mode": "equivalently exact verified reconstruction",
+  "source_filename": "pine-logs-MPM V6.6 PHASE C SRC.csv",
+  "source_log_sha256": "6c5aa03419d2e5325d28fb33bf9c83a9744d7170da84f72a614676a7fc1aad4d",
+  "source_helper_path": "indicators/macro-pressure-map/research/macro-pressure-map-v6.6-phase-c-sources.pine",
+  "source_rows_raw": 5458,
+  "source_unique_dates": 5451,
+  "duplicate_dates": [
+    "2026-09-02"
+  ],
+  "duplicate_policy": "Duplicate rows accepted only when all logged source values are identical; keep last identical row.",
+  "raw_ipi_coverage_first_date": "2006-04-03",
+  "raw_ipi_coverage_last_date": "2026-09-02",
+  "raw_ipi_rows": 5137,
+  "parity_reference": "data/issue-64-frozen-axis-audit.csv",
+  "parity_checkpoints": 51,
+  "parity_gate_max_abs_error": 5e-08,
+  "parity_max_abs_ipi_error": 2.0430569236395968e-08,
+  "parity_pass": true,
+  "inflation_extreme_threshold": 60.0,
+  "classification": "severe_inflation = raw IPI >= +60.0",
+  "storage_semantics": "CSV stores every positive severe-inflation source date with raw IPI; every other source date within raw_ipi_coverage is false.",
+  "severe_rows": 194,
+  "positive_dates_csv_sha256": "c4c55ce160bf68e3ee6f444c86b273a39c0948ac38b50d2ab737c2632688abd8",
+  "production_v66_modified": false,
+  "portfolio_results_calculated": false
+}
