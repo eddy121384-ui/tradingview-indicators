@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "issue": 64,
   "phase": "B",
   "artifact_role": "durable curated Phase B portfolio and attribution evidence",
@@ -101,12 +101,12 @@
     }
   },
   "posthoc_episode_concentration": {
-    "source_workflow_run": 34178007282,
-    "source_head_sha": "fc565d311933fbb7e7c2b5bafe1dff4762a30997",
-    "phase_b_artifact_id": 10038044071,
-    "phase_b_artifact_sha256": "b5c5615cbc1db0e05e1273130e55d518f4490a35eae5fc6adde6cf1635ab19de",
+    "source_workflow_run": 34556394055,
+    "source_head_sha": "dae23540bf32978333184fc3b11b554671e648a9",
+    "source_note": "Phase B evidence generation succeeded on this run; the downstream durable-contract gate failed only because this decision file still contained the pre-rematch values at that time.",
     "phase_b_replay_max_abs_net_return_error_bound": 1e-12,
-    "leaveout_method": "disable selected whole Reflation override episode and rerun the portfolio from inception, recomputing entry/exit event rebalances, transaction costs and subsequent drift",
+    "leaveout_control_max_abs_invested_weight_mismatch_bound": 1e-9,
+    "leaveout_method": "disable selected whole Reflation override episode, rerun the portfolio from inception, then solve a fresh realized-exposure-matched control for that leaveout evaluation segment",
     "development_pre2020": {
       "reflation_episodes": 49,
       "positive_reflation_episodes": 22,
@@ -114,9 +114,10 @@
       "largest_positive_episode": "2010-10-01 through 2011-05-03",
       "largest_positive_episode_active_log_including_exit_day": 0.04084166201964543,
       "top1_share_of_positive_episode_contribution": 0.2762528454544189,
-      "active_log_after_removing_largest_positive_episode": 0.041561818115137594,
-      "leaveout_delta_CAGR": 0.0035432017116356906,
-      "leaveout_delta_Sharpe": 0.05185204402348942
+      "active_log_after_removing_largest_positive_episode": 0.04362818456592632,
+      "leaveout_delta_CAGR": 0.0037190605875287996,
+      "leaveout_delta_Sharpe": 0.04459932685837087,
+      "leaveout_control_max_abs_invested_weight_mismatch": 2.173261570703744e-13
     },
     "post2019_reused_exploratory": {
       "reflation_episodes": 31,
@@ -125,11 +126,12 @@
       "largest_positive_episode": "2020-11-23 through 2021-05-21",
       "largest_positive_episode_active_log_including_exit_day": 0.05060254353272813,
       "top1_share_of_positive_episode_contribution": 0.6379151023472092,
-      "active_log_after_removing_largest_positive_episode": -0.05691242103957039,
-      "leaveout_delta_CAGR": -0.009341876709122676,
-      "leaveout_delta_Sharpe": -0.0685404504553564
+      "active_log_after_removing_largest_positive_episode": -0.037929628387997294,
+      "leaveout_delta_CAGR": -0.006216991597578936,
+      "leaveout_delta_Sharpe": -0.0484269890286978,
+      "leaveout_control_max_abs_invested_weight_mismatch": 2.7755575615628914e-17
     },
-    "interpretation": "The corrected whole-path counterfactual leaves the pre-2020 timing result positive after removing its largest winner, while the post-2019 result becomes materially negative. The recent-history episode-concentration warning is therefore strengthened rather than reversed."
+    "interpretation": "After re-matching realized exposure separately for each leaveout path, the pre-2020 timing result remains positive after removing its largest winner, while the post-2019 result remains negative. The prior non-rematched leaveout overstated the magnitude of recent weakness, but the qualitative episode-concentration warning survives exposure-neutral attribution."
   },
   "decision": {
     "reflation_rule_confirmed": false,
