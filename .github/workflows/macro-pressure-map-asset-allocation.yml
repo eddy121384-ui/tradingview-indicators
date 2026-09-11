@@ -136,11 +136,13 @@ jobs:
           rows = {row["segment"]: row for row in generated["summary_rows"]}
           tol = 1e-9
 
-          assert generated["schema_version"] >= 3
+          assert generated["schema_version"] >= 4
           assert generated["phase_b_replay_max_abs_net_return_error"] <= durable["phase_b_replay_max_abs_net_return_error_bound"]
           assert generated["leaveout_semantics"] == (
-              "selected whole Reflation override episode is disabled and the portfolio is rerun from inception, "
-              "so entry/exit rebalance costs and subsequent drift are recomputed rather than retained"
+              "selected whole Reflation override episode is disabled and the portfolio is rerun from "
+              "inception; the leaveout evaluation segment then receives a fresh realized-exposure-matched "
+              "control, so entry/exit costs, subsequent drift, and the exposure change caused by removal "
+              "are not misattributed to timing"
           )
 
           for segment in ("development_pre2020", "post2019_reused_exploratory"):
@@ -149,6 +151,10 @@ jobs:
               assert f"{actual['largest_positive_episode_start']} through {actual['largest_positive_episode_end']}" == expected["largest_positive_episode"]
               assert actual["reflation_episodes"] == expected["reflation_episodes"]
               assert actual["positive_reflation_episodes"] == expected["positive_reflation_episodes"]
+              match = actual["leaveout_realized_exposure_matching"]
+              assert match["matching_basis"] == "leaveout realized average invested_weight_* exposure"
+              assert match["max_abs_invested_weight_mismatch"] <= durable["leaveout_control_max_abs_invested_weight_mismatch_bound"]
+              assert abs(match["max_abs_invested_weight_mismatch"] - expected["leaveout_control_max_abs_invested_weight_mismatch"]) <= tol
               checks = {
                   "normal_active_log_return": actual["normal_active_log_return"],
                   "largest_positive_episode_active_log_including_exit_day": actual["screening_active_log_contribution_including_exit_day"],
@@ -167,6 +173,8 @@ jobs:
               "phase_b_replay_max_abs_net_return_error": generated["phase_b_replay_max_abs_net_return_error"],
               "development_leaveout_active_log": durable["development_pre2020"]["active_log_after_removing_largest_positive_episode"],
               "post2019_leaveout_active_log": durable["post2019_reused_exploratory"]["active_log_after_removing_largest_positive_episode"],
+              "development_leaveout_match_error": durable["development_pre2020"]["leaveout_control_max_abs_invested_weight_mismatch"],
+              "post2019_leaveout_match_error": durable["post2019_reused_exploratory"]["leaveout_control_max_abs_invested_weight_mismatch"],
           })
           PY
 
