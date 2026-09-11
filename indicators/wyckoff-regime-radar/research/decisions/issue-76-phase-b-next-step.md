@@ -1,20 +1,22 @@
 # Issue #76 — Phase B Next Step
 
-The previous next-step note proposed separate FX and rates exposure maps. That is now **superseded** after clarification of the intended product objective.
+The previous next-step note first proposed separate FX/rates exposure maps; that was superseded by the universal cross-asset objective. A second clarification now changes the ordering again: **before freezing any exposure policy, study regime persistence and lifecycle.**
 
-The intended product is a **general-purpose cross-asset regime indicator**, not an asset-specific ruleset. Therefore the next step is NOT to freeze separate FX/rates policies.
+The intended product is a general-purpose, medium/long-horizon regime indicator, not a short-term entry signal. A fixed 10-bar forward return is therefore only one diagnostic and must not become the organizing unit of the research.
 
-Primary Phase-B work must instead:
+Primary next work:
 
-- aggregate all accepted markets together after event-time ATR normalization;
-- compare every market/regime cell with that market's own unconditional baseline;
-- give each market equal weight so long-history markets do not dominate;
-- measure cross-market sign agreement and leave-one-market-out stability;
-- use asset-class slices only as adversarial diagnostics for heterogeneity, never as policy branches;
-- downgrade a state that requires asset-specific rescue rather than adding market-specific parameters.
+- reconstruct every contiguous formal-regime spell from the accepted nine-market daily logs;
+- measure how long each regime survives rather than only what happens 10 bars after entry;
+- estimate cross-market equal-weight survival probabilities after 5 / 10 / 20 / 40 / 60 / 120 trading bars;
+- report median spell duration and short-lived/churn rates;
+- estimate age-conditional persistence: given that a regime has already survived N bars, how likely is it to survive another 5 / 10 / 20 / 40 bars?;
+- report exit/transition destinations, including exits to unclassified/no-formal-stage periods;
+- treat asset-class slices only as heterogeneity diagnostics, never as policy branches;
+- only after persistence is understood, combine persistence with baseline-relative forward distributions to derive a universal exposure posture.
 
-The target output is a universal exposure tilt in chart-variable direction, for example increase positive-direction exposure / reduce positive exposure / neutral / increase negative-direction exposure. Instrument-specific execution translation, such as yield direction to duration, happens downstream and is not a classifier branch.
+The decision unit for the eventual product should be the **current state and its age**, re-evaluated as the state evolves, not `enter now and hold for 10 bars`.
 
-Do not freeze executable sizing yet. First complete the universal all-market Regime-Conditioned Exposure Map across the already frozen 1/5/10/20-bar horizons and regime-age buckets.
+For longer-horizon analysis, 20 bars is approximately one trading month, 60 bars approximately one quarter, and 120 bars approximately half a year. These are descriptive lifecycle landmarks, not optimized holding periods.
 
-No classifier thresholds, stops, targets, bespoke horizons, market exclusions, asset-specific parameters, or production Pine semantics may be changed in this step.
+Do not change classifier thresholds, add asset-specific parameters, or optimize a trading policy while doing this lifecycle study.
