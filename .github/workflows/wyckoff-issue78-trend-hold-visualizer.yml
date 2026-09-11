@@ -1,0 +1,58 @@
+name: Wyckoff Issue 78 trend-hold visualizer
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-trend-hold-visualizer.yml'
+      - 'indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-issue68-rc.pine'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue78_trend_hold_visualizer_pine.py'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Syntax check generator
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_trend_hold_visualizer_pine.py
+
+      - name: Generate frozen-source research visualizer
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_issue78_trend_hold_visualizer_pine.py \
+            --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-trend-hold-visualizer.pine
+
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-trend-hold-visualizer.pine
+          grep -F 'Chase Risk Trend Hold Lab｜Issue #78' "$FILE"
+          grep -F 'ctxDownExGate = math.min(downsideExhaustionGate, currentBearGate)' "$FILE"
+          grep -F 'ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)' "$FILE"
+          grep -F '#78 Gentle + Latch｜下一根目標曝險 %' "$FILE"
+          grep -F '#78 Balanced + Latch｜下一根目標曝險 %' "$FILE"
+          grep -F '減倉快｜新極值才加回' "$FILE"
+          ! grep -F 'strategy.entry' "$FILE"
+          ! grep -F 'strategy.close' "$FILE"
+          git diff --check
+
+      - name: Commit generated Pine when changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-trend-hold-visualizer.pine
+          if git diff --cached --quiet; then
+            echo 'Generated visualizer already current.'
+          else
+            git commit -m 'research: generate Issue #78 trend-hold visualizer [skip ci]'
+            git push
+          fi
