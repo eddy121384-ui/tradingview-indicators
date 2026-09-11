@@ -101,9 +101,10 @@
     }
   },
   "posthoc_episode_concentration": {
-    "source_workflow_run": 34556394055,
-    "source_head_sha": "dae23540bf32978333184fc3b11b554671e648a9",
-    "source_note": "Phase B evidence generation succeeded on this run; the downstream durable-contract gate failed only because this decision file still contained the pre-rematch values at that time.",
+    "source_workflow_run": 34556878398,
+    "source_head_sha": "123f6234bf0e7b488caa693828b5614eb3a3f314",
+    "phase_b_artifact_id": 10183080668,
+    "phase_b_artifact_sha256": "ba292923cc023e4f6cb5de62b04916470f42e7ab77ab69eeb608369a70998c15",
     "phase_b_replay_max_abs_net_return_error_bound": 1e-12,
     "leaveout_control_max_abs_invested_weight_mismatch_bound": 1e-9,
     "leaveout_method": "disable selected whole Reflation override episode, rerun the portfolio from inception, then solve a fresh realized-exposure-matched control for that leaveout evaluation segment",
