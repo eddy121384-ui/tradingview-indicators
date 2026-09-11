@@ -63,32 +63,37 @@ Versus this stricter control, the durable interpretation remains approximately:
 
 The primary +0.88% CAGR improvement versus 40/40/20 therefore mixes higher average equity exposure with regime timing. After stripping out realized average exposure, timing looks materially stronger in the older development era than in the post-2019 reused sample.
 
-## Episode concentration — corrected whole-path counterfactual
+## Episode concentration — exposure-neutral whole-path counterfactual
 
-The episode diagnostic now treats a Reflation episode as a complete trading intervention rather than only the dates on which lagged Reflation status is `True`.
+The episode diagnostic treats a Reflation episode as a complete trading intervention rather than only the dates on which lagged Reflation status is `True`.
 
-The earlier diagnostic omitted the first following non-Reflation row from the episode contribution even though the portfolio performs an event-driven exit rebalance on that row. That left exit turnover/cost and subsequent drift in the supposed leave-one-episode-out result.
+Two attribution issues were corrected in sequence:
 
-The corrected procedure therefore:
+1. the earlier diagnostic omitted the first following non-Reflation row even though the portfolio performs an event-driven exit rebalance there;
+2. the first whole-path counterfactual correctly reran the strategy after disabling the episode, but still compared that lower-equity-exposure leaveout path with the exposure-matched control fitted to the original strategy. That mixed the exposure change caused by disabling the episode with the timing residual.
+
+The final procedure therefore:
 
 1. screens contiguous Reflation episodes using active log contribution **including the first following exit row when present**;
 2. selects the largest positive episode within each era;
 3. disables that entire Reflation override episode, replacing it with the neutral 40/40/20 target;
 4. reruns the portfolio from inception so entry/exit event rebalances, transaction costs, and all subsequent drift are recomputed;
-5. compares the rerun with the same era-piecewise realized-exposure-matched control.
+5. for that leaveout path and that evaluation segment, solves a **fresh static monthly-rebalanced control whose realized average invested weights match the leaveout path**;
+6. reports leaveout active log return and metric deltas against this freshly re-matched control.
 
-A replay guard first reconstructs the unmodified Phase B strategy and requires its daily net-return path to match the official Phase B daily evidence within `1e-12`; the exact-head evidence run passed that guard.
+A replay guard first reconstructs the unmodified Phase B strategy and requires its daily net-return path to match the official Phase B daily evidence within `1e-12`. Each leaveout control must also match the counterfactual path's realized average invested weights within `1e-9`.
 
 ### Development, 2007–2019
 
 - 49 Reflation episodes;
 - 22 positive exit-inclusive timing-contribution episodes;
-- total active log return: +0.0943;
+- normal active log return: +0.0943;
 - largest winner: **2010-10-01 through 2011-05-03**;
 - exit-inclusive contribution of that episode: +0.04084;
 - that episode is 27.6% of gross positive Reflation-episode contribution;
-- after fully disabling that episode and rerunning the portfolio, cumulative active log return remains **+0.04156**;
-- leaveout result versus the exposure-matched control remains positive: **ΔCAGR +0.354%/yr, ΔSharpe +0.0519**.
+- after fully disabling that episode, rerunning the portfolio, and re-matching the leaveout exposure, cumulative active log return remains **+0.04363**;
+- exposure-neutral leaveout result remains positive: **ΔCAGR +0.372%/yr, ΔSharpe +0.0446**;
+- leaveout-control maximum realized-weight mismatch: `2.17e-13`.
 
 So the older-era timing evidence is concentrated, but it does **not** depend on one single winner.
 
@@ -96,14 +101,15 @@ So the older-era timing evidence is concentrated, but it does **not** depend on 
 
 - 31 Reflation episodes;
 - 12 positive exit-inclusive timing-contribution episodes;
-- total active log return: only +0.00583;
+- normal active log return: only +0.00583;
 - largest winner: **2020-11-23 through 2021-05-21**;
 - exit-inclusive contribution: +0.05060;
 - that episode accounts for **63.8%** of gross positive Reflation-episode contribution;
-- after fully disabling it and rerunning the portfolio, cumulative active log return becomes **-0.05691**;
-- leaveout result versus the exposure-matched control becomes **ΔCAGR -0.934%/yr, ΔSharpe -0.0685**.
+- after fully disabling it, rerunning the portfolio, and re-matching the lower realized equity exposure, cumulative active log return remains **negative at -0.03793**;
+- exposure-neutral leaveout result is **ΔCAGR -0.622%/yr, ΔSharpe -0.0484**;
+- leaveout-control maximum realized-weight mismatch: `2.78e-17`.
 
-The corrected counterfactual therefore strengthens the prior warning: the small post-2019 timing benefit is highly dependent on the 2020–2021 reflation/reopening episode. The previous status-row-only leaveout understated that dependence because it retained the episode's exit-day rebalance effect.
+The exposure re-match reduces the apparent severity versus the prior non-rematched whole-path estimate (`-0.05691` active log, `-0.934%/yr` CAGR delta), confirming that the earlier number mixed in an exposure shift. But the qualitative robustness conclusion survives: the small post-2019 timing benefit is still highly dependent on the 2020–2021 reflation/reopening episode and turns negative once that winner is removed on an exposure-neutral basis.
 
 ## Drawdown accounting correction
 
@@ -121,10 +127,8 @@ Phase C was therefore tested as a separately preregistered Stagflation gold-over
 
 ## Reproducibility
 
-The corrected whole-path Phase B episode diagnostic was generated in Actions run `34178007282` from evidence-producing code head `fc565d311933fbb7e7c2b5bafe1dff4762a30997`.
+The exposure-rematched whole-path Phase B evidence was first generated in Actions run `34556394055` from head `dae23540bf32978333184fc3b11b554671e648a9`. The Phase B evidence-generation step itself succeeded; the following durable-contract gate failed because the committed decision still contained the pre-rematch leaveout semantics and values, which is the expected synchronization failure this memo corrects.
 
-Phase B artifact: `10038044071`, digest `sha256:b5c5615cbc1db0e05e1273130e55d518f4490a35eae5fc6adde6cf1635ab19de`.
+The frozen outcome source remains CSV SHA-256 `3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57`.
 
-That run completed successfully with 37 focused tests, the Phase B replay guard, exact whole-path episode counterfactuals, Phase A/B/C generation and validation, final-verdict contract validation, and all artifact uploads. The frozen outcome source remains CSV SHA-256 `3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57`.
-
-No preregistered Phase B allocation rule, V6.6 formula/threshold, or primary Phase B return result changed. Only the post-hoc robustness attribution was corrected and made stricter.
+No preregistered Phase B allocation rule, V6.6 formula/threshold, or primary Phase B return result changed. Only the post-hoc robustness attribution was corrected to keep leaveout comparisons exposure-neutral.
