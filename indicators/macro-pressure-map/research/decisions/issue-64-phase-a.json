@@ -1,11 +1,19 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "issue": 64,
   "phase": "A",
   "artifact_role": "durable curated Phase A decision evidence",
   "interim_verdict": "cross_asset_structure_present_but_regime_specific_and_era_sensitive",
   "production_v66_parameters_modified": false,
   "allocation_mapping_selected": false,
+  "regenerated_evidence_binding": {
+    "numeric_tolerance": 1e-12,
+    "required_generated_files": [
+      "phase-a-segment-leader-stability.csv",
+      "phase-a-segment-relative-stability.csv"
+    ],
+    "semantics": "Fail closed if regenerated leader stability, pairwise sign/stability summary, or named Phase A pair evidence drifts from this durable decision."
+  },
   "signal": {
     "source": "Issue #59 TradingView Macro Pressure Map V6.6 parity log",
     "source_log_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
@@ -46,7 +54,7 @@
     "frozen_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
     "strict_json_validation_passed": true,
     "artifact_upload_passed": true,
-    "note": "This current-head run regenerated Phase A from the committed hash-verified frozen outcome panel; later documentation-only provenance updates must not replace this evidence-producing run unless they regenerate the same evidence."
+    "note": "This evidence-producing run established the frozen-panel provenance baseline; current regeneration is additionally bound fail-closed by regenerated_evidence_binding."
   },
   "temporal_stability": {
     "development_segment": "2007-01-04 through 2019-12-31; forward price panel truncated at 2019-12-31 so horizons cannot leak into 2020",
@@ -80,27 +88,27 @@
     "regime": "Reflation / Inflation Rising",
     "comparison": "SPY total return minus TLT total return",
     "one_month": {
-      "development_mean_spread": 0.01405305366111848,
-      "development_nominal_ci95": [5.358361085696646e-05, 0.027435164853313425],
+      "development_mean_spread": 0.0140530007567632,
+      "development_nominal_ci95": [5.3575930411986565e-05, 0.0274351304665202],
       "development_n": 51,
-      "post2019_mean_spread": 0.023093493423371695,
-      "post2019_nominal_ci95": [0.007021337945704043, 0.040068665298537254],
-      "post2019_n": 22
+      "post2019_mean_spread": 0.0241242476066888,
+      "post2019_nominal_ci95": [0.0082073745965059, 0.0403792422315655],
+      "post2019_n": 23
     },
     "three_month": {
-      "development_mean_spread": 0.04173639305153804,
-      "development_nominal_ci95": [0.014073789833590271, 0.07024357473065922],
+      "development_mean_spread": 0.0417364133735726,
+      "development_nominal_ci95": [0.0140736180080647, 0.0702434607314046],
       "development_n": 23,
-      "post2019_mean_spread": 0.06423478252240605,
-      "post2019_nominal_ci95": [0.02714026725291399, 0.10394191193410188],
+      "post2019_mean_spread": 0.0642347623855543,
+      "post2019_nominal_ci95": [0.0271402602623277, 0.1039418353344343],
       "post2019_n": 11
     },
     "six_month": {
-      "development_mean_spread": 0.0458236927758143,
-      "development_nominal_ci95": [-0.041714851479065854, 0.12316111507768338],
+      "development_mean_spread": 0.0458236778890648,
+      "development_nominal_ci95": [-0.0417151550811747, 0.1231613302596981],
       "development_n": 15,
-      "post2019_mean_spread": 0.12002193184991951,
-      "post2019_nominal_ci95": [0.0674573957167012, 0.17606179989453322],
+      "post2019_mean_spread": 0.12002184447885,
+      "post2019_nominal_ci95": [0.0674571556110397, 0.1760617630458436],
       "post2019_n": 7
     },
     "interpretation": "This is the most coherent candidate for an isolated Phase B equity-over-duration override, not a statistically confirmed relationship."
@@ -109,22 +117,22 @@
     "regime": "Stagflation Pressure",
     "comparison": "SPY total return minus GLD total return",
     "one_month": {
-      "development_mean_spread": -0.014836734435053787,
-      "development_nominal_ci95": [-0.04634984855699989, 0.01575104452221532],
-      "post2019_mean_spread": -0.010465591638455465,
-      "post2019_nominal_ci95": [-0.035202126577604374, 0.014778396047106344]
+      "development_mean_spread": -0.0148366500698208,
+      "development_nominal_ci95": [-0.0463498006843168, 0.0157510905480599],
+      "post2019_mean_spread": -0.0104655711882987,
+      "post2019_nominal_ci95": [-0.0352020986792717, 0.0147784588226654]
     },
     "three_month": {
-      "development_mean_spread": -0.04039757753566887,
-      "development_nominal_ci95": [-0.11636926567476712, 0.027926324786558446],
-      "post2019_mean_spread": -0.041272189806833226,
-      "post2019_nominal_ci95": [-0.11274610148654726, 0.04560460064497046]
+      "development_mean_spread": -0.0403973772349019,
+      "development_nominal_ci95": [-0.1163691092502551, 0.0279264440995895],
+      "post2019_mean_spread": -0.0412722037376385,
+      "post2019_nominal_ci95": [-0.1127461276023566, 0.0456046047703248]
     },
     "six_month": {
-      "development_mean_spread": -0.060800158972846075,
-      "development_nominal_ci95": [-0.1419561408772138, 0.018090466504132048],
-      "post2019_mean_spread": -0.09208739381314383,
-      "post2019_nominal_ci95": [-0.172331486403454, -0.01768908841015945]
+      "development_mean_spread": -0.0608000109666908,
+      "development_nominal_ci95": [-0.1419559484133528, 0.018090487961512],
+      "post2019_mean_spread": -0.0920874195557629,
+      "post2019_nominal_ci95": [-0.1723315424575409, -0.0176891131716033]
     },
     "interpretation": "Gold-over-equity direction is coherent across both eras and all three horizons but remains exploratory and weaker than the selected Reflation candidate."
   },
@@ -132,27 +140,27 @@
     "regime": "Slowdown / Disinflation",
     "comparison": "TLT total return minus GLD total return",
     "one_month": {
-      "development_mean_spread": 0.007817107142967992,
-      "development_nominal_ci95": [-0.009608865365669211, 0.025597966847099668],
+      "development_mean_spread": 0.0078170390616185,
+      "development_nominal_ci95": [-0.0096089297975341, 0.0255979494606547],
       "development_n": 46,
-      "post2019_mean_spread": -0.02194864431433932,
-      "post2019_nominal_ci95": [-0.0471353917584941, 0.0019949935151601585],
+      "post2019_mean_spread": -0.0219485991757016,
+      "post2019_nominal_ci95": [-0.0471353426667832, 0.0019949654980925],
       "post2019_n": 25
     },
     "three_month": {
-      "development_mean_spread": 0.00602276949672659,
-      "development_nominal_ci95": [-0.034306573673272944, 0.04654687100470743],
+      "development_mean_spread": 0.0060226715853549,
+      "development_nominal_ci95": [-0.0343067245993945, 0.046546628871348],
       "development_n": 21,
-      "post2019_mean_spread": -0.08495017093893946,
-      "post2019_nominal_ci95": [-0.13152168256371996, -0.036798651746716864],
+      "post2019_mean_spread": -0.0849500912701773,
+      "post2019_nominal_ci95": [-0.1315214935371141, -0.0367985508285473],
       "post2019_n": 14
     },
     "six_month": {
-      "development_mean_spread": -0.023453478952004076,
-      "development_nominal_ci95": [-0.08428902438902776, 0.03470496620948832],
+      "development_mean_spread": -0.0234534841397378,
+      "development_nominal_ci95": [-0.0842886839403716, 0.0347048796000522],
       "development_n": 14,
-      "post2019_mean_spread": -0.17050263492984874,
-      "post2019_nominal_ci95": [-0.26867544370477847, -0.08868818498753207],
+      "post2019_mean_spread": -0.1705026158982084,
+      "post2019_nominal_ci95": [-0.2686754350970935, -0.0886882007836618],
       "post2019_n": 8
     },
     "interpretation": "The relative duration-versus-gold preference changes materially by era; neither 'slowdown means long duration' nor 'slowdown means gold' should be hard-coded from the full-history winner table."
