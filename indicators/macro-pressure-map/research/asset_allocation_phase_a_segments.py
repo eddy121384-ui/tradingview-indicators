@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -11,11 +12,13 @@ import pandas as pd
 from asset_allocation_phase_a import REGIMES, summarize_forward_returns
 from asset_allocation_phase_a_frozen import load_frozen_transitions, map_regimes_to_outcome_calendar
 from asset_allocation_relative import PAIRS, summarize_relative_returns
+from issue_64_durable_validation import validate_phase_a_generated_evidence
 from issue_64_outcome_snapshot import load_frozen_prices
 
 DEVELOPMENT_START = pd.Timestamp("2007-01-04")
 DEVELOPMENT_END = pd.Timestamp("2019-12-31")
 EXPLORATORY_START = pd.Timestamp("2020-01-01")
+PHASE_A_DECISION = Path(__file__).resolve().parent / "decisions" / "issue-64-phase-a.json"
 
 
 def load_segment_prices(end: str | None = None) -> pd.DataFrame:
@@ -149,9 +152,16 @@ def run(output_dir: Path, end: str | None = None) -> None:
     leader_stability.to_csv(output_dir / "phase-a-segment-leader-stability.csv", index=False)
     relative_stability.to_csv(output_dir / "phase-a-segment-relative-stability.csv", index=False)
 
+    durable_audit = validate_phase_a_generated_evidence(output_dir, PHASE_A_DECISION)
+    (output_dir / "phase-a-durable-validation.json").write_text(
+        json.dumps(durable_audit, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
+
     print(
         f"leader comparisons={len(leader_stability)} same={int(leader_stability['same_leader'].sum())}; "
-        f"relative comparisons={len(relative_stability)} same-sign={int(relative_stability['same_point_sign'].sum())}"
+        f"relative comparisons={len(relative_stability)} same-sign={int(relative_stability['same_point_sign'].sum())}; "
+        f"durable={durable_audit['validated']}"
     )
 
 
