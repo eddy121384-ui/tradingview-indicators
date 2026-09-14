@@ -8,6 +8,7 @@ on:
       - "indicators/macro-pressure-map/research/data/issue-64-*"
       - "indicators/macro-pressure-map/research/decisions/issue-64-*"
       - "indicators/macro-pressure-map/research/issue-64-asset-allocation-spec.md"
+      - "indicators/macro-pressure-map/research/requirements-issue-64-lock.txt"
       - ".github/workflows/macro-pressure-map-asset-allocation.yml"
 
 permissions:
@@ -22,10 +23,30 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.11.16"
 
-      - name: Install research dependencies
-        run: python -m pip install --upgrade pip pandas numpy scipy scikit-learn yfinance pytest
+      - name: Install locked Issue 64 research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+          python - <<'PY'
+          from importlib.metadata import version
+          from pathlib import Path
+
+          lock = Path("requirements-issue-64-lock.txt")
+          checked = {}
+          for raw in lock.read_text().splitlines():
+              line = raw.strip()
+              if not line or line.startswith("#"):
+                  continue
+              name, expected = line.split("==", 1)
+              actual = version(name)
+              assert actual == expected, (name, expected, actual)
+              checked[name] = actual
+          print({"locked_packages_verified": len(checked), "python_lock": "3.11.16", "pip_lock": "26.2.1"})
+          PY
 
       - name: Run focused Issue 64 tests
         working-directory: indicators/macro-pressure-map/research
