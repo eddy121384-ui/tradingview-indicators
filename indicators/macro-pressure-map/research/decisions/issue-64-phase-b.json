@@ -64,17 +64,9 @@
     "regime_semantics": "prior-bar V6.6 core regime available for the current return row",
     "full_history_v66_reflation_override": {
       "annualized_arithmetic_net_return": 0.0914884792540551,
-      "annualized_asset_contribution": {
-        "SPY": 0.055465685893135,
-        "TLT": 0.015393299013749,
-        "GLD": 0.0215207752173416
-      },
+      "annualized_asset_contribution": {"SPY": 0.055465685893135, "TLT": 0.015393299013749, "GLD": 0.0215207752173416},
       "annualized_transaction_cost_residual": -0.0008912808701721,
-      "reflation_realized_average_allocation": {
-        "SPY": 0.6033902647344352,
-        "TLT": 0.1969809435059525,
-        "GLD": 0.1996287917596121
-      },
+      "reflation_realized_average_allocation": {"SPY": 0.6033902647344352, "TLT": 0.1969809435059525, "GLD": 0.1996287917596121},
       "reflation_annualized_net_return_contribution": 0.0258164530668697,
       "slowdown_disinflation_annualized_net_return_contribution": 0.0403842870572696
     },
@@ -92,7 +84,7 @@
   "posthoc_realized_exposure_match": {
     "noncausal_attribution_only": true,
     "matching_basis": "realized average invested_weight_* exposure after drift and rebalance, solved post-hoc on the realized return path",
-    "full_history": {
+    "full_reused_history": {
       "max_abs_invested_weight_mismatch": 5.551115123125783e-17,
       "delta_CAGR": 0.005142156703210374,
       "delta_Sharpe": 0.05594954303613009,
