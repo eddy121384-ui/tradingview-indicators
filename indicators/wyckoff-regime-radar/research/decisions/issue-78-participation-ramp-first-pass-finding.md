@@ -119,10 +119,20 @@ Advance **Persistence Ramp** and **Excursion-Proof Ramp** as the two interpretab
 
 Downgrade **Persistence + Health Gate** for now because it adds complexity without a clear frontier improvement.
 
+## TradingView visual audit
+
+The two surviving ramps are now implemented in the Issue #78 TradingView Position Lifecycle visualizer.
+
+Default visual mode is **Excursion-Proof × Gentle + Damage Latch**, with a single signed final target-exposure staircase to keep the chart readable. Users can switch the Participation Ramp among `Full-at-entry`, `Persistence`, and `Excursion-Proof`, and switch Damage management between `Gentle + Latch` and `Balanced + Latch`.
+
+The chart marks `試 / 加 / 滿 / 減`, while optional component lines expose the Participation cap and Damage cap separately. The final next-bar target remains `min(participation_cap, damage_latch_cap)`.
+
+This visual pass is for causal/manual auditing. It does not upgrade the discovery result to production validation.
+
 Before any production claim:
 
-1. freeze the two surviving ramp definitions;
-2. add them to the TradingView research visualizer so false starts and add-on behavior can be visually audited;
+1. manually compile and visually audit the generated Pine in TradingView;
+2. freeze the two surviving ramp definitions;
 3. test unchanged rules on new heterogeneous evidence — especially equities, commodities and weekly data;
 4. only then decide whether either ramp belongs in the practical exposure state machine.
 
