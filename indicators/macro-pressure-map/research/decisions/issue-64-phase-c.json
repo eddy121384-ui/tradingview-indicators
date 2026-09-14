@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "issue": 64,
   "phase": "C",
   "purpose": "Stagflation gold-over-equity override robustness checkpoint",
@@ -16,6 +16,7 @@
     "price_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
     "phase_c_replay_max_abs_net_return_error_bound": 1e-12,
     "exposure_match_max_abs_invested_weight_mismatch_bound": 1e-9,
+    "contribution_value_tolerance": 1e-12,
     "required_leaveout_sign": "negative_active_log_and_negative_delta_CAGR_and_Sharpe_in_both_eras",
     "locked_environment_source_run": 34800583302
   },
@@ -27,24 +28,33 @@
     "delta_annualized_turnover": 1.3581473743755843
   },
   "portfolio_contribution_audit": {
-    "source_workflow_run": 33492086706,
-    "source_head_sha": "51a9998ac0b370bdda8e2ccb5dc6e0e5e79e8b0e",
-    "phase_c_artifact_id": 9794326632,
-    "phase_c_artifact_sha256": "a2185cc603fafbdba6dc61bde43f05ca6f2ca8337b9ee0997d1ce0265dccb159",
+    "source_workflow_run": 34802605976,
+    "source_head_sha": "f59330ea467a849dc68711b4df41cf72d8c8a84d",
+    "phase_c_artifact_id": 10331809250,
+    "phase_c_artifact_sha256": "b0707c96366d5ddb2bf592ae6e8398b7380985f403b3e8f995b7d937645d6aa7",
     "price_source_mode": "committed_frozen_snapshot",
     "price_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
     "regime_semantics": "prior-bar V6.6 core regime available for the current return row",
+    "binding_scope": "full-history verdict-bearing Phase C asset contributions, Stagflation/Reflation/Slowdown regime contributions, Stagflation realized allocation, Phase B Stagflation comparator, and the derived Stagflation improvement",
     "full_history_phase_c_combined": {
-      "annualized_arithmetic_net_return": 0.093727,
-      "annualized_asset_contribution": {"SPY": 0.058746, "TLT": 0.015361, "GLD": 0.021190},
-      "annualized_transaction_cost_residual": -0.001570,
-      "stagflation_realized_average_allocation": {"SPY": 0.198736, "TLT": 0.397855, "GLD": 0.403408},
-      "stagflation_annualized_net_return_contribution": -0.005559,
-      "reflation_annualized_net_return_contribution": 0.025816,
-      "slowdown_disinflation_annualized_net_return_contribution": 0.040424
+      "annualized_arithmetic_net_return": 0.09372740893657161,
+      "annualized_asset_contribution": {
+        "SPY": 0.058746421653720765,
+        "TLT": 0.015361041477730963,
+        "GLD": 0.021190075262191355
+      },
+      "annualized_transaction_cost_residual": -0.0015701294570714562,
+      "stagflation_realized_average_allocation": {
+        "SPY": 0.19873644220888248,
+        "TLT": 0.397855441780028,
+        "GLD": 0.40340811601108945
+      },
+      "stagflation_annualized_net_return_contribution": -0.005559127630731675,
+      "reflation_annualized_net_return_contribution": 0.02581625821933896,
+      "slowdown_disinflation_annualized_net_return_contribution": 0.04042424018582315
     },
-    "full_history_phase_b_stagflation_regime_contribution": -0.007945,
-    "stagflation_regime_contribution_improvement_vs_phase_b": 0.002386,
+    "full_history_phase_b_stagflation_regime_contribution": -0.007944645034426172,
+    "stagflation_regime_contribution_improvement_vs_phase_b": 0.0023855174036944973,
     "max_abs_asset_reconciliation_error": 2.7755575615628914e-17,
     "max_abs_regime_reconciliation_error": 2.7755575615628914e-17,
     "interpretation": "The Stagflation override historically reduces losses in Stagflation rows rather than making those rows positive in absolute return contribution. This strengthens the risk-overlay interpretation without changing the episode-concentration robustness failure."
