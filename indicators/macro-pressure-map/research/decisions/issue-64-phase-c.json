@@ -7,27 +7,15 @@
   "production_v66_parameters_modified": false,
   "weight_magnitude_sweep_performed": false,
   "preregistered_templates": {
-    "neutral": {
-      "SPY": 0.4,
-      "TLT": 0.4,
-      "GLD": 0.2
-    },
-    "reflation": {
-      "SPY": 0.6,
-      "TLT": 0.2,
-      "GLD": 0.2
-    },
-    "stagflation": {
-      "SPY": 0.2,
-      "TLT": 0.4,
-      "GLD": 0.4
-    }
+    "neutral": {"SPY": 0.4, "TLT": 0.4, "GLD": 0.2},
+    "reflation": {"SPY": 0.6, "TLT": 0.2, "GLD": 0.2},
+    "stagflation": {"SPY": 0.2, "TLT": 0.4, "GLD": 0.4}
   },
   "regenerated_evidence_binding": {
     "price_source_mode": "committed_frozen_snapshot",
     "price_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
     "phase_c_replay_max_abs_net_return_error_bound": 1e-12,
-    "exposure_match_max_abs_invested_weight_mismatch_bound": 1e-09,
+    "exposure_match_max_abs_invested_weight_mismatch_bound": 1e-9,
     "required_leaveout_sign": "negative_active_log_and_negative_delta_CAGR_and_Sharpe_in_both_eras",
     "locked_environment_source_run": 34800583302
   },
@@ -48,17 +36,9 @@
     "regime_semantics": "prior-bar V6.6 core regime available for the current return row",
     "full_history_phase_c_combined": {
       "annualized_arithmetic_net_return": 0.093727,
-      "annualized_asset_contribution": {
-        "SPY": 0.058746,
-        "TLT": 0.015361,
-        "GLD": 0.02119
-      },
-      "annualized_transaction_cost_residual": -0.00157,
-      "stagflation_realized_average_allocation": {
-        "SPY": 0.198736,
-        "TLT": 0.397855,
-        "GLD": 0.403408
-      },
+      "annualized_asset_contribution": {"SPY": 0.058746, "TLT": 0.015361, "GLD": 0.021190},
+      "annualized_transaction_cost_residual": -0.001570,
+      "stagflation_realized_average_allocation": {"SPY": 0.198736, "TLT": 0.397855, "GLD": 0.403408},
       "stagflation_annualized_net_return_contribution": -0.005559,
       "reflation_annualized_net_return_contribution": 0.025816,
       "slowdown_disinflation_annualized_net_return_contribution": 0.040424
@@ -111,24 +91,9 @@
     }
   },
   "cost_sensitivity_full_history": {
-    "zero_bps": {
-      "phase_c_CAGR": 0.094765,
-      "phase_b_CAGR": 0.091606,
-      "phase_c_Sharpe": 0.978661,
-      "phase_b_Sharpe": 0.951403
-    },
-    "five_bps": {
-      "phase_c_CAGR": 0.093047,
-      "phase_b_CAGR": 0.090633,
-      "phase_c_Sharpe": 0.962452,
-      "phase_b_Sharpe": 0.942191
-    },
-    "ten_bps": {
-      "phase_c_CAGR": 0.091332,
-      "phase_b_CAGR": 0.089661,
-      "phase_c_Sharpe": 0.946231,
-      "phase_b_Sharpe": 0.932971
-    }
+    "zero_bps": {"phase_c_CAGR": 0.094765, "phase_b_CAGR": 0.091606, "phase_c_Sharpe": 0.978661, "phase_b_Sharpe": 0.951403},
+    "five_bps": {"phase_c_CAGR": 0.093047, "phase_b_CAGR": 0.090633, "phase_c_Sharpe": 0.962452, "phase_b_Sharpe": 0.942191},
+    "ten_bps": {"phase_c_CAGR": 0.091332, "phase_b_CAGR": 0.089661, "phase_c_Sharpe": 0.946231, "phase_b_Sharpe": 0.932971}
   },
   "verdict": "risk_management_value_only",
   "verdict_rationale": "stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated",
