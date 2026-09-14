@@ -107,6 +107,16 @@ Do not invent real bid/ask or commission estimates for heterogeneous instruments
 
 Instead report a generic normalized friction sensitivity in entry-ATR units per 100% exposure turnover and, where gross return is positive, the policy's break-even normalized friction. This is only a portability diagnostic until instrument mapping is performed.
 
+Freeze the descriptive friction grid before viewing results:
+
+- `0.00 ATR` per 100% exposure turnover;
+- `0.01 ATR` per 100% exposure turnover;
+- `0.02 ATR` per 100% exposure turnover;
+- `0.05 ATR` per 100% exposure turnover;
+- `0.10 ATR` per 100% exposure turnover.
+
+These values are stress units, not estimates of real transaction costs.
+
 ## Decision language
 
 Allowed conclusions:
