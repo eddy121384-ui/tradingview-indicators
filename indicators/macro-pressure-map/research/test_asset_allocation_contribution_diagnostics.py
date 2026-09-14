@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
 
-from asset_allocation_contribution_diagnostics import build_contribution_tables
+from asset_allocation_contribution_diagnostics import (
+    build_contribution_tables,
+    validate_phase_c_durable_contribution_audit,
+)
 
 ASSETS = ["SPY", "TLT", "GLD"]
 
@@ -95,3 +99,84 @@ def test_asset_contribution_rejects_gross_return_mismatch() -> None:
         assert "do not reproduce gross return" in str(exc)
     else:
         raise AssertionError("gross-return mismatch should fail closed")
+
+
+def test_phase_c_durable_audit_rejects_value_drift_even_when_reconciliation_is_zero() -> None:
+    asset = pd.DataFrame(
+        [
+            {"strategy": "phase_c_combined", "segment": "full_reused_history", "component": "SPY", "annualized_arithmetic_contribution": 0.10},
+            {"strategy": "phase_c_combined", "segment": "full_reused_history", "component": "TLT", "annualized_arithmetic_contribution": 0.20},
+            {"strategy": "phase_c_combined", "segment": "full_reused_history", "component": "GLD", "annualized_arithmetic_contribution": 0.30},
+            {"strategy": "phase_c_combined", "segment": "full_reused_history", "component": "transaction_cost_residual", "annualized_arithmetic_contribution": -0.01},
+        ]
+    )
+    regime = pd.DataFrame(
+        [
+            {
+                "strategy": "phase_c_combined",
+                "segment": "full_reused_history",
+                "executed_lagged_regime": "Stagflation Pressure",
+                "average_invested_weight_SPY": 0.20,
+                "average_invested_weight_TLT": 0.40,
+                "average_invested_weight_GLD": 0.40,
+                "annualized_net_return_contribution": -0.05,
+            },
+            {
+                "strategy": "phase_c_combined",
+                "segment": "full_reused_history",
+                "executed_lagged_regime": "Reflation / Inflation Rising",
+                "annualized_net_return_contribution": 0.08,
+            },
+            {
+                "strategy": "phase_c_combined",
+                "segment": "full_reused_history",
+                "executed_lagged_regime": "Slowdown / Disinflation",
+                "annualized_net_return_contribution": 0.06,
+            },
+            {
+                "strategy": "phase_b_reflation_only",
+                "segment": "full_reused_history",
+                "executed_lagged_regime": "Stagflation Pressure",
+                "annualized_net_return_contribution": -0.07,
+            },
+        ]
+    )
+    reconciliation = pd.DataFrame(
+        [
+            {
+                "strategy": "phase_c_combined",
+                "segment": "full_reused_history",
+                "annualized_arithmetic_net_return": 0.59,
+                "asset_reconciliation_error": 0.0,
+                "regime_reconciliation_error": 0.0,
+            }
+        ]
+    )
+    decision = {
+        "schema_version": 5,
+        "regenerated_evidence_binding": {"contribution_value_tolerance": 1e-12},
+        "portfolio_contribution_audit": {
+            "full_history_phase_c_combined": {
+                "annualized_arithmetic_net_return": 0.59,
+                "annualized_asset_contribution": {"SPY": 0.10, "TLT": 0.20, "GLD": 0.30},
+                "annualized_transaction_cost_residual": -0.01,
+                "stagflation_realized_average_allocation": {"SPY": 0.20, "TLT": 0.40, "GLD": 0.40},
+                "stagflation_annualized_net_return_contribution": -0.05,
+                "reflation_annualized_net_return_contribution": 0.08,
+                "slowdown_disinflation_annualized_net_return_contribution": 0.06,
+            },
+            "full_history_phase_b_stagflation_regime_contribution": -0.07,
+            "stagflation_regime_contribution_improvement_vs_phase_b": 0.02,
+        },
+    }
+
+    validated = validate_phase_c_durable_contribution_audit(asset, regime, reconciliation, decision)
+    assert validated["validated"] is True
+    assert validated["max_abs_error"] == 0.0
+
+    drifted = regime.copy()
+    drifted.loc[drifted["executed_lagged_regime"].eq("Stagflation Pressure") & drifted["strategy"].eq("phase_c_combined"), "annualized_net_return_contribution"] = -0.04
+    drifted.loc[drifted["executed_lagged_regime"].eq("Reflation / Inflation Rising"), "annualized_net_return_contribution"] = 0.07
+
+    with pytest.raises(RuntimeError, match="durable contribution audit drifted"):
+        validate_phase_c_durable_contribution_audit(asset, drifted, reconciliation, decision)
