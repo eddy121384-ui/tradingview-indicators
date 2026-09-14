@@ -1,5 +1,5 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "issue": 64,
   "phase": "B",
   "artifact_role": "durable curated Phase B portfolio and attribution evidence",
@@ -7,6 +7,12 @@
   "production_v66_parameters_modified": false,
   "primary_strategy_modified_after_results": false,
   "evidence_status": "development/reused exploratory history only; not untouched OOS",
+  "regenerated_evidence_binding": {
+    "numeric_tolerance": 1e-12,
+    "exposure_match_max_abs_invested_weight_mismatch_bound": 1e-9,
+    "contribution_reconciliation_tolerance": 1e-12,
+    "semantics": "Fail closed if regenerated primary portfolio metrics, cost sensitivity, realized-exposure attribution, contribution values, or episode diagnostics drift from this durable decision."
+  },
   "preregistered_rule": {
     "default_weights": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
     "reflation_weights": {"SPY": 0.60, "TLT": 0.20, "GLD": 0.20},
@@ -21,83 +27,91 @@
   },
   "primary_full_history_result": {
     "v66_reflation_override": {
-      "CAGR": 0.0906331733034633,
-      "Sharpe": 0.9421904676017993,
-      "maximum_drawdown": -0.2542998472319473,
-      "Calmar": 0.3564027831318225,
-      "annualized_turnover": 1.7825654327142146,
+      "CAGR": 0.0906331449779376,
+      "Sharpe": 0.9421902942345296,
+      "maximum_drawdown": -0.2542999569442611,
+      "Calmar": 0.3564025179831355,
+      "annualized_turnover": 1.7825653363539522,
       "rebalance_count": 386,
-      "transaction_cost_drag": 0.0170811654070192
+      "transaction_cost_drag": 0.0170811644915498
     },
     "fixed_neutral_40_40_20": {
-      "CAGR": 0.081840235627022,
-      "Sharpe": 0.8754688814622827,
-      "maximum_drawdown": -0.2542998472319479,
-      "Calmar": 0.3218257364990677
+      "CAGR": 0.0818401922265883,
+      "Sharpe": 0.8754683688099284,
+      "maximum_drawdown": -0.2542999569442602,
+      "Calmar": 0.321825426987889
     },
     "incremental_vs_neutral": {
-      "delta_CAGR": 0.0087929376764412,
-      "delta_Sharpe": 0.0667215861395164,
-      "delta_maximum_drawdown": 5.551115123125784e-16,
-      "delta_Calmar": 0.0345770466327548
+      "delta_CAGR": 0.0087929527513492,
+      "delta_Sharpe": 0.0667219254246013,
+      "delta_maximum_drawdown": -8.881784197001252e-16,
+      "delta_Calmar": 0.0345770909952465
     },
     "causal_inverse_volatility_context": {
-      "CAGR": 0.0905841088767722,
-      "Sharpe": 0.984942506653074,
-      "maximum_drawdown": -0.2246389838167029,
-      "Calmar": 0.4032430495264595
+      "CAGR": 0.0905839540837547,
+      "Sharpe": 0.9849407131623932,
+      "maximum_drawdown": -0.224639039120468,
+      "Calmar": 0.4032422611778398
     }
   },
   "portfolio_contribution_audit": {
-    "source_workflow_run": 33492086706,
-    "source_head_sha": "51a9998ac0b370bdda8e2ccb5dc6e0e5e79e8b0e",
-    "phase_b_artifact_id": 9794325559,
-    "phase_b_artifact_sha256": "cd381e633323c620f1c5c51bebe823711199212f7f166eea2bcfe6610f839712",
+    "source_workflow_run": 34818556552,
+    "source_head_sha": "ede0bfa8f800366b9a2860a9900350ba7f5435c0",
+    "phase_b_artifact_id": 10337795799,
+    "phase_b_artifact_sha256": "81707a657aba0a6ea71e0c17fad6cdb9efa3b1d73c4459235ba718e481699d66",
     "price_source_mode": "committed_frozen_snapshot",
     "price_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
     "regime_semantics": "prior-bar V6.6 core regime available for the current return row",
     "full_history_v66_reflation_override": {
-      "annualized_arithmetic_net_return": 0.091488,
-      "annualized_asset_contribution": {"SPY": 0.055466, "TLT": 0.015393, "GLD": 0.021521},
-      "annualized_transaction_cost_residual": -0.000891,
-      "reflation_realized_average_allocation": {"SPY": 0.603390, "TLT": 0.196981, "GLD": 0.199629},
-      "reflation_annualized_net_return_contribution": 0.025816,
-      "slowdown_disinflation_annualized_net_return_contribution": 0.040384
+      "annualized_arithmetic_net_return": 0.0914884792540551,
+      "annualized_asset_contribution": {
+        "SPY": 0.055465685893135,
+        "TLT": 0.015393299013749,
+        "GLD": 0.0215207752173416
+      },
+      "annualized_transaction_cost_residual": -0.0008912808701721,
+      "reflation_realized_average_allocation": {
+        "SPY": 0.6033902647344352,
+        "TLT": 0.1969809435059525,
+        "GLD": 0.1996287917596121
+      },
+      "reflation_annualized_net_return_contribution": 0.0258164530668697,
+      "slowdown_disinflation_annualized_net_return_contribution": 0.0403842870572696
     },
-    "full_history_fixed_neutral_reflation_regime_contribution": 0.017054,
-    "max_abs_asset_reconciliation_error": 2.7755575615628914e-17,
-    "max_abs_regime_reconciliation_error": 2.7755575615628914e-17,
+    "full_history_fixed_neutral_reflation_regime_contribution": 0.0170544379170408,
+    "max_abs_asset_reconciliation_error": 4.163336342344337e-17,
+    "max_abs_regime_reconciliation_error": 2.775557561562892e-17,
     "interpretation": "The contribution audit confirms that the historical Reflation advantage is concentrated in the intended lagged Reflation rows. It improves attribution transparency but does not alter the existing robustness verdict."
   },
   "cost_sensitivity": {
-    "strategy_CAGR_0bp": 0.0916057144304238,
-    "strategy_CAGR_5bp": 0.0906331733034633,
-    "strategy_CAGR_10bp": 0.0896614081697271,
-    "neutral_CAGR_10bp": 0.0817547712396922
+    "strategy_CAGR_0bp": 0.0916056860270424,
+    "strategy_CAGR_5bp": 0.0906331449779376,
+    "strategy_CAGR_10bp": 0.0896613799219556,
+    "neutral_CAGR_10bp": 0.0817547278254295
   },
   "posthoc_realized_exposure_match": {
     "noncausal_attribution_only": true,
     "matching_basis": "realized average invested_weight_* exposure after drift and rebalance, solved post-hoc on the realized return path",
     "full_history": {
-      "max_abs_invested_weight_mismatch": 2.498001805406602e-16,
-      "delta_CAGR": 0.0051422329616983,
-      "delta_Sharpe": 0.0559501569594586,
-      "delta_maximum_drawdown": -0.0057206324426802,
-      "delta_Calmar": 0.0124844792817459
+      "max_abs_invested_weight_mismatch": 5.551115123125783e-17,
+      "delta_CAGR": 0.005142156703210374,
+      "delta_Sharpe": 0.05594954303613009,
+      "delta_maximum_drawdown": -0.005720638145192747,
+      "delta_Calmar": 0.012484171566588653
     },
     "development_pre2020": {
-      "max_abs_invested_weight_mismatch": 2.53630449975617e-13,
-      "delta_CAGR": 0.008058325423895,
-      "delta_Sharpe": 0.0973723504321002,
-      "delta_maximum_drawdown": 0.0252047998151978,
-      "delta_Calmar": 0.0902948257289366
+      "max_abs_invested_weight_mismatch": 1.1102230246251565e-16,
+      "delta_CAGR": 0.008058238677986745,
+      "delta_Sharpe": 0.09737163678153482,
+      "delta_maximum_drawdown": 0.02520479930035291,
+      "delta_Calmar": 0.09029460728491284
     },
     "post2019_reused_exploratory": {
-      "max_abs_invested_weight_mismatch": 8.326672684688674e-17,
-      "delta_CAGR": 0.0009618736428957,
-      "delta_Sharpe": 0.0111009038398705,
-      "delta_maximum_drawdown": -0.004727999486678,
-      "delta_Calmar": -0.0027660235943954
+      "max_abs_invested_weight_mismatch": 2.7755575615628914e-17,
+      "delta_CAGR": 0.0009618187078079404,
+      "delta_Sharpe": 0.011100488226961414,
+      "delta_maximum_drawdown": -0.00472800376486382,
+      "delta_Calmar": -0.0027662362276255625
     }
   },
   "posthoc_episode_concentration": {
