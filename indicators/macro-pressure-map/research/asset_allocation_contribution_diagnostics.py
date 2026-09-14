@@ -29,9 +29,11 @@ import pandas as pd
 
 from asset_allocation_phase_a import ASSETS
 from asset_allocation_phase_a_frozen import load_frozen_transitions, map_regimes_to_outcome_calendar
+from issue_64_durable_validation import validate_phase_b_generated_evidence
 from issue_64_outcome_snapshot import load_frozen_prices
 
 HERE = Path(__file__).resolve().parent
+PHASE_B_DECISION = HERE / "decisions" / "issue-64-phase-b.json"
 PHASE_C_DECISION = HERE / "decisions" / "issue-64-phase-c.json"
 FULL_SEGMENT = "full_reused_history"
 PHASE_C_STRATEGY = "phase_c_combined"
@@ -412,6 +414,9 @@ def run(phase_dir: Path, phase_prefix: str) -> dict:
     regime.to_csv(regime_path, index=False)
     reconciliation.to_csv(reconciliation_path, index=False)
 
+    if phase_prefix == "phase-b":
+        durable_validation = validate_phase_b_generated_evidence(phase_dir, PHASE_B_DECISION)
+
     result = {
         "phase_prefix": phase_prefix,
         "price_source_mode": price_manifest.get("source_mode"),
@@ -425,7 +430,10 @@ def run(phase_dir: Path, phase_prefix: str) -> dict:
         "regime_semantics": "executed_lagged_regime is prior-bar V6.6 core regime available for the current return row",
     }
     if durable_validation is not None:
-        result["durable_contribution_audit"] = durable_validation
+        if phase_prefix == "phase-b":
+            result["durable_phase_b_evidence_audit"] = durable_validation
+        else:
+            result["durable_contribution_audit"] = durable_validation
     (phase_dir / f"{phase_prefix}-contribution-manifest.json").write_text(
         json.dumps(result, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
         encoding="utf-8",
