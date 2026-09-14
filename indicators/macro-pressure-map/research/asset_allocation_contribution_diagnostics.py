@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -67,6 +68,10 @@ def _single_row(table: pd.DataFrame, table_name: str, **filters: object) -> pd.S
     return rows.iloc[0]
 
 
+def _reject_nonfinite_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON constant is not allowed in durable Phase C decision: {value}")
+
+
 def validate_phase_c_durable_contribution_audit(
     asset: pd.DataFrame,
     regime: pd.DataFrame,
@@ -86,13 +91,22 @@ def validate_phase_c_durable_contribution_audit(
     audit = decision["portfolio_contribution_audit"]
     expected_c = audit["full_history_phase_c_combined"]
     tolerance = float(binding["contribution_value_tolerance"])
-    if tolerance <= 0.0:
-        raise ValueError("contribution-value tolerance must be positive")
+    if not math.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("contribution-value tolerance must be finite and positive")
 
     observed_errors: dict[str, float] = {}
 
     def check(name: str, actual: float, expected: float) -> None:
-        error = abs(float(actual) - float(expected))
+        actual_value = float(actual)
+        expected_value = float(expected)
+        if not math.isfinite(actual_value) or not math.isfinite(expected_value):
+            raise ValueError(
+                "non-finite durable contribution value: "
+                f"check={name}, actual={actual_value}, expected={expected_value}"
+            )
+        error = abs(actual_value - expected_value)
+        if not math.isfinite(error):
+            raise ValueError(f"non-finite durable contribution error for {name}: {error}")
         observed_errors[name] = error
 
     full_recon = _single_row(
@@ -200,6 +214,8 @@ def validate_phase_c_durable_contribution_audit(
     )
 
     worst_name, max_abs_error = max(observed_errors.items(), key=lambda item: item[1])
+    if not math.isfinite(max_abs_error):
+        raise ValueError(f"non-finite maximum durable contribution error: {max_abs_error}")
     if max_abs_error > tolerance:
         raise RuntimeError(
             "Phase C durable contribution audit drifted: "
@@ -373,7 +389,10 @@ def run(phase_dir: Path, phase_prefix: str) -> dict:
 
     durable_validation = None
     if phase_prefix == "phase-c":
-        decision = json.loads(PHASE_C_DECISION.read_text(encoding="utf-8"))
+        decision = json.loads(
+            PHASE_C_DECISION.read_text(encoding="utf-8"),
+            parse_constant=_reject_nonfinite_json_constant,
+        )
         audit = decision["portfolio_contribution_audit"]
         if price_manifest.get("source_mode") != audit["price_source_mode"]:
             raise RuntimeError("Phase C contribution audit price-source mode drifted")
