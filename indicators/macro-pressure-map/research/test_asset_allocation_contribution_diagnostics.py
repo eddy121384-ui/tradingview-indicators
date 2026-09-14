@@ -180,3 +180,22 @@ def test_phase_c_durable_audit_rejects_value_drift_even_when_reconciliation_is_z
 
     with pytest.raises(RuntimeError, match="durable contribution audit drifted"):
         validate_phase_c_durable_contribution_audit(asset, drifted, reconciliation, decision)
+
+    original_expected = decision["portfolio_contribution_audit"]["full_history_phase_c_combined"]["stagflation_annualized_net_return_contribution"]
+    decision["portfolio_contribution_audit"]["full_history_phase_c_combined"]["stagflation_annualized_net_return_contribution"] = float("nan")
+    with pytest.raises(ValueError, match="non-finite durable contribution value"):
+        validate_phase_c_durable_contribution_audit(asset, regime, reconciliation, decision)
+    decision["portfolio_contribution_audit"]["full_history_phase_c_combined"]["stagflation_annualized_net_return_contribution"] = original_expected
+
+    nonfinite_observed = regime.copy()
+    nonfinite_observed.loc[
+        nonfinite_observed["executed_lagged_regime"].eq("Stagflation Pressure")
+        & nonfinite_observed["strategy"].eq("phase_c_combined"),
+        "annualized_net_return_contribution",
+    ] = np.inf
+    with pytest.raises(ValueError, match="non-finite durable contribution value"):
+        validate_phase_c_durable_contribution_audit(asset, nonfinite_observed, reconciliation, decision)
+
+    decision["regenerated_evidence_binding"]["contribution_value_tolerance"] = float("nan")
+    with pytest.raises(ValueError, match="tolerance must be finite and positive"):
+        validate_phase_c_durable_contribution_audit(asset, regime, reconciliation, decision)
