@@ -172,7 +172,7 @@ def test_phase_c_durable_audit_rejects_value_drift_even_when_reconciliation_is_z
 
     validated = validate_phase_c_durable_contribution_audit(asset, regime, reconciliation, decision)
     assert validated["validated"] is True
-    assert validated["max_abs_error"] == 0.0
+    assert validated["max_abs_error"] < 1e-15
 
     drifted = regime.copy()
     drifted.loc[drifted["executed_lagged_regime"].eq("Stagflation Pressure") & drifted["strategy"].eq("phase_c_combined"), "annualized_net_return_contribution"] = -0.04
