@@ -117,6 +117,25 @@ Freeze the descriptive friction grid before viewing results:
 
 These values are stress units, not estimates of real transaction costs.
 
+## Secondary temporal stability diagnostic
+
+The aggregate audit was run before this extra temporal slice was added. The following calendar-era diagnostic is frozen **before viewing any era-sliced outcomes** and is therefore secondary, not part of the original primary preregistration.
+
+Use the common nine-market period beginning 2010-01-01 and report each frozen policy unchanged in three calendar eras:
+
+- `2010-2014`;
+- `2015-2019`;
+- `2020-2026` through the accepted data endpoint.
+
+For each era report:
+
+- equal-market mean episode normalized return;
+- count of markets with positive mean episode return;
+- equal-market median profit factor;
+- episode count per market and total episode count.
+
+Do not retune or drop a policy based on any one era. The purpose is only to detect obvious concentration in one historical macro regime.
+
 ## Decision language
 
 Allowed conclusions:
