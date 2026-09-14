@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "issue": 64,
   "phase": "C",
   "purpose": "Stagflation gold-over-equity override robustness checkpoint",
@@ -7,16 +7,36 @@
   "production_v66_parameters_modified": false,
   "weight_magnitude_sweep_performed": false,
   "preregistered_templates": {
-    "neutral": {"SPY": 0.4, "TLT": 0.4, "GLD": 0.2},
-    "reflation": {"SPY": 0.6, "TLT": 0.2, "GLD": 0.2},
-    "stagflation": {"SPY": 0.2, "TLT": 0.4, "GLD": 0.4}
+    "neutral": {
+      "SPY": 0.4,
+      "TLT": 0.4,
+      "GLD": 0.2
+    },
+    "reflation": {
+      "SPY": 0.6,
+      "TLT": 0.2,
+      "GLD": 0.2
+    },
+    "stagflation": {
+      "SPY": 0.2,
+      "TLT": 0.4,
+      "GLD": 0.4
+    }
+  },
+  "regenerated_evidence_binding": {
+    "price_source_mode": "committed_frozen_snapshot",
+    "price_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+    "phase_c_replay_max_abs_net_return_error_bound": 1e-12,
+    "exposure_match_max_abs_invested_weight_mismatch_bound": 1e-09,
+    "required_leaveout_sign": "negative_active_log_and_negative_delta_CAGR_and_Sharpe_in_both_eras",
+    "locked_environment_source_run": 34800583302
   },
   "primary_full_history_incremental_vs_phase_b": {
-    "delta_CAGR": 0.002414,
-    "delta_Sharpe": 0.020261,
-    "delta_maximum_drawdown": 0.023567,
-    "delta_Calmar": 0.046867,
-    "delta_annualized_turnover": 1.358147
+    "delta_CAGR": 0.0024142951227597,
+    "delta_Sharpe": 0.0202608954391758,
+    "delta_maximum_drawdown": 0.0235671858788359,
+    "delta_Calmar": 0.0468667691278548,
+    "delta_annualized_turnover": 1.3581473743755843
   },
   "portfolio_contribution_audit": {
     "source_workflow_run": 33492086706,
@@ -28,9 +48,17 @@
     "regime_semantics": "prior-bar V6.6 core regime available for the current return row",
     "full_history_phase_c_combined": {
       "annualized_arithmetic_net_return": 0.093727,
-      "annualized_asset_contribution": {"SPY": 0.058746, "TLT": 0.015361, "GLD": 0.021190},
-      "annualized_transaction_cost_residual": -0.001570,
-      "stagflation_realized_average_allocation": {"SPY": 0.198736, "TLT": 0.397855, "GLD": 0.403408},
+      "annualized_asset_contribution": {
+        "SPY": 0.058746,
+        "TLT": 0.015361,
+        "GLD": 0.02119
+      },
+      "annualized_transaction_cost_residual": -0.00157,
+      "stagflation_realized_average_allocation": {
+        "SPY": 0.198736,
+        "TLT": 0.397855,
+        "GLD": 0.403408
+      },
       "stagflation_annualized_net_return_contribution": -0.005559,
       "reflation_annualized_net_return_contribution": 0.025816,
       "slowdown_disinflation_annualized_net_return_contribution": 0.040424
@@ -43,49 +71,64 @@
   },
   "realized_exposure_matched_attribution": {
     "full_reused_history": {
-      "delta_CAGR": 0.0026082324363878584,
-      "delta_Sharpe": 0.018147943933739308,
-      "delta_maximum_drawdown": 0.02145989160740136,
-      "delta_Calmar": 0.044657795027860436,
-      "delta_annualized_turnover": 1.3559543778446095
+      "delta_CAGR": 0.0026082309885093746,
+      "delta_Sharpe": 0.018147842923586732,
+      "delta_maximum_drawdown": 0.02145975032328018,
+      "delta_Calmar": 0.044657506657784396,
+      "delta_annualized_turnover": 1.355954413751561
     },
     "development_pre2020": {
-      "delta_CAGR": 0.0015048718508030579,
-      "delta_Sharpe": 0.0019615589884043327,
-      "delta_maximum_drawdown": -0.022617917218107464,
-      "delta_Calmar": -0.04294872981383341,
-      "delta_annualized_turnover": 1.3601205220796009
+      "delta_CAGR": 0.0015048696595079125,
+      "delta_Sharpe": 0.0019613146381334268,
+      "delta_maximum_drawdown": -0.02261910282568047,
+      "delta_Calmar": -0.04295112151704422,
+      "delta_annualized_turnover": 1.3601205730929513
     },
     "post2019_reused_exploratory": {
-      "delta_CAGR": 0.004541130159844142,
-      "delta_Sharpe": 0.03598554387794728,
-      "delta_maximum_drawdown": 0.020826134523374673,
-      "delta_Calmar": 0.0516872623941908,
-      "delta_annualized_turnover": 1.3499976818596067
+      "delta_CAGR": 0.0045411290005719085,
+      "delta_Sharpe": 0.035985559346449425,
+      "delta_maximum_drawdown": 0.020825991969424473,
+      "delta_Calmar": 0.051686999701958,
+      "delta_annualized_turnover": 1.349997693496335
     }
   },
   "episode_concentration": {
     "development_pre2020": {
       "largest_winning_episode_start": "2007-09-17",
       "largest_winning_episode_end": "2008-01-17",
-      "normal_active_log_return": 0.0132471691152789,
-      "active_log_return_after_leaveout": -0.048354054512697475,
-      "delta_CAGR_after_leaveout_vs_phase_b": -0.004138267792862971,
-      "delta_Sharpe_after_leaveout_vs_phase_b": -0.04909250194089321
+      "normal_active_log_return": 0.01324712886981283,
+      "active_log_return_after_leaveout": -0.04835400137240087,
+      "delta_CAGR_after_leaveout_vs_phase_b": -0.004138262988086394,
+      "delta_Sharpe_after_leaveout_vs_phase_b": -0.049092496330295
     },
     "post2019_reused_exploratory": {
       "largest_winning_episode_start": "2021-12-29",
       "largest_winning_episode_end": "2022-06-06",
-      "normal_active_log_return": 0.029494304330633714,
-      "active_log_return_after_leaveout": -0.0031929142037914193,
-      "delta_CAGR_after_leaveout_vs_phase_b": -0.0005267013012895116,
-      "delta_Sharpe_after_leaveout_vs_phase_b": -0.0039110751958379986
+      "normal_active_log_return": 0.029494296932776276,
+      "active_log_return_after_leaveout": -0.003192900452926639,
+      "delta_CAGR_after_leaveout_vs_phase_b": -0.0005266990593355558,
+      "delta_Sharpe_after_leaveout_vs_phase_b": -0.003911028874366784
     }
   },
   "cost_sensitivity_full_history": {
-    "zero_bps": {"phase_c_CAGR": 0.094765, "phase_b_CAGR": 0.091606, "phase_c_Sharpe": 0.978661, "phase_b_Sharpe": 0.951403},
-    "five_bps": {"phase_c_CAGR": 0.093047, "phase_b_CAGR": 0.090633, "phase_c_Sharpe": 0.962452, "phase_b_Sharpe": 0.942191},
-    "ten_bps": {"phase_c_CAGR": 0.091332, "phase_b_CAGR": 0.089661, "phase_c_Sharpe": 0.946231, "phase_b_Sharpe": 0.932971}
+    "zero_bps": {
+      "phase_c_CAGR": 0.094765,
+      "phase_b_CAGR": 0.091606,
+      "phase_c_Sharpe": 0.978661,
+      "phase_b_Sharpe": 0.951403
+    },
+    "five_bps": {
+      "phase_c_CAGR": 0.093047,
+      "phase_b_CAGR": 0.090633,
+      "phase_c_Sharpe": 0.962452,
+      "phase_b_Sharpe": 0.942191
+    },
+    "ten_bps": {
+      "phase_c_CAGR": 0.091332,
+      "phase_b_CAGR": 0.089661,
+      "phase_c_Sharpe": 0.946231,
+      "phase_b_Sharpe": 0.932971
+    }
   },
   "verdict": "risk_management_value_only",
   "verdict_rationale": "stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated",
