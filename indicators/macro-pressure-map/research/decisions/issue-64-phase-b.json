@@ -1,5 +1,5 @@
 {
-  "schema_version": 7,
+  "schema_version": 8,
   "issue": 64,
   "phase": "B",
   "artifact_role": "durable curated Phase B portfolio and attribution evidence",
@@ -11,7 +11,7 @@
     "numeric_tolerance": 1e-12,
     "exposure_match_max_abs_invested_weight_mismatch_bound": 1e-9,
     "contribution_reconciliation_tolerance": 1e-12,
-    "semantics": "Fail closed if regenerated primary portfolio metrics, cost sensitivity, realized-exposure attribution, contribution values, or episode diagnostics drift from this durable decision."
+    "semantics": "Fail closed if regenerated primary portfolio metrics, required fixed benchmarks, cost sensitivity, realized-exposure attribution, contribution values, or episode diagnostics drift from this durable decision."
   },
   "preregistered_rule": {
     "default_weights": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
@@ -40,6 +40,24 @@
       "Sharpe": 0.8754683688099284,
       "maximum_drawdown": -0.2542999569442602,
       "Calmar": 0.321825426987889
+    },
+    "fixed_60_40": {
+      "CAGR": 0.0828893352911765,
+      "Sharpe": 0.7655905540321938,
+      "maximum_drawdown": -0.3141399508328909,
+      "Calmar": 0.2638611710207791,
+      "annualized_turnover": 0.1337768722188235,
+      "rebalance_count": 232,
+      "transaction_cost_drag": 0.0012920821250064
+    },
+    "fixed_equal_weight": {
+      "CAGR": 0.0859025411410168,
+      "Sharpe": 0.8831002873017193,
+      "maximum_drawdown": -0.230487664304293,
+      "Calmar": 0.3726990830520417,
+      "annualized_turnover": 0.1629831190427752,
+      "rebalance_count": 232,
+      "transaction_cost_drag": 0.0015739475634169
     },
     "incremental_vs_neutral": {
       "delta_CAGR": 0.0087929527513492,
