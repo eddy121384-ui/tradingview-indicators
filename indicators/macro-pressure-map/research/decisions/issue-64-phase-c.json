@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "issue": 64,
   "phase": "C",
   "purpose": "Stagflation gold-over-equity override robustness checkpoint",
@@ -17,6 +17,7 @@
     "phase_c_replay_max_abs_net_return_error_bound": 1e-12,
     "exposure_match_max_abs_invested_weight_mismatch_bound": 1e-9,
     "contribution_value_tolerance": 1e-12,
+    "cost_sensitivity_value_tolerance": 1e-12,
     "required_leaveout_sign": "negative_active_log_and_negative_delta_CAGR_and_Sharpe_in_both_eras",
     "locked_environment_source_run": 34800583302
   },
@@ -101,9 +102,24 @@
     }
   },
   "cost_sensitivity_full_history": {
-    "zero_bps": {"phase_c_CAGR": 0.094765, "phase_b_CAGR": 0.091606, "phase_c_Sharpe": 0.978661, "phase_b_Sharpe": 0.951403},
-    "five_bps": {"phase_c_CAGR": 0.093047, "phase_b_CAGR": 0.090633, "phase_c_Sharpe": 0.962452, "phase_b_Sharpe": 0.942191},
-    "ten_bps": {"phase_c_CAGR": 0.091332, "phase_b_CAGR": 0.089661, "phase_c_Sharpe": 0.946231, "phase_b_Sharpe": 0.932971}
+    "zero_bps": {
+      "phase_c_CAGR": 0.094765345712025,
+      "phase_b_CAGR": 0.0916056860270424,
+      "phase_c_Sharpe": 0.9786604993462172,
+      "phase_b_Sharpe": 0.951403034691662
+    },
+    "five_bps": {
+      "phase_c_CAGR": 0.0930474401006977,
+      "phase_b_CAGR": 0.0906331449779376,
+      "phase_c_Sharpe": 0.962451189673706,
+      "phase_b_Sharpe": 0.9421902942345296
+    },
+    "ten_bps": {
+      "phase_c_CAGR": 0.0913320643794139,
+      "phase_b_CAGR": 0.0896613799219556,
+      "phase_c_Sharpe": 0.9462305656561096,
+      "phase_b_Sharpe": 0.9329703102806728
+    }
   },
   "verdict": "risk_management_value_only",
   "verdict_rationale": "stagflation_override_has_historical_risk_management_value_but_is_episode_concentrated",
