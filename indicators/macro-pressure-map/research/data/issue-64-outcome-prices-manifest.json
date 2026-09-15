@@ -1,0 +1,36 @@
+{
+  "schema_version": 3,
+  "issue": 64,
+  "role": "durable frozen SPY/TLT/GLD adjusted-price input snapshot",
+  "storage": "10 UTF-8 Base64 shards containing one deterministic gzip-compressed CSV",
+  "columns": ["date", "SPY", "TLT", "GLD"],
+  "rows": 4941,
+  "first_date": "2007-01-03",
+  "last_date": "2026-08-24",
+  "csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+  "archive_sha256": "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240",
+  "archive_bytes": 114646,
+  "base64_chars": 152864,
+  "shards": [
+    {"path": "data/issue-64-outcome-prices-01.b64", "chars": 15288, "sha256": "03b6c427ab2e5868940b3d5633485e03770e2fd6b3beab315f55ed66fe071e26"},
+    {"path": "data/issue-64-outcome-prices-02.b64", "chars": 15288, "sha256": "14de5cfdb412b87888480f3349ec155c44741604d8b3ec3aa178cf71a2c03b03"},
+    {"path": "data/issue-64-outcome-prices-03.b64", "chars": 15288, "sha256": "0b2df28053d8a24f641066512d77e98c6cd4443221498f2be944095d5f00a43f"},
+    {"path": "data/issue-64-outcome-prices-04.b64", "chars": 15288, "sha256": "1d7822502878b75fd50abb050de0c19cd7a682fe6c2cb874794f3f6b1b6a8f3c"},
+    {"path": "data/issue-64-outcome-prices-05.b64", "chars": 15288, "sha256": "3fcdd9c3631b1fdc5bc8b52484e4cec352359028b3cc0c9d9b09484c7d4e168a"},
+    {"path": "data/issue-64-outcome-prices-06.b64", "chars": 15288, "sha256": "38d6849592c3078ef043c22750efb6ee22ecf46303e0e33cda00b696f0ec68d8"},
+    {"path": "data/issue-64-outcome-prices-07.b64", "chars": 15288, "sha256": "82215e6745f4a9f37e28156f62af4b175cd3adcd8ebd70cad9d6d5021db5e91d"},
+    {"path": "data/issue-64-outcome-prices-08.b64", "chars": 15288, "sha256": "a0b19ade98f403afb691cdb930aa565eae079483144a9b39b544f4d8757fdc7e"},
+    {"path": "data/issue-64-outcome-prices-09.b64", "chars": 15288, "sha256": "fe6fb6723ef58113f367329056e3095a764ff88f2e0a167c9901893fd7a11c0c"},
+    {"path": "data/issue-64-outcome-prices-10.b64", "chars": 15272, "sha256": "ad25550eddc7925126b86bf49cd8dcbf0beab82cdc3cba611d11ed3a347b4b06"}
+  ],
+  "source": {
+    "provider": "Yahoo Finance via yfinance",
+    "acquisition_mode": "Issue #64 bootstrap run subsequently frozen for durable reproducibility",
+    "source_artifact_run": 32794998567,
+    "source_phase_a_artifact": 9544547838,
+    "price_semantics": "auto_adjust=True adjusted Close; dividend/split-adjusted investable price proxy",
+    "calendar_semantics": "strict intersection of finite SPY, TLT and GLD observation dates; no outcome forward-fill"
+  },
+  "price_semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close; strict common finite SPY/TLT/GLD calendar",
+  "interpretation_boundary": "This snapshot freezes Issue #64 research inputs for reproducibility; it is not a production market-data source and does not convert reused history into untouched OOS evidence."
+}

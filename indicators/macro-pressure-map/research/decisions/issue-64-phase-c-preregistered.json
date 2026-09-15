@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "issue": 64,
+  "phase": "C",
+  "experiment": "stagflation_gold_over_equity_incremental_override",
+  "frozen_before_phase_c_portfolio_results_viewed": true,
+  "preregistration_issue_comment_id": 5403402932,
+  "evidence_status": "reused/development exploratory history only; not untouched OOS",
+  "production_v66_parameters_modified": false,
+  "hypothesis": {
+    "regime": "Stagflation Pressure",
+    "relative_asset_view": "GLD over SPY",
+    "source": "Phase A secondary exploratory hypothesis"
+  },
+  "templates": {
+    "neutral": {"SPY": 0.40, "TLT": 0.40, "GLD": 0.20},
+    "reflation": {"SPY": 0.60, "TLT": 0.20, "GLD": 0.20},
+    "stagflation": {"SPY": 0.20, "TLT": 0.40, "GLD": 0.40}
+  },
+  "primary_comparison": "Phase C combined minus Phase B Reflation-only",
+  "diagnostic_comparison": "Stagflation-only minus fixed neutral 40/40/20",
+  "execution_lag_trading_rows": 1,
+  "rebalance_rule": "monthly plus lagged template change",
+  "primary_cost_bps": 5.0,
+  "cost_sensitivity_bps": [0.0, 5.0, 10.0],
+  "development_end": "2019-12-31",
+  "post2019_start": "2020-01-01",
+  "required_metrics": [
+    "CAGR",
+    "annualized_volatility",
+    "Sharpe",
+    "maximum_drawdown",
+    "Calmar",
+    "turnover",
+    "cost_drag"
+  ],
+  "required_posthoc_diagnostics_if_positive": [
+    "realized-exposure-matched attribution preserving the Phase B Reflation rule",
+    "Stagflation episode concentration",
+    "leave-largest-winning-episode-out",
+    "0/5/10bp cost sensitivity",
+    "pre-2020 versus post-2019 era decomposition"
+  ],
+  "forbidden": [
+    "weight sweep",
+    "optimizer",
+    "V6.6 retuning",
+    "regime threshold changes",
+    "additional regime overrides"
+  ]
+}
