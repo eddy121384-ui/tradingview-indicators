@@ -314,6 +314,14 @@ jobs:
           })
           PY
 
+      - name: Validate complete Phase A/B/C durable evidence bindings
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_64_completion_validation.py \
+            --phase-a-dir generated/issue-64-phase-a \
+            --phase-b-dir generated/issue-64-phase-b \
+            --phase-c-dir generated/issue-64-phase-c
+
       - name: Upload Phase A research artifact
         uses: actions/upload-artifact@v4
         with:
