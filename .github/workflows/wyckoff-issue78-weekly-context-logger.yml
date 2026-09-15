@@ -8,6 +8,9 @@ on:
       - '.github/workflows/wyckoff-issue78-weekly-context-logger.yml'
       - 'indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-issue68-rc.pine'
       - 'indicators/wyckoff-regime-radar/research/generate_issue78_weekly_context_logger_pine.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_daily_weekly_sizing.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_participation_ramp.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_economic_value_audit.py'
 
 permissions:
   contents: write
@@ -24,8 +27,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Syntax check generator
-        run: python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_weekly_context_logger_pine.py
+      - name: Syntax check research code
+        run: |
+          python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_weekly_context_logger_pine.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_participation_ramp.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_economic_value_audit.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_daily_weekly_sizing.py
 
       - name: Generate frozen-source weekly context logger
         run: |
@@ -46,6 +53,8 @@ jobs:
           grep -F 'ISSUE78WEEKLY|schema=1' "$FILE"
           grep -F 'week_close_time=' "$FILE"
           grep -F 'wtrend=' "$FILE"
+          grep -F 'week_close_time <= daily event_time' indicators/wyckoff-regime-radar/research/analyze_issue78_daily_weekly_sizing.py
+          grep -F 'weekly_trendability_cap' indicators/wyckoff-regime-radar/research/analyze_issue78_daily_weekly_sizing.py
           ! grep -F 'strategy.entry' "$FILE"
           ! grep -F 'strategy.close' "$FILE"
           git diff --check
