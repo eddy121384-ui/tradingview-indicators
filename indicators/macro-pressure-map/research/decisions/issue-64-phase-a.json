@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "issue": 64,
   "phase": "A",
   "artifact_role": "durable curated Phase A decision evidence",
@@ -12,7 +12,7 @@
       "phase-a-segment-leader-stability.csv",
       "phase-a-segment-relative-stability.csv"
     ],
-    "semantics": "Fail closed if regenerated leader stability, pairwise sign/stability summary, or named Phase A pair evidence drifts from this durable decision."
+    "semantics": "Fail closed if regenerated regime/horizon leader-grid evidence, pairwise sign/stability summary, named Phase A pair values, or named-hypothesis sample counts drift from this durable decision."
   },
   "signal": {
     "source": "Issue #59 TradingView Macro Pressure Map V6.6 parity log",
@@ -63,6 +63,35 @@
     "same_leader_pre2020_vs_post2019": 9,
     "development_leader_counts": {"SPY": 12, "TLT": 8, "GLD": 7},
     "post2019_leader_counts": {"SPY": 5, "TLT": 0, "GLD": 22},
+    "leader_grid": [
+      {"regime": "Benign Expansion / Stable Inflation", "horizon": "1M", "development_leader": "GLD", "development_mean_return": 0.0161522400974768, "development_n": 30, "post2019_leader": "GLD", "post2019_mean_return": 0.0262898154164446, "post2019_n": 11, "same_leader": true},
+      {"regime": "Benign Expansion / Stable Inflation", "horizon": "3M", "development_leader": "SPY", "development_mean_return": 0.0428373203107576, "development_n": 17, "post2019_leader": "GLD", "post2019_mean_return": 0.0584095977754224, "post2019_n": 7, "same_leader": false},
+      {"regime": "Benign Expansion / Stable Inflation", "horizon": "6M", "development_leader": "SPY", "development_mean_return": 0.0646136837762813, "development_n": 14, "post2019_leader": "GLD", "post2019_mean_return": 0.0872191298588476, "post2019_n": 5, "same_leader": false},
+      {"regime": "Disinflationary Drift", "horizon": "1M", "development_leader": "TLT", "development_mean_return": 0.0104759122894984, "development_n": 29, "post2019_leader": "GLD", "post2019_mean_return": 0.0316056433526459, "post2019_n": 17, "same_leader": false},
+      {"regime": "Disinflationary Drift", "horizon": "3M", "development_leader": "SPY", "development_mean_return": 0.0207781083595693, "development_n": 18, "post2019_leader": "GLD", "post2019_mean_return": 0.0761159896140082, "post2019_n": 11, "same_leader": false},
+      {"regime": "Disinflationary Drift", "horizon": "6M", "development_leader": "TLT", "development_mean_return": 0.051260695297126, "development_n": 12, "post2019_leader": "SPY", "post2019_mean_return": 0.124000123649575, "post2019_n": 7, "same_leader": false},
+      {"regime": "Goldilocks / Disinflationary Expansion", "horizon": "1M", "development_leader": "SPY", "development_mean_return": 0.0057572627929632, "development_n": 20, "post2019_leader": "GLD", "post2019_mean_return": 0.0201098337573748, "post2019_n": 11, "same_leader": false},
+      {"regime": "Goldilocks / Disinflationary Expansion", "horizon": "3M", "development_leader": "SPY", "development_mean_return": 0.0110367510570345, "development_n": 12, "post2019_leader": "GLD", "post2019_mean_return": 0.099829012365782, "post2019_n": 7, "same_leader": false},
+      {"regime": "Goldilocks / Disinflationary Expansion", "horizon": "6M", "development_leader": "SPY", "development_mean_return": 0.0394768886716526, "development_n": 8, "post2019_leader": "GLD", "post2019_mean_return": 0.1198704978091229, "post2019_n": 5, "same_leader": false},
+      {"regime": "Growth Slowdown / Stable Inflation", "horizon": "1M", "development_leader": "GLD", "development_mean_return": 0.0117008917036315, "development_n": 32, "post2019_leader": "GLD", "post2019_mean_return": 0.0216754401555165, "post2019_n": 18, "same_leader": true},
+      {"regime": "Growth Slowdown / Stable Inflation", "horizon": "3M", "development_leader": "TLT", "development_mean_return": 0.0404776980526379, "development_n": 19, "post2019_leader": "GLD", "post2019_mean_return": 0.0551270639607217, "post2019_n": 12, "same_leader": false},
+      {"regime": "Growth Slowdown / Stable Inflation", "horizon": "6M", "development_leader": "GLD", "development_mean_return": 0.0533283891283985, "development_n": 13, "post2019_leader": "GLD", "post2019_mean_return": 0.1455954880362552, "post2019_n": 8, "same_leader": true},
+      {"regime": "Inflation Pressure without Growth Confirmation", "horizon": "1M", "development_leader": "GLD", "development_mean_return": 0.002763008877761, "development_n": 37, "post2019_leader": "SPY", "post2019_mean_return": 0.0109574968471614, "post2019_n": 22, "same_leader": false},
+      {"regime": "Inflation Pressure without Growth Confirmation", "horizon": "3M", "development_leader": "SPY", "development_mean_return": 0.0226504831994935, "development_n": 20, "post2019_leader": "GLD", "post2019_mean_return": 0.0243293806445531, "post2019_n": 11, "same_leader": false},
+      {"regime": "Inflation Pressure without Growth Confirmation", "horizon": "6M", "development_leader": "SPY", "development_mean_return": 0.0590055925012966, "development_n": 15, "post2019_leader": "GLD", "post2019_mean_return": 0.0937208267713561, "post2019_n": 9, "same_leader": false},
+      {"regime": "Neutral / Range-bound Macro", "horizon": "1M", "development_leader": "TLT", "development_mean_return": 0.0137799926333307, "development_n": 32, "post2019_leader": "GLD", "post2019_mean_return": 0.0253918004411739, "post2019_n": 23, "same_leader": false},
+      {"regime": "Neutral / Range-bound Macro", "horizon": "3M", "development_leader": "TLT", "development_mean_return": 0.0243912333536615, "development_n": 21, "post2019_leader": "GLD", "post2019_mean_return": 0.0740888794983685, "post2019_n": 13, "same_leader": false},
+      {"regime": "Neutral / Range-bound Macro", "horizon": "6M", "development_leader": "SPY", "development_mean_return": 0.0637499595575654, "development_n": 13, "post2019_leader": "GLD", "post2019_mean_return": 0.0925338399393093, "post2019_n": 8, "same_leader": false},
+      {"regime": "Reflation / Inflation Rising", "horizon": "1M", "development_leader": "SPY", "development_mean_return": 0.0119327526273174, "development_n": 51, "post2019_leader": "SPY", "post2019_mean_return": 0.0215287739181221, "post2019_n": 23, "same_leader": true},
+      {"regime": "Reflation / Inflation Rising", "horizon": "3M", "development_leader": "SPY", "development_mean_return": 0.0418367591026279, "development_n": 23, "post2019_leader": "SPY", "post2019_mean_return": 0.0508397021468853, "post2019_n": 11, "same_leader": true},
+      {"regime": "Reflation / Inflation Rising", "horizon": "6M", "development_leader": "SPY", "development_mean_return": 0.0632180121627327, "development_n": 15, "post2019_leader": "SPY", "post2019_mean_return": 0.1023591063119371, "post2019_n": 7, "same_leader": true},
+      {"regime": "Slowdown / Disinflation", "horizon": "1M", "development_leader": "TLT", "development_mean_return": 0.0170128659514147, "development_n": 46, "post2019_leader": "GLD", "post2019_mean_return": 0.0282350139868964, "post2019_n": 25, "same_leader": false},
+      {"regime": "Slowdown / Disinflation", "horizon": "3M", "development_leader": "TLT", "development_mean_return": 0.0383758766423377, "development_n": 21, "post2019_leader": "GLD", "post2019_mean_return": 0.0881861495632304, "post2019_n": 14, "same_leader": false},
+      {"regime": "Slowdown / Disinflation", "horizon": "6M", "development_leader": "GLD", "development_mean_return": 0.0729109822908267, "development_n": 14, "post2019_leader": "GLD", "post2019_mean_return": 0.1766175696726591, "post2019_n": 8, "same_leader": true},
+      {"regime": "Stagflation Pressure", "horizon": "1M", "development_leader": "GLD", "development_mean_return": 0.0153135170031222, "development_n": 29, "post2019_leader": "GLD", "post2019_mean_return": 0.0079452999299418, "post2019_n": 21, "same_leader": true},
+      {"regime": "Stagflation Pressure", "horizon": "3M", "development_leader": "GLD", "development_mean_return": 0.0393413525526309, "development_n": 15, "post2019_leader": "GLD", "post2019_mean_return": 0.0441133686946883, "post2019_n": 11, "same_leader": true},
+      {"regime": "Stagflation Pressure", "horizon": "6M", "development_leader": "TLT", "development_mean_return": 0.0913378147821447, "development_n": 10, "post2019_leader": "GLD", "post2019_mean_return": 0.1362241999519407, "post2019_n": 7, "same_leader": false}
+    ],
     "pairwise_regime_horizon_comparisons": 81,
     "same_pairwise_point_sign": 39,
     "both_segments_nominal_ci_excludes_zero_same_direction": 2,
@@ -119,20 +148,26 @@
     "one_month": {
       "development_mean_spread": -0.0148366500698208,
       "development_nominal_ci95": [-0.0463498006843168, 0.0157510905480599],
+      "development_n": 29,
       "post2019_mean_spread": -0.0104655711882987,
-      "post2019_nominal_ci95": [-0.0352020986792717, 0.0147784588226654]
+      "post2019_nominal_ci95": [-0.0352020986792717, 0.0147784588226654],
+      "post2019_n": 21
     },
     "three_month": {
       "development_mean_spread": -0.0403973772349019,
       "development_nominal_ci95": [-0.1163691092502551, 0.0279264440995895],
+      "development_n": 15,
       "post2019_mean_spread": -0.0412722037376385,
-      "post2019_nominal_ci95": [-0.1127461276023566, 0.0456046047703248]
+      "post2019_nominal_ci95": [-0.1127461276023566, 0.0456046047703248],
+      "post2019_n": 11
     },
     "six_month": {
       "development_mean_spread": -0.0608000109666908,
       "development_nominal_ci95": [-0.1419559484133528, 0.018090487961512],
+      "development_n": 10,
       "post2019_mean_spread": -0.0920874195557629,
-      "post2019_nominal_ci95": [-0.1723315424575409, -0.0176891131716033]
+      "post2019_nominal_ci95": [-0.1723315424575409, -0.0176891131716033],
+      "post2019_n": 7
     },
     "interpretation": "Gold-over-equity direction is coherent across both eras and all three horizons but remains exploratory and weaker than the selected Reflation candidate."
   },
