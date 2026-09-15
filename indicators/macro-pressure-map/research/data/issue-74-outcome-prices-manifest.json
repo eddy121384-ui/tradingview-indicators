@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "issue": 74,
+  "role": "durable frozen SPY/TLT/SHV/GSG adjusted-price input snapshot",
+  "columns": [
+    "date",
+    "SPY",
+    "TLT",
+    "SHV",
+    "GSG"
+  ],
+  "rows": 4935,
+  "first_date": "2007-01-11",
+  "last_date": "2026-08-24",
+  "csv_sha256": "eba5c4d82c647536a23856e091b874f7a82940d7358bc5235ed066a20ae9566c",
+  "archive_sha256": "e2a76e4aa6c43f64c9574000723ebf96309f7f129d148b805e26123c11643398",
+  "archive_bytes": 137086,
+  "base64_chars": 182784,
+  "shard_chars": 16000,
+  "shards": [
+    {
+      "path": "data/issue-74-outcome-prices-01.b64",
+      "chars": 16000,
+      "sha256": "ee62875ab1bec676e07612c66a7650a11d32f53324c022f793d6a83d75e6ebb2"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-02.b64",
+      "chars": 16000,
+      "sha256": "2e359c311174c6c08fb5f81ad4516f470dfcb491174b252b862268b5579c4fc4"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-03.b64",
+      "chars": 16000,
+      "sha256": "1d52ef66714e4671914920ceaa02fbdc3de05aa66e5afde2410c7452712c6125"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-04.b64",
+      "chars": 16000,
+      "sha256": "6e56ddbe69e1501e672d4ade7b1678e2eec1bd1af0107e724dd1d9fabd4ac2b2"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-05.b64",
+      "chars": 16000,
+      "sha256": "8db3bb5f3005b547228c21a22c7c80b5106653ab24b54416f11547d843eca221"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-06.b64",
+      "chars": 16000,
+      "sha256": "857524ddcf4985cd9aaf96a8c75e9d12d21791ab5b49cb06f3819fa73b9fc6f7"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-07.b64",
+      "chars": 16000,
+      "sha256": "d88af5c531b63dfd5a9543b866e55f375ebe534631f56740671d6de25a439c9e"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-08.b64",
+      "chars": 16000,
+      "sha256": "a4d12cc246f5571c3cdd9c687ceecd9c7dea1c879024b0cc04825a4466df81a1"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-09.b64",
+      "chars": 16000,
+      "sha256": "9929d2afb202674ac7f185a4a9c8f58b8916227034e9d216f4132db9ce29d5ea"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-10.b64",
+      "chars": 16000,
+      "sha256": "7dacedffacc7c0d67d3ce51ac5f229512e6c1445ab0d0f8933ed53d4f82381e4"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-11.b64",
+      "chars": 16000,
+      "sha256": "190f87d71e9ca1ba7a89980adf0eef90a538fd1802e3bb642276b4346e527397"
+    },
+    {
+      "path": "data/issue-74-outcome-prices-12.b64",
+      "chars": 6784,
+      "sha256": "35a3754e71090a7c6e895f30cf15a66756cd6b18003ecb9cdc2706f2556291c6"
+    }
+  ],
+  "source": {
+    "provider": "Yahoo Finance via yfinance",
+    "download_start": "2007-01-01",
+    "download_end_exclusive": "2026-08-25",
+    "auto_adjust": true,
+    "repair": true,
+    "common_calendar": [
+      "SPY",
+      "TLT",
+      "SHV",
+      "GSG"
+    ],
+    "individual_coverage": {
+      "SPY": {
+        "observations": 4941,
+        "first_date": "2007-01-03",
+        "last_date": "2026-08-24"
+      },
+      "TLT": {
+        "observations": 4941,
+        "first_date": "2007-01-03",
+        "last_date": "2026-08-24"
+      },
+      "SHV": {
+        "observations": 4935,
+        "first_date": "2007-01-11",
+        "last_date": "2026-08-24"
+      },
+      "GSG": {
+        "observations": 4941,
+        "first_date": "2007-01-03",
+        "last_date": "2026-08-24"
+      }
+    }
+  },
+  "price_semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close; strict common finite SPY/TLT/SHV/GSG calendar",
+  "interpretation_boundary": "Frozen research input for reproducibility; not a production market-data source."
+}
