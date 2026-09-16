@@ -1,0 +1,34 @@
+name: Wyckoff Issue 85 proof-based sizing frontier
+
+on:
+  push:
+    branches:
+      - research/issue-85-proof-based-sizing-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue85-proof-sizing.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue85_proof_based_sizing_frontier.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-85-proof-based-sizing-frontier-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-85-proof-based-sizing-frontier-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue85-proof-sizing-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue85_proof_based_sizing_frontier.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue85_proof_based_sizing_frontier.py
+          grep -F 'p0_persistence_gentle' "$FILE"
+          grep -F 'p1_excursion_gentle' "$FILE"
+          grep -F 'p2_proof_eff_gentle' "$FILE"
+          grep -F 'p3_proof_eff_extension_gentle' "$FILE"
+          grep -F 'efficiency >= 0.50' "$FILE"
+          grep -F 'event count drift' "$FILE"
+          grep -F 'episode count drift' "$FILE"
+          git diff --check
