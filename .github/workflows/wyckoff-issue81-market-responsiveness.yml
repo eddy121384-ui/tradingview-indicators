@@ -1,0 +1,38 @@
+name: Wyckoff Issue 81 market responsiveness
+
+on:
+  push:
+    branches:
+      - research/issue-81-market-responsiveness
+    paths:
+      - '.github/workflows/wyckoff-issue81-market-responsiveness.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue81_market_responsiveness.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-81-market-responsiveness-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-81-market-responsiveness-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue81-market-responsiveness-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue81_market_responsiveness.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue81_market_responsiveness.py
+          grep -F "if mfe < 4:" "$FILE"
+          grep -F "elif mfe >= 8:" "$FILE"
+          grep -F "f'e{k}_cum_atr'" "$FILE"
+          grep -F "f'e{k}_new_high_rate'" "$FILE"
+          grep -F "f'e{k}_mae_atr'" "$FILE"
+          grep -F "f'e{k}_max_pullback_atr'" "$FILE"
+          grep -F "f'e{k}_activity_ratio20'" "$FILE"
+          grep -F "f'e{k}_bars_to_half_atr'" "$FILE"
+          grep -F "conditional_rows" "$FILE"
+          grep -F "event count drift" "$FILE"
+          grep -F "episode count drift" "$FILE"
+          git diff --check
