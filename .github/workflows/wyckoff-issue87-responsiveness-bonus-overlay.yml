@@ -1,0 +1,35 @@
+name: Wyckoff Issue 87 responsiveness bonus overlay
+
+on:
+  push:
+    branches:
+      - research/issue-87-responsiveness-bonus-overlay
+    paths:
+      - '.github/workflows/wyckoff-issue87-responsiveness-bonus-overlay.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue87_responsiveness_bonus_overlay.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-87-responsiveness-bonus-overlay-*.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue87-bonus-overlay-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue87_responsiveness_bonus_overlay.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue87_responsiveness_bonus_overlay.py
+          grep -F "'b0_persistence_gentle','b1_e5_bonus','b2_e5_e10_bonus'" "$FILE"
+          grep -F "e5['cum']>=0.5" "$FILE"
+          grep -F "e5['dir_eff']>=0.50" "$FILE"
+          grep -F "e10['cum']>=1.0" "$FILE"
+          grep -F "e10['new_high_rate']>=0.50" "$FILE"
+          grep -F "base=min(cap,health)" "$FILE"
+          grep -F "total=min(limit,base+b)" "$FILE"
+          grep -F "event count drift" "$FILE"
+          grep -F "episode count drift" "$FILE"
+          git diff --check
