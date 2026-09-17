@@ -3,8 +3,8 @@
 
 This module covers verdict-bearing fields that are intentionally broader than the
 phase-specific validators: the full Phase A regime/horizon leader grid and all
-named-hypothesis sample counts, the required fixed Phase B benchmarks, and the
-Phase C 0/5/10 bp cost-sensitivity table.
+named-hypothesis sample counts, the complete required fixed Phase B benchmark
+summary rows, and the Phase C 0/5/10 bp cost-sensitivity table.
 """
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ from issue_64_durable_validation import FULL_SEGMENT, _close, _finite, _single_r
 HERE = Path(__file__).resolve().parent
 PHASE_A_DECISION = HERE / "decisions" / "issue-64-phase-a.json"
 PHASE_B_DECISION = HERE / "decisions" / "issue-64-phase-b.json"
+PHASE_B_FIXED_BENCHMARKS = HERE / "decisions" / "issue-64-phase-b-fixed-benchmarks.json"
 PHASE_C_DECISION = HERE / "decisions" / "issue-64-phase-c.json"
 
 
@@ -132,19 +133,75 @@ def validate_phase_b_completion(phase_b_dir: Path) -> dict:
     decision = strict_load_json(PHASE_B_DECISION)
     if int(decision.get("schema_version", 0)) < 8:
         raise RuntimeError("Phase B completion binding requires decision schema >= 8")
-    tolerance = _finite(
+    phase_b_tolerance = _finite(
         "phase_b.completion.numeric_tolerance",
         decision["regenerated_evidence_binding"]["numeric_tolerance"],
     )
+    if phase_b_tolerance <= 0.0:
+        raise RuntimeError("Phase B completion tolerance must be positive")
+
+    fixed = strict_load_json(PHASE_B_FIXED_BENCHMARKS)
+    if int(fixed.get("schema_version", 0)) < 1:
+        raise RuntimeError("Phase B fixed-benchmark durable evidence requires schema >= 1")
+    if fixed.get("segment") != FULL_SEGMENT:
+        raise RuntimeError("Phase B fixed-benchmark durable segment drifted")
+    tolerance = _finite("phase_b.fixed_benchmark.numeric_tolerance", fixed["numeric_tolerance"])
+    if tolerance <= 0.0:
+        raise RuntimeError("Phase B fixed-benchmark tolerance must be positive")
+    if tolerance != phase_b_tolerance:
+        raise RuntimeError("Phase B completion and fixed-benchmark tolerances disagree")
+
     summary = pd.read_csv(phase_b_dir / "phase-b-summary.csv")
-    primary = decision["primary_full_history_result"]
-    checks = 0
-    for strategy, durable_key in (
-        ("fixed_60_40", "fixed_60_40"),
-        ("fixed_equal_weight", "fixed_equal_weight"),
-    ):
+    legacy_primary = decision["primary_full_history_result"]
+    required_str_fields = ("first_date", "last_date")
+    required_int_fields = ("observations", "rebalance_count")
+    required_float_fields = (
+        "CAGR",
+        "annualized_return",
+        "annualized_volatility",
+        "Sharpe",
+        "maximum_drawdown",
+        "Calmar",
+        "total_turnover",
+        "annualized_turnover",
+        "transaction_cost_drag",
+        "ending_wealth",
+        "ending_wealth_before_cost_counterfactual",
+        "average_weight_SPY",
+        "average_weight_TLT",
+        "average_weight_GLD",
+    )
+
+    expected_benchmarks = fixed["benchmarks"]
+    if set(expected_benchmarks) != {"fixed_60_40", "fixed_equal_weight"}:
+        raise RuntimeError("Phase B durable fixed-benchmark set drifted")
+
+    exact_checks = 0
+    numeric_checks = 0
+    for strategy in ("fixed_60_40", "fixed_equal_weight"):
         row = _single_row(summary, "Phase B required fixed benchmark", strategy=strategy, segment=FULL_SEGMENT)
-        expected = primary[durable_key]
+        expected = expected_benchmarks[strategy]
+
+        for key in required_str_fields:
+            if str(row[key]) != str(expected[key]):
+                raise RuntimeError(
+                    f"Phase B benchmark {strategy} {key} drifted: {row[key]!r} != {expected[key]!r}"
+                )
+            exact_checks += 1
+
+        for key in required_int_fields:
+            if int(row[key]) != int(expected[key]):
+                raise RuntimeError(
+                    f"Phase B benchmark {strategy} {key} drifted: {int(row[key])} != {int(expected[key])}"
+                )
+            exact_checks += 1
+
+        for key in required_float_fields:
+            _close(f"phase_b.benchmark.{strategy}.{key}", row[key], expected[key], tolerance)
+            numeric_checks += 1
+
+        # Keep the older Phase B durable decision synchronized for overlapping fields.
+        legacy = legacy_primary[strategy]
         for key in (
             "CAGR",
             "Sharpe",
@@ -153,15 +210,18 @@ def validate_phase_b_completion(phase_b_dir: Path) -> dict:
             "annualized_turnover",
             "transaction_cost_drag",
         ):
-            _close(f"phase_b.benchmark.{durable_key}.{key}", row[key], expected[key], tolerance)
-            checks += 1
-        if int(row["rebalance_count"]) != int(expected["rebalance_count"]):
-            raise RuntimeError(f"Phase B benchmark rebalance count drifted for {strategy}")
-        checks += 1
+            _close(f"phase_b.benchmark.legacy_sync.{strategy}.{key}", expected[key], legacy[key], tolerance)
+            numeric_checks += 1
+        if int(expected["rebalance_count"]) != int(legacy["rebalance_count"]):
+            raise RuntimeError(f"Phase B legacy durable rebalance count disagrees for {strategy}")
+        exact_checks += 1
+
     return {
         "validated": True,
         "required_fixed_benchmarks": ["fixed_60_40", "fixed_equal_weight"],
-        "numeric_checks": checks,
+        "complete_summary_fields_per_benchmark": len(required_str_fields) + len(required_int_fields) + len(required_float_fields),
+        "numeric_checks": numeric_checks,
+        "exact_checks": exact_checks,
         "numeric_tolerance": tolerance,
     }
 
