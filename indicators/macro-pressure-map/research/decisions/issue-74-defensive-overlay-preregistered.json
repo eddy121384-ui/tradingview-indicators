@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "issue": 74,
+  "study": "macro_pressure_map_v66_cash_commodity_defensive_overlay",
+  "frozen_before_issue_74_portfolio_results_viewed": true,
+  "evidence_status": "development_or_reused_exploratory; not newly untouched OOS",
+  "production_v66_parameters_modified": false,
+  "source_dependency": {
+    "issue_64_pr_head_at_branch_creation": "fcc4c6b1ae083bda5b9c9b1dd865bd42f9015f8e",
+    "frozen_core_regime_transition_path": "data/issue-64-frozen-regime-transitions.csv",
+    "frozen_core_regime_transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+    "v66_spec_path": "../specs/macro-pressure-map-v6.6-spec.md",
+    "v66_inflation_extreme_threshold": 60.0,
+    "operator_local_source_log_expected_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d"
+  },
+  "asset_roles": {
+    "SPY": "equity / growth-risk exposure",
+    "TLT": "long-duration U.S. Treasury exposure",
+    "SHV": "0-1Y U.S. Treasury / cash-like defensive exposure",
+    "GSG": "broad S&P GSCI commodity futures satellite exposure"
+  },
+  "execution": {
+    "signal_lag_trading_rows": 1,
+    "scheduled_rebalance": "first common trading row of each calendar month",
+    "event_rebalance": "lagged target-template change",
+    "primary_cost_bps_per_one_way_turnover": 5.0,
+    "sensitivity_cost_bps_per_one_way_turnover": [0.0, 10.0],
+    "annualization_trading_rows": 252
+  },
+  "core_regimes": {
+    "reflation": "Reflation / Inflation Rising",
+    "stagflation": "Stagflation Pressure"
+  },
+  "phase_a": {
+    "purpose": "gold-to-cash substitution without reducing long-duration exposure",
+    "assets": ["SPY", "TLT", "SHV"],
+    "templates": {
+      "neutral": {"SPY": 0.40, "TLT": 0.40, "SHV": 0.20},
+      "reflation": {"SPY": 0.60, "TLT": 0.20, "SHV": 0.20},
+      "stagflation_cash_substitution": {"SPY": 0.20, "TLT": 0.40, "SHV": 0.40}
+    },
+    "primary_comparison": "combined_reflation_plus_stagflation_cash_substitution_minus_reflation_only"
+  },
+  "phase_b": {
+    "purpose": "true Stagflation defensive overlay reducing both equity and duration risk",
+    "assets": ["SPY", "TLT", "SHV"],
+    "templates": {
+      "neutral": {"SPY": 0.40, "TLT": 0.40, "SHV": 0.20},
+      "reflation": {"SPY": 0.60, "TLT": 0.20, "SHV": 0.20},
+      "stagflation_defensive": {"SPY": 0.20, "TLT": 0.20, "SHV": 0.60}
+    },
+    "primary_comparisons": [
+      "phase_b_combined_minus_phase_a_combined",
+      "phase_b_combined_minus_reflation_only"
+    ]
+  },
+  "phase_c": {
+    "purpose": "conditional broad-commodity sleeve during existing V6.6 severe inflation inside Stagflation",
+    "assets": ["SPY", "TLT", "SHV", "GSG"],
+    "activation_rule": {
+      "must_use_lagged_signal": true,
+      "core_regime_equals": "Stagflation Pressure",
+      "raw_IPI_greater_than_or_equal_to": 60.0,
+      "threshold_source": "existing V6.6 inflationExtremeThreshold; not tuned in Issue 74"
+    },
+    "templates": {
+      "normal_stagflation_defensive": {"SPY": 0.20, "TLT": 0.20, "SHV": 0.60, "GSG": 0.00},
+      "severe_inflation_stagflation": {"SPY": 0.20, "TLT": 0.20, "SHV": 0.40, "GSG": 0.20}
+    },
+    "primary_comparison": "phase_c_minus_phase_b",
+    "execution_gate": "FAIL_CLOSED until full daily severe-inflation state is frozen from the exact hash-matching prior Pine parity evidence or an equivalently exact verified reconstruction"
+  },
+  "outcome_data_contract": {
+    "common_window_start_not_before": "2007-01-01",
+    "required_assets": ["SPY", "TLT", "SHV", "GSG"],
+    "adjustment_semantics": "use one consistent adjusted/total-return-like ETF price convention",
+    "freeze_before_interpretation": true,
+    "repository_snapshot_required": true,
+    "silent_network_fallback_after_freeze_allowed": false
+  },
+  "reporting": [
+    "full_reused_history",
+    "development_pre2020",
+    "post2019_reused_exploratory",
+    "CAGR",
+    "annualized_return",
+    "annualized_volatility",
+    "Sharpe",
+    "maximum_drawdown",
+    "Calmar",
+    "turnover",
+    "cost_drag",
+    "average_allocation_by_regime",
+    "asset_contribution",
+    "regime_contribution",
+    "episode_concentration",
+    "leave_largest_winning_episode_out",
+    "exposure_matched_attribution_where_feasible"
+  ],
+  "prohibitions": {
+    "threshold_tuning": true,
+    "weight_sweep": true,
+    "optimizer": true,
+    "commodity_momentum_filter": true,
+    "oil_only_rescue_test": true,
+    "add_assets_after_results_to_rescue_failure": true,
+    "call_reused_history_OOS": true,
+    "modify_production_pine": true,
+    "retroactively_modify_issue_64_rules_or_verdicts": true
+  }
+}
