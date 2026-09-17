@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "issue": 64,
+  "artifact_role": "durable derived signal transitions and axis-audit evidence for Phase A/B asset-allocation research",
+  "source": {
+    "description": "operator-supplied TradingView Pine log from Macro Pressure Map V6.6 parity capture used in Issue #59",
+    "filename": "pine-logs-MPM V6.6 PARITY SRC.csv",
+    "sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
+    "raw_log_committed": false,
+    "rows_raw": 4943,
+    "unique_dates": 4935,
+    "duplicate_date_policy": "Duplicate rows are accepted only when tv_plot_gpi/tv_plot_ipi/tv_plot_fcpi are identical; then keep the last identical row.",
+    "duplicate_dates": [
+      "2026-08-14"
+    ]
+  },
+  "derivation": {
+    "v66_smoothing_enabled": true,
+    "smooth_length": 5,
+    "ema_alpha": 0.3333333333333333,
+    "formula": "raw_t = (plot_t - (1-alpha)*plot_{t-1}) / alpha = 3*plot_t - 2*plot_{t-1}",
+    "first_source_date": "2007-01-03",
+    "first_derived_raw_date": "2007-01-04",
+    "last_derived_raw_date": "2026-08-14",
+    "derived_daily_rows": 4934,
+    "first_source_row_excluded_reason": "The raw axis cannot be uniquely recovered from the first logged EMA observation without the preceding EMA state.",
+    "state_thresholds": {
+      "growth_positive": 10.0,
+      "growth_negative": -10.0,
+      "inflation_positive": 10.0,
+      "inflation_negative": -10.0
+    }
+  },
+  "regime_id_map": {
+    "1": "Goldilocks / Disinflationary Expansion",
+    "2": "Benign Expansion / Stable Inflation",
+    "3": "Reflation / Inflation Rising",
+    "4": "Disinflationary Drift",
+    "5": "Neutral / Range-bound Macro",
+    "6": "Inflation Pressure without Growth Confirmation",
+    "7": "Slowdown / Disinflation",
+    "8": "Growth Slowdown / Stable Inflation",
+    "9": "Stagflation Pressure"
+  },
+  "cross_check": {
+    "description": "Independent reconstruction from the logged V6.6 source inputs using the merged Python-mirror formulas after its local warm-up becomes finite.",
+    "start_date": "2008-04-03",
+    "max_abs_raw_axis_difference": {
+      "GPI": 2.5098222167230233e-08,
+      "IPI": 2.447142222194998e-08,
+      "FCPI": 2.4872640835837956e-08
+    },
+    "interpretation": "Differences are rounding noise from decimal precision in the TradingView log.",
+    "reproduction_script": "indicators/macro-pressure-map/research/verify_issue_64_axis_reconstruction.py",
+    "reproduction_requirement": "Supply the operator-local Pine log whose SHA-256 matches the frozen source hash. The script independently recomputes V6.6 from logged source inputs and fails if any raw-axis maximum absolute discrepancy exceeds 5e-8."
+  },
+  "axis_audit_csv": {
+    "path": "indicators/macro-pressure-map/research/data/issue-64-frozen-axis-audit.csv",
+    "sha256": "9021844c7ed0b927ce95ca3de117ac3749eb3c5541e5d6c46557aa5624fa08c1",
+    "rows": 51,
+    "columns": [
+      "date",
+      "GPI",
+      "IPI",
+      "FCPI",
+      "regime_id"
+    ],
+    "sampling": "Deterministic audit checkpoints: derived raw rows at zero-based positions 0, 100, 200, ... plus the final row. Values are stored to 8 decimal places.",
+    "purpose": "Preserve inspectable raw GPI/IPI/FCPI checkpoints, including FCPI context, without committing the operator-local Pine log or claiming the sample is a substitute for the full local derivation."
+  },
+  "transition_csv": {
+    "path": "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv",
+    "sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+    "episodes": 739,
+    "daily_rows_represented": 4934,
+    "columns": [
+      "start_date",
+      "regime_id"
+    ],
+    "mapping_semantics": "Assign each outcome trading date to the latest transition start_date at or before that date. The outcome calendar includes SPY, the same anchor market used by the Pine log."
+  },
+  "evidence_boundary": "This is reused Issue #59 TradingView evidence, not newly untouched OOS data. V6.6 production parameters are unchanged. The committed audit checkpoints make the recovered axes inspectable; the full daily reconstruction remains reproducible from the hash-frozen operator-local log."
+}
