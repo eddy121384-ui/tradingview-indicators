@@ -25,8 +25,8 @@
       "annualized_turnover": 0.1337768722188235,
       "rebalance_count": 232,
       "transaction_cost_drag": 0.0012920821250064,
-      "ending_wealth": 4.66109779738057,
-      "ending_wealth_before_cost_counterfactual": 4.667127777571536,
+      "ending_wealth": 4.661098097963864,
+      "ending_wealth_before_cost_counterfactual": 4.667128411159002,
       "average_weight_SPY": 0.6015611795965582,
       "average_weight_TLT": 0.3984388204034417,
       "average_weight_GLD": 0.0
@@ -45,8 +45,8 @@
       "annualized_turnover": 0.1629831190427752,
       "rebalance_count": 232,
       "transaction_cost_drag": 0.0015739475634169,
-      "ending_wealth": 4.918293198020385,
-      "ending_wealth_before_cost_counterfactual": 4.926046242100355,
+      "ending_wealth": 4.918292971736856,
+      "ending_wealth_before_cost_counterfactual": 4.926046310324331,
       "average_weight_SPY": 0.3340419335276673,
       "average_weight_TLT": 0.3317452726969743,
       "average_weight_GLD": 0.3342127937753583
