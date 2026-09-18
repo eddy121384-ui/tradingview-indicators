@@ -75,10 +75,14 @@ def fetch_bls_cpi_api(start_year: int = 1913, end_year: int = 2025, series_code:
             period = str(item.get("period", ""))
             if not re.fullmatch(r"M(?:0[1-9]|1[0-2])", period):
                 continue
+            try:
+                value = float(item["value"])
+            except (TypeError, ValueError):
+                continue
             observations.append({
                 "year": int(item["year"]),
                 "month": int(period[1:]),
-                "cpi": float(item["value"]),
+                "cpi": value,
             })
     if not observations:
         raise RuntimeError("BLS API returned no CPI monthly observations")
