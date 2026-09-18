@@ -30,6 +30,7 @@ from issue_64_outcome_snapshot import load_frozen_prices
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_CONTRACT = HERE / "decisions" / "issue-89-preregistered-policy.json"
+DEFAULT_DECISION = HERE / "decisions" / "issue-89-decision.json"
 STRATEGY = "v66_ex_ante_regime_policy"
 
 
