@@ -139,6 +139,16 @@ def parse_bls_cpi(payload: bytes, series_code: str = BLS_CPI_CODE) -> pd.DataFra
     return frame[["year", "month", "cpi"]].sort_values(["year", "month"]).reset_index(drop=True)
 
 
+def canonical_monthly_payload(frame: pd.DataFrame, value_col: str, end_year: int) -> bytes:
+    used = frame.loc[frame["year"].le(end_year), ["year", "month", value_col]].copy()
+    used = used.sort_values(["year", "month"]).reset_index(drop=True)
+    records = [
+        {"year": int(row.year), "month": int(row.month), value_col: float(getattr(row, value_col))}
+        for row in used.itertuples(index=False)
+    ]
+    return json.dumps(records, separators=(",", ":"), sort_keys=True).encode("utf-8")
+
+
 def annual_december(ip: pd.DataFrame, cpi: pd.DataFrame, end_year: int = 2025) -> pd.DataFrame:
     ip_dec = ip.loc[ip["month"].eq(12), ["year", "ip"]].copy()
     cpi_dec = cpi.loc[cpi["month"].eq(12), ["year", "cpi"]].copy()
@@ -284,7 +294,9 @@ def run(output_dir: Path) -> dict:
         start_year=1913,
         end_year=p["primary_analysis_window"]["completed_macro_year_end"],
     )
-    annual = annual_december(ip, cpi, end_year=p["primary_analysis_window"]["completed_macro_year_end"])
+    end_year = p["primary_analysis_window"]["completed_macro_year_end"]
+    fed_canonical = canonical_monthly_payload(ip, "ip", end_year)
+    annual = annual_december(ip, cpi, end_year=end_year)
     states = build_hmra(
         annual,
         primary_window=p["score_rule"]["primary_reference_window_years"],
@@ -333,8 +345,11 @@ def run(output_dir: Path) -> dict:
                 "requested_url":FED_IP_URL,
                 "final_url":fed_final,
                 "series_code":FED_IP_CODE,
-                "sha256":sha256_bytes(fed_raw),
-                "bytes":len(fed_raw),
+                "raw_sha256":sha256_bytes(fed_raw),
+                "raw_bytes":len(fed_raw),
+                "canonical_used_observations_sha256":sha256_bytes(fed_canonical),
+                "canonical_used_observations_bytes":len(fed_canonical),
+                "canonical_used_through_year":end_year,
                 "first_year":int(ip["year"].min()),
                 "last_year":int(ip["year"].max()),
             },
