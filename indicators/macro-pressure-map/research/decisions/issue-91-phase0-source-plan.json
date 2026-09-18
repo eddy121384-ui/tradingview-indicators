@@ -57,12 +57,18 @@
         "bond_tr",
         "bill_rate",
         "stir",
-        "rgdppc",
+        "rgdpmad",
+        "rgdpbarro",
         "ltrate"
       ],
       "etf": false,
       "license": "CC BY-NC-SA 4.0",
-      "licensing_note": "Raw JST data must not be committed into this repository in Phase 0. Store only source hash, schema and coverage metadata. Any later derived-file persistence requires explicit license review and attribution."
+      "licensing_note": "Raw JST data must not be committed into this repository in Phase 0. Store only source hash, schema and coverage metadata. Any later derived-file persistence requires explicit license review and attribution.",
+      "interpretation_notes": [
+        "R6 documents rgdpmad as Real GDP per capita (PPP, 1990 Int$, Maddison).",
+        "R6 documents rgdpbarro as Real GDP per capita (index, 2005=100).",
+        "Phase 0 audits both. It does not choose either series as the Historical Macro Regime Analogue Growth input."
+      ]
     },
     {
       "id": "fred_indpro",

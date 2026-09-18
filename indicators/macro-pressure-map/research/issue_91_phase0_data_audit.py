@@ -199,7 +199,8 @@ def audit_jst_xlsx(payload: bytes) -> dict:
         "government_bond_total_return":("bond_tr",),
         "government_bill_rate":("bill_rate",),
         "short_rate":("stir",),
-        "real_gdp_per_capita":("rgdppc","rgdp_pc"),
+        "real_gdp_per_capita_ppp_maddison":("rgdpmad",),
+        "real_gdp_per_capita_index":("rgdpbarro",),
         "long_rate":("ltrate","lt_rate"),
     }
     coverage = {}

@@ -60,7 +60,8 @@ def test_jst_audit_finds_usa_total_return_columns() -> None:
         "bond_tr":[0.03,0.02,0.02,0.01],
         "bill_rate":[0.02,0.02,0.01,0.01],
         "stir":[2.0,2.1,1.0,1.1],
-        "rgdppc":[100.0,102.0,90.0,91.0],
+        "rgdpmad":[100.0,102.0,90.0,91.0],
+        "rgdpbarro":[95.0,97.0,85.0,86.0],
         "ltrate":[3.0,3.1,2.0,2.1],
     })
     buf=io.BytesIO()
@@ -72,6 +73,8 @@ def test_jst_audit_finds_usa_total_return_columns() -> None:
     assert result["usa_rows"] == 2
     assert result["candidate_coverage"]["equity_total_return"]["usable_observations"] == 2
     assert result["candidate_coverage"]["government_bond_total_return"]["usable_observations"] == 2
+    assert result["candidate_coverage"]["real_gdp_per_capita_ppp_maddison"]["usable_observations"] == 2
+    assert result["candidate_coverage"]["real_gdp_per_capita_index"]["usable_observations"] == 2
 
 
 def test_fred_table_page_audit_reads_date_value_table() -> None:
