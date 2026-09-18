@@ -62,6 +62,11 @@ jobs:
           })
           PY
 
+      - name: Validate durable Phase 0 source freeze
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_91_phase0_completion_validation.py --evidence-dir generated/issue-91-phase0
+
       - name: Upload Phase 0 audit artifact
         uses: actions/upload-artifact@v4
         with:
