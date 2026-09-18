@@ -1,0 +1,35 @@
+name: Wyckoff Issue 78 structure proof stage 1
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-structure-proof-stage1.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_structure_proof_stage1.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-proof-basis-structure-stage1-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-proof-basis-structure-stage1-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-structure-stage1-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install analysis dependencies
+        run: python -m pip install --quiet numpy pandas scipy
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_structure_proof_stage1.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue78_structure_proof_stage1.py
+          grep -F 'EXPECTED_EVENTS = 68118' "$FILE"
+          grep -F 'EXPECTED_EPISODES = 1624' "$FILE"
+          grep -F 'CHECKPOINTS = (5, 10)' "$FILE"
+          grep -F 'range(entry_bar - 20, entry_bar)' "$FILE"
+          grep -F 'progress_quintile' "$FILE"
+          grep -F 'post_entry_structure_by_k' "$FILE"
+          git diff --check
