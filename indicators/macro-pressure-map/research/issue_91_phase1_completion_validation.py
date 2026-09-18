@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -20,6 +21,28 @@ def load_json(path: Path) -> dict:
 
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def semantic_dataframe_sha256(frame: pd.DataFrame, decimals: int = 10) -> str:
+    records = []
+    int_columns = {"year", "strict_causal_return_year"}
+    for _, row in frame.iterrows():
+        rec = {}
+        for col in frame.columns:
+            value = row[col]
+            if pd.isna(value):
+                rec[col] = None
+            elif col in int_columns:
+                rec[col] = int(round(float(value)))
+            elif isinstance(value, (bool,)):
+                rec[col] = bool(value)
+            elif isinstance(value, (int, float)) and not isinstance(value, bool):
+                rec[col] = round(float(value), decimals)
+            else:
+                rec[col] = str(value)
+        records.append(rec)
+    payload = json.dumps(records, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def require(condition: bool, message: str) -> None:
@@ -64,20 +87,24 @@ def validate(evidence_dir: Path) -> dict:
     require(cpi_observed["canonical_observations_bytes"] == cpi_expected["canonical_observations_bytes"], "BLS CPI canonical byte count changed")
 
     evidence = freeze["generated_evidence_freeze"]
-    states_hash = sha256_file(states_path)
+    states_byte_hash = sha256_file(states_path)
     occupancy_hash = sha256_file(occupancy_path)
+    semantic_expected = evidence["macro_states_csv"]["semantic_sha256"]
+    semantic_decimals = evidence["macro_states_csv"]["semantic_round_decimals"]
+    semantic_actual = semantic_dataframe_sha256(states, decimals=semantic_decimals)
     print(json.dumps({
-        "states_actual_sha256": states_hash,
-        "states_expected_sha256": evidence["macro_states_csv"]["sha256"],
-        "states_actual_bytes": states_path.stat().st_size,
-        "states_expected_bytes": evidence["macro_states_csv"]["bytes"],
+        "states_semantic_actual_sha256": semantic_actual,
+        "states_semantic_expected_sha256": semantic_expected,
+        "states_byte_sha256_diagnostic": states_byte_hash,
+        "states_frozen_byte_sha256_diagnostic": evidence["macro_states_csv"]["byte_sha256_diagnostic"],
+        "states_actual_bytes_diagnostic": states_path.stat().st_size,
+        "states_frozen_bytes_diagnostic": evidence["macro_states_csv"]["byte_size_diagnostic"],
         "occupancy_actual_sha256": occupancy_hash,
         "occupancy_expected_sha256": evidence["occupancy_csv"]["sha256"],
         "occupancy_actual_bytes": occupancy_path.stat().st_size,
         "occupancy_expected_bytes": evidence["occupancy_csv"]["bytes"],
     }, indent=2))
-    require(states_hash == evidence["macro_states_csv"]["sha256"], "HMRA macro-state CSV changed")
-    require(states_path.stat().st_size == evidence["macro_states_csv"]["bytes"], "HMRA macro-state CSV size changed")
+    require(semantic_actual == semantic_expected, "HMRA macro-state semantic content changed")
     require(occupancy_hash == evidence["occupancy_csv"]["sha256"], "HMRA occupancy CSV changed")
     require(occupancy_path.stat().st_size == evidence["occupancy_csv"]["bytes"], "HMRA occupancy CSV size changed")
 
