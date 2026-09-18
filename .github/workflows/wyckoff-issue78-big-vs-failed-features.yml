@@ -1,0 +1,33 @@
+name: Wyckoff Issue 78 big-vs-failed feature study
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-big-vs-failed-features.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_big_vs_failed_features.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-big-vs-failed-trend-feature-study-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-big-vs-failed-trend-feature-study-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-big-vs-failed-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_big_vs_failed_features.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue78_big_vs_failed_features.py
+          grep -F "if mfe<4:label='Failed'" "$FILE"
+          grep -F "elif mfe>=8:label='Large'" "$FILE"
+          grep -F "e5_cum_atr" "$FILE"
+          grep -F "e10_cum_atr" "$FILE"
+          grep -F "event count drift" "$FILE"
+          grep -F "episode count drift" "$FILE"
+          git diff --check

@@ -1,0 +1,61 @@
+name: Wyckoff Issue 78 trendability visualizer
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-trendability-visualizer.yml'
+      - 'indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-issue68-rc.pine'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue78_trendability_visualizer_pine.py'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Syntax check generator
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_trendability_visualizer_pine.py
+
+      - name: Generate frozen-source trendability visualizer
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_issue78_trendability_visualizer_pine.py \
+            --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-trendability-visualizer.pine
+
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-trendability-visualizer.pine
+          grep -F 'Chase Risk Trendability Lab｜Issue #78' "$FILE"
+          grep -F 'ctxDownExGate = math.min(downsideExhaustionGate, currentBearGate)' "$FILE"
+          grep -F 'ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)' "$FILE"
+          grep -F 'f_issue78Er' "$FILE"
+          grep -F 'ta.percentrank(issue78Er63, rankLen)' "$FILE"
+          grep -F 'ISSUE78TREND|schema=1' "$FILE"
+          grep -F '#78 Trendability Composite' "$FILE"
+          grep -F '33.33' "$FILE"
+          grep -F '66.67' "$FILE"
+          ! grep -F 'strategy.entry' "$FILE"
+          ! grep -F 'strategy.close' "$FILE"
+          git diff --check
+
+      - name: Commit generated Pine when changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-trendability-visualizer.pine
+          if git diff --cached --quiet; then
+            echo 'Generated trendability visualizer already current.'
+          else
+            git commit -m 'research: generate Issue #78 trendability visualizer [skip ci]'
+            git push
+          fi
