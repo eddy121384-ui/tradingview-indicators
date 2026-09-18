@@ -9,6 +9,7 @@ import pytest
 
 from issue_91_phase0_data_audit import (
     audit_fred_csv,
+    audit_fred_table_page,
     audit_jst_xlsx,
     first_last_numeric_year,
     validate_plan,
@@ -71,3 +72,12 @@ def test_jst_audit_finds_usa_total_return_columns() -> None:
     assert result["usa_rows"] == 2
     assert result["candidate_coverage"]["equity_total_return"]["usable_observations"] == 2
     assert result["candidate_coverage"]["government_bond_total_return"]["usable_observations"] == 2
+
+
+def test_fred_table_page_audit_reads_date_value_table() -> None:
+    payload = b"""<html><body><table><thead><tr><th>DATE</th><th>VALUE</th></tr></thead>
+    <tbody><tr><td>1919-01-01</td><td>4.8</td></tr><tr><td>1919-02-01</td><td>4.9</td></tr></tbody></table></body></html>"""
+    result = audit_fred_table_page(payload, "INDPRO")
+    assert result["first_observation"] == "1919-01-01"
+    assert result["last_observation"] == "1919-02-01"
+    assert result["usable_observations"] == 2

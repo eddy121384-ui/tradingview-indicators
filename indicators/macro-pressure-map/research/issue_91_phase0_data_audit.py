@@ -58,14 +58,36 @@ def first_last_numeric_year(values: pd.Series) -> tuple[int | None, int | None, 
     return int(numeric.min()), int(numeric.max()), int(numeric.size)
 
 
+def _promote_embedded_header(table: pd.DataFrame, required_tokens: tuple[str, ...]) -> pd.DataFrame | None:
+    raw = table.copy()
+    for pos in range(min(len(raw), 12)):
+        row = [str(x).strip() for x in raw.iloc[pos].tolist()]
+        joined = " | ".join(row).lower()
+        if all(token in joined for token in required_tokens):
+            headers = []
+            seen: dict[str, int] = {}
+            for i, value in enumerate(row):
+                base = value if value and value.lower() != "nan" else f"column_{i}"
+                count = seen.get(base, 0)
+                seen[base] = count + 1
+                headers.append(base if count == 0 else f"{base}__{count+1}")
+            out = raw.iloc[pos + 1 :].copy()
+            out.columns = headers
+            return out
+    return None
+
+
 def audit_damodaran(payload: bytes) -> dict:
-    tables = pd.read_html(io.BytesIO(payload))
+    tables = pd.read_html(io.BytesIO(payload), header=None)
     candidates = []
     for table in tables:
         frame = flatten_columns(table)
-        text = " ".join(frame.columns).lower()
-        if "year" in text and "s&p 500" in text and ("t. bond" in text or "t. bond" in text.replace("treasury", "t.")):
-            candidates.append(frame)
+        all_text = " ".join(frame.astype(str).fillna("").to_numpy().ravel()).lower()
+        if "s&p 500" not in all_text or "gold" not in all_text or "year" not in all_text:
+            continue
+        promoted = _promote_embedded_header(frame, ("year", "s&p 500", "gold"))
+        if promoted is not None:
+            candidates.append(promoted)
     if not candidates:
         raise RuntimeError("Damodaran return table not found")
     frame = max(candidates, key=len)
@@ -75,7 +97,7 @@ def audit_damodaran(payload: bytes) -> dict:
     first, last, rows = first_last_numeric_year(frame[year_col])
     if first is None or last is None:
         raise RuntimeError("Damodaran has no numeric year rows")
-    columns = [c for c in frame.columns if c]
+    columns = [str(c) for c in frame.columns if str(c)]
     required_tokens = ("s&p 500", "3-month", "bond", "gold")
     missing = [token for token in required_tokens if not any(token in c.lower() for c in columns)]
     if missing:
@@ -101,6 +123,10 @@ def audit_fred_csv(payload: bytes, series_id: str) -> dict:
         raise RuntimeError(f"FRED {series_id} unexpected columns: {list(frame.columns)}")
     dates = pd.to_datetime(frame[date_col], errors="coerce")
     values = pd.to_numeric(frame[series_id].replace(".", pd.NA), errors="coerce")
+    return _fred_coverage(dates, values, list(frame.columns), series_id)
+
+
+def _fred_coverage(dates: pd.Series, values: pd.Series, columns: list[str], series_id: str) -> dict:
     valid = dates.notna() & values.notna()
     if not valid.any():
         raise RuntimeError(f"FRED {series_id} contains no usable observations")
@@ -109,9 +135,25 @@ def audit_fred_csv(payload: bytes, series_id: str) -> dict:
         "first_observation": clean_dates.min().date().isoformat(),
         "last_observation": clean_dates.max().date().isoformat(),
         "usable_observations": int(valid.sum()),
-        "rows": int(len(frame)),
-        "columns": list(frame.columns),
+        "rows": int(len(dates)),
+        "columns": columns,
     }
+
+
+def audit_fred_table_page(payload: bytes, series_id: str) -> dict:
+    tables = pd.read_html(io.BytesIO(payload), header=0)
+    for table in tables:
+        frame = flatten_columns(table)
+        by_lower = {str(c).strip().lower(): str(c) for c in frame.columns}
+        date_col = by_lower.get("date")
+        value_col = by_lower.get("value")
+        if date_col is None or value_col is None:
+            continue
+        dates = pd.to_datetime(frame[date_col], errors="coerce")
+        values = pd.to_numeric(frame[value_col].replace(".", pd.NA), errors="coerce")
+        if (dates.notna() & values.notna()).any():
+            return _fred_coverage(dates, values, list(frame.columns), series_id)
+    raise RuntimeError(f"FRED {series_id} DATE/VALUE table not found")
 
 
 def _find_column(columns: list[str], aliases: tuple[str, ...]) -> str | None:
@@ -203,6 +245,8 @@ def audit_source(source: dict) -> dict:
         parsed = audit_damodaran(payload)
     elif transport == "fred_csv":
         parsed = audit_fred_csv(payload, source["series_id"])
+    elif transport == "fred_table_page":
+        parsed = audit_fred_table_page(payload, source["series_id"])
     elif transport == "xlsx":
         parsed = audit_jst_xlsx(payload)
     elif transport == "documentation_page":
