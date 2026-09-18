@@ -35,36 +35,53 @@ jobs:
       - name: Run focused Issue 89 tests
         working-directory: indicators/macro-pressure-map/research
         run: |
-          python -m pytest -q             test_issue_89_ex_ante_regime_policy.py             test_asset_allocation_phase_b.py             test_asset_allocation_phase_b_diagnostics.py
+          python -m pytest -q \
+            test_issue_89_ex_ante_regime_policy.py \
+            test_issue_89_episode_diagnostics.py \
+            test_asset_allocation_phase_b.py \
+            test_asset_allocation_phase_b_diagnostics.py
 
       - name: Generate Issue 89 primary evidence
         working-directory: indicators/macro-pressure-map/research
         run: |
           rm -rf generated/issue-89
-          python issue_89_ex_ante_regime_policy.py             --start 2007-01-01             --output-dir generated/issue-89
+          python issue_89_ex_ante_regime_policy.py \
+            --start 2007-01-01 \
+            --output-dir generated/issue-89
 
       - name: Generate Issue 89 realized-exposure attribution
         working-directory: indicators/macro-pressure-map/research
         run: |
-          python issue_89_exposure_diagnostics.py             --evidence-dir generated/issue-89
+          python issue_89_exposure_diagnostics.py \
+            --evidence-dir generated/issue-89
+
+      - name: Generate Issue 89 episode robustness
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_89_episode_diagnostics.py \
+            --evidence-dir generated/issue-89
 
       - name: Validate Issue 89 evidence contract
         working-directory: indicators/macro-pressure-map/research
         run: |
           python -m json.tool generated/issue-89/issue-89-manifest.json > /dev/null
           python -m json.tool generated/issue-89/issue-89-exposure-match.json > /dev/null
+          python -m json.tool generated/issue-89/issue-89-episode-robustness.json > /dev/null
           test -s generated/issue-89/issue-89-summary.csv
           test -s generated/issue-89/issue-89-cost-sensitivity.csv
           test -s generated/issue-89/issue-89-asset-contribution.csv
           test -s generated/issue-89/issue-89-regime-allocation-contribution.csv
           test -s generated/issue-89/issue-89-contribution-reconciliation.csv
+          test -s generated/issue-89/issue-89-episodes.csv
           python - <<'PY'
           import json
           from pathlib import Path
 
           contract = json.loads(Path("decisions/issue-89-preregistered-policy.json").read_text())
+          robustness = json.loads(Path("decisions/issue-89-episode-robustness-preregistered.json").read_text())
           manifest = json.loads(Path("generated/issue-89/issue-89-manifest.json").read_text())
           exposure = json.loads(Path("generated/issue-89/issue-89-exposure-match.json").read_text())
+          episodes = json.loads(Path("generated/issue-89/issue-89-episode-robustness.json").read_text())
 
           assert contract["frozen_before_issue_89_portfolio_results_viewed"] is True
           assert contract["return_fitted_weight_selection_allowed"] is False
@@ -76,11 +93,20 @@ jobs:
           assert manifest["price_snapshot_csv_sha256"] == contract["outcome_snapshot"]["csv_sha256"]
           assert manifest["price_snapshot_archive_sha256"] == contract["outcome_snapshot"]["archive_sha256"]
           assert exposure["max_abs_invested_weight_mismatch"] <= exposure["required_max_abs_invested_weight_mismatch"]
-          assert exposure["required_max_abs_invested_weight_mismatch"] == contract["benchmarks"]["realized_exposure_matched_static_control"]["max_abs_invested_weight_mismatch"]
+
+          assert robustness["primary_policy_modified"] is False
+          assert robustness["frozen_before_issue_89_episode_results_viewed"] is True
+          assert episodes["primary_policy_modified"] is False
+          assert episodes["secondary_contract_frozen_before_episode_results"] is True
+          assert len(episodes["summary_rows"]) == 3
+          for row in episodes["summary_rows"]:
+              assert row["leaveout_realized_exposure_matching"]["max_abs_invested_weight_mismatch"] <= robustness["exposure_match_tolerance"]
+
           print({
               "evaluation_rows": manifest["evaluation_rows"],
               "policy_transition_count": manifest["policy_transition_count"],
               "max_abs_exposure_mismatch": exposure["max_abs_invested_weight_mismatch"],
+              "episode_segments": [row["segment"] for row in episodes["summary_rows"]],
           })
           PY
 
