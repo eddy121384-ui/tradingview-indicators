@@ -23,6 +23,8 @@ def test_prereg_forbids_asset_outcomes() -> None:
     assert p["created_before_asset_conditioned_results"] is True
     assert p["production_v66_modified"] is False
     assert p["exact_v66_claim"] is False
+    assert "api.bls.gov" in p["primary_macro_sources"]["inflation"]["url"]
+    assert "v1" in p["primary_macro_sources"]["inflation"]["transport"]
 
 
 def test_parse_fed_ip_total_index() -> None:

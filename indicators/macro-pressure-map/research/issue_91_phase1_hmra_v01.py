@@ -22,7 +22,7 @@ HERE = Path(__file__).resolve().parent
 PREREG = HERE / "decisions" / "issue-91-phase1-hmra-v0.1-preregistered.json"
 
 FED_IP_URL = "https://www.federalreserve.gov/releases/g17/Current/ipdisk/ip_sa.txt"
-BLS_CPI_URL = "https://download.bls.gov/pub/time.series/cu/cu.data.1.AllItems"
+BLS_CPI_URL = "https://api.bls.gov/publicAPI/v1/timeseries/data/"
 FED_IP_CODE = "B50001"
 BLS_CPI_CODE = "CUUR0000SA0"
 USER_AGENT = "tradingview-indicators-issue-91/1.0"
@@ -40,6 +40,56 @@ def fetch_bytes(url: str, timeout: int = 30) -> tuple[bytes, str]:
 
 def sha256_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
+
+
+def fetch_bls_cpi_api(start_year: int = 1913, end_year: int = 2025, series_code: str = BLS_CPI_CODE) -> tuple[pd.DataFrame, bytes, int]:
+    """Fetch one BLS series through the official unregistered v1 API in <=10-year chunks.
+
+    The returned hash payload is a canonical JSON encoding of observations only,
+    excluding response-time metadata so repeated identical data hash identically.
+    """
+    observations: list[dict] = []
+    request_count = 0
+    for start in range(start_year, end_year + 1, 10):
+        end = min(start + 9, end_year)
+        body = json.dumps({
+            "seriesid": [series_code],
+            "startyear": str(start),
+            "endyear": str(end),
+        }).encode("utf-8")
+        request = urllib.request.Request(
+            BLS_CPI_URL,
+            data=body,
+            headers={"Content-Type": "application/json", "User-Agent": USER_AGENT},
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:  # nosec B310 - frozen official HTTPS API
+            payload = json.loads(response.read().decode("utf-8"))
+        request_count += 1
+        if payload.get("status") != "REQUEST_SUCCEEDED":
+            raise RuntimeError(f"BLS API failed for {start}-{end}: {payload.get('message')}")
+        series = payload.get("Results", {}).get("series", [])
+        if len(series) != 1 or series[0].get("seriesID") != series_code:
+            raise RuntimeError(f"BLS API unexpected series payload for {start}-{end}")
+        for item in series[0].get("data", []):
+            period = str(item.get("period", ""))
+            if not re.fullmatch(r"M(?:0[1-9]|1[0-2])", period):
+                continue
+            observations.append({
+                "year": int(item["year"]),
+                "month": int(period[1:]),
+                "cpi": float(item["value"]),
+            })
+    if not observations:
+        raise RuntimeError("BLS API returned no CPI monthly observations")
+    frame = pd.DataFrame(observations).drop_duplicates(["year", "month"], keep="last")
+    frame = frame.sort_values(["year", "month"]).reset_index(drop=True)
+    canonical_records = [
+        {"year": int(row.year), "month": int(row.month), "cpi": float(row.cpi)}
+        for row in frame.itertuples(index=False)
+    ]
+    canonical = json.dumps(canonical_records, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    return frame, canonical, request_count
 
 
 def parse_fed_ip(payload: bytes, series_code: str = FED_IP_CODE) -> pd.DataFrame:
@@ -225,9 +275,11 @@ def validate_prereg() -> dict:
 def run(output_dir: Path) -> dict:
     p = validate_prereg()
     fed_raw, fed_final = fetch_bytes(FED_IP_URL)
-    bls_raw, bls_final = fetch_bytes(BLS_CPI_URL)
     ip = parse_fed_ip(fed_raw)
-    cpi = parse_bls_cpi(bls_raw)
+    cpi, bls_canonical, bls_request_count = fetch_bls_cpi_api(
+        start_year=1913,
+        end_year=p["primary_analysis_window"]["completed_macro_year_end"],
+    )
     annual = annual_december(ip, cpi, end_year=p["primary_analysis_window"]["completed_macro_year_end"])
     states = build_hmra(
         annual,
@@ -284,10 +336,12 @@ def run(output_dir: Path) -> dict:
             },
             "bls_cpi":{
                 "requested_url":BLS_CPI_URL,
-                "final_url":bls_final,
+                "final_url":BLS_CPI_URL,
                 "series_code":BLS_CPI_CODE,
-                "sha256":sha256_bytes(bls_raw),
-                "bytes":len(bls_raw),
+                "transport":"BLS Public Data API v1 in <=10-year chunks",
+                "canonical_observations_sha256":sha256_bytes(bls_canonical),
+                "canonical_observations_bytes":len(bls_canonical),
+                "request_count":bls_request_count,
                 "first_year":int(cpi["year"].min()),
                 "last_year":int(cpi["year"].max()),
             },

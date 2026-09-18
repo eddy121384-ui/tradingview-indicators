@@ -30,9 +30,11 @@
       "program": "Consumer Price Index",
       "series_code": "CUUR0000SA0",
       "description": "CPI-U, U.S. city average, all items, not seasonally adjusted",
-      "url": "https://download.bls.gov/pub/time.series/cu/cu.data.1.AllItems",
+      "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/",
       "documented_start": 1913,
-      "frequency": "monthly"
+      "frequency": "monthly",
+      "transport": "BLS Public Data API v1, POST in <=10-year chunks",
+      "retrieval_note": "The BLS flat-file host returned HTTP 403 to GitHub Actions. The official unregistered v1 API is used instead; series identity remains CUUR0000SA0."
     }
   },
   "primary_analysis_window": {
