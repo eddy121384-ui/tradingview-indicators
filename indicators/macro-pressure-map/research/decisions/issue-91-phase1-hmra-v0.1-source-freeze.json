@@ -49,9 +49,9 @@
   },
   "generated_evidence_freeze": {
     "macro_states_csv": {
-      "semantic_sha256": "3e7e5fefe94aeb9821f1104b8085c2a0d6ca7dc9ac7259da525ba197e78d2a2d",
+      "semantic_sha256": "3e3b87d9ed208d95996c9f5687d2e7e2e3d9ef206cbb411a41c32220ddb8ac40",
       "semantic_round_decimals": 10,
-      "semantic_canonicalization": "JSON records in row order; object keys sorted; null for missing; year and strict_causal_return_year as integers; all other numeric values rounded to 10 decimals; strings/booleans exact",
+      "semantic_canonicalization": "Read CSV text with csv.DictReader; empty->null; year and strict_causal_return_year->integer Decimal; same_year_structural_only->boolean; categorical columns exact strings; all other numeric cells Decimal-quantized ROUND_HALF_EVEN to fixed 10-decimal strings; JSON records in row order with object keys sorted.",
       "byte_sha256_diagnostic": "46fdcbf90f83a2ce6b9633401c9463b362090c571b10bf516f8d28c5606b351c",
       "byte_size_diagnostic": 57194,
       "csv_lines_including_header": 108
