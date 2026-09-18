@@ -1,0 +1,33 @@
+name: Macro Pressure Map Issue 91 Phase 2 Prereg
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-91-phase2-*"
+      - "indicators/macro-pressure-map/research/test_issue_91_phase2_prereg.py"
+      - ".github/workflows/macro-pressure-map-issue-91-phase2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  phase2-prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test environment
+        run: python -m pip install "pytest==9.1.1"
+      - name: Validate preregistration only
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_91_phase2_prereg.py
+      - name: Confirm no Phase 2 outcome implementation exists in prereg commit
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_91_phase2_asset_validation.py
+          test ! -f decisions/issue-91-phase2-decision.json
+          echo "Phase 2 prereg commit contains no asset-outcome implementation or verdict."
