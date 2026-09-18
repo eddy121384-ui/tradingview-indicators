@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "issue": 91,
+  "phase": "0-source-audit",
+  "verification_date": "2026-09-18",
+  "purpose": "record independently web-verified source coverage when the GitHub Actions runner cannot reliably retrieve an official endpoint",
+  "methodology_boundary": "This file records source metadata/coverage only. It contains no historical regime labels, conditioned returns, portfolio outcomes, or tuned parameters.",
+  "verified_sources": [
+    {
+      "id": "damodaran_us_returns",
+      "url": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html",
+      "observed_title": "Historical Returns on Stocks, Bonds and Bills",
+      "observed_coverage": "1928-2025",
+      "observed_update": "January 5, 2026",
+      "semantics": [
+        "S&P 500 includes dividends",
+        "3-month T.Bill",
+        "US T. Bond (10-year) return",
+        "Gold"
+      ],
+      "note": "Automated GitHub runner retrieval also succeeds; live SHA is captured by the audit artifact."
+    },
+    {
+      "id": "jst_macrohistory_r6",
+      "url": "https://www.macrohistory.net/database/",
+      "observed_coverage": "18 advanced economies since 1870, annual",
+      "observed_variables": [
+        "consumer prices",
+        "real GDP per capita",
+        "equity total return",
+        "government bond total return",
+        "government bill rate"
+      ],
+      "license": "CC BY-NC-SA 4.0",
+      "note": "Automated GitHub runner retrieval succeeds; raw workbook is not committed."
+    },
+    {
+      "id": "fred_indpro",
+      "url": "https://fred.stlouisfed.org/data/INDPRO",
+      "observed_coverage": "1919-01-01 to 2026-07-01",
+      "frequency": "Monthly",
+      "source": "Board of Governors of the Federal Reserve System (US)",
+      "role": "official real-activity cross-check",
+      "runner_status": "live fetch timed out repeatedly on GitHub Actions; do not infer source unavailability"
+    },
+    {
+      "id": "fred_cpiaucsl",
+      "url": "https://fred.stlouisfed.org/data/CPIAUCSL",
+      "observed_coverage": "1947-01-01 to 2026-08-01",
+      "frequency": "Monthly",
+      "source": "U.S. Bureau of Labor Statistics",
+      "role": "official postwar inflation cross-check",
+      "runner_status": "live fetch timed out repeatedly on GitHub Actions; do not infer source unavailability"
+    },
+    {
+      "id": "fred_gdpc1",
+      "url": "https://fred.stlouisfed.org/data/GDPC1",
+      "observed_coverage": "1947-01-01 to 2026-04-01",
+      "frequency": "Quarterly",
+      "source": "U.S. Bureau of Economic Analysis",
+      "role": "official postwar real-GDP cross-check",
+      "runner_status": "live fetch timed out repeatedly on GitHub Actions; do not infer source unavailability"
+    },
+    {
+      "id": "fred_gs10",
+      "url": "https://fred.stlouisfed.org/data/GS10",
+      "observed_coverage": "1953-04-01 to 2026-08-01",
+      "frequency": "Monthly",
+      "source": "Board of Governors of the Federal Reserve System (US)",
+      "role": "yield diagnostic only",
+      "warning": "GS10 is a yield series, not a Treasury total-return series."
+    },
+    {
+      "id": "shiller_long_stock_history",
+      "url": "https://www.econ.yale.edu/~shiller/data.htm",
+      "observed_coverage": "monthly stock price, dividends, earnings and CPI beginning January 1871",
+      "role": "secondary pre-1928 equity/inflation extension candidate",
+      "runner_status": "Yale endpoint refused the GitHub Actions runner connection; source remains secondary and non-blocking until a reproducible download path is frozen."
+    }
+  ]
+}
