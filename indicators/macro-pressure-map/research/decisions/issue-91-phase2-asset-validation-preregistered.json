@@ -4,7 +4,7 @@
   "phase": "2-structural-and-causal-asset-validation-preregistration",
   "created_before_phase2_asset_outcomes": true,
   "hmra_version": "v0.1",
-  "hmra_source_freeze_commit": "84e6b15cb8ecde458319031f30d771236d87745a",
+  "hmra_source_freeze_commit": "749d1df34703a707a3250dc4712fc6983c79cdd9",
   "production_v66_modified": false,
   "portfolio_policy_test_in_this_phase": false,
   "purpose": "Test whether HMRA Growth × Inflation states map to stable cross-asset payoffs across nearly a century, and whether that mapping changes with absolute inflation / monetary era, before any portfolio-policy evaluation.",
@@ -333,5 +333,13 @@
     "Do not modify V6.6/HMRA thresholds.",
     "Do not promote a production allocator.",
     "Do not infer that same-year associations are causal."
-  ]
+  ],
+  "pre_outcome_reproducibility_repair": {
+    "occurred_before_any_phase2_asset_outcome_was_loaded": true,
+    "trigger": "First Phase 2 evidence run stopped in HMRA validation before Damodaran/JST fetch because raw floating CSV byte hash differed while canonical Fed/BLS input hashes and occupancy were unchanged.",
+    "repair": "Phase 1 freeze now gates a 10-decimal semantic dataframe hash plus exact canonical source hashes; raw CSV byte hash is diagnostic only.",
+    "hmra_rules_changed": false,
+    "state_thresholds_changed": false,
+    "source_series_changed": false
+  }
 }
