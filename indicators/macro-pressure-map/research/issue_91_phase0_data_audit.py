@@ -27,7 +27,7 @@ def sha256_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def fetch_bytes(url: str, timeout: int = 60) -> tuple[bytes, str]:
+def fetch_bytes(url: str, timeout: int = 20) -> tuple[bytes, str]:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(request, timeout=timeout) as response:  # nosec B310 - preregistered HTTPS sources
         payload = response.read()
@@ -242,9 +242,13 @@ def run(plan_path: Path, output_dir: Path) -> dict:
     rows = []
     failures = []
     for source in plan["sources"]:
+        print(f"AUDIT_START {source['id']} {source['url']}", flush=True)
         try:
-            rows.append(audit_source(source))
+            row = audit_source(source)
+            rows.append(row)
+            print(f"AUDIT_OK {source['id']} {row.get('raw_sha256')}", flush=True)
         except Exception as exc:
+            print(f"AUDIT_ERROR {source['id']} {type(exc).__name__}: {exc}", flush=True)
             row = {
                 "id":source["id"],
                 "role":source["role"],
