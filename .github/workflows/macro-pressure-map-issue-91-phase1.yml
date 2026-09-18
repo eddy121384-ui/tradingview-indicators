@@ -1,0 +1,79 @@
+name: Macro Pressure Map Issue 91 Phase 1 HMRA v0.1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_91_phase1_*"
+      - "indicators/macro-pressure-map/research/test_issue_91_phase1_*"
+      - "indicators/macro-pressure-map/research/decisions/issue-91-phase1-*"
+      - ".github/workflows/macro-pressure-map-issue-91-phase1.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  hmra-preregistered-state-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install HMRA environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy==2.4.6" "pandas==3.0.5" "pytest==9.1.1"
+
+      - name: Run Phase 1 unit tests
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_91_phase1_hmra_v01.py
+
+      - name: Build macro states only
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-91-phase1
+          python issue_91_phase1_hmra_v01.py --output-dir generated/issue-91-phase1
+
+      - name: Enforce no-asset-outcome boundary
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          out=Path("generated/issue-91-phase1")
+          manifest=json.loads((out/"issue-91-hmra-v0.1-manifest.json").read_text())
+          states=pd.read_csv(out/"issue-91-hmra-v0.1-macro-states.csv")
+          assert manifest["asset_returns_loaded"] is False
+          assert manifest["asset_conditioned_results_computed"] is False
+          assert manifest["portfolio_results_computed"] is False
+          forbidden=("equity","treasury","t_bill","gold","spy","tlt","gld","asset_return")
+          assert not any(any(token in c.lower() for token in forbidden) for c in states.columns)
+          assert manifest["timing"]["strict_causal_return_year_offset"] == 2
+          print({
+              "annual_overlap": manifest["annual_overlap"],
+              "valid_states": manifest["primary_valid_states"]["years"],
+              "first_valid": manifest["primary_valid_states"]["first_year"],
+              "last_valid": manifest["primary_valid_states"]["last_year"],
+              "10y_agreement": manifest["sensitivity_10y"]["exact_regime_agreement_rate"],
+          })
+          PY
+
+      - name: Validate durable HMRA v0.1 freeze
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_91_phase1_completion_validation.py --evidence-dir generated/issue-91-phase1
+
+      - name: Upload HMRA macro-only artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-91-phase1-hmra-v01
+          path: indicators/macro-pressure-map/research/generated/issue-91-phase1
+          retention-days: 7
+          if-no-files-found: error

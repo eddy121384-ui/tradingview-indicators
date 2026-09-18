@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "issue": 91,
+  "phase": "1-hmra-v0.1",
+  "artifact_role": "durable macro-only HMRA v0.1 freeze before any asset-conditioned Phase 2 result",
+  "created_after_first_clean_macro_only_build": true,
+  "created_before_asset_conditioned_results": true,
+  "production_v66_modified": false,
+  "exact_v66_claim": false,
+  "asset_returns_loaded": false,
+  "asset_conditioned_results_computed": false,
+  "portfolio_results_computed": false,
+  "source_evidence_run": {
+    "workflow_run": 35318585156,
+    "head_sha": "fa8725a74ae7dbbdc805353dfda44ed09b801b0c",
+    "artifact_id": 10536335987,
+    "artifact_digest": "sha256:04fb912a49e3f985e3fff875132aa9fd49d6d8e759664507ddfc6fa747aeee42"
+  },
+  "canonical_input_freeze": {
+    "fed_ip": {
+      "series_code": "B50001",
+      "used_through_year": 2025,
+      "canonical_used_observations_sha256": "11ebdc64f49a3c4d4f041b453496669793889df8acd3c2b1884f937b37330cbc",
+      "canonical_used_observations_bytes": 47546,
+      "note": "The full current Fed text-file hash is intentionally not a durable gate because later 2026 observations can change without altering the 1919-2025 research input."
+    },
+    "bls_cpi": {
+      "series_code": "CUUR0000SA0",
+      "used_through_year": 2025,
+      "canonical_observations_sha256": "06bbdb5470d01a73334629a2fc90e00c91fe0e9d59ab1bc3677fa873aace7f3f",
+      "canonical_observations_bytes": 48696,
+      "transport": "BLS Public Data API v1 in <=10-year chunks"
+    }
+  },
+  "model_rule_freeze": {
+    "growth_rate": "100 * ln(IP_Dec_t / IP_Dec_t-1)",
+    "inflation_rate": "100 * ln(CPI_Dec_t / CPI_Dec_t-1)",
+    "primary_reference_window_years": 5,
+    "sensitivity_reference_window_years": 10,
+    "current_year_excluded_from_reference": true,
+    "raw_axis_score": "0.70 * level_z + 0.30 * acceleration_z",
+    "scaled_axis_score": "100 * tanh(raw_axis_score / 2)",
+    "low_threshold": -10,
+    "high_threshold": 10,
+    "neutral_includes_thresholds": true,
+    "zero_std_policy": "missing",
+    "strict_causal_return_year_offset": 2,
+    "same_year_pairing_role": "descriptive structural association only; no causal claim"
+  },
+  "generated_evidence_freeze": {
+    "macro_states_csv": {
+      "semantic_sha256": "3e3b87d9ed208d95996c9f5687d2e7e2e3d9ef206cbb411a41c32220ddb8ac40",
+      "semantic_round_decimals": 10,
+      "semantic_canonicalization": "Read CSV text with csv.DictReader; empty->null; year and strict_causal_return_year->integer Decimal; same_year_structural_only->boolean; categorical columns exact strings; all other numeric cells Decimal-quantized ROUND_HALF_EVEN to fixed 10-decimal strings; JSON records in row order with object keys sorted.",
+      "byte_sha256_diagnostic": "46fdcbf90f83a2ce6b9633401c9463b362090c571b10bf516f8d28c5606b351c",
+      "byte_size_diagnostic": 57194,
+      "csv_lines_including_header": 108
+    },
+    "occupancy_csv": {
+      "sha256": "af81f502ee1c677c827a2b582e7c51f04937d0afb03471f91700e17132a8c9b5",
+      "bytes": 453,
+      "csv_lines_including_header": 10
+    }
+  },
+  "coverage_and_diagnostics": {
+    "annual_overlap": {
+      "first_year": 1919,
+      "last_year": 2025,
+      "rows": 107
+    },
+    "primary_valid_states": {
+      "first_year": 1928,
+      "last_year": 2025,
+      "years": 98
+    },
+    "regime_occupancy": {
+      "Reflation / Inflation Rising": 22,
+      "Goldilocks / Disinflationary Expansion": 20,
+      "Benign Expansion / Stable Inflation": 4,
+      "Stagflation Pressure": 19,
+      "Slowdown / Disinflation": 15,
+      "Growth Slowdown / Stable Inflation": 2,
+      "Inflation Pressure without Growth Confirmation": 2,
+      "Disinflationary Drift": 10,
+      "Neutral / Range-bound Macro": 4
+    },
+    "all_nine_cells_observed": true,
+    "sensitivity_10y": {
+      "comparable_years": 95,
+      "exact_regime_agreement_rate": 0.6,
+      "diagnostic_only": true,
+      "interpretation_guard": "Do not switch the primary lookback or thresholds because the sensitivity produces more attractive occupancy or later asset results."
+    }
+  },
+  "phase2_gate": {
+    "status": "blocked_until_separate_preregistration",
+    "allowed_next_step": "Preregister asset-source mapping, contemporaneous structural tests, strict-causal tests, gold boundary, era-conditioned comparisons and multiple-testing/interpretation rules before loading any asset outcome.",
+    "forbidden_next_step": "Do not directly join Damodaran/JST asset returns to HMRA states and inspect results before the Phase 2 contract exists."
+  },
+  "revision_policy": {
+    "canonical_input_hash_change": "fail closed; create explicit new HMRA source-freeze version and explain revision before regenerating outcome evidence",
+    "generated_macro_state_hash_change": "Fail closed on semantic SHA change. Raw CSV byte SHA is diagnostic only because repeated identical canonical inputs produced rare float-serialization byte drift without state/occupancy change.",
+    "occupancy_or_10y_agreement_change": "fail closed; never repair by tuning thresholds or lookback after asset outcomes exist",
+    "semantic_hash_rationale": "Phase 2 first asset-outcome run was blocked before asset loading because identical canonical Fed/BLS input hashes regenerated a CSV differing only at raw-byte level. Semantic hashing was introduced before any asset outcome was read."
+  }
+}
