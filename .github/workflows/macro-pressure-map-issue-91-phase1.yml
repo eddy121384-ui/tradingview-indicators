@@ -65,6 +65,11 @@ jobs:
           })
           PY
 
+      - name: Validate durable HMRA v0.1 freeze
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_91_phase1_completion_validation.py --evidence-dir generated/issue-91-phase1
+
       - name: Upload HMRA macro-only artifact
         uses: actions/upload-artifact@v4
         with:
