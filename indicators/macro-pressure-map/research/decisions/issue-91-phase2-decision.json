@@ -183,17 +183,36 @@
   "production_implication": "Do not add a third axis or change V6.6/HMRA yet. Treat absolute inflation background as a validated research interaction for the allocation layer and preregister any future portfolio-policy modification separately.",
   "portfolio_policy_evaluated": false,
   "production_change_authorized": false,
-  "evidence_files": {
-    "issue-91-phase2-absolute-inflation-comparison.csv": "6755b085ef3072f349f26da0a885623008f31e7999e7a2363b19c8e19ed5d93a",
-    "issue-91-phase2-causal-cell-summary.csv": "85e61c3e4af0919bcaeed8501c8ae1ce3e75154429085afb733f422dceb4a39e",
-    "issue-91-phase2-causal-joined.csv": "0f268dad2ceebeed390329bf0fd7d4cd112095fe05272ae21a388d810607f143",
-    "issue-91-phase2-cross-source-cells.csv": "c29efa1911dfdc3fe96f47b29358f5f28a32f7d88eb9c0517390dbf48233de1f",
-    "issue-91-phase2-cross-source-overall.csv": "0a3beb97423874825bdd290a777e2a3c3bb424f73ebdd314a133410c90a48ef5",
-    "issue-91-phase2-era-sign-consistency.csv": "0626a710ff2a4e180668062227374b0cf66d3c71090dc2fed5a0a838a73443b8",
-    "issue-91-phase2-era-summary.csv": "0e9b0697ddb904e5fb8b6578cdb7df8cb6a053c8666a9409a370470742e8610c",
-    "issue-91-phase2-leader-consistency.csv": "1c96d5a5e4928872ddb9438d1181adf6fd2751d0c5a59f5a4ea6da59195f2975",
-    "issue-91-phase2-leave-one-era-out.csv": "93c583daa51edda18c82337ca222c7db78483acdc7d19822a60d1f166264fb9f",
-    "issue-91-phase2-structural-cell-summary.csv": "60572dc0b1785125fef45d6f289a4cbfad56dd688816749555e56e2bc0793ef2",
-    "issue-91-phase2-structural-joined.csv": "8d619f3ec48fcd2097b6308acae69407ecf8aaa2c8ca1ee50e34062cf37b30ab"
+  "evidence_binding": {
+    "method": "CSV semantic hash",
+    "numeric_round_decimals": 8,
+    "canonicalization": "csv.DictReader; empty->null; true/false->boolean; parseable numeric cells Decimal ROUND_HALF_EVEN to fixed 8-decimal strings; other cells exact strings; JSON rows in file order with object keys sorted",
+    "rationale": "Current-head regeneration preserved all frozen sources, categories, counts and key metrics but a subset of float-bearing CSV byte hashes changed by serialization-level differences. Semantic binding was adopted after the verdict without changing analysis or outcome values.",
+    "semantic_sha256": {
+      "issue-91-phase2-absolute-inflation-comparison.csv": "c7fa042ee43f4159e9be3ef88d1116fcd0279f051a0fbb0367bdf66c42e7e087",
+      "issue-91-phase2-causal-cell-summary.csv": "d0aa4991f45ca0ab7c7926bd3f6dc76fbe8df8bc710a01fa6c9d9e6285433533",
+      "issue-91-phase2-causal-joined.csv": "024cc38b585fb512bcc7ab66652feda3c7d793938adb9069997ce76a7915a7ce",
+      "issue-91-phase2-cross-source-cells.csv": "157730bba247d5730bef091cf7132d18c16886071902379c3c804ee48bf65905",
+      "issue-91-phase2-cross-source-overall.csv": "f1c21fd5b0168e29e1370672f4f9d44ce0e5b665ca0f0211d9453c9cf409cae5",
+      "issue-91-phase2-era-sign-consistency.csv": "f169e2f888df02176f45650255371af400a49a45d04e0a813af8d1db13c0ec2c",
+      "issue-91-phase2-era-summary.csv": "00410629f3cc7fb88c9b4b8d673a755faa5fa5705dd52f7fe790c06fce9c8019",
+      "issue-91-phase2-leader-consistency.csv": "98e0e86d7e2a2ca6683e1995c8cc2b943fe4c5c3d8e095f170f39bba1af79e90",
+      "issue-91-phase2-leave-one-era-out.csv": "33cf0d809187f82aad7f2956de55bd491083b25300d38a344ece4b9eccd440f8",
+      "issue-91-phase2-structural-cell-summary.csv": "f22f99f37f42c25b65e004a189597f3b412770483fe1fd7f1d434ae9e55440aa",
+      "issue-91-phase2-structural-joined.csv": "982db8ab9ad01934387010e3b5ee429f365676335a6f8b72f9415c5d2b1c5961"
+    },
+    "raw_byte_sha256_diagnostic": {
+      "issue-91-phase2-absolute-inflation-comparison.csv": "6755b085ef3072f349f26da0a885623008f31e7999e7a2363b19c8e19ed5d93a",
+      "issue-91-phase2-causal-cell-summary.csv": "85e61c3e4af0919bcaeed8501c8ae1ce3e75154429085afb733f422dceb4a39e",
+      "issue-91-phase2-causal-joined.csv": "0f268dad2ceebeed390329bf0fd7d4cd112095fe05272ae21a388d810607f143",
+      "issue-91-phase2-cross-source-cells.csv": "c29efa1911dfdc3fe96f47b29358f5f28a32f7d88eb9c0517390dbf48233de1f",
+      "issue-91-phase2-cross-source-overall.csv": "0a3beb97423874825bdd290a777e2a3c3bb424f73ebdd314a133410c90a48ef5",
+      "issue-91-phase2-era-sign-consistency.csv": "0626a710ff2a4e180668062227374b0cf66d3c71090dc2fed5a0a838a73443b8",
+      "issue-91-phase2-era-summary.csv": "0e9b0697ddb904e5fb8b6578cdb7df8cb6a053c8666a9409a370470742e8610c",
+      "issue-91-phase2-leader-consistency.csv": "1c96d5a5e4928872ddb9438d1181adf6fd2751d0c5a59f5a4ea6da59195f2975",
+      "issue-91-phase2-leave-one-era-out.csv": "93c583daa51edda18c82337ca222c7db78483acdc7d19822a60d1f166264fb9f",
+      "issue-91-phase2-structural-cell-summary.csv": "60572dc0b1785125fef45d6f289a4cbfad56dd688816749555e56e2bc0793ef2",
+      "issue-91-phase2-structural-joined.csv": "8d619f3ec48fcd2097b6308acae69407ecf8aaa2c8ca1ee50e34062cf37b30ab"
+    }
   }
 }

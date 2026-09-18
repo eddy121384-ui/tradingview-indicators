@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import csv
+from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN
 import hashlib
+import io
 import json
 from pathlib import Path
 
@@ -19,6 +22,34 @@ def load(path:Path)->dict:
 
 def sha(path:Path)->str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def semantic_csv_sha(path:Path,decimals:int)->str:
+    quant=Decimal(1).scaleb(-decimals)
+    rows=[]
+    with path.open("r",encoding="utf-8",newline="") as fh:
+        reader=csv.DictReader(fh)
+        for row in reader:
+            rec={}
+            for key,value in row.items():
+                if value is None or value=="":
+                    rec[key]=None
+                    continue
+                lowered=value.strip().lower()
+                if lowered=="true":
+                    rec[key]=True
+                    continue
+                if lowered=="false":
+                    rec[key]=False
+                    continue
+                try:
+                    number=Decimal(value)
+                    rec[key]=format(number.quantize(quant,rounding=ROUND_HALF_EVEN),f".{decimals}f")
+                except InvalidOperation:
+                    rec[key]=value
+            rows.append(rec)
+    payload=json.dumps(rows,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def require(condition:bool,message:str)->None:
@@ -45,10 +76,13 @@ def validate(evidence_dir:Path)->dict:
     require(m["portfolio_policy_evaluated"] is False,"portfolio policy leaked into Phase 2")
     require(m["structural_verdict_committed"] is True,"evaluator does not see durable verdict")
 
-    for name,expected in d["evidence_files"].items():
+    binding=d["evidence_binding"]
+    decimals=int(binding["numeric_round_decimals"])
+    for name,expected in binding["semantic_sha256"].items():
         path=evidence_dir/name
         require(path.exists(),f"missing evidence file: {name}")
-        require(sha(path)==expected,f"evidence hash drift: {name}")
+        actual=semantic_csv_sha(path,decimals)
+        require(actual==expected,f"evidence semantic hash drift: {name}; actual={actual}; expected={expected}")
 
     structural=pd.read_csv(evidence_dir/"issue-91-phase2-structural-cell-summary.csv")
     causal=pd.read_csv(evidence_dir/"issue-91-phase2-causal-cell-summary.csv")

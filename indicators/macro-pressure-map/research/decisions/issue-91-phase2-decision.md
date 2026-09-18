@@ -105,3 +105,9 @@ The finding does **not** justify immediately adding a third axis to production V
 > the economic meaning of Growth × Inflation for asset allocation is conditional on the background level of inflation, with the clearest evidence in the duration-versus-cash relationship.
 
 Any portfolio rule that uses this interaction must be separately preregistered and tested.
+
+## Durable evidence binding note
+
+The first current-head re-run after binding the verdict reproduced the frozen source hashes, regime counts, diagnostic counts and key numerical findings, but some CSV raw-byte hashes differed at floating serialization precision.
+
+The analysis and verdict were not changed. Durable binding now uses an 8-decimal Decimal semantic hash for CSV content, while original raw-byte hashes remain recorded as diagnostics. Key decision metrics continue to be checked independently by the completion validator.
