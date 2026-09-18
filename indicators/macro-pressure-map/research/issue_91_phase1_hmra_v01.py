@@ -185,10 +185,10 @@ def build_hmra(annual: pd.DataFrame, primary_window: int = 5, sensitivity_window
     out["growth_rate"] = 100.0 * np.log(out["ip"] / out["ip"].shift(1))
     out["inflation_rate"] = 100.0 * np.log(out["cpi"] / out["cpi"].shift(1))
 
-    g = scaled_axis(out["growth_rate"], primary_window).add_prefix("growth_")
-    i = scaled_axis(out["inflation_rate"], primary_window).add_prefix("inflation_")
-    gs = scaled_axis(out["growth_rate"], sensitivity_window).add_prefix("growth_sens10_")
-    is_ = scaled_axis(out["inflation_rate"], sensitivity_window).add_prefix("inflation_sens10_")
+    g = scaled_axis(out["growth_rate"], primary_window).drop(columns=["rate"]).add_prefix("growth_")
+    i = scaled_axis(out["inflation_rate"], primary_window).drop(columns=["rate"]).add_prefix("inflation_")
+    gs = scaled_axis(out["growth_rate"], sensitivity_window).drop(columns=["rate"]).add_prefix("growth_sens10_")
+    is_ = scaled_axis(out["inflation_rate"], sensitivity_window).drop(columns=["rate"]).add_prefix("inflation_sens10_")
     out = pd.concat([out, g, i, gs, is_], axis=1)
 
     out["growth_state"] = out["growth_score"].map(tri_state)
