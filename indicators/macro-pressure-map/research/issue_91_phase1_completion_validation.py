@@ -64,9 +64,21 @@ def validate(evidence_dir: Path) -> dict:
     require(cpi_observed["canonical_observations_bytes"] == cpi_expected["canonical_observations_bytes"], "BLS CPI canonical byte count changed")
 
     evidence = freeze["generated_evidence_freeze"]
-    require(sha256_file(states_path) == evidence["macro_states_csv"]["sha256"], "HMRA macro-state CSV changed")
+    states_hash = sha256_file(states_path)
+    occupancy_hash = sha256_file(occupancy_path)
+    print(json.dumps({
+        "states_actual_sha256": states_hash,
+        "states_expected_sha256": evidence["macro_states_csv"]["sha256"],
+        "states_actual_bytes": states_path.stat().st_size,
+        "states_expected_bytes": evidence["macro_states_csv"]["bytes"],
+        "occupancy_actual_sha256": occupancy_hash,
+        "occupancy_expected_sha256": evidence["occupancy_csv"]["sha256"],
+        "occupancy_actual_bytes": occupancy_path.stat().st_size,
+        "occupancy_expected_bytes": evidence["occupancy_csv"]["bytes"],
+    }, indent=2))
+    require(states_hash == evidence["macro_states_csv"]["sha256"], "HMRA macro-state CSV changed")
     require(states_path.stat().st_size == evidence["macro_states_csv"]["bytes"], "HMRA macro-state CSV size changed")
-    require(sha256_file(occupancy_path) == evidence["occupancy_csv"]["sha256"], "HMRA occupancy CSV changed")
+    require(occupancy_hash == evidence["occupancy_csv"]["sha256"], "HMRA occupancy CSV changed")
     require(occupancy_path.stat().st_size == evidence["occupancy_csv"]["bytes"], "HMRA occupancy CSV size changed")
 
     coverage = freeze["coverage_and_diagnostics"]
