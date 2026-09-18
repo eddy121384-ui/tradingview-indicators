@@ -92,8 +92,10 @@ def validate(evidence_dir: Path) -> dict:
     semantic_expected = evidence["macro_states_csv"]["semantic_sha256"]
     semantic_decimals = evidence["macro_states_csv"]["semantic_round_decimals"]
     semantic_actual = semantic_dataframe_sha256(states, decimals=semantic_decimals)
+    semantic_diagnostics = {str(d): semantic_dataframe_sha256(states, decimals=d) for d in (6, 8, 10, 12)}
     print(json.dumps({
         "states_semantic_actual_sha256": semantic_actual,
+        "states_semantic_diagnostics": semantic_diagnostics,
         "states_semantic_expected_sha256": semantic_expected,
         "states_byte_sha256_diagnostic": states_byte_hash,
         "states_frozen_byte_sha256_diagnostic": evidence["macro_states_csv"]["byte_sha256_diagnostic"],
