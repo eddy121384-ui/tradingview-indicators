@@ -18,3 +18,14 @@ Primary source candidates are Damodaran's U.S. annual underlying asset returns (
 The JST dataset is CC BY-NC-SA 4.0. Phase 0 therefore does not commit its raw workbook. The audit stores only retrieval metadata, source hash, schema, coverage and license notes. Any later persistence of derived JST data requires an explicit license/attribution decision.
 
 The next gate after Phase 0 is **not** a backtest. It is a preregistered definition of Historical Macro Regime Analogue v0.1: exact Growth axis, Inflation axis, frequency, lag, normalization and thresholds must be frozen before asset-conditioned results are generated.
+
+## Live-source accessibility finding
+
+The first two live audit attempts established a useful infrastructure constraint:
+
+- Damodaran: GitHub Actions retrieval succeeds after making the HTML-table parser robust.
+- JST R6: GitHub Actions retrieval succeeds and raw bytes are hashable.
+- FRED web metadata is available and independently verifiable, but repeated GitHub Actions requests to both `fredgraph.csv` and the static table-data URL timed out.
+- Shiller's Yale documentation endpoint refused the GitHub Actions runner connection.
+
+This is treated as a **retrieval-path limitation**, not as evidence against the underlying official series. FRED remains an official cross-check and is not replaced with a lower-quality mirror merely to satisfy CI. The Phase 0 automated gate therefore requires the reproducible Damodaran + JST backbone, while recording FRED/Shiller accessibility separately.
