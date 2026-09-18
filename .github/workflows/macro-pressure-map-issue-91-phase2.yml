@@ -59,13 +59,18 @@ jobs:
           assert m["portfolio_policy_evaluated"] is False
           assert m["pairings"]["structural"]["rows"] == 98
           assert m["pairings"]["strict_causal_t_plus_2"]["last_return_year"] == 2025
-          assert m["structural_verdict_committed"] is False
+          assert m["structural_verdict_committed"] is True
           print({
               "pairings":m["pairings"],
               "diagnostic_counts":m["diagnostic_counts"],
               "cross_source_overall":m["cross_source_overall"],
           })
           PY
+
+      - name: Validate durable Phase 2 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_91_phase2_completion_validation.py --evidence-dir generated/issue-91-phase2
 
       - name: Upload Phase 2 evidence
         uses: actions/upload-artifact@v4

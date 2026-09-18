@@ -25,6 +25,7 @@ from issue_91_phase1_completion_validation import validate as validate_hmra_free
 
 HERE = Path(__file__).resolve().parent
 PREREG = HERE / "decisions" / "issue-91-phase2-asset-validation-preregistered.json"
+DECISION = HERE / "decisions" / "issue-91-phase2-decision.json"
 
 DAMODARAN_URL = "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html"
 JST_URL = "https://www.macrohistory.net/app/download/9834512569/JSTdatasetR6.xlsx"
@@ -662,7 +663,7 @@ def run(output_dir: Path) -> dict:
             "cross_source_cell_sign_agreement_rate":cross_sign_agreement_rate,
         },
         "cross_source_overall":cross_overall.iloc[0].to_dict(),
-        "structural_verdict_committed":False,
+        "structural_verdict_committed":DECISION.exists(),
         "output_files":{},
     }
     manifest_path = output_dir / "issue-91-phase2-manifest.json"

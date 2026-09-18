@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "issue": 91,
+  "phase": "2-structural-and-causal-asset-validation",
+  "decision_status": "durable",
+  "source_evidence": {
+    "head_sha": "0e4ba347e35dc5375b2e9705981128a2ef1b4915",
+    "workflow_run": 35329186244,
+    "artifact_id": 10539734952,
+    "artifact_digest": "sha256:016842b11a76ed2b90296eed60149dd3da5a4aee4e4170579e10ffcbd5579bba"
+  },
+  "final_structural_verdict": "inflation_regime_dependent_mapping",
+  "rationale_token": "cross_asset_mapping_is_not_uniformly_stable_but_duration_excess_return_changes_coherently_with_absolute_inflation_background_in_both_reflation_and_stagflation_while_primary_and_jst_cross_source_signs_agree",
+  "key_evidence": {
+    "full_structural": {
+      "reflation_equity_minus_treasury": {
+        "n": 22,
+        "mean": 0.1172,
+        "ci_low": 0.030495,
+        "ci_high": 0.199519
+      },
+      "goldilocks_equity_minus_treasury": {
+        "n": 20,
+        "mean": 0.15308,
+        "ci_low": 0.098295,
+        "ci_high": 0.209286
+      },
+      "stagflation_equity_minus_treasury": {
+        "n": 19,
+        "mean": -0.015526,
+        "ci_low": -0.098606,
+        "ci_high": 0.067659
+      },
+      "stagflation_treasury_minus_cash": {
+        "n": 19,
+        "mean": -0.021374,
+        "ci_low": -0.057058,
+        "ci_high": 0.012743
+      },
+      "slowdown_treasury_minus_cash": {
+        "n": 15,
+        "mean": 0.06038,
+        "ci_low": 0.020213,
+        "ci_high": 0.102633
+      },
+      "disinflationary_drift_treasury_minus_cash": {
+        "n": 10,
+        "mean": 0.06334,
+        "ci_low": 0.016977,
+        "ci_high": 0.111051
+      }
+    },
+    "absolute_inflation_background": {
+      "reflation_treasury_minus_cash": {
+        "below_4_n": 15,
+        "at_or_above_4_n": 7,
+        "below_4_mean": 0.020313,
+        "at_or_above_4_mean": -0.0308,
+        "difference": -0.051113,
+        "ci_low": -0.100139,
+        "ci_high": -0.004303,
+        "sign_reversal": true
+      },
+      "stagflation_treasury_minus_cash": {
+        "below_4_n": 8,
+        "at_or_above_4_n": 11,
+        "below_4_mean": 0.014013,
+        "at_or_above_4_mean": -0.047109,
+        "difference": -0.061122,
+        "ci_low": -0.122979,
+        "ci_high": -0.000965,
+        "sign_reversal": true
+      },
+      "stagflation_equity_minus_treasury": {
+        "below_4_n": 8,
+        "at_or_above_4_n": 11,
+        "below_4_mean": -0.0605,
+        "at_or_above_4_mean": 0.017182,
+        "difference": 0.077682,
+        "ci_low": -0.095652,
+        "ci_high": 0.254053,
+        "sign_reversal": true,
+        "uncertainty_note": "difference CI includes zero"
+      }
+    },
+    "strict_causal_t_plus_2": {
+      "reflation_equity_minus_treasury": {
+        "n": 22,
+        "mean": 0.138136,
+        "ci_low": 0.060386,
+        "ci_high": 0.208643
+      },
+      "disinflationary_drift_equity_minus_treasury": {
+        "n": 9,
+        "mean": 0.092,
+        "ci_low": 0.018256,
+        "ci_high": 0.170002
+      },
+      "stagflation_equity_minus_treasury": {
+        "n": 19,
+        "mean": 0.046674,
+        "ci_low": -0.058634,
+        "ci_high": 0.148121
+      },
+      "slowdown_equity_minus_treasury": {
+        "n": 15,
+        "mean": 0.091227,
+        "ci_low": -0.015302,
+        "ci_high": 0.197727
+      }
+    },
+    "cross_source": {
+      "overlap_years": 93,
+      "equity_return_correlation": 0.9747369856363414,
+      "treasury_return_correlation": 0.9485429255695503,
+      "equity_minus_treasury_correlation": 0.9624718020320061,
+      "eligible_cells": 5,
+      "cell_mean_sign_agreement_rate": 1
+    },
+    "concentration": {
+      "leave_one_era_out_rows": 118,
+      "era_concentrated_rows": 17,
+      "stagflation_equity_minus_treasury_concentrated_omissions": 3,
+      "stagflation_treasury_minus_cash_concentrated_omissions": 0
+    },
+    "historical_analogy_examples_descriptive_only": {
+      "reflation": {
+        "1978": {
+          "inflation_rate": 0.08634019,
+          "equity_minus_treasury": 0.0729,
+          "treasury_minus_cash": -0.0796
+        },
+        "2021": {
+          "inflation_rate": 0.0679988,
+          "equity_minus_treasury": 0.3289,
+          "treasury_minus_cash": -0.0446
+        }
+      },
+      "stagflation": {
+        "1973": {
+          "inflation_rate": 0.08347572,
+          "equity_minus_treasury": -0.1797,
+          "treasury_minus_cash": -0.0338
+        },
+        "1974": {
+          "inflation_rate": 0.11633899,
+          "equity_minus_treasury": -0.2789,
+          "treasury_minus_cash": -0.0586
+        },
+        "1979": {
+          "inflation_rate": 0.12481553,
+          "equity_minus_treasury": 0.1785,
+          "treasury_minus_cash": -0.0938
+        },
+        "1980": {
+          "inflation_rate": 0.11792789,
+          "equity_minus_treasury": 0.3473,
+          "treasury_minus_cash": -0.1438
+        },
+        "2022": {
+          "inflation_rate": 0.06254655,
+          "equity_minus_treasury": -0.0021,
+          "treasury_minus_cash": -0.1992
+        }
+      },
+      "interpretation": "The strongest 1970s/2020s resemblance is duration underperformance versus cash under high inflation, not a universal equity-versus-bond pattern."
+    }
+  },
+  "verdict_exclusions": {
+    "structurally_stable_mapping": "Rejected because several central cell payoffs vary materially across eras/background inflation, and structural versus t+2 signs differ in Stagflation and Slowdown.",
+    "monetary_regime_dependent_mapping": "Not selected because the cleanest predeclared higher-order evidence is directly captured by the absolute-inflation <4% versus >=4% split; evidence for an additional monetary-era effect beyond inflation is not yet isolated.",
+    "asset_mapping_unstable": "Not selected because instability is not patternless: Treasury-minus-cash changes coherently with high absolute inflation in both Reflation and Stagflation, while cross-source equity/bond signs agree.",
+    "inconclusive_long_history_evidence": "Not selected because the central duration/inflation interaction is supported across two HMRA cells and by independent source agreement, despite sparse secondary cells."
+  },
+  "limitations": [
+    "Same-year structural results are descriptive associations, not causal trading signals.",
+    "The strict-causal t+2 test is deliberately conservative and does not preserve all contemporaneous cell signs.",
+    "Several neutral-state cells are sparse.",
+    "Phase 1 five-year versus ten-year exact nine-cell agreement was only 60%, so HMRA state assignment has lookback sensitivity.",
+    "Gold-valid 1975+ samples are too sparse for equally strong absolute-inflation conclusions.",
+    "All history is reused/development evidence; there is no untouched long-history OOS period."
+  ],
+  "production_implication": "Do not add a third axis or change V6.6/HMRA yet. Treat absolute inflation background as a validated research interaction for the allocation layer and preregister any future portfolio-policy modification separately.",
+  "portfolio_policy_evaluated": false,
+  "production_change_authorized": false,
+  "evidence_files": {
+    "issue-91-phase2-absolute-inflation-comparison.csv": "6755b085ef3072f349f26da0a885623008f31e7999e7a2363b19c8e19ed5d93a",
+    "issue-91-phase2-causal-cell-summary.csv": "85e61c3e4af0919bcaeed8501c8ae1ce3e75154429085afb733f422dceb4a39e",
+    "issue-91-phase2-causal-joined.csv": "0f268dad2ceebeed390329bf0fd7d4cd112095fe05272ae21a388d810607f143",
+    "issue-91-phase2-cross-source-cells.csv": "c29efa1911dfdc3fe96f47b29358f5f28a32f7d88eb9c0517390dbf48233de1f",
+    "issue-91-phase2-cross-source-overall.csv": "0a3beb97423874825bdd290a777e2a3c3bb424f73ebdd314a133410c90a48ef5",
+    "issue-91-phase2-era-sign-consistency.csv": "0626a710ff2a4e180668062227374b0cf66d3c71090dc2fed5a0a838a73443b8",
+    "issue-91-phase2-era-summary.csv": "0e9b0697ddb904e5fb8b6578cdb7df8cb6a053c8666a9409a370470742e8610c",
+    "issue-91-phase2-leader-consistency.csv": "1c96d5a5e4928872ddb9438d1181adf6fd2751d0c5a59f5a4ea6da59195f2975",
+    "issue-91-phase2-leave-one-era-out.csv": "93c583daa51edda18c82337ca222c7db78483acdc7d19822a60d1f166264fb9f",
+    "issue-91-phase2-structural-cell-summary.csv": "60572dc0b1785125fef45d6f289a4cbfad56dd688816749555e56e2bc0793ef2",
+    "issue-91-phase2-structural-joined.csv": "8d619f3ec48fcd2097b6308acae69407ecf8aaa2c8ca1ee50e34062cf37b30ab"
+  }
+}
