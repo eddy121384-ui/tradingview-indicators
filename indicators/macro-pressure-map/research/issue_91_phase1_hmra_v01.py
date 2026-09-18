@@ -101,9 +101,9 @@ def parse_fed_ip(payload: bytes, series_code: str = FED_IP_CODE) -> pd.DataFrame
         if not m or m.group("code") != series_code:
             continue
         values = m.group("values").split()
-        if len(values) < 12:
-            raise RuntimeError(f"Fed IP row has fewer than 12 months: {line}")
-        nums = [float(x) for x in values[:12]]
+        if not 1 <= len(values) <= 12:
+            raise RuntimeError(f"Fed IP row has invalid month count: {line}")
+        nums = [float(x) for x in values]
         year = int(m.group("year"))
         for month, value in enumerate(nums, start=1):
             rows.append((year, month, value))
