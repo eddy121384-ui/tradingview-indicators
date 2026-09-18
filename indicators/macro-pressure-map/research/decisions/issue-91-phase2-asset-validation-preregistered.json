@@ -64,7 +64,13 @@
       "Do not choose between Damodaran and JST based on which produces the preferred conclusion.",
       "JST cross-check must be reported as agreement/disagreement with primary evidence.",
       "JST bill_rate is not assumed identical to Damodaran T-bill total return and is not used in the primary Treasury-minus-cash spread."
-    ]
+    ],
+    "units": {
+      "equity": "decimal nominal total return; official definition r[t] = ((p[t] + d[t]) / p[t-1]) - 1",
+      "treasury": "decimal nominal total return; official definition r[t] = ((p[t] + coupon[t]) / p[t-1]) - 1",
+      "cash_rate": "decimal nominal bill return/rate as documented; not used for primary Treasury-minus-cash spread"
+    },
+    "unit_policy": "Use JST eq_tr and bond_tr as stored decimal returns. Do not divide by 100 or infer scale from realized values."
   },
   "derived_payoffs": {
     "primary_assets": [
