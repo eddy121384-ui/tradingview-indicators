@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "issue": 91,
+  "phase": "1-hmra-v0.1-preregistration",
+  "model_name": "Historical Macro Regime Analogue v0.1",
+  "acronym": "HMRA-v0.1",
+  "created_before_asset_conditioned_results": true,
+  "production_v66_modified": false,
+  "exact_v66_claim": false,
+  "purpose": "Build a long-history Growth × Inflation state classifier using only official underlying macro series with one homogeneous definition across the 1928-present primary sample.",
+  "hard_rules": [
+    "No ETF or asset-return series may be loaded by the Phase 1 classifier.",
+    "No conditioned equity, bond, bill or gold outcomes may be computed before this preregistration is frozen.",
+    "Do not change the primary source definitions, scoring weights, lookback, thresholds or timing after asset-conditioned results are viewed.",
+    "HMRA-v0.1 is a historical structural analogue, not V6.6 and not a retroactive reconstruction of V6.6.",
+    "Era labels and absolute inflation buckets are diagnostics only and may not alter HMRA state assignments or portfolio weights."
+  ],
+  "primary_macro_sources": {
+    "growth": {
+      "provider": "Board of Governors of the Federal Reserve System",
+      "release": "Industrial Production and Capacity Utilization (G.17)",
+      "series_code": "B50001",
+      "description": "Total Industrial Production Index, seasonally adjusted",
+      "url": "https://www.federalreserve.gov/releases/g17/Current/ipdisk/ip_sa.txt",
+      "documented_start": 1919,
+      "frequency": "monthly"
+    },
+    "inflation": {
+      "provider": "U.S. Bureau of Labor Statistics",
+      "program": "Consumer Price Index",
+      "series_code": "CUUR0000SA0",
+      "description": "CPI-U, U.S. city average, all items, not seasonally adjusted",
+      "url": "https://download.bls.gov/pub/time.series/cu/cu.data.1.AllItems",
+      "documented_start": 1913,
+      "frequency": "monthly"
+    }
+  },
+  "primary_analysis_window": {
+    "asset_history_target_start_year": 1928,
+    "completed_macro_year_end": 2025,
+    "reason": "Damodaran primary underlying asset-return history begins in 1928; completed-year macro states through 2025 are available without a post-2020 source splice."
+  },
+  "annual_observation_rule": {
+    "level_observation": "December level for each calendar year",
+    "growth_rate_formula": "100 * ln(IP_Dec_t / IP_Dec_t-1)",
+    "inflation_rate_formula": "100 * ln(CPI_Dec_t / CPI_Dec_t-1)",
+    "missing_december_policy": "fail the year closed; do not substitute annual average or another month",
+    "partial_current_year_policy": "exclude incomplete calendar years"
+  },
+  "score_rule": {
+    "primary_reference_window_years": 5,
+    "sensitivity_reference_window_years": 10,
+    "reference_window_semantics": "Trailing completed annual observations strictly before year t; current year t is excluded from its own normalization reference window.",
+    "level_z": "(rate_t - mean(rate_t-1...rate_t-L)) / population_std(rate_t-1...rate_t-L)",
+    "acceleration": "rate_t - rate_t-1",
+    "acceleration_z": "(accel_t - mean(accel_t-1...accel_t-L)) / population_std(accel_t-1...accel_t-L)",
+    "raw_axis_score": "0.70 * level_z + 0.30 * acceleration_z",
+    "scaled_axis_score": "100 * tanh(raw_axis_score / 2)",
+    "zero_std_policy": "axis score is missing for that year; do not inject zero or epsilon",
+    "rationale": "Five annual observations approximate the five-year macro normalization horizon used by V6.6's monthly macro path while preserving a transparent historical analogue. Ten years is a predeclared state-stability sensitivity only."
+  },
+  "state_thresholds": {
+    "growth_low": "score < -10",
+    "growth_neutral": "-10 <= score <= +10",
+    "growth_high": "score > +10",
+    "inflation_low": "score < -10",
+    "inflation_neutral": "-10 <= score <= +10",
+    "inflation_high": "score > +10",
+    "threshold_values": {
+      "low": -10,
+      "high": 10
+    },
+    "frozen_without_occupancy_tuning": true
+  },
+  "core_regime_semantics": {
+    "growth_high|inflation_low": "Goldilocks / Disinflationary Expansion",
+    "growth_high|inflation_neutral": "Benign Expansion / Stable Inflation",
+    "growth_high|inflation_high": "Reflation / Inflation Rising",
+    "growth_neutral|inflation_low": "Disinflationary Drift",
+    "growth_neutral|inflation_neutral": "Neutral / Range-bound Macro",
+    "growth_neutral|inflation_high": "Inflation Pressure without Growth Confirmation",
+    "growth_low|inflation_low": "Slowdown / Disinflation",
+    "growth_low|inflation_neutral": "Growth Slowdown / Stable Inflation",
+    "growth_low|inflation_high": "Stagflation Pressure"
+  },
+  "absolute_inflation_overlay": {
+    "role": "diagnostic higher-order inflation regime only; never changes the HMRA grid",
+    "based_on": "December-to-December CPI inflation rate",
+    "buckets": [
+      {
+        "label": "deflation",
+        "condition": "inflation_rate < 0"
+      },
+      {
+        "label": "low",
+        "condition": "0 <= inflation_rate < 2"
+      },
+      {
+        "label": "moderate",
+        "condition": "2 <= inflation_rate < 4"
+      },
+      {
+        "label": "high",
+        "condition": "4 <= inflation_rate < 6"
+      },
+      {
+        "label": "very_high",
+        "condition": "inflation_rate >= 6"
+      }
+    ]
+  },
+  "era_diagnostics": [
+    {
+      "label": "Depression_WWII",
+      "start": 1928,
+      "end": 1945
+    },
+    {
+      "label": "Postwar_Bretton_Woods",
+      "start": 1946,
+      "end": 1970
+    },
+    {
+      "label": "Great_Inflation_pre_Volcker",
+      "start": 1971,
+      "end": 1979
+    },
+    {
+      "label": "Volcker_disinflation",
+      "start": 1980,
+      "end": 1984
+    },
+    {
+      "label": "Post_Volcker_disinflation",
+      "start": 1985,
+      "end": 1999
+    },
+    {
+      "label": "Pre_GFC_2000s",
+      "start": 2000,
+      "end": 2007
+    },
+    {
+      "label": "GFC_QE_low_inflation",
+      "start": 2008,
+      "end": 2019
+    },
+    {
+      "label": "COVID_shock",
+      "start": 2020,
+      "end": 2020
+    },
+    {
+      "label": "Inflation_surge",
+      "start": 2021,
+      "end": 2022
+    },
+    {
+      "label": "Higher_rate_disinflation",
+      "start": 2023,
+      "end": 2025
+    }
+  ],
+  "phase2_pairing_rules": {
+    "structural_same_year": {
+      "mapping": "HMRA state_t vs asset total return_t",
+      "interpretation": "descriptive contemporaneous state-payoff association only",
+      "causal_claim_allowed": false
+    },
+    "strict_causal_primary": {
+      "mapping": "HMRA state_t -> full-calendar-year asset return_t+2",
+      "rationale": "December t macro observations are published during early t+1. Applying them only to full calendar year t+2 guarantees the entire evaluated year begins after the information was observable.",
+      "same_year_or_t_plus_1_not_primary": true
+    }
+  },
+  "phase1_allowed_outputs": [
+    "raw-source hashes and coverage",
+    "annual December IP and CPI levels",
+    "annual IP growth and CPI inflation rates",
+    "HMRA primary and 10-year sensitivity scores/states",
+    "state occupancy and transition diagnostics",
+    "absolute inflation diagnostic bucket",
+    "predeclared era label"
+  ],
+  "phase1_forbidden_outputs": [
+    "equity returns",
+    "Treasury returns",
+    "T-bill returns",
+    "gold returns",
+    "asset ranking by regime",
+    "portfolio performance",
+    "allocation optimization",
+    "threshold rescue tuning"
+  ],
+  "long_history_extension": {
+    "role": "secondary robustness after the primary 1928-present official-series analysis is frozen",
+    "source": "JST Macrohistory R6",
+    "potential_start": 1870,
+    "note": "The 1870-1918 extension requires a separately frozen mapping using JST real activity/CPI. It must not be silently spliced into HMRA-v0.1 primary states."
+  }
+}
