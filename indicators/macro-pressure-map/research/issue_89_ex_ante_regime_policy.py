@@ -230,7 +230,7 @@ def run_issue_89(start: str, output_dir: Path) -> dict:
         "policy_transition_count": transition_count,
         "policy_regime_target_days": {regime: int(policy_days.loc[regime]) for regime in REGIMES},
         "v66_parameters_modified": False,
-        "durable_verdict_committed": False,
+        "durable_verdict_committed": DEFAULT_DECISION.exists(),
         "interpretation_boundary": "reused historical validation; results cannot be called untouched OOS or production validation",
     }
     (output_dir / "issue-89-manifest.json").write_text(

@@ -110,7 +110,7 @@ jobs:
           })
           PY
 
-      - name: Upload Issue 89 research artifact
+      - name: Validate complete Issue 89 durable evidence and final verdict\n        working-directory: indicators/macro-pressure-map/research\n        run: |\n          python issue_89_completion_validation.py --evidence-dir generated/issue-89\n\n      - name: Upload Issue 89 research artifact
         uses: actions/upload-artifact@v4
         with:
           name: macro-pressure-map-issue-89-regime-policy
