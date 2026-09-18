@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "issue": 91,
+  "phase": "2-structural-and-causal-asset-validation-preregistration",
+  "created_before_phase2_asset_outcomes": true,
+  "hmra_version": "v0.1",
+  "hmra_source_freeze_commit": "41cc06dc25a2cfbb9cb4d5ea2eeb1db6febdc712",
+  "production_v66_modified": false,
+  "portfolio_policy_test_in_this_phase": false,
+  "purpose": "Test whether HMRA Growth × Inflation states map to stable cross-asset payoffs across nearly a century, and whether that mapping changes with absolute inflation / monetary era, before any portfolio-policy evaluation.",
+  "hard_rules": [
+    "Do not alter HMRA-v0.1 sources, 5-year normalization, 70/30 score weights, tanh scaling, or +/-10 thresholds after Phase 2 outcomes are viewed.",
+    "Do not use ETFs anywhere in Phase 2.",
+    "Damodaran is the primary 1928-2025 asset-outcome source. JST is an independent equity/bond cross-check only.",
+    "Same-year state_t vs return_t is descriptive structural evidence, never a causal or tradable claim.",
+    "Strict-causal primary mapping is state_t -> full-calendar-year return_t+2 exactly as frozen in Phase 1.",
+    "Gold observations before the post-Bretton-Woods investability boundary may be reported as monetary-history context but cannot support a modern investable-gold allocation claim.",
+    "Do not tune era boundaries, absolute-inflation cutoffs, minimum sample sizes, or statistical procedures based on asset results.",
+    "Phase 2 stops at asset/payoff structure and causal information. It must not optimize or run the #89 allocation matrix."
+  ],
+  "primary_asset_source": {
+    "id": "damodaran_us_returns",
+    "url": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html",
+    "frozen_raw_sha256_from_phase0": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+    "coverage": {
+      "first_year": 1928,
+      "last_year": 2025,
+      "rows": 98
+    },
+    "exact_columns": {
+      "year": "Year",
+      "equity": "S&P 500 (includes dividends)",
+      "cash": "3-month T.Bill",
+      "treasury": "US T. Bond (10-year)",
+      "gold": "Gold*"
+    },
+    "semantics": {
+      "equity": "S&P 500 total return including dividends",
+      "cash": "3-month Treasury bill annual return",
+      "treasury": "10-year U.S. Treasury annual total return",
+      "gold": "underlying gold annual return"
+    },
+    "parser_policy": [
+      "Use the first annual-return columns listed above, not cumulative-value columns with duplicate labels/suffixes.",
+      "Convert percent strings to decimal annual returns.",
+      "Fail closed on duplicate year, missing required primary asset column, or nonnumeric annual return after percent parsing.",
+      "Do not silently refresh the source if the raw SHA differs from the Phase 0 frozen SHA."
+    ]
+  },
+  "independent_cross_check": {
+    "id": "jst_macrohistory_r6",
+    "url": "https://www.macrohistory.net/app/download/9834512569/JSTdatasetR6.xlsx",
+    "frozen_raw_sha256_from_phase0": "c1bb91fe56ea50d4f27af5c0fc897d481e89ae38ce41eaecab62134c9354981d",
+    "country": "USA",
+    "coverage_end": 2020,
+    "fields": {
+      "year": "year",
+      "equity": "eq_tr",
+      "treasury": "bond_tr",
+      "cash_rate": "bill_rate"
+    },
+    "role": "Independent equity/bond directional and state-payoff robustness check; not a source-selection alternative.",
+    "restrictions": [
+      "Do not choose between Damodaran and JST based on which produces the preferred conclusion.",
+      "JST cross-check must be reported as agreement/disagreement with primary evidence.",
+      "JST bill_rate is not assumed identical to Damodaran T-bill total return and is not used in the primary Treasury-minus-cash spread."
+    ],
+    "units": {
+      "equity": "decimal nominal total return; official definition r[t] = ((p[t] + d[t]) / p[t-1]) - 1",
+      "treasury": "decimal nominal total return; official definition r[t] = ((p[t] + coupon[t]) / p[t-1]) - 1",
+      "cash_rate": "decimal nominal bill return/rate as documented; not used for primary Treasury-minus-cash spread"
+    },
+    "unit_policy": "Use JST eq_tr and bond_tr as stored decimal returns. Do not divide by 100 or infer scale from realized values."
+  },
+  "derived_payoffs": {
+    "primary_assets": [
+      "equity",
+      "treasury",
+      "cash"
+    ],
+    "gold_context_asset": "gold",
+    "primary_spreads": [
+      {
+        "name": "equity_minus_treasury",
+        "formula": "equity - treasury",
+        "meaning": "relative preference for equity versus long government bonds"
+      },
+      {
+        "name": "treasury_minus_cash",
+        "formula": "treasury - cash",
+        "meaning": "duration excess return versus short bills"
+      },
+      {
+        "name": "equity_minus_gold",
+        "formula": "equity - gold",
+        "meaning": "equity versus gold; investability interpretation restricted before gold boundary"
+      },
+      {
+        "name": "treasury_minus_gold",
+        "formula": "treasury - gold",
+        "meaning": "Treasury versus gold; investability interpretation restricted before gold boundary"
+      }
+    ],
+    "asset_leader_definition": "Highest arithmetic annual return among the assets eligible for the relevant comparison window. Pre-gold-investability leader tests use equity/treasury/cash only; gold-valid leader tests may include gold."
+  },
+  "gold_boundary": {
+    "structural_context": [
+      {
+        "start": 1928,
+        "end": 1970,
+        "role": "monetary-history context only; not modern investable-allocation evidence"
+      },
+      {
+        "start": 1971,
+        "end": 1974,
+        "role": "floating-price transition context; still not primary investable-gold allocation evidence"
+      },
+      {
+        "start": 1975,
+        "end": 2025,
+        "role": "primary gold-valid structural / later portfolio window"
+      }
+    ],
+    "primary_investable_gold_start_year": 1975,
+    "sensitivity_start_years": [
+      1972,
+      1973
+    ],
+    "phase2_use": "All-year gold spreads may be shown with boundary labels, but any statement about investable gold robustness must use 1975+ primary evidence."
+  },
+  "pairings": {
+    "structural_same_year": {
+      "state_year": "t",
+      "return_year": "t",
+      "role": "descriptive contemporaneous macro-state/payoff structure",
+      "causal_claim": false,
+      "primary_window": {
+        "start": 1928,
+        "end": 2025
+      }
+    },
+    "strict_causal_primary": {
+      "state_year": "t",
+      "return_year": "t+2",
+      "role": "conservative forward information test",
+      "causal_claim": "information-timing-safe predictive association, not proof of economic causality",
+      "state_window": {
+        "start": 1928,
+        "end": 2023
+      },
+      "return_window": {
+        "start": 1930,
+        "end": 2025
+      }
+    }
+  },
+  "descriptive_metrics": {
+    "per_asset_and_spread": [
+      "n",
+      "arithmetic_mean",
+      "median",
+      "sample_standard_deviation",
+      "positive_fraction",
+      "bootstrap_95pct_mean_ci"
+    ],
+    "asset_only_additional": [
+      "geometric_mean_if_all_returns_greater_than_minus_one"
+    ],
+    "bootstrap": {
+      "method": "nonparametric percentile bootstrap of annual observations within the cell/group",
+      "repetitions": 10000,
+      "seed": 9102,
+      "ci": [
+        0.025,
+        0.975
+      ],
+      "minimum_n": 3
+    },
+    "small_sample_labels": {
+      "n_lt_3": "insufficient; no mean CI or directional conclusion",
+      "n_3_to_4": "very_sparse; descriptive only",
+      "n_5_to_9": "sparse; eligible for sign diagnostics but weak",
+      "n_ge_10": "regular"
+    }
+  },
+  "regime_stability_tests": {
+    "cell_level_primary": [
+      "For each HMRA 3x3 cell, report primary spreads in the full sample.",
+      "For each predeclared historical era with n>=3 in the cell, report era-specific spread means and signs.",
+      "Report sign_consistency = share of eligible eras whose mean spread has the same nonzero sign as the full-sample cell mean.",
+      "Report leader_consistency separately for eligible asset sets where n>=3."
+    ],
+    "no_winner_ranking_rule": "Do not rank cells, eras, or asset mappings by a composite score."
+  },
+  "absolute_inflation_regime_test": {
+    "frozen_background_groups": [
+      {
+        "label": "below_4pct",
+        "buckets": [
+          "deflation",
+          "low",
+          "moderate"
+        ],
+        "condition": "December-to-December CPI inflation < 4%"
+      },
+      {
+        "label": "at_or_above_4pct",
+        "buckets": [
+          "high",
+          "very_high"
+        ],
+        "condition": "December-to-December CPI inflation >= 4%"
+      }
+    ],
+    "cell_eligibility": "Both background groups must have n>=5 within the same HMRA cell.",
+    "primary_comparison": "Difference in mean spread: at_or_above_4pct minus below_4pct.",
+    "report": [
+      "group n",
+      "group mean",
+      "mean difference",
+      "bootstrap 95% CI of difference"
+    ],
+    "bootstrap": {
+      "repetitions": 10000,
+      "seed": 9191,
+      "method": "independent within-group resampling"
+    },
+    "interpretation": "Evidence for a higher-order inflation regime is descriptive if the same HMRA cell shows a material sign reversal or a bootstrap CI for the spread difference excluding zero; do not convert this to a tuned third-axis allocation rule in Phase 2."
+  },
+  "era_definitions": [
+    {
+      "label": "Depression_WWII",
+      "start": 1928,
+      "end": 1945
+    },
+    {
+      "label": "Postwar_Bretton_Woods",
+      "start": 1946,
+      "end": 1970
+    },
+    {
+      "label": "Great_Inflation_pre_Volcker",
+      "start": 1971,
+      "end": 1979
+    },
+    {
+      "label": "Volcker_disinflation",
+      "start": 1980,
+      "end": 1984
+    },
+    {
+      "label": "Post_Volcker_disinflation",
+      "start": 1985,
+      "end": 1999
+    },
+    {
+      "label": "Pre_GFC_2000s",
+      "start": 2000,
+      "end": 2007
+    },
+    {
+      "label": "GFC_QE_low_inflation",
+      "start": 2008,
+      "end": 2019
+    },
+    {
+      "label": "COVID_shock",
+      "start": 2020,
+      "end": 2020
+    },
+    {
+      "label": "Inflation_surge",
+      "start": 2021,
+      "end": 2022
+    },
+    {
+      "label": "Higher_rate_disinflation",
+      "start": 2023,
+      "end": 2025
+    }
+  ],
+  "leave_one_era_out": {
+    "primary_metrics": [
+      "full-sample mean spread by HMRA cell",
+      "sign of full-sample mean spread by HMRA cell"
+    ],
+    "procedure": "For each predeclared era, remove all observations in that era and recompute cell-level spread means/signs.",
+    "minimum_remaining_n": 5,
+    "interpretation": "A mapping is era-concentrated if its full-sample sign changes after omitting one eligible era or if more than half of the absolute full-sample mean disappears after one era removal."
+  },
+  "cross_source_validation": {
+    "primary_overlap": "1928-2020 where both sources have usable U.S. equity and government-bond total returns",
+    "target": "equity_minus_treasury",
+    "report": [
+      "overall annual-return correlation between primary and JST equity series",
+      "overall annual-return correlation between primary and JST bond series",
+      "overall correlation of equity_minus_treasury",
+      "cell-level sign agreement of mean equity_minus_treasury for HMRA cells with n>=5 in both sources"
+    ],
+    "interpretation": "Disagreement is evidence uncertainty and must be reported; it cannot be resolved by selecting the source with preferred results."
+  },
+  "multiple_testing_and_interpretation": {
+    "inferential_status": "exploratory structural validation on reused historical data; not untouched OOS",
+    "primary_evidence_order": [
+      "full-sample cell-level primary spreads",
+      "predeclared era sign stability",
+      "absolute-inflation background comparison",
+      "leave-one-era-out",
+      "strict-causal t+2 mapping",
+      "JST cross-source agreement"
+    ],
+    "p_values": "not primary; no fishing across significance thresholds",
+    "bootstrap_ci_role": "uncertainty descriptor, not a binary production gate",
+    "production_promotion_allowed": false
+  },
+  "phase2_structural_verdict_categories": [
+    "structurally_stable_mapping",
+    "inflation_regime_dependent_mapping",
+    "monetary_regime_dependent_mapping",
+    "asset_mapping_unstable",
+    "inconclusive_long_history_evidence"
+  ],
+  "verdict_rules": {
+    "structurally_stable_mapping": "Broad sign/leader consistency across eras, no systematic absolute-inflation sign reversal, leave-one-era-out robustness, and meaningful agreement in strict-causal/cross-source checks.",
+    "inflation_regime_dependent_mapping": "At least one economically central HMRA cell shows repeatable/payoff sign differences between <4% and >=4% absolute-inflation backgrounds, with broader evidence that inflation background explains mapping instability better than one isolated era.",
+    "monetary_regime_dependent_mapping": "Mapping changes align materially with predeclared historical monetary eras beyond what the simple <4%/>=4% inflation split captures.",
+    "asset_mapping_unstable": "Material cell-level signs/leaders change across eras without coherent higher-order inflation/monetary structure, or leave-one-era-out/cross-source evidence is broadly unstable.",
+    "inconclusive_long_history_evidence": "Sparse cells, conflicting sources, or mixed diagnostics prevent a defensible structural classification."
+  },
+  "explicit_non_goals": [
+    "Do not evaluate the #89 3x3 allocation matrix in Phase 2.",
+    "Do not optimize weights.",
+    "Do not modify V6.6/HMRA thresholds.",
+    "Do not promote a production allocator.",
+    "Do not infer that same-year associations are causal."
+  ],
+  "pre_outcome_reproducibility_repair": {
+    "occurred_before_any_phase2_asset_outcome_was_loaded": true,
+    "trigger": "First Phase 2 evidence run stopped in HMRA validation before Damodaran/JST fetch because raw floating CSV byte hash differed while canonical Fed/BLS input hashes and occupancy were unchanged.",
+    "repair": "Phase 1 freeze now gates a 10-decimal semantic dataframe hash plus exact canonical source hashes; raw CSV byte hash is diagnostic only.",
+    "hmra_rules_changed": false,
+    "state_thresholds_changed": false,
+    "source_series_changed": false,
+    "final_phase1_freeze_commit": "41cc06dc25a2cfbb9cb4d5ea2eeb1db6febdc712",
+    "semantic_gate": "CSV-text Decimal canonicalization, 10 decimal places, exact categorical/integer/boolean fields"
+  }
+}
