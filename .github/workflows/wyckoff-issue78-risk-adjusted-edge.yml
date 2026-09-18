@@ -26,7 +26,7 @@ jobs:
           FILE=indicators/wyckoff-regime-radar/research/analyze_issue78_risk_adjusted_edge.py
           grep -F "EXPECTED_EVENTS=68118" "$FILE"
           grep -F "EXPECTED_EPISODES=1624" "$FILE"
-          grep -F "'formal_hold'" "$FILE"
-          grep -F "'progressive_warning'" "$FILE"
+          grep -F '"formal_hold"' "$FILE"
+          grep -F '"progressive_warning"' "$FILE"
           grep -F "equal_vol_scale_vs_formal" "$FILE"
           git diff --check
