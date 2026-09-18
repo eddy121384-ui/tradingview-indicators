@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "issue": 89,
+  "artifact_role": "post-evaluation durable decision and exact regenerated-evidence binding",
+  "post_evaluation_synthesis": true,
+  "primary_policy_preregistered_before_results": true,
+  "episode_robustness_preregistered_after_primary_results_but_before_episode_results": true,
+  "production_v66_parameters_modified": false,
+  "policy_retuned_after_results": false,
+  "source_evidence": {
+    "workflow_run": 35296339142,
+    "head_sha": "45fd670dea05ceeaa544092504f93de264a0b2d2",
+    "artifact_id": 10527702935,
+    "artifact_digest": "sha256:b489ad89b3c26f936510a2afd2836dc86eda2e850e518ef8d9b3cc81e0d8c0da",
+    "price_snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+    "price_snapshot_archive_sha256": "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240",
+    "evaluation_first_date": "2007-04-05",
+    "evaluation_last_date": "2026-08-14",
+    "evaluation_rows": 4871,
+    "primary_cost_bps": 5,
+    "policy_transition_count": 718
+  },
+  "exact_generated_file_sha256": {
+    "issue-89-asset-contribution.csv": "72984c3066f63fd0cc9775ef24141b1d6dbf99c65d7d085c537c1cb560ddf0b4",
+    "issue-89-contribution-reconciliation.csv": "c7daabfaa03c9281037b7277f376a5290608536183d8a21372784853a344c47b",
+    "issue-89-cost-sensitivity.csv": "7324cb1fd30ec045a6b7dbdfe3631a6f959c1a21dfd55c7ee12123f7f755f551",
+    "issue-89-daily.csv": "e666703150d258dc7c752428f000fdaa9e113ccc59747c2c18c25a4c19e34861",
+    "issue-89-episode-robustness.json": "aef3063c56b5bf35205e199b59f9289bb33c74972d73b1edac5f8123ec2ae06c",
+    "issue-89-episodes.csv": "e365fa2ffadea8189d5c56c6d71b7f7f6f4ba36f2f1855d06fe8010b7823f590",
+    "issue-89-exposure-match.csv": "f642238ebf2c44477135d82daace78c2f83aa673de640c70eca3f091505cb4e1",
+    "issue-89-exposure-match.json": "1e3c3fd9dfd2bc9a86f3949c4dc98f5ce9142f09a03d54ac06ed0369bdb51f5d",
+    "issue-89-manifest.json": "11ca54d881cdd94ef0becc30d9b904866e814fb3153b2f0b7fb2b1cb5dd37264",
+    "issue-89-regime-allocation-contribution.csv": "63328411508b91af07ac29cf066633601c2da77fb39200627f844d120e42d796",
+    "issue-89-summary.csv": "5c38db20217a107991379c33f96a2a7e41d13f5ce594f96479007f0e95bf28a9"
+  },
+  "key_metrics": {
+    "policy_full_history": {
+      "CAGR": 0.098985140508081,
+      "annualized_return": 0.0997322024479681,
+      "annualized_volatility": 0.1031927034113328,
+      "Sharpe": 0.9664656429285416,
+      "maximum_drawdown": -0.2734684773957523,
+      "Calmar": 0.3619617933690903,
+      "annualized_turnover": 5.959308441645577,
+      "transaction_cost_drag": 0.0559700119055841
+    },
+    "policy_development_pre2020": {
+      "CAGR": 0.1125363304921751,
+      "Sharpe": 1.2099855713126524,
+      "maximum_drawdown": -0.1455541722253648,
+      "Calmar": 0.7731577100925187
+    },
+    "policy_post2019_reused_exploratory": {
+      "CAGR": 0.0733088550552407,
+      "Sharpe": 0.6389748287439531,
+      "maximum_drawdown": -0.2734684773957524,
+      "Calmar": 0.2680705862458552
+    },
+    "exposure_matched_switching_attribution": {
+      "full_reused_history": {
+        "delta_CAGR": 0.0170513380273477,
+        "delta_Sharpe": 0.0899014046733265,
+        "delta_maximum_drawdown": -0.0199782491786066,
+        "delta_Calmar": 0.0387390677555931,
+        "max_abs_invested_weight_mismatch": 8.326672684688674e-17
+      },
+      "development_pre2020": {
+        "delta_CAGR": 0.0298889264286894,
+        "delta_Sharpe": 0.2286994610153082,
+        "delta_maximum_drawdown": 0.0528138523325542,
+        "delta_Calmar": 0.3565209852591042,
+        "max_abs_invested_weight_mismatch": 2.023381462379348e-13
+      },
+      "post2019_reused_exploratory": {
+        "delta_CAGR": -0.0043390655457147,
+        "delta_Sharpe": -0.0813818715053413,
+        "delta_maximum_drawdown": -0.0180303532849286,
+        "delta_Calmar": -0.0359087859455383,
+        "max_abs_invested_weight_mismatch": 2.498001805406602e-16
+      }
+    },
+    "policy_cost_sensitivity": {
+      "0bp": {
+        "CAGR": 0.1022647634719471,
+        "Sharpe": 0.9953881060483292,
+        "maximum_drawdown": -0.2718844965396101,
+        "Calmar": 0.376133118193624,
+        "transaction_cost_drag": 0
+      },
+      "5bp": {
+        "CAGR": 0.098985140508081,
+        "Sharpe": 0.9664656429285416,
+        "maximum_drawdown": -0.2734684773957523,
+        "Calmar": 0.3619617933690903,
+        "transaction_cost_drag": 0.0559700119055841
+      },
+      "10bp": {
+        "CAGR": 0.0957149895998288,
+        "Sharpe": 0.9375256246487949,
+        "maximum_drawdown": -0.2750491471409854,
+        "Calmar": 0.3479923155361285,
+        "transaction_cost_drag": 0.1088118774044551
+      }
+    },
+    "episode_robustness": {
+      "full_reused_history": {
+        "largest_positive_episode": "Slowdown / Disinflation | 2008-10-02 through 2009-01-26",
+        "largest_positive_active_log": 0.09193172193949743,
+        "top1_share_positive": 0.06288786707128957,
+        "normal_active_log": 0.3022563079197518,
+        "leaveout_active_log": 0.20274956763058616,
+        "leaveout_delta_CAGR": 0.011412568552921387,
+        "leaveout_delta_Sharpe": 0.021997774911863943,
+        "leaveout_max_abs_exposure_mismatch": 8.326672684688674e-17
+      },
+      "development_pre2020": {
+        "largest_positive_episode": "Slowdown / Disinflation | 2008-10-02 through 2009-01-26",
+        "largest_positive_active_log": 0.09567837697236227,
+        "top1_share_positive": 0.09413697270549891,
+        "normal_active_log": 0.3466810426816127,
+        "leaveout_active_log": 0.24944544675944913,
+        "leaveout_delta_CAGR": 0.021425408683145353,
+        "leaveout_delta_Sharpe": 0.10111468939365309,
+        "leaveout_max_abs_exposure_mismatch": 1.8185453143360064e-13
+      },
+      "post2019_reused_exploratory": {
+        "largest_positive_episode": "Reflation / Inflation Rising | 2020-11-23 through 2021-05-21",
+        "largest_positive_active_log": 0.08295235712919663,
+        "top1_share_positive": 0.1815543636083954,
+        "normal_active_log": -0.026624828601445105,
+        "leaveout_active_log": -0.07998037358304833,
+        "leaveout_delta_CAGR": -0.012922076643704816,
+        "leaveout_delta_Sharpe": -0.14266915496994192,
+        "leaveout_max_abs_exposure_mismatch": 5.551115123125783e-17
+      }
+    }
+  },
+  "decision": {
+    "final_category": "inconclusive_insufficient_evidence",
+    "verdict_rationale": "ex_ante_policy_has_material_full_history_and_pre2020_switching_value_but_switching_value_reverses_post2019_and_full_history_drawdown_is_worse_than_the_exposure_matched_static_control",
+    "full_history_switching_value_positive": true,
+    "development_pre2020_switching_value_positive": true,
+    "post2019_switching_value_positive": false,
+    "cross_era_switching_robustness_demonstrated": false,
+    "full_history_drawdown_improved_vs_exposure_matched_static": false,
+    "largest_episode_removal_eliminates_full_history_switching_value": false,
+    "largest_episode_removal_eliminates_pre2020_switching_value": false,
+    "post2019_switching_value_remains_negative_after_largest_positive_episode_removal": true,
+    "useful_regime_switching_policy_supported": false,
+    "risk_management_value_only_supported": false,
+    "allocation_mix_value_only_no_switching_value_supported": false,
+    "no_material_policy_value_supported": false,
+    "production_allocator_validated": false,
+    "retune_policy_allowed": false
+  },
+  "interpretation": [
+    "Full-history and pre-2020 realized-exposure-matched residuals show material historical switching value, so the result is not merely a better long-run asset mix.",
+    "Post-2019 switching attribution reverses sign on CAGR, Sharpe, maximum drawdown and Calmar; recent risk-adjusted performance is weaker than the relevant static/risk-balanced benchmarks.",
+    "Removing the largest positive episode leaves full-history and pre-2020 switching attribution positive. Post-2019 remains negative and worsens after its largest positive episode is removed.",
+    "Full-history switching worsens maximum drawdown versus the exposure-matched static control, so risk_management_value_only is not supported.",
+    "The bounded final category is inconclusive_insufficient_evidence; do not retune the matrix, claim untouched OOS evidence, or call this a validated production allocator."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "issue": 89,
+  "artifact_role": "secondary preregistration for episode-concentration robustness only",
+  "primary_policy_contract": "decisions/issue-89-preregistered-policy.json",
+  "primary_policy_modified": false,
+  "primary_portfolio_results_already_viewed": true,
+  "frozen_before_issue_89_episode_results_viewed": true,
+  "episode_definition": "maximal contiguous run of one executed one-bar-lagged V6.6 regime; screening contribution uses exactly the dates assigned to that regime episode, including its entry rebalance date and excluding the next episode's entry rebalance date",
+  "segment_rule": "for pre-2020 and post-2019 screening, only whole episodes whose start and end both lie inside the segment are eligible",
+  "screening_metric": "sum(log1p(policy net return) - log1p(realized-exposure-matched static-control net return)) across episode dates",
+  "screen_positive_and_negative": true,
+  "leaveout_selection": "largest positive active-log episode within each segment",
+  "leaveout_replacement": "replace the selected episode's preregistered regime target with the corresponding original segment exposure-matched static target; rerun the full portfolio path with monthly plus target-change rebalancing",
+  "leaveout_control": "solve a fresh monthly-rebalanced realized-exposure-matched static control against the leaveout path on the evaluation segment",
+  "exposure_match_tolerance": 1e-9,
+  "segments": {
+    "full_reused_history": {
+      "start": null,
+      "end": null,
+      "original_control": "full-history realized-exposure-matched static control"
+    },
+    "development_pre2020": {
+      "start": null,
+      "end": "2019-12-31",
+      "original_control": "era-piecewise realized-exposure-matched static control"
+    },
+    "post2019_reused_exploratory": {
+      "start": "2020-01-01",
+      "end": null,
+      "original_control": "era-piecewise realized-exposure-matched static control"
+    }
+  },
+  "interpretation_boundary": "post-hoc robustness attribution only; may diagnose concentration but may not alter or tune the primary policy matrix"
+}
