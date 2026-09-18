@@ -1,0 +1,93 @@
+name: Macro Pressure Map Issue 89 Ex-Ante Regime Allocation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_89_*.py"
+      - "indicators/macro-pressure-map/research/test_issue_89_*.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-89-*"
+      - "indicators/macro-pressure-map/research/data/issue-64-*"
+      - "indicators/macro-pressure-map/research/requirements-issue-64-lock.txt"
+      - ".github/workflows/macro-pressure-map-issue-89-regime-policy.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  issue-89:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked Issue 64/89 research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Run focused Issue 89 tests
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q             test_issue_89_ex_ante_regime_policy.py             test_asset_allocation_phase_b.py             test_asset_allocation_phase_b_diagnostics.py
+
+      - name: Generate Issue 89 primary evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-89
+          python issue_89_ex_ante_regime_policy.py             --start 2007-01-01             --output-dir generated/issue-89
+
+      - name: Generate Issue 89 realized-exposure attribution
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_89_exposure_diagnostics.py             --evidence-dir generated/issue-89
+
+      - name: Validate Issue 89 evidence contract
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m json.tool generated/issue-89/issue-89-manifest.json > /dev/null
+          python -m json.tool generated/issue-89/issue-89-exposure-match.json > /dev/null
+          test -s generated/issue-89/issue-89-summary.csv
+          test -s generated/issue-89/issue-89-cost-sensitivity.csv
+          test -s generated/issue-89/issue-89-asset-contribution.csv
+          test -s generated/issue-89/issue-89-regime-allocation-contribution.csv
+          test -s generated/issue-89/issue-89-contribution-reconciliation.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          contract = json.loads(Path("decisions/issue-89-preregistered-policy.json").read_text())
+          manifest = json.loads(Path("generated/issue-89/issue-89-manifest.json").read_text())
+          exposure = json.loads(Path("generated/issue-89/issue-89-exposure-match.json").read_text())
+
+          assert contract["frozen_before_issue_89_portfolio_results_viewed"] is True
+          assert contract["return_fitted_weight_selection_allowed"] is False
+          assert contract["weight_tuning_after_results_allowed"] is False
+          assert manifest["contract_frozen_before_results"] is True
+          assert manifest["return_fitted_weight_selection"] is False
+          assert manifest["weight_tuning_after_results"] is False
+          assert manifest["v66_parameters_modified"] is False
+          assert manifest["price_snapshot_csv_sha256"] == contract["outcome_snapshot"]["csv_sha256"]
+          assert manifest["price_snapshot_archive_sha256"] == contract["outcome_snapshot"]["archive_sha256"]
+          assert exposure["max_abs_invested_weight_mismatch"] <= exposure["required_max_abs_invested_weight_mismatch"]
+          assert exposure["required_max_abs_invested_weight_mismatch"] == contract["benchmarks"]["realized_exposure_matched_static_control"]["max_abs_invested_weight_mismatch"]
+          print({
+              "evaluation_rows": manifest["evaluation_rows"],
+              "policy_transition_count": manifest["policy_transition_count"],
+              "max_abs_exposure_mismatch": exposure["max_abs_invested_weight_mismatch"],
+          })
+          PY
+
+      - name: Upload Issue 89 research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-pressure-map-issue-89-regime-policy
+          path: indicators/macro-pressure-map/research/generated/issue-89
+          retention-days: 3
+          if-no-files-found: error

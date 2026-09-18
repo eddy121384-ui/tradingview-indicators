@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "issue": 89,
+  "artifact_role": "preregistered ex-ante economic regime allocation policy contract",
+  "source_issue": 64,
+  "stacked_parent_head": "1ed3f2bb6ad967b1603cae06aefc03e61aa8be2e",
+  "frozen_before_issue_89_portfolio_results_viewed": true,
+  "production_v66_parameters_modified": false,
+  "return_fitted_weight_selection_allowed": false,
+  "weight_tuning_after_results_allowed": false,
+  "evidence_status": "frozen-policy historical validation on reused evidence; not untouched OOS",
+  "universe": [
+    "SPY",
+    "TLT",
+    "GLD"
+  ],
+  "signal": {
+    "source": "data/issue-64-frozen-regime-transitions.csv",
+    "transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+    "last_date": "2026-08-14",
+    "execution_lag_trading_rows": 1,
+    "no_signal_forward_fill_after_cutoff": true
+  },
+  "outcome_snapshot": {
+    "manifest": "data/issue-64-outcome-prices-manifest.json",
+    "csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+    "archive_sha256": "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240",
+    "rows": 4941,
+    "first_date": "2007-01-03",
+    "last_date": "2026-08-24"
+  },
+  "policy": {
+    "strategy_name": "v66_ex_ante_regime_policy",
+    "construction": "neutral 40/40/20 plus zero-sum growth tilt of ±20pp SPY vs TLT and inflation tilt of ±10pp GLD vs TLT",
+    "matrix": {
+      "Goldilocks / Disinflationary Expansion": {
+        "SPY": 0.6,
+        "TLT": 0.3,
+        "GLD": 0.1
+      },
+      "Benign Expansion / Stable Inflation": {
+        "SPY": 0.6,
+        "TLT": 0.2,
+        "GLD": 0.2
+      },
+      "Reflation / Inflation Rising": {
+        "SPY": 0.6,
+        "TLT": 0.1,
+        "GLD": 0.3
+      },
+      "Disinflationary Drift": {
+        "SPY": 0.4,
+        "TLT": 0.5,
+        "GLD": 0.1
+      },
+      "Neutral / Range-bound Macro": {
+        "SPY": 0.4,
+        "TLT": 0.4,
+        "GLD": 0.2
+      },
+      "Inflation Pressure without Growth Confirmation": {
+        "SPY": 0.4,
+        "TLT": 0.3,
+        "GLD": 0.3
+      },
+      "Slowdown / Disinflation": {
+        "SPY": 0.2,
+        "TLT": 0.7,
+        "GLD": 0.1
+      },
+      "Growth Slowdown / Stable Inflation": {
+        "SPY": 0.2,
+        "TLT": 0.6,
+        "GLD": 0.2
+      },
+      "Stagflation Pressure": {
+        "SPY": 0.2,
+        "TLT": 0.5,
+        "GLD": 0.3
+      }
+    }
+  },
+  "rebalance": {
+    "scheduled": "first common trading day of each calendar month",
+    "event_driven": "rebalance when the one-bar-lagged V6.6 core regime changes to a different preregistered policy row",
+    "turnover_definition": "0.5 * sum(abs(target_weight - drifted_pretrade_weight))",
+    "weights_between_rebalances": "self-financing drift with adjusted close-to-close returns",
+    "initial_allocation": "initialize at first target; initial entry excluded from turnover and transaction-cost accounting"
+  },
+  "transaction_cost": {
+    "primary_bps_per_one_way_turnover": 5,
+    "sensitivity_bps_per_one_way_turnover": [
+      0,
+      5,
+      10
+    ]
+  },
+  "benchmarks": {
+    "fixed_60_40": {
+      "weights": {
+        "SPY": 0.6,
+        "TLT": 0.4,
+        "GLD": 0
+      }
+    },
+    "fixed_equal_weight": {
+      "weights": {
+        "SPY": 0.3333333333333333,
+        "TLT": 0.3333333333333333,
+        "GLD": 0.3333333333333333
+      }
+    },
+    "fixed_neutral_40_40_20": {
+      "weights": {
+        "SPY": 0.4,
+        "TLT": 0.4,
+        "GLD": 0.2
+      }
+    },
+    "causal_inverse_volatility": {
+      "lookback_trading_rows": 63,
+      "minimum_observations": 63
+    },
+    "realized_exposure_matched_static_control": {
+      "causal_investable_benchmark": false,
+      "role": "post-hoc attribution control to separate long-run allocation mix from regime switching value",
+      "max_abs_invested_weight_mismatch": 1e-9
+    }
+  },
+  "comparison_window": {
+    "end": "2026-08-14",
+    "development_segment": "common_start through 2019-12-31",
+    "post2019_reused_exploratory_segment": "2020-01-01 through 2026-08-14"
+  },
+  "metrics": {
+    "annualization_trading_rows": 252,
+    "risk_free_rate_for_sharpe": 0,
+    "required": [
+      "CAGR",
+      "annualized_return",
+      "annualized_volatility",
+      "Sharpe",
+      "maximum_drawdown",
+      "Calmar",
+      "total_turnover",
+      "annualized_turnover",
+      "rebalance_count",
+      "transaction_cost_drag",
+      "ending_wealth",
+      "ending_wealth_before_cost_counterfactual",
+      "average_asset_weights"
+    ]
+  },
+  "interpretation_guardrails": [
+    "Do not change the policy matrix after viewing portfolio results.",
+    "Do not call a 60/40 beat evidence of switching value unless the realized-exposure-matched static control is also beaten on the relevant metric.",
+    "A negative result is valid.",
+    "Do not promote reused historical evidence to untouched OOS confirmation or production validation."
+  ]
+}
