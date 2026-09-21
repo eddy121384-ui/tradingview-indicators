@@ -39,7 +39,8 @@ def test_primary_timing():
     m=p["monthly_sampling"]
     assert m["outcome"]=="FEDFUNDS_(m+6) - FEDFUNDS_m"
     assert m["primary_horizon_months"]==6
-    assert p["estimation"]["initial_training_information_date"]=="2014-12"\n    assert p["estimation"]["first_oos_latest_eligible_training_origin"]=="2014-06"
+    assert p["estimation"]["initial_training_information_date"]=="2014-12"
+    assert p["estimation"]["first_oos_latest_eligible_training_origin"]=="2014-06"
     assert p["estimation"]["first_oos_origin"]=="2015-01"
 
 def test_a1_cannot_authorize_production():
