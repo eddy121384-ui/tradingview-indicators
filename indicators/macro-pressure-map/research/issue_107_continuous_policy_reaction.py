@@ -19,6 +19,7 @@ from urllib.request import Request, urlopen
 
 import numpy as np
 import pandas as pd
+import requests
 
 from public_data import SERIES_SPECS, align_to_anchor, download_spec
 from v6_6_core import V66Config, compute_v66
@@ -75,9 +76,13 @@ def _download_fred_bounded_once(series_id: str, start: str, end: str) -> pd.Seri
     end_inclusive = (pd.Timestamp(end) - pd.Timedelta(days=1)).date().isoformat()
     query = urlencode({"id": series_id, "cosd": start, "coed": end_inclusive})
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?{query}"
-    request = Request(url, headers={"User-Agent": "tradingview-indicators-research/1.0"})
-    with urlopen(request, timeout=60) as response:  # nosec B310 - fixed trusted HTTPS host
-        payload = response.read()
+    response = requests.get(
+        url,
+        headers={"User-Agent": "tradingview-indicators-research/1.0"},
+        timeout=(15, 60),
+    )
+    response.raise_for_status()
+    payload = response.content
     frame = pd.read_csv(io.BytesIO(payload))
     date_col = "observation_date" if "observation_date" in frame.columns else "DATE"
     if date_col not in frame.columns or series_id not in frame.columns:
