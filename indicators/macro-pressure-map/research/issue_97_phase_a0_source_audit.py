@@ -61,12 +61,22 @@ def run(output_dir:Path)->dict:
 
     ipm=monthize(ip,"ip")
     cpim=monthize(cpi,"cpi")
-    overlap=ipm.rename(columns={"value":"ip"}).merge(
-        cpim.rename(columns={"value":"cpi"}),on="month_date",how="inner"
-    ).merge(effr.rename(columns={"month":"month_date"}),on="month_date",how="inner")
-    overlap=overlap.loc[overlap["month_date"].between("1954-07-01","2025-12-01")].copy()
+    start=pd.Timestamp("1954-07-01"); end=pd.Timestamp("2025-12-01")
+    expected=pd.date_range(start,end,freq="MS")
+    ip_window=ipm.loc[ipm["month_date"].between(start,end)].copy()
+    cpi_window=cpim.loc[cpim["month_date"].between(start,end)].copy()
+    effr_window=effr.rename(columns={"month":"month_date"}).loc[lambda x:x["month_date"].between(start,end)].copy()
+    missing_by_source={
+        "ip":[x.strftime("%Y-%m") for x in expected.difference(pd.DatetimeIndex(ip_window["month_date"]))],
+        "cpi":[x.strftime("%Y-%m") for x in expected.difference(pd.DatetimeIndex(cpi_window["month_date"]))],
+        "effr":[x.strftime("%Y-%m") for x in expected.difference(pd.DatetimeIndex(effr_window["month_date"]))],
+    }
+    overlap=ip_window.rename(columns={"value":"ip"}).merge(
+        cpi_window.rename(columns={"value":"cpi"}),on="month_date",how="inner"
+    ).merge(effr_window,on="month_date",how="inner")
     if overlap.empty:
         raise RuntimeError("no IP/CPI/EFFR overlap")
+    overlap_missing=[x.strftime("%Y-%m") for x in expected.difference(pd.DatetimeIndex(overlap["month_date"]))]
 
     result={
       "schema_version":1,"issue":97,"phase":"A0-policy-reaction-source-audit",
@@ -92,10 +102,13 @@ def run(output_dir:Path)->dict:
         "observations":int(len(overlap)),
         "missing_ip":int(overlap["ip"].isna().sum()),
         "missing_cpi":int(overlap["cpi"].isna().sum()),
-        "missing_effr":int(overlap["effr"].isna().sum())
+        "missing_effr":int(overlap["effr"].isna().sum()),
+        "missing_expected_months":overlap_missing,
+        "missing_expected_months_by_source":missing_by_source
       }
     }
     output_dir.mkdir(parents=True,exist_ok=True)
+    print(json.dumps({"missing_expected_months":overlap_missing,"missing_by_source":missing_by_source},indent=2),flush=True)
     (output_dir/"issue-97-phase-a0-source-audit.json").write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     return result
 
