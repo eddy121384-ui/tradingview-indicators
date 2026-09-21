@@ -167,7 +167,8 @@
     "incremental_question": "Does PS_intended add useful policy information versus P alone, without optimizing weights?"
   },
   "pivot_event_study": {
-    "event": "PS_intended zero crossing at signal month",
+    "event": "PS_intended zero crossing at signal observation month s",
+    "recognition_month": "s+2",
     "directions": [
       "dovish_to_hawkish",
       "hawkish_to_dovish"
@@ -177,7 +178,8 @@
       6,
       12
     ],
-    "outcome": "FEDFUNDS change from pivot month to horizon",
+    "outcome": "FEDFUNDS change from recognition month s+2 to recognition+horizon",
+    "publication_lag_months": 2,
     "no_event_threshold_tuning": true
   },
   "verdict_categories": [
@@ -194,5 +196,18 @@
     "Do not call this exact original BCI-10.",
     "Do not replace PMI runtime fields with scraped or redistributed ISM history.",
     "Do not change R_hawk sign repair after validation."
-  ]
+  ],
+  "comparison_signal_classes": {
+    "p_axis": {
+      "hawkish": "> +0.3",
+      "neutral": "[-0.3,+0.3]",
+      "dovish": "< -0.3"
+    },
+    "r_hawk": {
+      "hawkish": "> +0.3",
+      "neutral": "[-0.3,+0.3]",
+      "dovish": "< -0.3"
+    },
+    "rule": "Same +/-0.3 cutoffs as PS are used only for fixed diagnostic classification; no cutoff optimization."
+  }
 }
