@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "issue": 97,
+  "phase": "A-policy-reaction-function",
+  "decision_status": "durable",
+  "source_evidence": {
+    "head_sha": "9f40598ecf5247521d8b20e00c70f12f2fb23690",
+    "workflow_run": 35553884457,
+    "artifact_id": 10619980850,
+    "artifact_digest": "sha256:7c1853523e3f80db3f54a8007ee62797f008e13549cffb42bf064cc557327fed"
+  },
+  "final_phase_a_verdict": "policy_relation_era_dependent",
+  "rationale_token": "direction_and_speed_do_not_stably_improve_primary_oos_policy_error_over_levels_and_directional_gains_are_concentrated_in_recent_era_while_level_relations_also_shift_across_regimes",
+  "primary_6m_expanding": {
+    "sample": {
+      "first_origin": "1970-01",
+      "last_origin": "2025-06",
+      "forecast_origins": 666
+    },
+    "M0": {
+      "RMSE": 1.648219,
+      "MAE": 1.102525,
+      "correlation": 0.066171,
+      "balanced_accuracy": 0.329533,
+      "direction_accuracy_ex_neutral": 0.368664
+    },
+    "M1": {
+      "RMSE": 1.623133,
+      "MAE": 1.101787,
+      "correlation": 0.192243,
+      "balanced_accuracy": 0.359429,
+      "direction_accuracy_ex_neutral": 0.384793
+    },
+    "M2": {
+      "RMSE": 1.66024,
+      "MAE": 1.125888,
+      "correlation": 0.16247,
+      "balanced_accuracy": 0.362672,
+      "direction_accuracy_ex_neutral": 0.391705
+    },
+    "M2_minus_M1": {
+      "RMSE": 0.037106,
+      "MAE": 0.0241,
+      "balanced_accuracy": 0.003243,
+      "direction_accuracy_ex_neutral": 0.006912
+    }
+  },
+  "era_evidence": {
+    "Great_Inflation_Volcker": {
+      "M2_minus_M1_RMSE": 0.06744,
+      "M2_minus_M1_MAE": 0.065778,
+      "M2_minus_M1_balanced_accuracy": -0.003472,
+      "M2_minus_M1_direction_accuracy": -0.005917
+    },
+    "Post_Volcker": {
+      "M2_minus_M1_RMSE": 0.022403,
+      "M2_minus_M1_MAE": 0.012087,
+      "M2_minus_M1_balanced_accuracy": 0.010684,
+      "M2_minus_M1_direction_accuracy": 0.025
+    },
+    "Pre_GFC": {
+      "M2_minus_M1_RMSE": 0.020927,
+      "M2_minus_M1_MAE": 0.020996,
+      "M2_minus_M1_balanced_accuracy": -0.010101,
+      "M2_minus_M1_direction_accuracy": -0.014925
+    },
+    "GFC_QE": {
+      "M2_minus_M1_RMSE": 0.006277,
+      "M2_minus_M1_MAE": 0.006402,
+      "M2_minus_M1_balanced_accuracy": -0.006803,
+      "M2_minus_M1_direction_accuracy": 0
+    },
+    "COVID_inflation_higher_rate": {
+      "M2_minus_M1_RMSE": 0.011406,
+      "M2_minus_M1_MAE": -0.013671,
+      "M2_minus_M1_balanced_accuracy": 0.054696,
+      "M2_minus_M1_direction_accuracy": 0.0625
+    }
+  },
+  "leave_one_era_out": {
+    "observation": "M2 remains worse than M1 on RMSE and MAE under every era omission; balanced-accuracy and directional deltas are small and change sign depending on the omitted era.",
+    "all_RMSE_deltas_positive": true,
+    "all_MAE_deltas_positive": true
+  },
+  "coefficient_stability": {
+    "M2_expanding_6m": {
+      "inflation_level": {
+        "median": 0.249045,
+        "positive_fraction": 0.977477
+      },
+      "growth_level": {
+        "median": 0.077818,
+        "positive_fraction": 0.98048
+      },
+      "inflation_acceleration": {
+        "median": 0.046296,
+        "positive_fraction": 0.57958
+      },
+      "growth_acceleration": {
+        "median": 0.014503,
+        "positive_fraction": 0.908408
+      }
+    },
+    "interpretation": "Level coefficients are consistently positive; growth acceleration is usually positive; inflation acceleration is much less stable. Coefficient sign persistence does not translate into stable OOS error improvement."
+  },
+  "verdict_exclusions": {
+    "direction_speed_adds_stable_policy_information": "Rejected because M2 worsens full-sample RMSE and MAE versus M1 and also worsens RMSE in every predeclared era.",
+    "levels_sufficient_no_incremental_speed_value": "Not selected because the level-only relationship itself changes materially across monetary regimes and M1 is not uniformly useful across eras.",
+    "policy_model_unstable": "Not selected because M1 retains some OOS information and several macro coefficients have stable signs; the cleaner diagnosis is regime dependence rather than complete instability.",
+    "inconclusive_policy_evidence": "Rejected because 666 OOS monthly forecasts and leave-one-era-out diagnostics provide enough evidence to classify the relation as era-dependent."
+  },
+  "phase_b_status": "blocked_by_preregistered_stop_rule",
+  "phase_b_reason": "M2 does not provide stable incremental policy information over M1, and the incremental directional gains are concentrated mainly in the recent era. Treasury-minus-cash outcomes remain unopened for Issue #97.",
+  "treasury_outcomes_loaded": false,
+  "portfolio_results_computed": false,
+  "production_change_authorized": false,
+  "next_research_direction": "Open a new preregistered reaction-function study with a richer mechanism; do not rescue Issue #97 by changing horizons, acceleration lookbacks, thresholds, or adding Treasury outcomes.",
+  "evidence_binding": {
+    "method": "CSV semantic hash",
+    "numeric_round_decimals": 8,
+    "semantic_sha256": {
+      "issue-97-phase-a-coefficient-signs.csv": "eb5bb7af8f6d41d1d86b852027b3f16969fa4b02f8640630e8a55c77bcbd0324",
+      "issue-97-phase-a-incremental.csv": "36aaf6b5cd746a8c07a39fe87612fd8f9f664d0f629adf2ff9d29354cad607ba",
+      "issue-97-phase-a-leave-one-era-out.csv": "6e3fda98b2cf4d5d1d6a201fee00ee054106e63fb6f47dc8c9d67914527850f4",
+      "issue-97-phase-a-predictions-12m.csv": "24578cfa5bf9cb8c21bf3baddfe188faf38291853c7b7bc730a720b454aa94f4",
+      "issue-97-phase-a-predictions-6m-rolling240.csv": "eb46ef5d45834daf348add96563159f2c7f51daee728028d888b853ca8302538",
+      "issue-97-phase-a-predictions-6m.csv": "d0056373b3e99db817c5e9cebec6440a8397c7cd9b959b970f71a1bdae9fd4e8",
+      "issue-97-phase-a-summary.csv": "8bb4f4f89b6b5f40b0bd9a7d9dbb7b813d7ba223d279b022abc418feacf62ac9"
+    }
+  }
+}

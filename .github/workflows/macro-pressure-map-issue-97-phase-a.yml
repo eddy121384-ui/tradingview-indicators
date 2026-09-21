@@ -45,6 +45,9 @@ jobs:
           print(m["oos"])
           print(m["primary_M2_minus_M1"])
           PY
+      - name: Validate durable Phase A finding
+        working-directory: indicators/macro-pressure-map/research
+        run: python issue_97_phase_a_completion_validation.py --evidence-dir generated/issue-97-phase-a
       - uses: actions/upload-artifact@v4
         with:
           name: issue-97-phase-a-policy-reaction
