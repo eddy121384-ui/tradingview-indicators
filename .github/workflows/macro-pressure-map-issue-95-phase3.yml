@@ -58,6 +58,9 @@ jobs:
           print(m["primary_deltas"])
           print(m["episode_concentration"])
           PY
+      - name: Validate durable Phase 3 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: python issue_95_phase3_completion_validation.py --evidence-dir generated/issue-95-phase3
       - name: Upload Phase 3 evidence
         uses: actions/upload-artifact@v4
         with:
