@@ -1,0 +1,48 @@
+name: Macro Pressure Map Issue 99 Proxy Source Schema
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_99_phase_a0_*"
+      - "indicators/macro-pressure-map/research/test_issue_99_phase_a0_*"
+      - "indicators/macro-pressure-map/research/decisions/issue-99-phase-a0-*"
+      - ".github/workflows/macro-pressure-map-issue-99-a0.yml"
+permissions:
+  contents: read
+jobs:
+  proxy-source-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install "pandas==3.0.5" "openpyxl==3.1.5" "pytest==9.1.1"
+      - name: Unit test
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_99_phase_a0_proxy_source_schema.py
+      - name: Audit official proxy workbook schema
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-99-phase-a0
+          python issue_99_phase_a0_proxy_source_schema.py --output-dir generated/issue-99-phase-a0
+      - name: Enforce no-outcome boundary
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path("generated/issue-99-phase-a0/issue-99-phase-a0-proxy-source-schema.json").read_text())
+          assert x["policy_model_outcomes_computed"] is False
+          assert x["treasury_outcomes_loaded"] is False
+          assert x["portfolio_results_computed"] is False
+          assert "proxy-funds-rate-data.xlsx" in x["workbook"]["resolved_url"]
+          print({"sha":x["workbook"]["raw_sha256"],"bytes":x["workbook"]["raw_bytes"],"sheets":x["workbook"]["sheet_names"]})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-99-proxy-source-schema
+          path: indicators/macro-pressure-map/research/generated/issue-99-phase-a0
+          retention-days: 3
