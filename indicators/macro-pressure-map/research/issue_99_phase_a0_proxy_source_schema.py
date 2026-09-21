@@ -62,6 +62,46 @@ def cell_to_json(v):
     return str(v)
 
 
+def parse_monthly_proxy(payload:bytes,end_month:str="2025-12")->pd.DataFrame:
+    raw=pd.read_excel(io.BytesIO(payload),sheet_name="Monthly",header=None,engine="openpyxl")
+    if raw.shape[1] < 3:
+        raise RuntimeError("Monthly sheet has fewer than 3 columns")
+    header=[str(x).strip() for x in raw.iloc[0,:3].tolist()]
+    expected=["Date","Effective funds rate","Proxy funds rate"]
+    if header != expected:
+        raise RuntimeError(f"unexpected Monthly header: {header}")
+    out=raw.iloc[1:,:3].copy()
+    out.columns=["date","workbook_effr","proxy_rate"]
+    out["date"]=pd.to_datetime(out["date"],errors="coerce")
+    out["workbook_effr"]=pd.to_numeric(out["workbook_effr"],errors="coerce")
+    out["proxy_rate"]=pd.to_numeric(out["proxy_rate"],errors="coerce")
+    out=out.dropna(subset=["date"]).sort_values("date").reset_index(drop=True)
+    cutoff=pd.Period(end_month,freq="M").end_time.normalize()
+    used=out.loc[out["date"].le(cutoff)].copy()
+    if used.empty or used[["workbook_effr","proxy_rate"]].isna().any().any():
+        raise RuntimeError("missing monthly proxy/effr values in canonical window")
+    if used["date"].duplicated().any():
+        raise RuntimeError("duplicate proxy monthly date")
+    expected_dates=pd.period_range(used["date"].min().to_period("M"),pd.Period(end_month,"M"),freq="M")
+    actual=pd.PeriodIndex(used["date"].dt.to_period("M"))
+    missing=[str(x) for x in expected_dates.difference(actual)]
+    if missing:
+        raise RuntimeError(f"missing monthly proxy observations: {missing}")
+    return used
+
+
+def canonical_proxy_payload(frame:pd.DataFrame)->bytes:
+    records=[
+        {
+            "month":row.date.strftime("%Y-%m"),
+            "workbook_effr":round(float(row.workbook_effr),10),
+            "proxy_rate":round(float(row.proxy_rate),10),
+        }
+        for row in frame.itertuples(index=False)
+    ]
+    return json.dumps(records,sort_keys=True,separators=(",",":")).encode("utf-8")
+
+
 def audit_workbook(payload:bytes)->dict:
     book=pd.ExcelFile(io.BytesIO(payload),engine="openpyxl")
     sheets=[]
@@ -90,6 +130,8 @@ def run(output_dir:Path)->dict:
     if "spreadsheet" not in workbook_ctype.lower() and not workbook_final.lower().split("?")[0].endswith(".xlsx"):
         raise RuntimeError(f"unexpected workbook content type: {workbook_ctype}")
 
+    monthly=parse_monthly_proxy(workbook,"2025-12")
+    canonical=canonical_proxy_payload(monthly)
     result={
       "schema_version":1,
       "issue":99,
@@ -110,7 +152,16 @@ def run(output_dir:Path)->dict:
         "content_type":workbook_ctype,
         "raw_sha256":sha256_bytes(workbook),
         "raw_bytes":len(workbook),
-        **audit_workbook(workbook)
+        **audit_workbook(workbook),
+        "canonical_monthly_through_2025_12":{
+          "first_month":monthly["date"].min().strftime("%Y-%m"),
+          "last_month":monthly["date"].max().strftime("%Y-%m"),
+          "observations":int(len(monthly)),
+          "canonical_sha256":sha256_bytes(canonical),
+          "canonical_bytes":len(canonical),
+          "proxy_min":float(monthly["proxy_rate"].min()),
+          "proxy_max":float(monthly["proxy_rate"].max())
+        }
       }
     }
     output_dir.mkdir(parents=True,exist_ok=True)
