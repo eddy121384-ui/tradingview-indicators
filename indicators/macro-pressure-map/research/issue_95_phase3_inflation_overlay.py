@@ -210,7 +210,7 @@ def exposure_mismatch(a:pd.DataFrame,b:pd.DataFrame)->float:
     return float(np.max(np.abs(aw-bw)))
 
 
-def simulate_primary_set(frame:pd.DataFrame,p:dict,cost:float,redirect:float)->tuple[dict[str,pd.DataFrame],dict]:
+def simulate_primary_set(frame:pd.DataFrame,p:dict,cost:float,redirect:float,*,include_inverse_vol:bool=True)->tuple[dict[str,pd.DataFrame],dict]:
     base_t,over_t=targets_for_frame(frame,p,redirect)
     years=base_t.index
     targets={
@@ -227,12 +227,13 @@ def simulate_primary_set(frame:pd.DataFrame,p:dict,cost:float,redirect:float)->t
     tol=float(p["required_strategies_and_controls"]["realized_exposure_matched_static_control"]["fail_closed_tolerance"])
     if mismatch>tol:
         raise RuntimeError(f"matched-static exposure mismatch {mismatch} > {tol}")
-    inv_t=inverse_vol_targets(
-        frame[["return_year",*ASSETS]].rename(columns={"return_year":"year"}),
-        p,
-    )
-    inv_frame=frame.loc[frame["return_year"].isin(inv_t.index)].copy()
-    sims["causal_inverse_vol_3asset"]=simulate(inv_frame,inv_t,cost,"causal_inverse_vol_3asset")
+    if include_inverse_vol:
+        inv_t=inverse_vol_targets(
+            frame[["return_year",*ASSETS]].rename(columns={"return_year":"year"}),
+            p,
+        )
+        inv_frame=frame.loc[frame["return_year"].isin(inv_t.index)].copy()
+        sims["causal_inverse_vol_3asset"]=simulate(inv_frame,inv_t,cost,"causal_inverse_vol_3asset")
     return sims,{"matched_static_max_abs_exposure_mismatch":mismatch}
 
 
@@ -285,7 +286,7 @@ def era_metrics(sims:dict[str,pd.DataFrame],p:dict)->pd.DataFrame:
 
 def rerun_subset(frame:pd.DataFrame,p:dict,cost:float,redirect:float)->tuple[dict[str,pd.DataFrame],dict]:
     # Compressed jackknife sample per prereg.
-    return simulate_primary_set(frame.reset_index(drop=True),p,cost,redirect)
+    return simulate_primary_set(frame.reset_index(drop=True),p,cost,redirect,include_inverse_vol=False)
 
 
 def leave_one_era_out(frame:pd.DataFrame,p:dict,cost:float,redirect:float)->pd.DataFrame:
@@ -371,7 +372,7 @@ def sensitivities(frame:pd.DataFrame,p:dict)->pd.DataFrame:
     rows=[]
     for redirect in [0.25,0.50,0.75]:
         for cost in [0.0,5.0,10.0]:
-            sims,diag=simulate_primary_set(frame,p,cost,redirect)
+            sims,diag=simulate_primary_set(frame,p,cost,redirect,include_inverse_vol=False)
             om=portfolio_metrics(sims["inflation_overlay_50"]); bm=portfolio_metrics(sims["base_issue89_policy"]); mm=portfolio_metrics(sims["matched_static_4asset"])
             rows.append({
                 "redirect_fraction":redirect,"cost_bps":cost,
