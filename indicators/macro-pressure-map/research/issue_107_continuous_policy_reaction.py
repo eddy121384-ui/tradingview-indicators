@@ -10,14 +10,17 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import time
 from pathlib import Path
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 import numpy as np
 import pandas as pd
 
-from public_data import SERIES_SPECS, align_to_anchor, download_fred_series, download_spec
+from public_data import SERIES_SPECS, align_to_anchor, download_spec
 from v6_6_core import V66Config, compute_v66
 
 HERE = Path(__file__).resolve().parent
@@ -67,6 +70,24 @@ def retry_call(func, *args, attempts: int = 3):
     raise RuntimeError("retry_call exhausted") from last
 
 
+def download_fred_bounded(series_id: str, start: str, end: str) -> pd.Series:
+    """Same FRED series as public_data.py, but server-side bounded for CI reliability."""
+    end_inclusive = (pd.Timestamp(end) - pd.Timedelta(days=1)).date().isoformat()
+    query = urlencode({"id": series_id, "cosd": start, "coed": end_inclusive})
+    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?{query}"
+    request = Request(url, headers={"User-Agent": "tradingview-indicators-research/1.0"})
+    with urlopen(request, timeout=60) as response:  # nosec B310 - fixed trusted HTTPS host
+        payload = response.read()
+    frame = pd.read_csv(io.BytesIO(payload))
+    date_col = "observation_date" if "observation_date" in frame.columns else "DATE"
+    if date_col not in frame.columns or series_id not in frame.columns:
+        raise RuntimeError(f"FRED bounded CSV for {series_id} has unexpected columns: {list(frame.columns)}")
+    index = pd.to_datetime(frame[date_col], errors="raise", utc=True).dt.tz_convert(None).dt.normalize()
+    raw = frame[series_id].replace(".", np.nan)
+    values = pd.Series(pd.to_numeric(raw, errors="coerce").to_numpy(float), index=pd.DatetimeIndex(index), name=series_id)
+    return values[~values.index.duplicated(keep="last")].sort_index()
+
+
 def build_public_gpi_ipi_sources(start: str, end: str) -> tuple[pd.DataFrame, dict]:
     specs = [s for s in SERIES_SPECS if s.canonical in GPI_IPI_CANONICAL]
     found = {s.canonical for s in specs}
@@ -75,7 +96,9 @@ def build_public_gpi_ipi_sources(start: str, end: str) -> tuple[pd.DataFrame, di
     downloaded: dict[str, pd.Series] = {}
     coverage: list[dict] = []
     for spec in specs:
-        series = retry_call(download_spec, spec, start, end)
+        series = (retry_call(download_fred_bounded, spec.public_symbol, start, end)
+                  if spec.provider == "fred"
+                  else retry_call(download_spec, spec, start, end))
         if series.dropna().empty:
             raise RuntimeError(f"no usable source for {spec.canonical}")
         downloaded[spec.canonical] = series
@@ -123,8 +146,8 @@ def _monthly_series(series: pd.Series) -> pd.Series:
 
 
 def build_policy_monthly(start: str = "2005-01-01", end: str = "2026-01-01") -> pd.DataFrame:
-    effr = _monthly_series(retry_call(download_fred_series, "FEDFUNDS", start, end))
-    pce = _monthly_series(retry_call(download_fred_series, "PCEPILFE", start, end))
+    effr = _monthly_series(retry_call(download_fred_bounded, "FEDFUNDS", start, end))
+    pce = _monthly_series(retry_call(download_fred_bounded, "PCEPILFE", start, end))
     p = pd.DataFrame({"FEDFUNDS": effr, "PCEPILFE": pce}).sort_index()
     p["core_pce_yoy"] = 100.0 * (p["PCEPILFE"] / p["PCEPILFE"].shift(12) - 1.0)
     p["real_policy_rate_raw"] = p["FEDFUNDS"] - p["core_pce_yoy"]
