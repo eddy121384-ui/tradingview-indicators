@@ -20,6 +20,7 @@ from urllib.request import Request, urlopen
 import numpy as np
 import pandas as pd
 import requests
+from bs4 import BeautifulSoup
 
 from public_data import SERIES_SPECS, align_to_anchor, download_spec
 from v6_6_core import V66Config, compute_v66
@@ -72,25 +73,38 @@ def retry_call(func, *args, attempts: int = 3):
 
 
 def _download_fred_bounded_once(series_id: str, start: str, end: str) -> pd.Series:
-    """Fetch one bounded FRED slice; end is exclusive."""
-    end_inclusive = (pd.Timestamp(end) - pd.Timedelta(days=1)).date().isoformat()
-    query = urlencode({"id": series_id, "cosd": start, "coed": end_inclusive})
-    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?{query}"
+    """Fetch one bounded slice from FRED's official Table Data page; end is exclusive."""
+    url = f"https://fred.stlouisfed.org/data/{series_id}"
     response = requests.get(
         url,
         headers={"User-Agent": "tradingview-indicators-research/1.0"},
         timeout=(15, 60),
     )
     response.raise_for_status()
-    payload = response.content
-    frame = pd.read_csv(io.BytesIO(payload))
-    date_col = "observation_date" if "observation_date" in frame.columns else "DATE"
-    if date_col not in frame.columns or series_id not in frame.columns:
-        raise RuntimeError(f"FRED bounded CSV for {series_id} has unexpected columns: {list(frame.columns)}")
-    index = pd.to_datetime(frame[date_col], errors="raise", utc=True).dt.tz_convert(None).dt.normalize()
-    raw = frame[series_id].replace(".", np.nan)
-    values = pd.Series(pd.to_numeric(raw, errors="coerce").to_numpy(float), index=pd.DatetimeIndex(index), name=series_id)
-    return values[~values.index.duplicated(keep="last")].sort_index()
+    soup = BeautifulSoup(response.text, "html.parser")
+    records: list[tuple[pd.Timestamp, float]] = []
+    for row in soup.find_all("tr"):
+        cells = [cell.get_text(strip=True) for cell in row.find_all(["td", "th"])]
+        if len(cells) < 2:
+            continue
+        try:
+            date = pd.Timestamp(cells[0])
+        except (TypeError, ValueError):
+            continue
+        raw = cells[1]
+        value = np.nan if raw in {"", "."} else float(raw)
+        records.append((date.normalize(), value))
+    if not records:
+        raise RuntimeError(f"FRED Table Data page for {series_id} returned no observations")
+    values = pd.Series(
+        [value for _, value in records],
+        index=pd.DatetimeIndex([date for date, _ in records]),
+        name=series_id,
+        dtype=float,
+    )
+    values = values[~values.index.duplicated(keep="last")].sort_index()
+    start_ts, end_ts = pd.Timestamp(start), pd.Timestamp(end)
+    return values.loc[(values.index >= start_ts) & (values.index < end_ts)]
 
 
 def _fred_chunk_ranges(start: str, end: str, years: int = 6) -> list[tuple[str, str]]:
