@@ -34,12 +34,13 @@ def test_trajectory_reuses_20_63_and_acceleration():
 def test_standardized_ols_predicts_linear_relation():
     n = 60
     a = np.arange(n, dtype=float)
-    b = np.linspace(-3.0, 3.0, n)
+    b = (a % 7.0) - 3.0
     train = pd.DataFrame({"a": a, "b": b})
     train["y"] = 1.5 + 0.2 * train["a"] - 0.7 * train["b"]
-    row = pd.Series({"a": 61.0, "b": 2.0})
+    row_b = (61.0 % 7.0) - 3.0
+    row = pd.Series({"a": 61.0, "b": row_b})
     pred, _ = standardize_fit_predict(train, row, ["a", "b"], "y")
-    assert np.isclose(pred, 1.5 + 0.2 * 61.0 - 0.7 * 2.0)
+    assert np.isclose(pred, 1.5 + 0.2 * 61.0 - 0.7 * row_b)
 
 
 def test_complete_case_is_common_m2_universe():
