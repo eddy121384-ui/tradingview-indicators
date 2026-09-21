@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -21,10 +23,16 @@ jobs:
       - name: Validate preregistration
         working-directory: indicators/macro-pressure-map/research
         run: python -m pytest -q test_issue_107_continuous_policy_prereg.py
-      - name: Confirm no outcome evaluator or display formula exists
-        working-directory: indicators/macro-pressure-map/research
+      - name: Confirm historical prereg preceded outcome evaluator
         run: |
-          test ! -f issue_107_continuous_policy_reaction.py
-          test ! -f decisions/issue-107-phase-a-decision.json
-          test ! -f policy_pressure_proxy.py
-          echo "Issue #107 prereg precedes outcome evaluation and display-formula design."
+          PREREG_SHA=65db3acb61a894c9a71588235c1324085ba53547
+          git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-107-continuous-policy-reaction-preregistered.json"
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/issue_107_continuous_policy_reaction.py'; then
+            echo "Outcome evaluator existed in prereg commit"
+            exit 1
+          fi
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/policy_pressure_proxy.py'; then
+            echo "Display formula existed in prereg commit"
+            exit 1
+          fi
+          echo "Historical prereg cleanly precedes outcome evaluation and display-formula design."
