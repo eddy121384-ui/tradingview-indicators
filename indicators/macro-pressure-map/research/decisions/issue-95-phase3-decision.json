@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "issue": 95,
+  "phase": "3-inflation-conditioned-allocation-overlay",
+  "decision_status": "durable",
+  "source_evidence": {
+    "head_sha": "fc28eb09ed40933fdd09eb6a7d3438face2ad2be",
+    "workflow_run": 35550458426,
+    "artifact_id": 10618246109,
+    "artifact_digest": "sha256:922a90c4f3ed74191bbd4b8509dd629a18badf0475d8b693ed44e94acefa9428"
+  },
+  "final_verdict": "no_material_overlay_value",
+  "rationale_token": "primary_50pct_treasury_to_cash_overlay_has_only_trivial_incremental_value_vs_base_no_drawdown_improvement_weaker_risk_adjusted_results_vs_matched_static_and_fragile_episode_attribution",
+  "primary_evidence": {
+    "sample": {
+      "return_years": "1975-2025",
+      "years": 51,
+      "overlay_active_years": 16,
+      "active_1975_1984": 9,
+      "active_2020_2025": 2
+    },
+    "overlay": {
+      "CAGR": 0.095893,
+      "Sharpe_using_TBill": 0.595835,
+      "maximum_drawdown": -0.160438,
+      "Calmar": 0.597695,
+      "annualized_turnover": 0.275521,
+      "cumulative_estimated_cost_drag": 0.007002,
+      "average_weights": {
+        "equity": 0.419608,
+        "treasury": 0.316667,
+        "cash": 0.063725,
+        "gold": 0.2
+      }
+    },
+    "base": {
+      "CAGR": 0.095621,
+      "Sharpe_using_TBill": 0.587821,
+      "maximum_drawdown": -0.160438,
+      "Calmar": 0.596001
+    },
+    "matched_static": {
+      "CAGR": 0.094515,
+      "Sharpe_using_TBill": 0.608967,
+      "maximum_drawdown": -0.129758,
+      "Calmar": 0.728396,
+      "max_abs_exposure_mismatch": 5.551115123125783e-17
+    },
+    "primary_deltas": {
+      "CAGR_vs_base": 0.00027164475340635263,
+      "Sharpe_vs_base": 0.00801324239323209,
+      "maximum_drawdown_vs_base": 1.1102230246251565e-16,
+      "Calmar_vs_base": 0.0016931461161817651,
+      "CAGR_vs_matched": 0.0013775208725415045,
+      "Sharpe_vs_matched": -0.013132338191186643,
+      "maximum_drawdown_vs_matched": -0.03067976125848848,
+      "Calmar_vs_matched": -0.13070169098585804
+    }
+  },
+  "temporal_evidence": {
+    "Great_Inflation_Volcker_1975_1984": {
+      "overlay_CAGR": 0.102255,
+      "base_CAGR": 0.101457,
+      "matched_CAGR": 0.113647,
+      "delta_CAGR_vs_base": 0.000799,
+      "delta_CAGR_vs_matched": -0.011392,
+      "delta_Sharpe_vs_base": 0.009275,
+      "delta_Sharpe_vs_matched": -0.09444
+    },
+    "Post_Volcker_1985_1999": {
+      "delta_CAGR_vs_base": -0.002689,
+      "delta_CAGR_vs_matched": 0.005456,
+      "delta_Sharpe_vs_base": -0.035986
+    },
+    "GFC_QE_2008_2019": {
+      "delta_CAGR_vs_base": 0.002295,
+      "delta_CAGR_vs_matched": 0.002243
+    },
+    "COVID_inflation_higher_rate_2020_2025": {
+      "overlay_CAGR": 0.08929,
+      "base_CAGR": 0.086456,
+      "matched_CAGR": 0.104834,
+      "delta_CAGR_vs_base": 0.002834,
+      "delta_CAGR_vs_matched": -0.015544,
+      "delta_Sharpe_vs_base": 0.020644,
+      "delta_Sharpe_vs_matched": -0.177305
+    },
+    "interpretation": "The overlay is not a 2020-2025-only rescue because it is also slightly positive vs base in 1975-1984, but neither high-inflation era shows material value against the exposure-matched static control."
+  },
+  "robustness": {
+    "active_episodes": 4,
+    "positive_episodes": 3,
+    "top1_share_positive": 0.5279196322190152,
+    "largest_positive_episode": {
+      "start": 2009,
+      "end": 2009
+    },
+    "largest_positive_episode_leaveout": {
+      "delta_CAGR_vs_base": -0.00028677018490896877,
+      "delta_CAGR_vs_matched": 0.0015713111825217396,
+      "delta_Sharpe_vs_base": 0.003101706362801493,
+      "delta_Sharpe_vs_matched": -0.01075631484858719,
+      "active_log_vs_base": -0.01308294351997829
+    },
+    "leave_one_era_out": {
+      "overlay_vs_base_CAGR_sign_not_stable": true,
+      "overlay_vs_matched_CAGR_sign_not_stable": true,
+      "note": "Omitting GFC/QE or COVID/higher-rate periods makes overlay-vs-base CAGR negative; matched-static residual also changes sign under some era omissions."
+    },
+    "primary_cost_sensitivity": {
+      "cost_0bp_delta_CAGR_vs_base": 0.000285,
+      "cost_5bp_delta_CAGR_vs_base": 0.000272,
+      "cost_10bp_delta_CAGR_vs_base": 0.000258
+    },
+    "redirect_sensitivity_diagnostic_only": {
+      "redirect_25pct_cost5_delta_CAGR_vs_base": 0.00015,
+      "redirect_50pct_cost5_delta_CAGR_vs_base": 0.000272,
+      "redirect_75pct_cost5_delta_CAGR_vs_base": 0.000364,
+      "interpretation": "Larger redirect produces a slightly larger return effect, but sensitivities are diagnostic only and do not change the primary verdict."
+    }
+  },
+  "verdict_exclusions": {
+    "robust_inflation_conditioned_switching_value": "Rejected because the primary overlay adds only ~2.7bp CAGR versus the unchanged base policy, has no max-drawdown improvement, loses Sharpe and drawdown quality versus matched static, and is not robust to episode/era leaveouts.",
+    "historical_risk_management_value_only": "Rejected because max drawdown is unchanged versus base and materially worse than the matched static control; there is no non-fragile downside improvement.",
+    "recent_era_rescue_only": "Rejected because the overlay is also slightly positive versus base in 1975-1984; the problem is lack of material/robust value, not exclusively recent concentration.",
+    "allocation_mix_only_no_switching_value": "Not selected because the overlay does not even add a material benefit versus the base policy; the more basic conclusion is that the tested overlay itself is economically small.",
+    "inconclusive_insufficient_evidence": "Not selected because 51 years, 16 active years, the early high-inflation era, recent high-inflation era, leave-one-era-out and episode tests are sufficient to conclude the preregistered primary overlay lacks material value."
+  },
+  "interpretation": [
+    "Phase 2 structural evidence that high absolute inflation changes Treasury-vs-cash payoff remains valid.",
+    "Phase 3 shows that a crude binary >=4% rule plus 50% Treasury-sleeve haircut does not translate that structure into material portfolio value.",
+    "This is evidence against this overlay design, not against HMRA/V6.6 and not against the Phase 2 inflation-regime interaction.",
+    "Do not tune the 4% threshold, redirect fraction, or #89 base matrix to rescue Issue #95.",
+    "A future study would need a new preregistered mechanism rather than parameter rescue."
+  ],
+  "production_change_authorized": false,
+  "evidence_binding": {
+    "method": "CSV semantic hash",
+    "numeric_round_decimals": 8,
+    "semantic_sha256": {
+      "issue-95-active-attribution.csv": "aa603d7b6d0fba810a9fa81cbf8de28c7e172a2841376d6ce96f17d46bdc2ce4",
+      "issue-95-active-episodes.csv": "c7b5888f83a290b310c7b83e711e60c6793f2e435ad49f0579ff506aa1f934bb",
+      "issue-95-active-year.csv": "c91d3bfa478e1d7c00b8373b4730fbd7df7e39c661563a40ef138c86a3a65699",
+      "issue-95-asset-contribution.csv": "1ec90530780605d3dfe1dd46dcb1f3451e6d896ed7b69bedb20bf354c6f2c1b9",
+      "issue-95-era-summary.csv": "058f0c8802b4b1520ce5609aee13895e7751613ec582de79149b7e153f96569a",
+      "issue-95-leave-one-era-out.csv": "aba4a25e243075e237fa75e5f0a0ec42e447b592e586ef28f330f401a4e8dd17",
+      "issue-95-sensitivity.csv": "25b5dec671128929f047b1a1d24668611d89da5cf992eda7ff0002681bce758c",
+      "issue-95-summary.csv": "4e2cc7cfd0b497b1adfb499e5a68e7236ecb390838a61566a4025722e4534352"
+    }
+  }
+}
