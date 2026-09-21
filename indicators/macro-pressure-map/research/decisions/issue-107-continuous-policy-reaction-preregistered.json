@@ -108,11 +108,13 @@
     "primary": "expanding-window OLS with intercept",
     "feature_standardization": "training-window mean/std only",
     "zero_std_policy": "drop no feature dynamically; fail closed if a training feature has zero variance",
-    "initial_training_end": "2014-12",
     "first_oos_origin": "2015-01",
     "coefficient_information_rule": "training row is eligible only when its 6M policy outcome would already be known before the current forecast origin",
     "full_sample_fit_not_predictive_evidence": true,
-    "rolling_8y_diagnostic_only": true
+    "rolling_8y_diagnostic_only": true,
+    "initial_training_information_date": "2014-12",
+    "first_oos_latest_eligible_training_origin": "2014-06",
+    "training_origin_cutoff_rule": "For forecast origin m with H=6, training origins must be <= m-(H+1) months, so their full 6M outcome is known strictly before m."
   },
   "metrics": {
     "primary": [
