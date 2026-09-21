@@ -198,7 +198,10 @@
       "current_return_year_excluded": true,
       "minimum_history_required": 5,
       "design_requirement": "Only returns strictly before each evaluated return year may enter the estimate; no same-year look-ahead.",
-      "fallback_if_not_feasible": "Fail closed rather than substituting a noncausal control."
+      "fallback_if_not_feasible": "Fail closed rather than substituting a noncausal control.",
+      "evaluation_return_year_start": 1980,
+      "evaluation_return_year_end": 2025,
+      "gold_history_boundary": "Do not use pre-1975 gold returns even as volatility-estimation history. The first eligible inverse-vol return year is therefore 1980."
     },
     "realized_exposure_matched_static_control": {
       "required": true,
@@ -278,7 +281,8 @@
   "leave_one_era_out": {
     "required": true,
     "procedure": "For the primary 50% overlay, omit each predeclared return-year era and fully rerun allocations, turnover, costs, realized-exposure matched static control, and active metrics.",
-    "subtraction_shortcut_forbidden": true
+    "subtraction_shortcut_forbidden": true,
+    "jackknife_time_handling": "Remove all observations in the omitted era; preserve chronological order of retained years; simulate the retained observations as a compressed jackknife sample. Omitted years generate no return, drift, turnover, or cost. This is a robustness attribution, not an implementable calendar-time strategy."
   },
   "episode_concentration": {
     "activation_episode_definition": "Contiguous evaluated return years for which the lagged HMRA state-year inflation is >=4%.",
