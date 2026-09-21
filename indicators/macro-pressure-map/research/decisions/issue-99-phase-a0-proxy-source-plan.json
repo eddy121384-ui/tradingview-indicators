@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "issue": 99,
+  "phase": "A0-proxy-policy-stance-source-schema-audit",
+  "purpose": "Inspect and freeze the official San Francisco Fed Proxy Funds Rate source structure before any model outcome is evaluated.",
+  "created_before_policy_model_outcomes": true,
+  "created_before_treasury_outcomes": true,
+  "source_page": "https://www.frbsf.org/research-and-insights/data-and-indicators/proxy-funds-rate/",
+  "required_link_pattern": "proxy-funds-rate-data.xlsx",
+  "rules": [
+    "Only official San Francisco Fed page-linked source files may be used in A0.",
+    "Do not run EFFR-vs-Proxy model comparisons in this commit.",
+    "Do not load Treasury, T-bill, equity, gold or portfolio outcomes.",
+    "Do not infer a monthly series by positional guess if the workbook schema is ambiguous.",
+    "If workbook structure changes, fail closed and inspect the new schema."
+  ],
+  "allowed_outputs": [
+    "resolved official download URL",
+    "raw SHA-256",
+    "byte size",
+    "workbook sheet names",
+    "sheet dimensions",
+    "first rows / column labels as schema metadata only"
+  ],
+  "forbidden_outputs": [
+    "policy forecast metrics",
+    "Treasury-minus-cash results",
+    "portfolio results"
+  ]
+}

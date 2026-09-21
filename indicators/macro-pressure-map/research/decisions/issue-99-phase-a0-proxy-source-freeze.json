@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "issue": 99,
+  "phase": "A0-proxy-policy-stance-source-freeze",
+  "created_before_A1_model_outcomes": true,
+  "source_audit_run": 35557409858,
+  "source_audit_head": "d85e4c1b327ae05a4a339cc8c7cc9f54c3283cd2",
+  "official_page": "https://www.frbsf.org/research-and-insights/data-and-indicators/proxy-funds-rate/",
+  "workbook": {
+    "role": "official SF Fed Proxy Funds Rate source",
+    "observed_resolved_url": "https://www.frbsf.org/wp-content/uploads/proxy-funds-rate-data.xlsx?2026-09-18",
+    "raw_sha256_diagnostic": "75b2f7dd89b9697172d8aa854af0fb633b6c5e058799d77e56325edda95104b2",
+    "raw_bytes_diagnostic": 104449,
+    "sheet": "Monthly",
+    "expected_header": [
+      "Date",
+      "Effective funds rate",
+      "Proxy funds rate"
+    ],
+    "raw_file_is_live_and_may_extend_after_2025": true
+  },
+  "canonical_monthly_through_2025_12": {
+    "first_month": "1976-06",
+    "last_month": "2025-12",
+    "observations": 595,
+    "canonical_sha256": "a797e085ff0dc9edb7da2e7b35e29db98ae5c11104189a179f52d6262401a413",
+    "canonical_bytes": 39904,
+    "canonicalization": "Monthly rows through 2025-12; JSON records with month YYYY-MM and workbook_effr/proxy_rate rounded to 10 decimals; keys sorted.",
+    "missing_months": [],
+    "proxy_min": -1.4107960754178914,
+    "proxy_max": 17.43856910805559
+  },
+  "source_revision_policy": "Fail closed on canonical monthly SHA drift through 2025-12. Later 2026+ updates may change the raw workbook without invalidating the frozen historical input.",
+  "model_outcomes_seen": false,
+  "treasury_outcomes_seen": false,
+  "portfolio_results_seen": false
+}

@@ -1,0 +1,58 @@
+name: Macro Pressure Map Issue 99 A1 EFFR vs Proxy
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_99_phase_a1_*"
+      - "indicators/macro-pressure-map/research/test_issue_99_phase_a1_*"
+      - "indicators/macro-pressure-map/research/decisions/issue-99-phase-a1-*"
+      - ".github/workflows/macro-pressure-map-issue-99-a1.yml"
+permissions:
+  contents: read
+jobs:
+  measurement-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install "numpy==2.4.6" "pandas==3.0.5" "openpyxl==3.1.5" "pytest==9.1.1"
+      - name: Revalidate A1 prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_99_phase_a1_prereg.py
+      - name: Unit tests
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_99_phase_a1_effr_vs_proxy.py
+      - name: Generate A1 evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-99-a1
+          python issue_99_phase_a1_effr_vs_proxy.py --output-dir generated/issue-99-a1
+      - name: Enforce no-Treasury boundary
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path("generated/issue-99-a1/issue-99-a1-manifest.json").read_text())
+          assert m["preregistration_preceded_outcomes"] is True
+          assert m["treasury_outcomes_loaded"] is False
+          assert m["portfolio_results_computed"] is False
+          assert m["production_v66_modified"] is False
+          assert m["oos"]["first_origin"]=="1990-01"
+          assert m["oos"]["last_origin"]=="2025-06"
+          assert m["oos"]["identical_target_samples"] is True
+          print(m["primary_full_M2_minus_M1"])
+          print(m["post_Dec2008_M2_minus_M1"])
+          PY
+      - name: Validate durable A1 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: python issue_99_phase_a1_completion_validation.py --evidence-dir generated/issue-99-a1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-99-a1-effr-vs-proxy
+          path: indicators/macro-pressure-map/research/generated/issue-99-a1
+          retention-days: 3
