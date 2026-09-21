@@ -141,7 +141,13 @@
     }
   ],
   "additional_noncore_issue": {
-    "sahm_alert": "Original alert uses z_du > 0.5, where z_du is a z-score of 3-month unemployment change. This is not the official Sahm Rule threshold definition. It does not enter P/R/PS directly."
+    "sahm_alert": "Original alert uses z_du > 0.5, where z_du is a z-score of 3-month unemployment change. This is not the official Sahm Rule threshold definition. It does not enter P/R/PS directly.",
+    "zscore_startup_behavior": {
+      "original_function": "std > 0 ? (src - mean) / std : 0",
+      "pine_v5_behavior": "If std is na because the lookback is not yet populated, the ternary condition is na/false and the function returns 0.",
+      "implication": "Literal BCI-10 silently treats insufficient-history z-scores as neutral zero rather than unavailable. This can make P/R/PS appear populated before the intended 120-month normalization exists.",
+      "intended_semantics_repair": "Return na while mean/std are unavailable; return 0 only when the lookback is populated and std is exactly zero."
+    }
   },
   "reconstructability": {
     "literal_variant_status": "pending_tradingview_runtime_probe",
@@ -152,7 +158,8 @@
   "phase_a0_decisions": {
     "ps_sign_semantics": "internally_conflicted",
     "literal_model_validation_allowed": false,
-    "intended_semantics_repair_allowed_only_after_separate_preregistration": true
+    "intended_semantics_repair_allowed_only_after_separate_preregistration": true,
+    "literal_zscore_startup_behavior": "insufficient_history_zero_filled"
   },
   "hard_boundaries": [
     "Do not evaluate future Fed policy accuracy in A0.",

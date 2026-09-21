@@ -69,3 +69,16 @@ The literal variant is not allowed into Fed validation until:
 - the P/R sign conflict is acknowledged as literal behavior.
 
 No Fed outcome or Treasury return is used in this audit.
+
+
+## Core finding 3 — the original Z-score helper zero-fills insufficient history
+
+The original helper is:
+
+`std > 0 ? (src - mean) / std : 0`
+
+In Pine v5, an `na` conditional expression is treated as false. Therefore, before a 120-month standard deviation exists, the helper returns **0** rather than `na`.
+
+Literal BCI-10 can therefore look populated before its 120-month normalization window is actually available.
+
+For the separately preregistered Intended-semantics version, insufficient history must remain `na`; zero is allowed only when a fully populated window has a true zero standard deviation.
