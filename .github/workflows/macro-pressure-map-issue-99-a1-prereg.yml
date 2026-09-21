@@ -17,6 +17,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -24,9 +26,16 @@ jobs:
       - name: Validate A1 prereg
         working-directory: indicators/macro-pressure-map/research
         run: python -m pytest -q test_issue_99_phase_a1_prereg.py
-      - name: Confirm no A1 outcome implementation exists in this prereg commit
-        working-directory: indicators/macro-pressure-map/research
+      - name: Confirm historical A1 prereg preceded outcome implementation
         run: |
-          test ! -f issue_99_phase_a1_effr_vs_proxy.py
-          test ! -f decisions/issue-99-phase-a1-decision.json
-          echo "A1 prereg is pre-outcome."
+          PREREG_SHA=73ece3cba3a6820b253223e1499093d842fd5b7d
+          git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-99-phase-a1-effr-vs-proxy-preregistered.json"
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/issue_99_phase_a1_effr_vs_proxy.py'; then
+            echo "A1 evaluator existed in prereg commit"
+            exit 1
+          fi
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/decisions/issue-99-phase-a1-decision.json'; then
+            echo "A1 decision existed in prereg commit"
+            exit 1
+          fi
+          echo "Historical A1 prereg cleanly precedes evaluator and decision."
