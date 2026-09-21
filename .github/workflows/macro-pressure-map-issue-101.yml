@@ -46,6 +46,9 @@ jobs:
           assert m["oos"]["identical_proxy_effr_samples"] is True
           print(m["proxy_primary_deltas"])
           PY
+      - name: Validate durable Issue 101 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: python issue_101_completion_validation.py --evidence-dir generated/issue-101
       - uses: actions/upload-artifact@v4
         with:
           name: issue-101-state-dependent-reaction

@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "issue": 101,
+  "phase": "state-dependent-policy-reaction",
+  "decision_status": "durable",
+  "source_evidence": {
+    "head_sha": "28671bea35ffcef95b3f13b518bfbd70a3410f5c",
+    "workflow_run": 35558039095,
+    "artifact_id": 10621038819,
+    "artifact_digest": "sha256:3ec808f686e5754db9b273d4be70646ec93135117f10f6f44d8ae4175ce93c44"
+  },
+  "final_verdict": "state_dependence_not_enough_linear_speed_problem_persists",
+  "rationale_token": "own_axis_level_by_acceleration_interactions_worsen_proxy_oos_error_full_sample_all_subperiods_and_all_leaveout_samples",
+  "sample": {
+    "first_origin": "1990-01",
+    "last_origin": "2025-06",
+    "forecast_origins": 426,
+    "primary_target": "Proxy",
+    "crosscheck_target": "EFFR"
+  },
+  "primary_proxy": {
+    "M1": {
+      "RMSE": 1.183971,
+      "MAE": 0.92534,
+      "correlation": 0.20159,
+      "balanced_accuracy": 0.393824,
+      "direction_accuracy_ex_neutral": 0.423077
+    },
+    "M2": {
+      "RMSE": 1.304136,
+      "MAE": 1.000443,
+      "correlation": 0.132749,
+      "balanced_accuracy": 0.364252,
+      "direction_accuracy_ex_neutral": 0.414201
+    },
+    "M3": {
+      "RMSE": 1.334389,
+      "MAE": 1.021769,
+      "correlation": 0.119366,
+      "balanced_accuracy": 0.365157,
+      "direction_accuracy_ex_neutral": 0.411243
+    },
+    "M3_minus_M2": {
+      "RMSE": 0.030252687094787234,
+      "MAE": 0.02132640706380884,
+      "balanced_accuracy": 0.0009046157780335795,
+      "direction_accuracy": -0.00295857988165682
+    },
+    "M3_minus_M1": {
+      "RMSE": 0.15041777086679642,
+      "MAE": 0.0964293138126463,
+      "balanced_accuracy": -0.028667476452286567,
+      "direction_accuracy": -0.011834319526627224
+    }
+  },
+  "proxy_subperiods": {
+    "Conventional_pre_Dec2008": {
+      "M3_minus_M2_RMSE": 0.026888,
+      "M3_minus_M2_MAE": 0.015366
+    },
+    "Unconventional_post_Dec2008": {
+      "M3_minus_M2_RMSE": 0.044679,
+      "M3_minus_M2_MAE": 0.029603
+    },
+    "Pandemic_and_postpandemic": {
+      "M3_minus_M2_RMSE": 0.023856,
+      "M3_minus_M2_MAE": 0.025148
+    }
+  },
+  "leave_one_segment_out": {
+    "proxy_all_M3_minus_M2_RMSE_positive": true,
+    "proxy_all_M3_minus_M2_MAE_positive": true,
+    "proxy_all_M3_minus_M1_RMSE_positive": true,
+    "proxy_all_M3_minus_M1_MAE_positive": true
+  },
+  "interaction_coefficients": {
+    "Proxy": {
+      "inflation_level_x_acceleration": {
+        "median": -0.009626,
+        "positive_fraction": 0.469484
+      },
+      "growth_level_x_acceleration": {
+        "median": -0.034955,
+        "positive_fraction": 0.077465
+      }
+    },
+    "EFFR": {
+      "inflation_level_x_acceleration": {
+        "median": 0.139146,
+        "positive_fraction": 0.960094
+      },
+      "growth_level_x_acceleration": {
+        "median": -0.08366,
+        "positive_fraction": 0.016432
+      }
+    },
+    "interpretation": "Interaction coefficient behavior differs sharply by policy target and does not translate into stable Proxy forecast improvement."
+  },
+  "effr_crosscheck": {
+    "full_M3_minus_M2": {
+      "RMSE": -0.022218,
+      "MAE": -0.01406
+    },
+    "full_M3_minus_M1": {
+      "RMSE": 0.018753,
+      "MAE": 0.016234
+    },
+    "interpretation": "M3 partially repairs M2 for EFFR but still does not beat M1 full-sample, and the improvement reverses in the pandemic period."
+  },
+  "verdict_exclusions": {
+    "state_dependence_adds_stable_policy_information": "Rejected because Proxy M3 worsens both RMSE and MAE versus M2 full-sample, in all three fixed subperiods, and under every leave-one-subperiod-out check.",
+    "state_dependence_improves_only_recently": "Rejected because Proxy M3 does not improve RMSE/MAE even in 2020-2025.",
+    "state_dependence_era_dependent": "Not selected because there is no material full-sample Proxy improvement to begin with; the primary model is consistently worse.",
+    "inconclusive_state_dependence_evidence": "Rejected because 426 OOS forecasts and all robustness checks point in the same direction."
+  },
+  "treasury_outcomes_loaded": false,
+  "portfolio_results_computed": false,
+  "production_change_authorized": false,
+  "interpretation": [
+    "The user's economic intuition that central-bank decisions depend on levels, direction and speed is not disproved.",
+    "What is rejected is a narrow implementation: CPI/IP levels, six-month acceleration and two own-axis linear interaction terms.",
+    "Further work should change the state variables / reaction-function representation rather than add more interactions or retune lookbacks on the same specification."
+  ],
+  "stop_rule_result": "Treasury transmission remains closed.",
+  "evidence_binding": {
+    "method": "CSV semantic hash",
+    "numeric_round_decimals": 8,
+    "semantic_sha256": {
+      "issue-101-incremental.csv": "b218ceeed8a9e0c83516fd26aa1588bbeca9cc1641fc62c20146299fb09a4f8e",
+      "issue-101-interaction-coefficients.csv": "395ad88b8c4463fdd70b32d721af20366c30f35e75ff162ef89c6597c1f501c4",
+      "issue-101-leave-one-segment-out.csv": "90e9ffc5a1735eb60bf5545a635f5cdfa54fb36ebeb6a80ba1ff06a833478177",
+      "issue-101-predictions-effr.csv": "42554604fe5731f86e5337e09b0418f8d0580844a5d518e4b9099d32273591ad",
+      "issue-101-predictions-proxy.csv": "6629414836e56be672396abe40b784307a5285e6b39122a763b0f1f6aa4f495d",
+      "issue-101-summary.csv": "0752e50c73095b1d882e88d0bc29c1e5d4fb18a5204a446f2284065c17f4945a"
+    }
+  }
+}
