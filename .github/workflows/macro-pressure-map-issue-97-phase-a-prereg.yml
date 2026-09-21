@@ -27,13 +27,11 @@ jobs:
         run: |
           PREREG_SHA=86be53012fb29032afffea89f31a33fab80e59dc
           git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-97-phase-a-policy-reaction-preregistered.json"
-          if git ls-tree -r "$PREREG_SHA" --name-only | grep -q '^indicators/macro-pressure-map/research/issue_97_phase_a_policy_reaction.py
-; then
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/issue_97_phase_a_policy_reaction.py'; then
             echo "Outcome implementation existed in prereg commit"
             exit 1
           fi
-          if git ls-tree -r "$PREREG_SHA" --name-only | grep -q '^indicators/macro-pressure-map/research/decisions/issue-97-phase-a-decision.json
-; then
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/decisions/issue-97-phase-a-decision.json'; then
             echo "Decision existed in prereg commit"
             exit 1
           fi

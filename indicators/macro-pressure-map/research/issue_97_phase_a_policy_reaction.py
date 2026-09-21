@@ -98,7 +98,8 @@ def expanding_predictions(data:pd.DataFrame,target:str,rolling_months:int|None=N
     origins=data.loc[data["date"].between("1970-01-01",latest)].copy()
     rows=[]; coef_rows=[]
     for _,r in origins.iterrows():
-        if any(pd.isna(r[c]) for c in set(sum(MODELS.values(),[]))+{target}):
+        required=set(sum(MODELS.values(),[])) | {target}
+        if any(pd.isna(r[c]) for c in required):
             continue
         # outcome of a training origin must end before current forecast month.
         horizon=6 if target=="policy_change_6m" else 12
