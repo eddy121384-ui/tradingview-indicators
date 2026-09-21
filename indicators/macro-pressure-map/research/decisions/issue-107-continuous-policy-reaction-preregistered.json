@@ -114,7 +114,9 @@
     "rolling_8y_diagnostic_only": true,
     "initial_training_information_date": "2014-12",
     "first_oos_latest_eligible_training_origin": "2014-06",
-    "training_origin_cutoff_rule": "For forecast origin m with H=6, training origins must be <= m-(H+1) months, so their full 6M outcome is known strictly before m."
+    "training_origin_cutoff_rule": "For forecast origin m with H=6, training origins must be <= m-(H+1) months, so their full 6M outcome is known strictly before m.",
+    "minimum_complete_training_rows": 36,
+    "minimum_complete_training_rows_reason": "At least four observations per M2 feature before OOS estimation; engineering guard only, fixed before outcomes."
   },
   "metrics": {
     "primary": [
