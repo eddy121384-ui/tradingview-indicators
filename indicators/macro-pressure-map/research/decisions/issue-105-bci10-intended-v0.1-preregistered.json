@@ -54,6 +54,11 @@
       "original": "FRED:JTSQUR",
       "intended": "FRED:JTSQUR rate",
       "change": "none"
+    },
+    "zscore_startup": {
+      "original": "std > 0 ? (src - mean) / std : 0",
+      "intended": "if mean/std unavailable -> na; else if std == 0 -> 0; else (src-mean)/std",
+      "rationale": "The literal helper zero-fills insufficient lookback history in Pine v5. Intended semantics require a real 120-month normalization window before the score is considered available."
     }
   },
   "unchanged_sources": {
@@ -65,7 +70,7 @@
     "wage_level": "FRED:CES0500000003"
   },
   "formulas": {
-    "zscore": "(src - sma(src,120)) / stdev(src,120), with zero stdev -> 0 as in original",
+    "zscore": "if sma/stdev over 120 months are unavailable -> na; if populated stdev == 0 -> 0; otherwise (src - sma120) / stdev120",
     "g_lead": "0.60*z_pmi_mfg + 0.40*z_delta_pmi_mfg",
     "g_mfg": "0.60*z_pmi_mfg + 0.40*z_delta_pmi_mfg",
     "g_services": "0.60*z_pmi_services + 0.40*z_delta_pmi_services",
@@ -107,7 +112,8 @@
     "primary_signal_lag_months": 2,
     "expected_first_forecast_origin_no_earlier_than": "2017-04",
     "latest_primary_forecast_origin_given_effr_through_2025_12": "2025-06",
-    "warning": "The usable modern sample is short and contains only a few policy cycles. No structural multi-era claim is permitted."
+    "warning": "The usable modern sample is short and contains only a few policy cycles. No structural multi-era claim is permitted.",
+    "startup_policy": "No zero-fill for insufficient history. Full dependent chain must be non-na before P/R/PS is eligible for validation."
   },
   "data_access_boundary": {
     "ism_raw_history_committed_to_repo": false,
