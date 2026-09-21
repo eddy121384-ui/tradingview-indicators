@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import time
 from pathlib import Path
 
 import numpy as np
@@ -53,6 +54,19 @@ def sha256_frame(frame: pd.DataFrame) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def retry_call(func, *args, attempts: int = 3):
+    last = None
+    for attempt in range(attempts):
+        try:
+            return func(*args)
+        except Exception as exc:
+            last = exc
+            if attempt + 1 >= attempts:
+                raise
+            time.sleep(2.0 * (attempt + 1))
+    raise RuntimeError("retry_call exhausted") from last
+
+
 def build_public_gpi_ipi_sources(start: str, end: str) -> tuple[pd.DataFrame, dict]:
     specs = [s for s in SERIES_SPECS if s.canonical in GPI_IPI_CANONICAL]
     found = {s.canonical for s in specs}
@@ -61,7 +75,7 @@ def build_public_gpi_ipi_sources(start: str, end: str) -> tuple[pd.DataFrame, di
     downloaded: dict[str, pd.Series] = {}
     coverage: list[dict] = []
     for spec in specs:
-        series = download_spec(spec, start, end)
+        series = retry_call(download_spec, spec, start, end)
         if series.dropna().empty:
             raise RuntimeError(f"no usable source for {spec.canonical}")
         downloaded[spec.canonical] = series
@@ -109,8 +123,8 @@ def _monthly_series(series: pd.Series) -> pd.Series:
 
 
 def build_policy_monthly(start: str = "2005-01-01", end: str = "2026-01-01") -> pd.DataFrame:
-    effr = _monthly_series(download_fred_series("FEDFUNDS", start, end))
-    pce = _monthly_series(download_fred_series("PCEPILFE", start, end))
+    effr = _monthly_series(retry_call(download_fred_series, "FEDFUNDS", start, end))
+    pce = _monthly_series(retry_call(download_fred_series, "PCEPILFE", start, end))
     p = pd.DataFrame({"FEDFUNDS": effr, "PCEPILFE": pce}).sort_index()
     p["core_pce_yoy"] = 100.0 * (p["PCEPILFE"] / p["PCEPILFE"].shift(12) - 1.0)
     p["real_policy_rate_raw"] = p["FEDFUNDS"] - p["core_pce_yoy"]
