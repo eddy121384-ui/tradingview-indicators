@@ -150,17 +150,17 @@ var int n = 0
 var float sy = 0.0
 var float syy = 0.0
 
-var float sp = 0.0
-var float spp = 0.0
-var float spy = 0.0
+var float sum_p = 0.0
+var float sum_p2 = 0.0
+var float sum_p_y = 0.0
 
-var float sr = 0.0
-var float srr = 0.0
-var float sry = 0.0
+var float sum_r = 0.0
+var float sum_r2 = 0.0
+var float sum_r_y = 0.0
 
-var float sps = 0.0
-var float spsps = 0.0
-var float spsy = 0.0
+var float sum_ps = 0.0
+var float sum_ps2 = 0.0
+var float sum_ps_y = 0.0
 
 var array<int> cmP = array.new_int(9, 0)
 var array<int> cmR = array.new_int(9, 0)
@@ -174,17 +174,17 @@ if valid_eval
     sy += actual_6m
     syy += actual_6m * actual_6m
 
-    sp += sig_p
-    spp += sig_p * sig_p
-    spy += sig_p * actual_6m
+    sum_p += sig_p
+    sum_p2 += sig_p * sig_p
+    sum_p_y += sig_p * actual_6m
 
-    sr += sig_r
-    srr += sig_r * sig_r
-    sry += sig_r * actual_6m
+    sum_r += sig_r
+    sum_r2 += sig_r * sig_r
+    sum_r_y += sig_r * actual_6m
 
-    sps += sig_ps
-    spsps += sig_ps * sig_ps
-    spsy += sig_ps * actual_6m
+    sum_ps += sig_ps
+    sum_ps2 += sig_ps * sig_ps
+    sum_ps_y += sig_ps * actual_6m
 
     int a = class_actual(actual_6m)
     int cp = class_signal(sig_p)
@@ -204,9 +204,9 @@ if valid_eval
         firstOrigin := time[6]
     lastOrigin := time[6]
 
-float corrP = corr_from_sums(n, sp, sy, spp, syy, spy)
-float corrR = corr_from_sums(n, sr, sy, srr, syy, sry)
-float corrPS = corr_from_sums(n, sps, sy, spsps, syy, spsy)
+float corrP = corr_from_sums(n, sum_p, sy, sum_p2, syy, sum_p_y)
+float corrR = corr_from_sums(n, sum_r, sy, sum_r2, syy, sum_r_y)
+float corrPS = corr_from_sums(n, sum_ps, sy, sum_ps2, syy, sum_ps_y)
 
 float balP = balanced_accuracy(cmP)
 float balR = balanced_accuracy(cmR)
