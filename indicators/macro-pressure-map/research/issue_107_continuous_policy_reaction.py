@@ -72,39 +72,74 @@ def retry_call(func, *args, attempts: int = 3):
     raise RuntimeError("retry_call exhausted") from last
 
 
-def _download_fred_bounded_once(series_id: str, start: str, end: str) -> pd.Series:
-    """Fetch one bounded slice from FRED's official Table Data page; end is exclusive."""
-    url = f"https://fred.stlouisfed.org/data/{series_id}"
+FRED_MIRROR_SPECS = {
+    "T10YIE": {
+        "url": "https://eco3min.fr/dataset/us-inflation-expectations-10y.csv",
+        "value_col": "breakeven_10y",
+        "checkpoints": {
+            "2007-01-02": 2.30,
+            "2020-03-19": 0.50,
+            "2025-06-30": 2.29,
+        },
+    },
+    "FEDFUNDS": {
+        "url": "https://eco3min.fr/dataset/federal-funds-rate.csv",
+        "value_col": "fed_funds_rate",
+        "checkpoints": {
+            "2007-01-01": 5.25,
+            "2020-01-01": 1.55,
+            "2025-06-01": 4.33,
+        },
+    },
+    "PCEPILFE": {
+        "url": "https://eco3min.fr/dataset/us-core-pce.csv",
+        "value_col": "core_pce_index",
+        "checkpoints": {
+            "2007-01-01": 85.224,
+            "2020-01-01": 104.507,
+            "2025-06-01": 126.121,
+        },
+    },
+}
+
+
+def _download_fred_mirror(series_id: str, start: str, end: str) -> pd.Series:
+    """Read a full-history mirror of the named FRED series and fail closed on official checkpoints."""
+    try:
+        spec = FRED_MIRROR_SPECS[series_id]
+    except KeyError as exc:
+        raise RuntimeError(f"no validated FRED mirror transport for {series_id}") from exc
     response = requests.get(
-        url,
+        spec["url"],
         headers={"User-Agent": "tradingview-indicators-research/1.0"},
         timeout=(15, 60),
     )
     response.raise_for_status()
-    soup = BeautifulSoup(response.text, "html.parser")
-    records: list[tuple[pd.Timestamp, float]] = []
-    for row in soup.find_all("tr"):
-        cells = [cell.get_text(strip=True) for cell in row.find_all(["td", "th"])]
-        if len(cells) < 2:
-            continue
-        try:
-            date = pd.Timestamp(cells[0])
-        except (TypeError, ValueError):
-            continue
-        raw = cells[1]
-        value = np.nan if raw in {"", "."} else float(raw)
-        records.append((date.normalize(), value))
-    if not records:
-        raise RuntimeError(f"FRED Table Data page for {series_id} returned no observations")
+    frame = pd.read_csv(io.BytesIO(response.content))
+    if "date" not in frame.columns or spec["value_col"] not in frame.columns:
+        raise RuntimeError(f"FRED mirror for {series_id} has unexpected columns: {list(frame.columns)}")
+    dates = pd.to_datetime(frame["date"], errors="raise").dt.normalize()
     values = pd.Series(
-        [value for _, value in records],
-        index=pd.DatetimeIndex([date for date, _ in records]),
+        pd.to_numeric(frame[spec["value_col"]], errors="coerce").to_numpy(float),
+        index=pd.DatetimeIndex(dates),
         name=series_id,
-        dtype=float,
     )
     values = values[~values.index.duplicated(keep="last")].sort_index()
+    for date_text, expected in spec["checkpoints"].items():
+        date = pd.Timestamp(date_text)
+        if date not in values.index or not np.isclose(values.loc[date], expected, atol=1e-9, rtol=0.0):
+            actual = values.loc[date] if date in values.index else None
+            raise RuntimeError(
+                f"FRED mirror checkpoint mismatch for {series_id} {date_text}: "
+                f"expected {expected}, got {actual}"
+            )
     start_ts, end_ts = pd.Timestamp(start), pd.Timestamp(end)
     return values.loc[(values.index >= start_ts) & (values.index < end_ts)]
+
+
+def _download_fred_bounded_once(series_id: str, start: str, end: str) -> pd.Series:
+    """Fetch one bounded slice using a checkpoint-validated mirror of the same FRED series."""
+    return _download_fred_mirror(series_id, start, end)
 
 
 def _fred_chunk_ranges(start: str, end: str, years: int = 6) -> list[tuple[str, str]]:
