@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "issue": 99,
+  "phase": "A1-effr-vs-proxy-policy-stance-preregistration",
+  "created_before_A1_model_outcomes": true,
+  "created_before_treasury_outcomes": true,
+  "production_v66_modified": false,
+  "hmra_modified": false,
+  "upstream_issue_97_verdict": "policy_relation_era_dependent",
+  "purpose": "Test whether Issue #97's era dependence is materially attributable to using EFFR instead of a broader proxy monetary-policy stance measure during unconventional-policy periods.",
+  "hard_rules": [
+    "Keep Issue #97 macro features, lags, six-month horizon and linear model forms unchanged.",
+    "Do not add nonlinear interactions, labor-market variables, FCPI, real yields, term premium or Treasury returns in A1.",
+    "Use exactly the same OOS forecast origins for EFFR and Proxy targets.",
+    "Do not select a different OOS start or subperiod split after viewing results.",
+    "Do not load Treasury, T-bill, equity, gold or portfolio outcomes."
+  ],
+  "data_sources": {
+    "macro": "Reuse Issue #97 frozen Fed IP and BLS CPI sources.",
+    "effr": "Reuse Issue #97 frozen Fed H.15 H15/H15/RIFSPFF_N.M.",
+    "proxy": "Reuse Issue #99 A0 canonical SF Fed Proxy Funds Rate monthly freeze through 2025-12."
+  },
+  "exact_common_sample": {
+    "proxy_history_start": "1976-06",
+    "training_start": "1976-06",
+    "oos_first_forecast_origin": "1990-01",
+    "oos_last_forecast_origin": "2025-06",
+    "primary_horizon_months": 6,
+    "rationale": "Provides more than 13 years of pre-OOS Proxy history and leaves a fully observed six-month outcome through 2025-12."
+  },
+  "macro_features": {
+    "macro_month": "k = forecast month m - 2 months",
+    "growth_level": "100 * ln(IP_k / IP_k-12)",
+    "growth_acceleration": "growth_level_k - growth_level_k-6",
+    "inflation_level": "100 * ln(CPI_k / CPI_k-12)",
+    "inflation_acceleration": "inflation_level_k - inflation_level_k-6"
+  },
+  "stance_specific_controls": {
+    "EFFR": {
+      "current_stance": "EFFR_m",
+      "six_month_inertia": "EFFR_m - EFFR_m-6",
+      "outcome": "EFFR_m+6 - EFFR_m"
+    },
+    "Proxy": {
+      "current_stance": "Proxy_m",
+      "six_month_inertia": "Proxy_m - Proxy_m-6",
+      "outcome": "Proxy_m+6 - Proxy_m"
+    }
+  },
+  "model_ladder": {
+    "M1": {
+      "controls": [
+        "current_stance",
+        "six_month_inertia"
+      ],
+      "macro_features": [
+        "inflation_level",
+        "growth_level"
+      ],
+      "label": "levels"
+    },
+    "M2": {
+      "controls": [
+        "current_stance",
+        "six_month_inertia"
+      ],
+      "macro_features": [
+        "inflation_level",
+        "growth_level",
+        "inflation_acceleration",
+        "growth_acceleration"
+      ],
+      "label": "levels + direction/speed"
+    }
+  },
+  "estimation": {
+    "model": "ordinary least squares with intercept",
+    "primary_window": "expanding",
+    "coefficient_information_rule": "At forecast origin m, train only on rows whose six-month outcome is fully known before m.",
+    "no_full_sample_predictive_fit": true
+  },
+  "fixed_subperiods": [
+    {
+      "label": "Conventional_pre_Dec2008",
+      "start": "1990-01",
+      "end": "2008-11"
+    },
+    {
+      "label": "Unconventional_post_Dec2008",
+      "start": "2008-12",
+      "end": "2019-12"
+    },
+    {
+      "label": "Pandemic_and_postpandemic",
+      "start": "2020-01",
+      "end": "2025-06"
+    }
+  ],
+  "boundary_rationale": "SF Fed documentation states the proxy mapping is nearly exact through December 2008 and diverges thereafter as broader policy tools affect financial conditions.",
+  "metrics": {
+    "continuous": [
+      "RMSE",
+      "MAE",
+      "Pearson correlation"
+    ],
+    "directional": [
+      "three-class balanced accuracy",
+      "tighten/ease direction accuracy excluding neutral realized outcomes"
+    ],
+    "labels": {
+      "tightening": "> +0.25 percentage point over six months",
+      "neutral": "[-0.25,+0.25] percentage point",
+      "easing": "< -0.25 percentage point"
+    },
+    "primary_incremental": [
+      "M2 minus M1 RMSE",
+      "M2 minus M1 MAE",
+      "M2 minus M1 balanced accuracy",
+      "M2 minus M1 direction accuracy"
+    ]
+  },
+  "primary_comparison": {
+    "question": "Does M2 add more stable incremental information over M1 for Proxy stance than for EFFR stance on the same OOS months?",
+    "report": [
+      "full common-sample M1/M2 metrics for both targets",
+      "subperiod M1/M2 metrics",
+      "M2-M1 deltas by target and subperiod",
+      "leave-one-subperiod-out deltas"
+    ]
+  },
+  "decision_categories": [
+    "policy_measurement_explains_material_era_dependence",
+    "policy_measurement_matters_but_speed_still_not_stable",
+    "effr_measurement_not_the_main_problem",
+    "inconclusive_proxy_rate_evidence"
+  ],
+  "decision_rules": {
+    "policy_measurement_explains_material_era_dependence": "Proxy M2 improves both RMSE and MAE over Proxy M1 on the full common OOS sample and on the post-December-2008 sample, while the corresponding EFFR M2 result does not; directional diagnostics are not materially contradictory.",
+    "policy_measurement_matters_but_speed_still_not_stable": "Proxy target shows a clearer or more favorable M2-vs-M1 pattern than EFFR in unconventional-policy periods, but full-sample or leave-one-subperiod-out evidence is not stable enough to call the measurement issue decisive.",
+    "effr_measurement_not_the_main_problem": "M2 still fails to improve Proxy M1 on the primary continuous-error measures, especially post-December-2008, so replacing EFFR with broader policy stance does not solve Issue #97's instability.",
+    "inconclusive_proxy_rate_evidence": "Source/sample limitations or conflicting diagnostics prevent a defensible classification."
+  },
+  "continuation_rule": {
+    "if_measurement_explains": "Freeze A1 finding, then separately preregister a state-dependent/nonlinear reaction-function study.",
+    "if_measurement_does_not_explain": "Freeze A1 finding and move to a new nonlinear reaction-function hypothesis without opening Treasury transmission."
+  },
+  "forbidden": [
+    "Treasury-minus-cash outcomes",
+    "portfolio tests",
+    "changing six-month horizon",
+    "changing two-month macro lag",
+    "changing six-month acceleration lookback",
+    "adding interaction terms in A1",
+    "adding unemployment or financial-conditions variables in A1",
+    "modifying V6.6"
+  ]
+}

@@ -1,0 +1,32 @@
+name: Macro Pressure Map Issue 99 A1 Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-99-phase-a0-proxy-source-freeze.json"
+      - "indicators/macro-pressure-map/research/decisions/issue-99-phase-a1-*"
+      - "indicators/macro-pressure-map/research/test_issue_99_phase_a1_prereg.py"
+      - ".github/workflows/macro-pressure-map-issue-99-a1-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate A1 prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_99_phase_a1_prereg.py
+      - name: Confirm no A1 outcome implementation exists in this prereg commit
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_99_phase_a1_effr_vs_proxy.py
+          test ! -f decisions/issue-99-phase-a1-decision.json
+          echo "A1 prereg is pre-outcome."
