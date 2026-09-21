@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -21,9 +23,18 @@ jobs:
       - name: Validate prereg
         working-directory: indicators/macro-pressure-map/research
         run: python -m pytest -q test_issue_97_phase_a_prereg.py
-      - name: Confirm no policy outcome implementation
-        working-directory: indicators/macro-pressure-map/research
+      - name: Confirm prereg commit preceded outcome implementation
         run: |
-          test ! -f issue_97_phase_a_policy_reaction.py
-          test ! -f decisions/issue-97-phase-a-decision.json
-          echo "Phase A prereg contains no policy-model outcome implementation or decision."
+          PREREG_SHA=86be53012fb29032afffea89f31a33fab80e59dc
+          git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-97-phase-a-policy-reaction-preregistered.json"
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -q '^indicators/macro-pressure-map/research/issue_97_phase_a_policy_reaction.py
+; then
+            echo "Outcome implementation existed in prereg commit"
+            exit 1
+          fi
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -q '^indicators/macro-pressure-map/research/decisions/issue-97-phase-a-decision.json
+; then
+            echo "Decision existed in prereg commit"
+            exit 1
+          fi
+          echo "Historical prereg commit cleanly precedes outcome implementation."

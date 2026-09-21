@@ -19,8 +19,9 @@ def test_balanced_accuracy():
     assert balanced_accuracy(a,p)==1.0
 
 def test_ols():
-    train=pd.DataFrame({"x":[0.,1.,2.,3.],"y":[1.,3.,5.,7.]})
-    row=pd.Series({"x":4.})
+    x=np.arange(30,dtype=float)
+    train=pd.DataFrame({"x":x,"y":1.0+2.0*x})
+    row=pd.Series({"x":30.})
     pred,coef=ols_fit_predict(train,row,["x"],"y")
-    assert np.isclose(pred,9.)
+    assert np.isclose(pred,61.)
     assert np.isclose(coef["x"],2.)
