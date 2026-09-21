@@ -1,0 +1,39 @@
+name: Macro Pressure Map Issue 101 Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-101-*"
+      - "indicators/macro-pressure-map/research/test_issue_101_prereg.py"
+      - ".github/workflows/macro-pressure-map-issue-101-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_101_prereg.py
+      - name: Confirm historical prereg preceded evaluator
+        run: |
+          PREREG_SHA=77ecab8d78efa41aa1415a422439097f85276a8d
+          git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-101-state-dependent-policy-reaction-preregistered.json"
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/issue_101_state_dependent_policy_reaction.py'; then
+            echo "Evaluator existed in prereg commit"
+            exit 1
+          fi
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/decisions/issue-101-decision.json'; then
+            echo "Decision existed in prereg commit"
+            exit 1
+          fi
+          echo "Historical Issue #101 prereg cleanly precedes evaluator."
+
