@@ -1,0 +1,30 @@
+name: Macro Pressure Map Issue 107 Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-107-*"
+      - "indicators/macro-pressure-map/research/test_issue_107_*"
+      - ".github/workflows/macro-pressure-map-issue-107-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate preregistration
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_107_continuous_policy_prereg.py
+      - name: Confirm no outcome evaluator or display formula exists
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_107_continuous_policy_reaction.py
+          test ! -f decisions/issue-107-phase-a-decision.json
+          test ! -f policy_pressure_proxy.py
+          echo "Issue #107 prereg precedes outcome evaluation and display-formula design."
