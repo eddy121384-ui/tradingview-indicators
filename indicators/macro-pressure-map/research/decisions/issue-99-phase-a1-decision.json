@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "issue": 99,
+  "phase": "A1-effr-vs-proxy-policy-stance",
+  "decision_status": "durable",
+  "source_evidence": {
+    "head_sha": "3292f9d4a80e60654a447a92cecc93057e87a9bb",
+    "workflow_run": 35557634498,
+    "artifact_id": 10620157972,
+    "artifact_digest": "sha256:ec8101da19ad494efc0c64cdbc72b99679bc445ec6ccbe92194bd226aba50ee0"
+  },
+  "final_A1_verdict": "effr_measurement_not_the_main_problem",
+  "rationale_token": "broad_proxy_policy_stance_diverges_materially_from_effr_after_2008_but_levels_plus_acceleration_still_worsen_primary_oos_error_more_than_levels_only",
+  "sample": {
+    "oos_first_origin": "1990-01",
+    "oos_last_origin": "2025-06",
+    "forecast_origins": 426,
+    "identical_effr_proxy_samples": true
+  },
+  "full_sample": {
+    "EFFR": {
+      "M1": {
+        "RMSE": 1.16294,
+        "MAE": 0.83791,
+        "correlation": 0.08291,
+        "balanced_accuracy": 0.363319,
+        "direction_accuracy_ex_neutral": 0.406393
+      },
+      "M2": {
+        "RMSE": 1.203911,
+        "MAE": 0.868203,
+        "correlation": 0.062148,
+        "balanced_accuracy": 0.339573,
+        "direction_accuracy_ex_neutral": 0.39726
+      },
+      "M2_minus_M1": {
+        "RMSE": 0.04097091875313841,
+        "MAE": 0.03029323115614857,
+        "balanced_accuracy": -0.02374617065482637,
+        "direction_accuracy": -0.0091324200913242
+      }
+    },
+    "Proxy": {
+      "M1": {
+        "RMSE": 1.183971,
+        "MAE": 0.92534,
+        "correlation": 0.20159,
+        "balanced_accuracy": 0.393824,
+        "direction_accuracy_ex_neutral": 0.423077
+      },
+      "M2": {
+        "RMSE": 1.304136,
+        "MAE": 1.000443,
+        "correlation": 0.132749,
+        "balanced_accuracy": 0.364252,
+        "direction_accuracy_ex_neutral": 0.414201
+      },
+      "M2_minus_M1": {
+        "RMSE": 0.1201650837720094,
+        "MAE": 0.07510290674883702,
+        "balanced_accuracy": -0.029572092230320146,
+        "direction_accuracy": -0.008875739644970404
+      }
+    }
+  },
+  "unconventional_post_Dec2008": {
+    "EFFR_M2_minus_M1": {
+      "RMSE": 0.027504258726774866,
+      "MAE": 0.025016653589743698,
+      "balanced_accuracy": 0.026666666666666672,
+      "direction_accuracy": 0.055555555555555525
+    },
+    "Proxy_M2_minus_M1": {
+      "RMSE": 0.13178330079448974,
+      "MAE": 0.06803976605179751,
+      "balanced_accuracy": -0.008771929824561375,
+      "direction_accuracy": 0
+    }
+  },
+  "pandemic_and_postpandemic": {
+    "Proxy_M2_minus_M1": {
+      "RMSE": 0.051937,
+      "MAE": 0.020459,
+      "balanced_accuracy": 0.036471,
+      "direction_accuracy": 0.050847
+    },
+    "interpretation": "Direction classification improves somewhat, but continuous forecast error remains worse."
+  },
+  "target_measurement_divergence": {
+    "full": {
+      "mean_proxy_minus_effr": 0.10225,
+      "mean_abs_proxy_minus_effr": 0.626201,
+      "correlation": 0.951331
+    },
+    "conventional_pre_Dec2008": {
+      "mean_proxy_minus_effr": 0.005024,
+      "mean_abs_proxy_minus_effr": 0.48644,
+      "correlation": 0.955407
+    },
+    "unconventional_post_Dec2008": {
+      "mean_proxy_minus_effr": -0.208886,
+      "mean_abs_proxy_minus_effr": 0.616124,
+      "correlation": 0.911671
+    },
+    "pandemic_and_postpandemic": {
+      "mean_proxy_minus_effr": 1.063632,
+      "mean_abs_proxy_minus_effr": 1.127201,
+      "correlation": 0.927007
+    },
+    "interpretation": "Proxy stance materially differs from EFFR in unconventional-policy periods, but that broader measurement does not restore M2 stability."
+  },
+  "robustness": {
+    "leave_one_segment_out": "For both EFFR and Proxy targets, M2-minus-M1 RMSE and MAE remain positive under every subperiod omission.",
+    "proxy_all_leaveout_RMSE_deltas_positive": true,
+    "proxy_all_leaveout_MAE_deltas_positive": true,
+    "effr_all_leaveout_RMSE_deltas_positive": true,
+    "effr_all_leaveout_MAE_deltas_positive": true
+  },
+  "verdict_exclusions": {
+    "policy_measurement_explains_material_era_dependence": "Rejected because Proxy M2 worsens both RMSE and MAE versus Proxy M1 on the full sample and in the post-December-2008 sample.",
+    "policy_measurement_matters_but_speed_still_not_stable": "Not selected because broader policy measurement does not merely leave mixed evidence; it makes the M2 continuous-error deterioration larger than EFFR.",
+    "inconclusive_proxy_rate_evidence": "Rejected because 426 identical OOS forecast origins and robust subperiod/leaveout diagnostics provide clear evidence."
+  },
+  "treasury_outcomes_loaded": false,
+  "portfolio_results_computed": false,
+  "production_change_authorized": false,
+  "continuation": "Do not open Treasury transmission. Next research must preregister a nonlinear/state-dependent reaction function; no lookback/horizon rescue inside Issue #99.",
+  "evidence_binding": {
+    "method": "CSV semantic hash",
+    "numeric_round_decimals": 8,
+    "semantic_sha256": {
+      "issue-99-a1-incremental.csv": "d5446dde2894854f85d376a59616e810de9cac9ad405a6a778db2b471955e913",
+      "issue-99-a1-leave-one-segment-out.csv": "ff48e2ed42145ce9b903281e383f42a75001c9878f8c75a1b7e7ae2c305a2b08",
+      "issue-99-a1-predictions-effr.csv": "49326f16e0a6ad6638d80ca536b2384d4e2e1e2b4ab2d3a7e41db499b66b0f8d",
+      "issue-99-a1-predictions-proxy.csv": "c328c305cfd73157f60e38ceb92b6eae9d53e9039c0fd53789a48ee657dd03b1",
+      "issue-99-a1-summary.csv": "0ab9cdb75040a494f107822a609488d973215749ec7070bfa6a53e378e541088",
+      "issue-99-a1-target-divergence.csv": "aaafe9a9ec3fafc23d36e8021f9aae55c3052957a758b3a22d1a78444f882109"
+    }
+  }
+}

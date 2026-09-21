@@ -48,6 +48,9 @@ jobs:
           print(m["primary_full_M2_minus_M1"])
           print(m["post_Dec2008_M2_minus_M1"])
           PY
+      - name: Validate durable A1 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: python issue_99_phase_a1_completion_validation.py --evidence-dir generated/issue-99-a1
       - uses: actions/upload-artifact@v4
         with:
           name: issue-99-a1-effr-vs-proxy
