@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "issue": 95,
+  "phase": "3-inflation-conditioned-allocation-overlay-preregistration",
+  "created_before_phase3_portfolio_outcomes": true,
+  "upstream_structural_issue": 91,
+  "upstream_structural_verdict": "inflation_regime_dependent_mapping",
+  "upstream_phase2_head": "ec0607311d5bec46c2ab56d5babdf5bed8f36ff1",
+  "production_v66_modified": false,
+  "hmra_modified": false,
+  "base_policy_modified": false,
+  "purpose": "Test whether the Phase 2 absolute-inflation interaction has allocation-layer value when applied as a frozen Treasury-to-cash overlay on the existing #89 3x3 policy, using underlying annual returns only.",
+  "frozen_research_boundaries": [
+    "Do not modify V6.6 or HMRA-v0.1.",
+    "Do not modify the #89 base 3x3 Growth x Inflation allocation matrix.",
+    "Do not change the absolute-inflation threshold from 4% after viewing outcomes.",
+    "Do not add COVID-, rate-level-, real-yield-, term-premium-, or stock-bond-correlation rules inside Issue #95.",
+    "Do not use ETFs.",
+    "Do not optimize weights.",
+    "Do not promote a production allocator from this reused-history study."
+  ],
+  "primary_underlying_asset_source": {
+    "id": "damodaran_us_returns",
+    "source_freeze_issue": 91,
+    "url": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html",
+    "frozen_raw_sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+    "assets": {
+      "equity": "S&P 500 total return including dividends",
+      "treasury": "10-year U.S. Treasury total return",
+      "cash": "3-month Treasury bill annual return",
+      "gold": "underlying gold annual return"
+    },
+    "etfs_used": false
+  },
+  "sample_and_timing": {
+    "gold_primary_start_year": 1975,
+    "return_year_start": 1975,
+    "return_year_end": 2025,
+    "state_year_start": 1973,
+    "state_year_end": 2023,
+    "mapping": "HMRA state_t -> full-calendar-year return_t+2",
+    "overlay_inflation_observation": "HMRA state-year t December-to-December CPI inflation",
+    "return_year_inflation_forbidden": true,
+    "same_year_clairvoyance_forbidden": true
+  },
+  "base_policy": {
+    "origin": "Issue #89 preregistered 3x3 policy",
+    "asset_order": [
+      "equity",
+      "treasury",
+      "gold"
+    ],
+    "cash_weight": 0,
+    "matrix": {
+      "growth_high|inflation_low": [
+        0.6,
+        0.3,
+        0.1
+      ],
+      "growth_high|inflation_neutral": [
+        0.6,
+        0.2,
+        0.2
+      ],
+      "growth_high|inflation_high": [
+        0.6,
+        0.1,
+        0.3
+      ],
+      "growth_neutral|inflation_low": [
+        0.4,
+        0.5,
+        0.1
+      ],
+      "growth_neutral|inflation_neutral": [
+        0.4,
+        0.4,
+        0.2
+      ],
+      "growth_neutral|inflation_high": [
+        0.4,
+        0.3,
+        0.3
+      ],
+      "growth_low|inflation_low": [
+        0.2,
+        0.7,
+        0.1
+      ],
+      "growth_low|inflation_neutral": [
+        0.2,
+        0.6,
+        0.2
+      ],
+      "growth_low|inflation_high": [
+        0.2,
+        0.5,
+        0.3
+      ]
+    }
+  },
+  "overlay_rule": {
+    "activation_condition": "state-year December-to-December CPI inflation >= 4.0%",
+    "primary_treasury_redirect_fraction_to_cash": 0.5,
+    "operation_order": "Select the frozen base 3x3 Equity/Treasury/Gold template first, then redirect the frozen fraction of the Treasury sleeve to cash.",
+    "formula": {
+      "equity_weight": "base_equity_weight",
+      "treasury_weight": "base_treasury_weight * (1 - redirect_fraction) when active; otherwise base_treasury_weight",
+      "cash_weight": "base_treasury_weight * redirect_fraction when active; otherwise 0",
+      "gold_weight": "base_gold_weight"
+    },
+    "primary_examples": [
+      {
+        "base": [
+          0.6,
+          0.2,
+          0.2
+        ],
+        "base_asset_order": [
+          "equity",
+          "treasury",
+          "gold"
+        ],
+        "high_inflation_overlay": [
+          0.6,
+          0.1,
+          0.1,
+          0.2
+        ],
+        "overlay_asset_order": [
+          "equity",
+          "treasury",
+          "cash",
+          "gold"
+        ]
+      },
+      {
+        "base": [
+          0.2,
+          0.6,
+          0.2
+        ],
+        "base_asset_order": [
+          "equity",
+          "treasury",
+          "gold"
+        ],
+        "high_inflation_overlay": [
+          0.2,
+          0.3,
+          0.3,
+          0.2
+        ],
+        "overlay_asset_order": [
+          "equity",
+          "treasury",
+          "cash",
+          "gold"
+        ]
+      }
+    ],
+    "diagnostic_redirect_sensitivities": [
+      0.25,
+      0.75
+    ],
+    "sensitivity_selection_forbidden": true,
+    "rationale": "Phase 2 found the cleanest higher-order interaction in Treasury-minus-cash under >=4% absolute inflation. A 50% Treasury-sleeve redirect is the neutral preregistered primary haircut, not an optimized size."
+  },
+  "rebalancing_and_costs": {
+    "frequency": "annual full-calendar allocation",
+    "rebalance_timing": "At the start of each evaluated return year using the frozen t -> t+2 information mapping.",
+    "one_way_turnover_definition": "0.5 * sum(abs(new_weight - old_weight)) across Equity/Treasury/Cash/Gold",
+    "primary_cost_bps_per_one_way_turnover": 5,
+    "diagnostic_cost_bps": [
+      0,
+      10
+    ],
+    "cost_formula": "turnover * cost_bps / 10000",
+    "monthly_rebalance_forbidden": true
+  },
+  "required_strategies_and_controls": {
+    "primary_overlay": "Frozen #89 base matrix + 4% inflation activation + 50% Treasury-sleeve redirect to cash.",
+    "base_policy_no_overlay": "Frozen #89 base 3x3 policy on underlying Equity/Treasury/Gold.",
+    "fixed_60_40": "60% Equity / 40% Treasury.",
+    "fixed_40_40_20": "40% Equity / 40% Treasury / 20% Gold.",
+    "equal_weight_3asset": "1/3 Equity / 1/3 Treasury / 1/3 Gold.",
+    "causal_inverse_vol": {
+      "required_if_feasible": true,
+      "design_requirement": "Must use only returns observable before each evaluated return year under the same annual information discipline.",
+      "fallback_if_not_feasible": "Document exclusion; do not replace with a noncausal version."
+    },
+    "realized_exposure_matched_static_control": {
+      "required": true,
+      "assets": [
+        "equity",
+        "treasury",
+        "cash",
+        "gold"
+      ],
+      "target": "Match the primary overlay strategy's realized average invested weights over the exact evaluation sample.",
+      "fail_closed_tolerance": 1e-9,
+      "interpretation": "Overlay-vs-matched-static residual is switching/timing value; overlay-vs-base alone mixes switching with average cash exposure."
+    }
+  },
+  "metrics": {
+    "strategy_level": [
+      "CAGR",
+      "arithmetic_annual_return",
+      "annualized_volatility",
+      "Sharpe_using_TBill_as_annual_cash_benchmark",
+      "max_drawdown_from_annual_wealth_path",
+      "Calmar",
+      "worst_calendar_year",
+      "mean_return_in_negative_portfolio_years",
+      "annualized_turnover",
+      "cumulative_estimated_cost_drag",
+      "average_realized_allocation"
+    ],
+    "attribution": [
+      "contribution_by_asset",
+      "contribution_by_HMRA_cell",
+      "contribution_by_absolute_inflation_background",
+      "contribution_by_predeclared_era"
+    ],
+    "overlay_vs_base_and_matched": [
+      "delta_CAGR",
+      "delta_Sharpe",
+      "delta_max_drawdown",
+      "delta_Calmar",
+      "cumulative_active_log_return",
+      "active_return_contribution_by_era",
+      "active_return_contribution_by_HMRA_cell",
+      "active_return_contribution_by_inflation_background"
+    ]
+  },
+  "temporal_validation": {
+    "return_year_eras": [
+      {
+        "label": "Great_Inflation_Volcker_transition",
+        "start": 1975,
+        "end": 1984
+      },
+      {
+        "label": "Post_Volcker_disinflation",
+        "start": 1985,
+        "end": 1999
+      },
+      {
+        "label": "Pre_GFC_2000s",
+        "start": 2000,
+        "end": 2007
+      },
+      {
+        "label": "GFC_QE_low_inflation",
+        "start": 2008,
+        "end": 2019
+      },
+      {
+        "label": "COVID_inflation_higher_rate",
+        "start": 2020,
+        "end": 2025
+      }
+    ],
+    "compare_1975_1984_vs_2020_2025": true,
+    "recent_era_rescue_guard": "If material positive overlay value is confined to 2020-2025 and does not appear in the earlier high-inflation era, classify as recent_era_rescue_only."
+  },
+  "leave_one_era_out": {
+    "required": true,
+    "procedure": "For the primary 50% overlay, omit each predeclared return-year era and fully rerun allocations, turnover, costs, realized-exposure matched static control, and active metrics.",
+    "subtraction_shortcut_forbidden": true
+  },
+  "episode_concentration": {
+    "activation_episode_definition": "Contiguous evaluated return years for which the lagged HMRA state-year inflation is >=4%.",
+    "report": [
+      "episode_start_return_year",
+      "episode_end_return_year",
+      "episode_years",
+      "overlay_minus_base_active_log_return",
+      "overlay_minus_matched_static_active_log_return",
+      "positive_or_negative"
+    ],
+    "concentration_metrics": [
+      "top1_share_of_positive_overlay_vs_base_episode_contribution",
+      "top3_share_of_positive_overlay_vs_base_episode_contribution"
+    ],
+    "largest_positive_episode_leaveout_required": true,
+    "leaveout_procedure": "Remove the entire largest positive active episode and fully rerun the overlay, base, costs, and matched-static control on the remaining sample."
+  },
+  "sensitivity_discipline": {
+    "primary": {
+      "inflation_threshold_pct": 4,
+      "treasury_redirect_fraction": 0.5,
+      "cost_bps": 5
+    },
+    "diagnostic_only": {
+      "treasury_redirect_fraction": [
+        0.25,
+        0.75
+      ],
+      "cost_bps": [
+        0,
+        10
+      ]
+    },
+    "forbidden": [
+      "threshold shopping",
+      "3%/5% inflation threshold rescue",
+      "COVID-specific rule",
+      "rate-level condition",
+      "real-yield condition",
+      "term-premium condition",
+      "stock-bond-correlation condition",
+      "base-matrix changes",
+      "selecting a sensitivity as the new primary because it performs better"
+    ]
+  },
+  "verdict_categories": [
+    "robust_inflation_conditioned_switching_value",
+    "historical_risk_management_value_only",
+    "recent_era_rescue_only",
+    "allocation_mix_only_no_switching_value",
+    "no_material_overlay_value",
+    "inconclusive_insufficient_evidence"
+  ],
+  "verdict_rules": {
+    "robust_inflation_conditioned_switching_value": "Primary 50% overlay adds material switching/timing value versus the realized-exposure-matched static control, is not dominated by one active episode, and shows evidence across more than one historical inflation era including evidence outside 2020-2025.",
+    "historical_risk_management_value_only": "Primary overlay does not show robust return/Sharpe switching value versus matched static, but materially and non-fragilely improves downside/max-drawdown behavior across historical inflation episodes.",
+    "recent_era_rescue_only": "Positive primary overlay value is concentrated in 2020-2025 and is not supported by the earlier high-inflation era 1975-1984.",
+    "allocation_mix_only_no_switching_value": "Overlay beats the base policy but does not materially beat its realized-exposure-matched static control; benefit is attributable to average asset mix rather than regime timing.",
+    "no_material_overlay_value": "Primary overlay does not add material return, risk-management, or matched-static switching value after costs.",
+    "inconclusive_insufficient_evidence": "Sparse active years, unstable attribution, conflicting robustness checks, or episode concentration prevents a defensible category."
+  },
+  "interpretation_guards": [
+    "Beating 60/40 is not sufficient evidence.",
+    "Beating the base #89 policy is not sufficient evidence.",
+    "Matched-static residual is required to claim switching value.",
+    "Diagnostic 25%/75% overlay results cannot replace the primary 50% verdict.",
+    "A 2020-2025-only gain is not robust long-history evidence.",
+    "Any successful result remains reused historical evidence, not untouched OOS.",
+    "No production change is authorized by this issue."
+  ],
+  "order_of_operations": [
+    "Commit Phase 3 preregistration contract.",
+    "CI confirms no Phase 3 outcome implementation or decision exists.",
+    "Implement underlying-asset policy evaluator.",
+    "Generate primary 50% / 5bp evidence and controls.",
+    "Generate matched-static attribution, temporal validation, leave-one-era-out and episode concentration.",
+    "Run diagnostics 25/75 redirect and 0/10bp costs without changing primary.",
+    "Bind one durable verdict.",
+    "Keep PR Draft/Open/unmerged unless explicitly authorized."
+  ]
+}

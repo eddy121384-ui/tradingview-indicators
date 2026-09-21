@@ -1,0 +1,38 @@
+name: Macro Pressure Map Issue 95 Phase 3 Prereg
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-95-phase3-*"
+      - "indicators/macro-pressure-map/research/test_issue_95_phase3_prereg.py"
+      - ".github/workflows/macro-pressure-map-issue-95-phase3.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  phase3-prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test environment
+        run: python -m pip install "pytest==9.1.1"
+
+      - name: Validate Phase 3 preregistration
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_95_phase3_prereg.py
+
+      - name: Confirm no Phase 3 outcome implementation exists in prereg commit
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_95_phase3_inflation_overlay.py
+          test ! -f decisions/issue-95-phase3-decision.json
+          test ! -d generated/issue-95-phase3
+          echo "Issue #95 prereg commit contains no portfolio-outcome implementation or verdict."
