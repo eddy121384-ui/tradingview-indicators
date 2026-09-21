@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "issue": 103,
+  "phase": "A0-bci10-v1.5-literal-vs-intended-audit",
+  "created_before_fed_validation": true,
+  "created_before_treasury_validation": true,
+  "production_v66_modified": false,
+  "source_artifact": "user-supplied BCI-10 v1.5 Pine script",
+  "literal_formulas": {
+    "p_axis": "0.5*z_rir + 0.3*i_axis + 0.2*(-z_uergap)",
+    "inflation_panic": "max(0, i_axis - 1.5)",
+    "r_axis": "0.25*(-g_lead) + 0.25*z_du + 0.15*(-z_yc) - 0.15*i_axis - 0.10*z_di - 0.10*lt_axis - 0.20*inflation_panic",
+    "ps_axis": "0.4*p_axis + 0.4*r_axis + 0.2*(p_axis*r_axis)"
+  },
+  "original_ps_labels": {
+    "strong_hawkish": "ps_axis > 1.0",
+    "mild_hawkish": "0.3 < ps_axis <= 1.0",
+    "neutral": "-0.3 <= ps_axis <= 0.3",
+    "mild_dovish": "-1.0 <= ps_axis < -0.3",
+    "strong_dovish": "ps_axis < -1.0"
+  },
+  "sign_semantics": {
+    "p_axis": {
+      "positive_interpretation": "more restrictive / more hawkish",
+      "terms": [
+        {
+          "term": "z_rir",
+          "weight": 0.5,
+          "positive_input_effect": "raises P; higher real policy rate is tighter"
+        },
+        {
+          "term": "i_axis",
+          "weight": 0.3,
+          "positive_input_effect": "raises P; higher inflation pressure increases hawkish stance"
+        },
+        {
+          "term": "-z_uergap",
+          "weight": 0.2,
+          "positive_input_effect": "raises P when unemployment is below its historical/NAIRU-relative norm; tighter labor increases hawkish stance"
+        }
+      ]
+    },
+    "r_axis": {
+      "inferred_positive_interpretation": "greater easing / dovish pressure",
+      "inferred_negative_interpretation": "greater tightening / hawkish pressure",
+      "terms": [
+        {
+          "term": "-g_lead",
+          "weight": 0.25,
+          "positive_input_effect": "weaker leading growth raises R -> easing pressure"
+        },
+        {
+          "term": "z_du",
+          "weight": 0.25,
+          "positive_input_effect": "rising unemployment raises R -> easing pressure"
+        },
+        {
+          "term": "-z_yc",
+          "weight": 0.15,
+          "positive_input_effect": "more inverted curve raises R -> easing pressure"
+        },
+        {
+          "term": "-i_axis",
+          "weight": 0.15,
+          "positive_input_effect": "higher inflation lowers R -> tightening pressure"
+        },
+        {
+          "term": "-z_di",
+          "weight": 0.1,
+          "positive_input_effect": "accelerating inflation lowers R -> tightening pressure"
+        },
+        {
+          "term": "-lt_axis",
+          "weight": 0.1,
+          "positive_input_effect": "tighter labor lowers R -> tightening pressure"
+        },
+        {
+          "term": "-inflation_panic",
+          "weight": 0.2,
+          "positive_input_effect": "inflation panic lowers R -> tightening pressure"
+        }
+      ]
+    },
+    "ps_axis_conflict": "P positive is hawkish/restrictive while R positive is inferred dovish/easing, yet PS adds P and R with the same positive coefficient and labels positive PS hawkish."
+  },
+  "source_audit": [
+    {
+      "code_variable": "pmi_mfg",
+      "original_symbol": "ECONOMICS:USISMMP",
+      "original_comment": "manufacturing PMI",
+      "documented_current_concept": "USISMMP is associated with ISM Manufacturing Prices in external historical symbol/event references; current TradingView manufacturing PMI is USBCOI and current manufacturing prices is USMPR",
+      "status": "semantic_mismatch_and_legacy_symbol_requires_runtime_check",
+      "literal_repair_allowed": false
+    },
+    {
+      "code_variable": "pmi_svs",
+      "original_symbol": "ECONOMICS:USNMPR",
+      "original_comment": "services PMI",
+      "documented_current_concept": "ISM Non-Manufacturing Prices",
+      "status": "semantic_mismatch",
+      "literal_repair_allowed": false
+    },
+    {
+      "code_variable": "cpi_headline",
+      "original_symbol": "ECONOMICS:USIRYY",
+      "original_comment": "headline CPI YoY",
+      "documented_current_concept": "United States Inflation Rate YoY, BLS",
+      "status": "concept_match"
+    },
+    {
+      "code_variable": "cpi_core",
+      "original_symbol": "ECONOMICS:USCCPI",
+      "original_comment": "core CPI",
+      "documented_current_concept": "Core CPI YoY, BLS",
+      "status": "concept_match"
+    },
+    {
+      "code_variable": "pce_core",
+      "original_symbol": "ECONOMICS:USPCEPIAC",
+      "original_comment": "Core PCE / PCE core level requiring YoY conversion",
+      "documented_current_concept": "headline PCE Price Index Annual Change, BEA",
+      "status": "semantic_mismatch_and_double_yoy_transform_risk",
+      "intended_current_symbol": "ECONOMICS:USCPCEPIAC",
+      "literal_repair_allowed": false
+    },
+    {
+      "code_variable": "jolts_openings",
+      "original_symbol": "FRED:JTSJOL",
+      "original_comment": "JOLTS rate form",
+      "documented_current_concept": "Job Openings: Total Nonfarm, level in thousands, seasonally adjusted",
+      "status": "unit_comment_mismatch",
+      "rate_series_if_intended": "FRED:JTSJOR",
+      "literal_repair_allowed": false
+    },
+    {
+      "code_variable": "jolts_quits",
+      "original_symbol": "FRED:JTSQUR",
+      "original_comment": "JOLTS rate form",
+      "documented_current_concept": "Quits: Total Nonfarm, rate, seasonally adjusted",
+      "status": "concept_match"
+    }
+  ],
+  "additional_noncore_issue": {
+    "sahm_alert": "Original alert uses z_du > 0.5, where z_du is a z-score of 3-month unemployment change. This is not the official Sahm Rule threshold definition. It does not enter P/R/PS directly."
+  },
+  "reconstructability": {
+    "literal_variant_status": "pending_tradingview_runtime_probe",
+    "reason": "The legacy ECONOMICS:USISMMP symbol cannot be confirmed from the current TradingView symbol directory via reproducible repo tooling. No silent substitution to USMPR/USBCOI is allowed.",
+    "intended_variant_status": "not_yet_preregistered",
+    "zscore_bottleneck_note": "Original 120-month z-score window plus JOLTS history implies the fully populated policy surface cannot begin until roughly a decade after JOLTS availability, even if every source is resolved."
+  },
+  "phase_a0_decisions": {
+    "ps_sign_semantics": "internally_conflicted",
+    "literal_model_validation_allowed": false,
+    "intended_semantics_repair_allowed_only_after_separate_preregistration": true
+  },
+  "hard_boundaries": [
+    "Do not evaluate future Fed policy accuracy in A0.",
+    "Do not load Treasury returns in A0.",
+    "Do not change source symbols, transforms, signs, weights, thresholds or the 120-month z-score window in the literal variant.",
+    "Do not call an intended-semantics repair exact BCI-10."
+  ]
+}

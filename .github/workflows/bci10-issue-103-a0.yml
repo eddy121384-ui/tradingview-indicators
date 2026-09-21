@@ -1,0 +1,31 @@
+name: BCI-10 Issue 103 A0 Audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-103-*"
+      - "indicators/macro-pressure-map/research/test_issue_103_*"
+      - "indicators/macro-pressure-map/research/bci10_v15_source_probe.pine"
+      - ".github/workflows/bci10-issue-103-a0.yml"
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate frozen semantic/source audit
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_103_bci10_audit.py
+      - name: Confirm no Fed or Treasury validation implementation exists
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_103_bci10_fed_validation.py
+          test ! -f issue_103_bci10_treasury_validation.py
+          test ! -f decisions/issue-103-bci10-validation-decision.json
+          echo "A0 contains semantic/source audit only."
