@@ -1,0 +1,38 @@
+name: Macro Pressure Map Issue 97 Phase A Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-97-phase-a-policy-*"
+      - "indicators/macro-pressure-map/research/test_issue_97_phase_a_prereg.py"
+      - ".github/workflows/macro-pressure-map-issue-97-phase-a-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_97_phase_a_prereg.py
+      - name: Confirm prereg commit preceded outcome implementation
+        run: |
+          PREREG_SHA=86be53012fb29032afffea89f31a33fab80e59dc
+          git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-97-phase-a-policy-reaction-preregistered.json"
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/issue_97_phase_a_policy_reaction.py'; then
+            echo "Outcome implementation existed in prereg commit"
+            exit 1
+          fi
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/decisions/issue-97-phase-a-decision.json'; then
+            echo "Decision existed in prereg commit"
+            exit 1
+          fi
+          echo "Historical prereg commit cleanly precedes outcome implementation."

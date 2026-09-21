@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "issue": 97,
+  "phase": "A0-policy-reaction-source-audit",
+  "purpose": "Freeze official macro and effective federal funds rate sources before testing whether macro direction/speed adds policy information.",
+  "created_before_policy_model_outcomes": true,
+  "created_before_treasury_outcomes": true,
+  "hard_rules": [
+    "No Treasury, T-bill, equity, gold or portfolio outcome may be loaded in Phase A0.",
+    "Do not modify V6.6, HMRA-v0.1 or prior allocation research.",
+    "Federal Reserve H.15 is the primary policy-rate source.",
+    "Do not replace an unavailable official source with a lower-quality mirror merely to make CI green."
+  ],
+  "sources": {
+    "industrial_production": {
+      "provider": "Board of Governors of the Federal Reserve System",
+      "series_code": "B50001",
+      "description": "Total industrial production index, seasonally adjusted",
+      "url": "https://www.federalreserve.gov/releases/g17/Current/ipdisk/ip_sa.txt",
+      "documented_start": "1919"
+    },
+    "cpi": {
+      "provider": "U.S. Bureau of Labor Statistics",
+      "series_code": "CUUR0000SA0",
+      "description": "CPI-U, U.S. city average, all items, NSA",
+      "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/",
+      "documented_start": "1913"
+    },
+    "effective_federal_funds_rate": {
+      "provider": "Board of Governors of the Federal Reserve System",
+      "release": "H.15 Selected Interest Rates",
+      "series_code": "H15/H15/RIFSPFF_N.M",
+      "description": "Federal funds effective rate, monthly average",
+      "url": "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H15&series=d7e27b7b09a3a7feae95b9c61781fcd8&lastobs=&from=07/01/1954&to=12/31/2025&filetype=csv&label=omit&layout=seriescolumn",
+      "documented_start": "1954-07",
+      "frozen_end": "2025-12"
+    }
+  },
+  "intended_phase_a_features": {
+    "growth_level": "12-month log change in IP",
+    "growth_acceleration": "growth_level minus its value 6 months earlier",
+    "inflation_level": "12-month log change in CPI",
+    "inflation_acceleration": "inflation_level minus its value 6 months earlier",
+    "note": "Feature formulas belong to the later Phase A preregistration and are listed here only to confirm source sufficiency."
+  },
+  "allowed_outputs": [
+    "source SHA-256",
+    "byte size",
+    "first/last observation",
+    "row counts",
+    "missingness",
+    "monthly overlap coverage"
+  ],
+  "forbidden_outputs": [
+    "policy regression results",
+    "EFFR forecast accuracy",
+    "Treasury-minus-cash returns",
+    "portfolio results"
+  ]
+}

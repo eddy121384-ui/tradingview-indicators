@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "issue": 97,
+  "phase": "A-policy-reaction-function-preregistration",
+  "created_before_policy_model_outcomes": true,
+  "created_before_treasury_outcomes": true,
+  "production_v66_modified": false,
+  "hmra_modified": false,
+  "purpose": "Test whether growth/inflation direction and speed add stable out-of-sample information about Federal Reserve policy changes beyond macro levels.",
+  "conceptual_link_to_v66": {
+    "component_score_formula": "0.50 * level + 0.30 * momentum + 0.20 * direction",
+    "interpretation": "Issue #97 tests the economic premise behind direction/momentum information. It does not alter or directly fit V6.6."
+  },
+  "timestamps": {
+    "decision_month": "m",
+    "macro_month": "k = m-2",
+    "rationale": "Two-month macro lag ensures IP/CPI observations are public before the policy forecast origin.",
+    "current_policy_information": "EFFR monthly average at m, known at month-end forecast origin."
+  },
+  "features": {
+    "growth_level": "100 * ln(IP_k / IP_k-12)",
+    "growth_acceleration": "growth_level_k - growth_level_k-6",
+    "inflation_level": "100 * ln(CPI_k / CPI_k-12)",
+    "inflation_acceleration": "inflation_level_k - inflation_level_k-6",
+    "policy_inertia_common_controls": [
+      "EFFR_m",
+      "EFFR_m - EFFR_m-6"
+    ],
+    "missing_macro_policy": "No interpolation; skip forecast origin if any required macro observation is unavailable."
+  },
+  "primary_outcome": {
+    "name": "policy_change_6m",
+    "formula": "EFFR_m+6 - EFFR_m",
+    "unit": "percentage points",
+    "latest_forecast_origin": "2025-06"
+  },
+  "secondary_outcome": {
+    "name": "policy_change_12m",
+    "formula": "EFFR_m+12 - EFFR_m",
+    "latest_forecast_origin": "2024-12",
+    "diagnostic_only": true
+  },
+  "policy_direction_labels": {
+    "tightening": "> +0.25 percentage point",
+    "neutral": "[-0.25, +0.25] percentage point",
+    "easing": "< -0.25 percentage point"
+  },
+  "model_ladder": {
+    "M0": {
+      "common_controls": [
+        "EFFR_m",
+        "EFFR_6m_change"
+      ],
+      "macro_features": [
+        "inflation_level"
+      ],
+      "label": "inflation level only"
+    },
+    "M1": {
+      "common_controls": [
+        "EFFR_m",
+        "EFFR_6m_change"
+      ],
+      "macro_features": [
+        "inflation_level",
+        "growth_level"
+      ],
+      "label": "growth + inflation levels"
+    },
+    "M2": {
+      "common_controls": [
+        "EFFR_m",
+        "EFFR_6m_change"
+      ],
+      "macro_features": [
+        "inflation_level",
+        "growth_level",
+        "inflation_acceleration",
+        "growth_acceleration"
+      ],
+      "label": "levels + direction/speed"
+    }
+  },
+  "primary_research_question": "Does M2 add stable out-of-sample policy information over M1?",
+  "estimation": {
+    "model": "ordinary least squares with intercept",
+    "primary_window": "expanding",
+    "initial_training_end": "1969-12 forecast origins/outcomes available by that point",
+    "oos_first_forecast_origin": "1970-01",
+    "coefficient_information_rule": "Each forecast is fit only on rows whose policy outcome is fully known before forecast month m.",
+    "no_full_sample_predictive_fit": true,
+    "rolling_20y_sensitivity": {
+      "diagnostic_only": true,
+      "window_months": 240
+    }
+  },
+  "metrics": {
+    "continuous": [
+      "RMSE",
+      "MAE",
+      "Pearson correlation"
+    ],
+    "directional": [
+      "three-class balanced accuracy",
+      "tighten/ease sign accuracy excluding neutral realized outcomes"
+    ],
+    "incremental": [
+      "M2 minus M1 RMSE",
+      "M2 minus M1 MAE",
+      "M2 minus M1 balanced accuracy"
+    ]
+  },
+  "eras": [
+    {
+      "label": "Great_Inflation_Volcker",
+      "start": "1970-01",
+      "end": "1984-12"
+    },
+    {
+      "label": "Post_Volcker",
+      "start": "1985-01",
+      "end": "1999-12"
+    },
+    {
+      "label": "Pre_GFC",
+      "start": "2000-01",
+      "end": "2007-12"
+    },
+    {
+      "label": "GFC_QE",
+      "start": "2008-01",
+      "end": "2019-12"
+    },
+    {
+      "label": "COVID_inflation_higher_rate",
+      "start": "2020-01",
+      "end": "2025-06"
+    }
+  ],
+  "robustness": {
+    "leave_one_era_out": true,
+    "coefficient_sign_report": [
+      "inflation_level",
+      "growth_level",
+      "inflation_acceleration",
+      "growth_acceleration"
+    ],
+    "no_p_value_winner_selection": true
+  },
+  "decision_categories": [
+    "direction_speed_adds_stable_policy_information",
+    "levels_sufficient_no_incremental_speed_value",
+    "policy_relation_era_dependent",
+    "policy_model_unstable",
+    "inconclusive_policy_evidence"
+  ],
+  "decision_rules": {
+    "direction_speed_adds_stable_policy_information": "M2 improves primary OOS error and directional metrics versus M1 with support across multiple eras and without one-era dependence.",
+    "levels_sufficient_no_incremental_speed_value": "M2 adds no material/stable improvement over M1 while M1 itself has useful OOS policy information.",
+    "policy_relation_era_dependent": "M2 or M1 has useful full-sample OOS information but incremental relationships materially reverse or disappear across major eras.",
+    "policy_model_unstable": "All model variants show weak or unstable OOS policy information.",
+    "inconclusive_policy_evidence": "Data gaps, small effective samples or conflicting diagnostics prevent a defensible classification."
+  },
+  "phase_b_gate": {
+    "treasury_outcome_may_be_loaded_only_after_phase_a_finding_is_durable": true,
+    "stop_if": [
+      "M2 does not add useful information and M1 is also weak/unstable",
+      "Any apparent M2 gain is isolated to one era"
+    ]
+  },
+  "forbidden": [
+    "Treasury-minus-cash outcome before Phase A finding",
+    "portfolio backtest",
+    "interaction-term rescue after seeing M2",
+    "changing 6-month primary horizon",
+    "changing +/-25bp direction labels",
+    "changing acceleration lookback from 6 months",
+    "adding FCPI, real yield, term premium or market returns after failure",
+    "modifying V6.6"
+  ]
+}

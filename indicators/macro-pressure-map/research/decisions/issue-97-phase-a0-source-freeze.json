@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "issue": 97,
+  "phase": "A0-policy-reaction-source-freeze",
+  "source_audit_run": 35553548210,
+  "source_audit_head": "d35dd768a7cb13dbba76b719be494f7498cb7330",
+  "policy_outcomes_seen": false,
+  "treasury_outcomes_seen": false,
+  "sources": {
+    "industrial_production": {
+      "series_code": "B50001",
+      "canonical_used_through_2025_sha256": "11ebdc64f49a3c4d4f041b453496669793889df8acd3c2b1884f937b37330cbc",
+      "note": "Reuse Issue #91 canonical 1919-2025 IP freeze; current raw G.17 file may extend into 2026."
+    },
+    "cpi": {
+      "series_code": "CUUR0000SA0",
+      "canonical_1913_2025_sha256": "06bbdb5470d01a73334629a2fc90e00c91fe0e9d59ab1bc3677fa873aace7f3f",
+      "known_official_gap": [
+        "2025-10"
+      ],
+      "gap_policy": "Do not impute. Drop only forecast origins whose required lagged macro observation is unavailable.",
+      "note": "BLS did not collect October 2025 survey data during the federal government shutdown."
+    },
+    "effective_federal_funds_rate": {
+      "series_code": "H15/H15/RIFSPFF_N.M",
+      "first_month": "1954-07",
+      "last_month": "2025-12",
+      "observations": 858,
+      "raw_sha256": "6bb0e9cf24aa735f342dde02b7e83aea01cab620d6ac3866d70a6230957d57e9",
+      "raw_bytes": 99296,
+      "source": "Federal Reserve H.15 Data Download Program"
+    }
+  },
+  "usable_overlap": {
+    "first_month": "1954-07",
+    "last_month": "2025-12",
+    "missing_expected_months": [
+      "2025-10"
+    ],
+    "primary_policy_forecast_latest_origin": "2025-06",
+    "reason": "6-month EFFR outcome must be fully observed through 2025-12, so the later 2025-10 CPI gap cannot affect the primary policy OOS window."
+  },
+  "revision_policy": "Any IP/CPI canonical hash change or H.15 frozen raw hash change fails closed and requires an explicit new source-freeze version."
+}
