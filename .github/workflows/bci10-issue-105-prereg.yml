@@ -1,0 +1,30 @@
+name: BCI-10 Issue 105 Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-105-*"
+      - "indicators/macro-pressure-map/research/test_issue_105_*"
+      - ".github/workflows/bci10-issue-105-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate preregistration
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_105_bci10_intended_prereg.py
+      - name: Confirm no Fed/Treasury validation code exists
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f bci10_intended_v01_fed_validation.pine
+          test ! -f decisions/issue-105-bci10-intended-decision.json
+          test ! -f issue_105_treasury_validation.py
+          echo "Issue #105 prereg commit contains no validation result implementation."
