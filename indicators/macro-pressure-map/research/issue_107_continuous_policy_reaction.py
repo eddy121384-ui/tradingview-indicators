@@ -70,8 +70,8 @@ def retry_call(func, *args, attempts: int = 3):
     raise RuntimeError("retry_call exhausted") from last
 
 
-def download_fred_bounded(series_id: str, start: str, end: str) -> pd.Series:
-    """Same FRED series as public_data.py, but server-side bounded for CI reliability."""
+def _download_fred_bounded_once(series_id: str, start: str, end: str) -> pd.Series:
+    """Fetch one bounded FRED slice; end is exclusive."""
     end_inclusive = (pd.Timestamp(end) - pd.Timedelta(days=1)).date().isoformat()
     query = urlencode({"id": series_id, "cosd": start, "coed": end_inclusive})
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?{query}"
@@ -88,6 +88,31 @@ def download_fred_bounded(series_id: str, start: str, end: str) -> pd.Series:
     return values[~values.index.duplicated(keep="last")].sort_index()
 
 
+def _fred_chunk_ranges(start: str, end: str, years: int = 6) -> list[tuple[str, str]]:
+    """Split a long end-exclusive FRED request into deterministic calendar chunks."""
+    current = pd.Timestamp(start).normalize()
+    stop = pd.Timestamp(end).normalize()
+    if stop <= current:
+        raise ValueError(f"invalid FRED date range: {start}..{end}")
+    chunks: list[tuple[str, str]] = []
+    while current < stop:
+        next_stop = min(current + pd.DateOffset(years=years), stop)
+        chunks.append((current.date().isoformat(), next_stop.date().isoformat()))
+        current = next_stop
+    return chunks
+
+
+def download_fred_bounded(series_id: str, start: str, end: str) -> pd.Series:
+    """Fetch the same bounded FRED series in smaller slices for CI reliability."""
+    parts = [
+        retry_call(_download_fred_bounded_once, series_id, chunk_start, chunk_end)
+        for chunk_start, chunk_end in _fred_chunk_ranges(start, end)
+    ]
+    values = pd.concat(parts)
+    values.name = series_id
+    return values[~values.index.duplicated(keep="last")].sort_index()
+
+
 def build_public_gpi_ipi_sources(start: str, end: str) -> tuple[pd.DataFrame, dict]:
     specs = [s for s in SERIES_SPECS if s.canonical in GPI_IPI_CANONICAL]
     found = {s.canonical for s in specs}
@@ -96,7 +121,7 @@ def build_public_gpi_ipi_sources(start: str, end: str) -> tuple[pd.DataFrame, di
     downloaded: dict[str, pd.Series] = {}
     coverage: list[dict] = []
     for spec in specs:
-        series = (retry_call(download_fred_bounded, spec.public_symbol, start, end)
+        series = (download_fred_bounded(spec.public_symbol, start, end)
                   if spec.provider == "fred"
                   else retry_call(download_spec, spec, start, end))
         if series.dropna().empty:
@@ -146,8 +171,8 @@ def _monthly_series(series: pd.Series) -> pd.Series:
 
 
 def build_policy_monthly(start: str = "2005-01-01", end: str = "2026-01-01") -> pd.DataFrame:
-    effr = _monthly_series(retry_call(download_fred_bounded, "FEDFUNDS", start, end))
-    pce = _monthly_series(retry_call(download_fred_bounded, "PCEPILFE", start, end))
+    effr = _monthly_series(download_fred_bounded("FEDFUNDS", start, end))
+    pce = _monthly_series(download_fred_bounded("PCEPILFE", start, end))
     p = pd.DataFrame({"FEDFUNDS": effr, "PCEPILFE": pce}).sort_index()
     p["core_pce_yoy"] = 100.0 * (p["PCEPILFE"] / p["PCEPILFE"].shift(12) - 1.0)
     p["real_policy_rate_raw"] = p["FEDFUNDS"] - p["core_pce_yoy"]
