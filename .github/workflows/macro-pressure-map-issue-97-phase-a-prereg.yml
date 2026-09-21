@@ -1,0 +1,29 @@
+name: Macro Pressure Map Issue 97 Phase A Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-97-phase-a-policy-*"
+      - "indicators/macro-pressure-map/research/test_issue_97_phase_a_prereg.py"
+      - ".github/workflows/macro-pressure-map-issue-97-phase-a-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_97_phase_a_prereg.py
+      - name: Confirm no policy outcome implementation
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_97_phase_a_policy_reaction.py
+          test ! -f decisions/issue-97-phase-a-decision.json
+          echo "Phase A prereg contains no policy-model outcome implementation or decision."
