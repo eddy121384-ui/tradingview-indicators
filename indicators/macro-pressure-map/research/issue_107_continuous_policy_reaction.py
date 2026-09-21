@@ -157,14 +157,8 @@ def _fred_chunk_ranges(start: str, end: str, years: int = 6) -> list[tuple[str, 
 
 
 def download_fred_bounded(series_id: str, start: str, end: str) -> pd.Series:
-    """Fetch the same bounded FRED series in smaller slices for CI reliability."""
-    parts = [
-        retry_call(_download_fred_bounded_once, series_id, chunk_start, chunk_end)
-        for chunk_start, chunk_end in _fred_chunk_ranges(start, end)
-    ]
-    values = pd.concat(parts)
-    values.name = series_id
-    return values[~values.index.duplicated(keep="last")].sort_index()
+    """Fetch a bounded, checkpoint-validated mirror of the same named FRED series."""
+    return retry_call(_download_fred_bounded_once, series_id, start, end)
 
 
 def build_public_gpi_ipi_sources(start: str, end: str) -> tuple[pd.DataFrame, dict]:
