@@ -1,0 +1,31 @@
+name: Macro Pressure Map Issue 101 Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-101-*"
+      - "indicators/macro-pressure-map/research/test_issue_101_prereg.py"
+      - ".github/workflows/macro-pressure-map-issue-101-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_101_prereg.py
+      - name: Confirm no Issue 101 evaluator or decision exists
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_101_state_dependent_policy_reaction.py
+          test ! -f decisions/issue-101-decision.json
+          echo "Issue #101 prereg is pre-outcome."

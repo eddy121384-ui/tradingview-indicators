@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "issue": 101,
+  "phase": "state-dependent-policy-reaction-preregistration",
+  "created_before_model_outcomes": true,
+  "created_before_treasury_outcomes": true,
+  "upstream_issue_99_verdict": "effr_measurement_not_the_main_problem",
+  "production_v66_modified": false,
+  "hmra_modified": false,
+  "exact_oos_sample": {
+    "training_start": "1976-06",
+    "first_forecast_origin": "1990-01",
+    "last_forecast_origin": "2025-06",
+    "forecast_origins_expected": 426
+  },
+  "timing": {
+    "horizon_months": 6,
+    "macro_lag_months": 2,
+    "acceleration_lookback_months": 6,
+    "coefficient_information_rule": "train only on rows whose six-month outcome is fully known before forecast origin"
+  },
+  "primary_target": "SF Fed Proxy Funds Rate six-month change",
+  "crosscheck_target": "EFFR six-month change",
+  "macro_features": {
+    "inflation_level": "100*ln(CPI_k/CPI_k-12)",
+    "growth_level": "100*ln(IP_k/IP_k-12)",
+    "inflation_acceleration": "inflation_level_k - inflation_level_k-6",
+    "growth_acceleration": "growth_level_k - growth_level_k-6"
+  },
+  "causal_standardization": {
+    "applied_to": [
+      "inflation_level",
+      "growth_level",
+      "inflation_acceleration",
+      "growth_acceleration"
+    ],
+    "moments_source": "training rows only at each forecast origin",
+    "formula": "z=(x-training_mean)/training_population_std",
+    "zero_std_policy": "fail closed",
+    "stance_controls_standardized": false
+  },
+  "models": {
+    "M1": {
+      "features": [
+        "current_stance",
+        "six_month_stance_inertia",
+        "z_inflation_level",
+        "z_growth_level"
+      ]
+    },
+    "M2": {
+      "features": [
+        "current_stance",
+        "six_month_stance_inertia",
+        "z_inflation_level",
+        "z_growth_level",
+        "z_inflation_acceleration",
+        "z_growth_acceleration"
+      ]
+    },
+    "M3": {
+      "features": [
+        "current_stance",
+        "six_month_stance_inertia",
+        "z_inflation_level",
+        "z_growth_level",
+        "z_inflation_acceleration",
+        "z_growth_acceleration",
+        "z_inflation_level_x_z_inflation_acceleration",
+        "z_growth_level_x_z_growth_acceleration"
+      ],
+      "interaction_rule": "form exactly the two own-axis interactions after causal standardization"
+    }
+  },
+  "forbidden_model_changes": [
+    "cross-axis interactions",
+    "polynomial squares",
+    "decision trees",
+    "unemployment",
+    "FCPI",
+    "real yields",
+    "term premium",
+    "Treasury returns",
+    "different horizon",
+    "different macro lag",
+    "different acceleration lookback"
+  ],
+  "fixed_subperiods": [
+    {
+      "label": "Conventional_pre_Dec2008",
+      "start": "1990-01",
+      "end": "2008-11"
+    },
+    {
+      "label": "Unconventional_post_Dec2008",
+      "start": "2008-12",
+      "end": "2019-12"
+    },
+    {
+      "label": "Pandemic_and_postpandemic",
+      "start": "2020-01",
+      "end": "2025-06"
+    }
+  ],
+  "metrics": [
+    "RMSE",
+    "MAE",
+    "Pearson correlation",
+    "three-class balanced accuracy",
+    "tighten/ease direction accuracy excluding neutral"
+  ],
+  "primary_comparisons": [
+    "M3 minus M2",
+    "M3 minus M1"
+  ],
+  "robustness": [
+    "leave-one-subperiod-out",
+    "EFFR cross-check",
+    "interaction coefficient median/sign fraction"
+  ],
+  "decision_categories": [
+    "state_dependence_adds_stable_policy_information",
+    "state_dependence_improves_only_recently",
+    "state_dependence_not_enough_linear_speed_problem_persists",
+    "state_dependence_era_dependent",
+    "inconclusive_state_dependence_evidence"
+  ],
+  "decision_rules": {
+    "state_dependence_adds_stable_policy_information": "Proxy M3 improves both RMSE and MAE versus M2 full-sample; M3 is not worse than M1 on both RMSE and MAE full-sample; M3 RMSE is non-worse than M2 in at least two of three fixed subperiods; M3 RMSE remains favorable versus M2 under every leave-one-subperiod-out check.",
+    "state_dependence_improves_only_recently": "M3 improvement is concentrated in 2020-2025 and absent from both earlier subperiods.",
+    "state_dependence_not_enough_linear_speed_problem_persists": "M3 does not beat M1 on both primary continuous-error metrics and does not establish stable M3-vs-M2 improvement.",
+    "state_dependence_era_dependent": "M3 has material full-sample improvement but incremental value reverses across major subperiods or leaveouts.",
+    "inconclusive_state_dependence_evidence": "Conflicting diagnostics prevent classification."
+  },
+  "stop_rule": "Treasury transmission remains closed unless verdict is state_dependence_adds_stable_policy_information.",
+  "production_change_authorized": false
+}
