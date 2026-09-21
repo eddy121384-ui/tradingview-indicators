@@ -23,9 +23,17 @@ jobs:
       - name: Validate prereg
         working-directory: indicators/macro-pressure-map/research
         run: python -m pytest -q test_issue_101_prereg.py
-      - name: Confirm no Issue 101 evaluator or decision exists
-        working-directory: indicators/macro-pressure-map/research
+      - name: Confirm historical prereg preceded evaluator
         run: |
-          test ! -f issue_101_state_dependent_policy_reaction.py
-          test ! -f decisions/issue-101-decision.json
-          echo "Issue #101 prereg is pre-outcome."
+          PREREG_SHA=77ecab8d78efa41aa1415a422439097f85276a8d
+          git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-101-state-dependent-policy-reaction-preregistered.json"
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/issue_101_state_dependent_policy_reaction.py'; then
+            echo "Evaluator existed in prereg commit"
+            exit 1
+          fi
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/decisions/issue-101-decision.json'; then
+            echo "Decision existed in prereg commit"
+            exit 1
+          fi
+          echo "Historical Issue #101 prereg cleanly precedes evaluator."
+
