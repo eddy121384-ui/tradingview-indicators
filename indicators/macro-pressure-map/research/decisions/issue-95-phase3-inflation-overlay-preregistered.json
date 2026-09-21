@@ -185,9 +185,20 @@
     "fixed_40_40_20": "40% Equity / 40% Treasury / 20% Gold.",
     "equal_weight_3asset": "1/3 Equity / 1/3 Treasury / 1/3 Gold.",
     "causal_inverse_vol": {
-      "required_if_feasible": true,
-      "design_requirement": "Must use only returns observable before each evaluated return year under the same annual information discipline.",
-      "fallback_if_not_feasible": "Document exclusion; do not replace with a noncausal version."
+      "required": true,
+      "assets": [
+        "equity",
+        "treasury",
+        "gold"
+      ],
+      "cash_weight": 0,
+      "lookback_completed_years": 5,
+      "estimator": "sample standard deviation (ddof=1) of the five asset returns immediately preceding the evaluated return year",
+      "target_formula": "inverse volatility normalized to sum to one across Equity/Treasury/Gold",
+      "current_return_year_excluded": true,
+      "minimum_history_required": 5,
+      "design_requirement": "Only returns strictly before each evaluated return year may enter the estimate; no same-year look-ahead.",
+      "fallback_if_not_feasible": "Fail closed rather than substituting a noncausal control."
     },
     "realized_exposure_matched_static_control": {
       "required": true,
