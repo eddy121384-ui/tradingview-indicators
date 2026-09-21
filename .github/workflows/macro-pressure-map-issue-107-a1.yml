@@ -20,7 +20,7 @@ jobs:
           python-version: "3.11"
       - name: Install research environment
         working-directory: indicators/macro-pressure-map
-        run: python -m pip install -r requirements-research.txt
+        run: python -m pip install -r requirements-research.txt "scipy>=1.13"
       - name: Revalidate prereg
         working-directory: indicators/macro-pressure-map/research
         run: python -m pytest -q test_issue_107_continuous_policy_prereg.py
