@@ -1,0 +1,33 @@
+name: BCI-10 Issue 105 Validation Harness
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/bci10_intended_v01_fed_validation.pine"
+      - "indicators/macro-pressure-map/research/test_issue_105_bci10_validation_harness.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-105-*"
+      - ".github/workflows/bci10-issue-105-validation-harness.yml"
+permissions:
+  contents: read
+jobs:
+  boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Revalidate prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_105_bci10_intended_prereg.py
+      - name: Validate Pine harness boundary
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_105_bci10_validation_harness.py
+      - name: Confirm no Treasury validation exists
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          test ! -f issue_105_treasury_validation.py
+          test ! -f decisions/issue-105-bci10-intended-decision.json
+          echo "Fed-only validation harness boundary is clean."
