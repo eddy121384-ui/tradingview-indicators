@@ -1,0 +1,38 @@
+//@version=5
+indicator("BCI-10 v1.5 Source Probe", overlay=false)
+
+// This probe does not repair the model. It only checks whether the original
+// TradingView symbols still return data in the current runtime.
+
+orig_mfg = request.security("ECONOMICS:USISMMP", "M", close)
+orig_svs = request.security("ECONOMICS:USNMPR", "M", close)
+orig_pce = request.security("ECONOMICS:USPCEPIAC", "M", close)
+
+current_mfg_pmi = request.security("ECONOMICS:USBCOI", "M", close)
+current_mfg_prices = request.security("ECONOMICS:USMPR", "M", close)
+current_core_pce_ac = request.security("ECONOMICS:USCPCEPIAC", "M", close)
+
+first_date(src) =>
+    var int d = na
+    if na(d) and not na(src)
+        d := time
+    d
+
+var table t = table.new(position.top_right, 4, 7)
+if barstate.islast
+    table.cell(t,0,0,"Series")
+    table.cell(t,1,0,"Latest")
+    table.cell(t,2,0,"First non-NA")
+    table.cell(t,3,0,"Status")
+    string[] names = array.from("USISMMP original","USNMPR original","USPCEPIAC original","USBCOI current PMI","USMPR current prices","USCPCEPIAC current core PCE")
+    float[] vals = array.from(orig_mfg,orig_svs,orig_pce,current_mfg_pmi,current_mfg_prices,current_core_pce_ac)
+    int[] dates = array.from(first_date(orig_mfg),first_date(orig_svs),first_date(orig_pce),first_date(current_mfg_pmi),first_date(current_mfg_prices),first_date(current_core_pce_ac))
+    for i=0 to 5
+        v=array.get(vals,i)
+        d=array.get(dates,i)
+        table.cell(t,0,i+1,array.get(names,i))
+        table.cell(t,1,i+1,na(v)?"NA":str.tostring(v))
+        table.cell(t,2,i+1,na(d)?"NA":str.format("{0,date,yyyy-MM}",d))
+        table.cell(t,3,i+1,na(v)?"NO DATA":"OK")
+
+plot(orig_mfg, "USISMMP original", display=display.none)
