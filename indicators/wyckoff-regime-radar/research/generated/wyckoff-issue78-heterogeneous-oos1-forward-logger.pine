@@ -1639,7 +1639,7 @@ issue76Ready = issue76AllowedFeed and issue76D1 and issue76InWindow and issue76E
 plot(issue76AllowedFeed and issue76D1 ? formalId : na, "#76 Formal Stage ID", display=display.none)
 plot(issue76AllowedFeed and issue76D1 ? symATR : na, "#76 Event-time SymATR", display=display.none)
 
-if issue76LogEnabled and barstate.islastconfirmedhistory
+if issue76LogEnabled and barstate.islast
     log.warning(
          "HET_OOS1_STATUS" +
          "|ticker=" + syminfo.tickerid +
