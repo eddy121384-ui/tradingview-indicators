@@ -5,6 +5,7 @@ import pandas as pd
 
 from issue_107_continuous_policy_reaction import (
     MODELS,
+    _download_fred_mirror,
     complete_case_mask,
     standardize_fit_predict,
     trajectory_features,
@@ -49,3 +50,13 @@ def test_complete_case_is_common_m2_universe():
     frame.loc[1, "acceleration_IPI"] = np.nan
     mask = complete_case_mask(frame)
     assert mask.tolist() == [True, False]
+
+
+def test_pcepilfe_frozen_snapshot_preserves_official_index_values():
+    series = _download_fred_mirror("PCEPILFE", "2020-01-01", "2020-04-01")
+    assert series.index.tolist() == [
+        pd.Timestamp("2020-01-01"),
+        pd.Timestamp("2020-02-01"),
+        pd.Timestamp("2020-03-01"),
+    ]
+    assert np.allclose(series.to_numpy(), [104.507, 104.711, 104.632])
