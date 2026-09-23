@@ -25,3 +25,16 @@ Hidden plots are included so TradingView's chart-data export can export the alig
 This script does not use Treasury or portfolio returns.
 
 The sample is frozen at realized Fed Funds outcomes through December 2025, so future data releases do not silently expand this preregistered test.
+
+
+## 2026-09-23 pre-outcome runtime amendment
+
+The user's TradingView account returned `Permission denied for symbol: ECONOMICS:USCPCEPI` before any #105 validation outcome was visible.
+
+Core PCE transport is therefore amended to:
+`request.security("FRED:PCEPILFE", "M", close)`
+
+This preserves the same monthly BEA Core PCE index construct and the same YoY transformation. No model weight, lag, threshold, horizon, or outcome definition changed.
+
+See:
+`decisions/issue-105-preoutcome-runtime-source-amendment.md`
