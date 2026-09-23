@@ -92,8 +92,9 @@ FRED_MIRROR_SPECS = {
         },
     },
     "PCEPILFE": {
-        "url": "https://eco3min.fr/dataset/us-core-pce.csv",
-        "value_col": "core_pce_index",
+        "path": "data/issue-107-fred-pcepilfe-2005-2025.csv",
+        "value_col": "PCEPILFE",
+        "source": "FRED PCEPILFE table data; snapshot last updated 2026-07-30",
         "checkpoints": {
             "2007-01-01": 85.224,
             "2020-01-01": 104.507,
@@ -104,18 +105,21 @@ FRED_MIRROR_SPECS = {
 
 
 def _download_fred_mirror(series_id: str, start: str, end: str) -> pd.Series:
-    """Read a full-history mirror of the named FRED series and fail closed on official checkpoints."""
+    """Read a validated FRED transport (remote mirror or frozen official snapshot) and fail closed."""
     try:
         spec = FRED_MIRROR_SPECS[series_id]
     except KeyError as exc:
         raise RuntimeError(f"no validated FRED mirror transport for {series_id}") from exc
-    response = requests.get(
-        spec["url"],
-        headers={"User-Agent": "tradingview-indicators-research/1.0"},
-        timeout=(15, 60),
-    )
-    response.raise_for_status()
-    frame = pd.read_csv(io.BytesIO(response.content))
+    if "path" in spec:
+        frame = pd.read_csv(HERE / spec["path"])
+    else:
+        response = requests.get(
+            spec["url"],
+            headers={"User-Agent": "tradingview-indicators-research/1.0"},
+            timeout=(15, 60),
+        )
+        response.raise_for_status()
+        frame = pd.read_csv(io.BytesIO(response.content))
     if "date" not in frame.columns or spec["value_col"] not in frame.columns:
         raise RuntimeError(f"FRED mirror for {series_id} has unexpected columns: {list(frame.columns)}")
     dates = pd.to_datetime(frame["date"], errors="raise").dt.normalize()
