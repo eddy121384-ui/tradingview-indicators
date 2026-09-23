@@ -64,7 +64,7 @@ float pmi_mfg = request.economic("US", "BCOI")
 float pmi_svs = request.economic("US", "NMPMI")
 float cpi_headline_yoy = request.economic("US", "IRYY")
 float cpi_core_yoy = request.economic("US", "CIR")
-float core_pce_level = request.economic("US", "CPCEPI")
+float core_pce_level = request.security("FRED:PCEPILFE", "M", close)  // pre-outcome transport amendment: same BEA Core PCE index
 
 float fed_funds = request.security("FRED:FEDFUNDS", "M", close)
 float y10 = request.security("FRED:DGS10", "M", close)
