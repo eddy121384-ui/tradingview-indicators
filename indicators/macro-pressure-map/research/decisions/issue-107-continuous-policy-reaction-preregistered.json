@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "issue": 107,
+  "phase": "continuous-policy-reaction-preregistration",
+  "created_before_policy_outcomes": true,
+  "created_before_display_formula": true,
+  "production_v66_modified": false,
+  "purpose": "Test whether frozen V6.6 GPI/IPI levels, trajectory, and one policy starting-point variable contain stable continuous information about the next 6-month Fed policy move.",
+  "core_freeze": {
+    "source_of_truth": "indicators/macro-pressure-map/src/macro-pressure-map-v6.6.pine",
+    "python_mirror": "indicators/macro-pressure-map/research/v6_6_core.py",
+    "config_path": "default market-only V6.6",
+    "forbidden_changes": [
+      "GPI/IPI formulas",
+      "component weights",
+      "20/63/252 lookbacks",
+      "thresholds",
+      "3x3 regime",
+      "FCPI",
+      "risk note",
+      "smoothing/raw-state semantics"
+    ]
+  },
+  "data_gates": {
+    "A1_public_feed_screening": {
+      "source": "existing repo public_data.py mapping + frozen V6.6 Python mirror",
+      "interpretation": "screening only; public Yahoo/FRED feeds are not claimed vendor-identical to TradingView",
+      "can_authorize_production": false
+    },
+    "A2_tradingview_feed_confirmation": {
+      "source": "TradingView-source V6.6 axis export/parity-compatible history",
+      "required_if_A1_passes": true,
+      "can_authorize_phase_B": true,
+      "note": "Issue #59 established Pine↔Python formula parity on same TradingView history, not public-feed identity."
+    }
+  },
+  "features": {
+    "axis_levels": [
+      "GPI",
+      "IPI"
+    ],
+    "fast_len": 20,
+    "mid_len": 63,
+    "formulas": {
+      "fast_slope_GPI": "(GPI_t - GPI_t-20) / 20",
+      "mid_slope_GPI": "(GPI_t - GPI_t-63) / 63",
+      "acceleration_GPI": "fast_slope_GPI - mid_slope_GPI",
+      "fast_slope_IPI": "(IPI_t - IPI_t-20) / 20",
+      "mid_slope_IPI": "(IPI_t - IPI_t-63) / 63",
+      "acceleration_IPI": "fast_slope_IPI - mid_slope_IPI"
+    },
+    "policy_starting_point": {
+      "name": "real_policy_rate",
+      "formula": "FEDFUNDS_(m-2) - CorePCE_YoY_(m-2)",
+      "fed_funds_source": "FRED FEDFUNDS",
+      "core_pce_source": "FRED PCEPILFE",
+      "core_pce_yoy": "100*(PCEPILFE_t/PCEPILFE_t-12 - 1)",
+      "lag_months": 2,
+      "reason": "Conservative monthly availability rule; no real-time vintage claim."
+    }
+  },
+  "monthly_sampling": {
+    "gpi_ipi": "last available daily observation in calendar month m",
+    "trajectory": "computed on daily V6.6 raw axes before month-end sampling",
+    "policy_state": "m-2 monthly observation",
+    "outcome": "FEDFUNDS_(m+6) - FEDFUNDS_m",
+    "outcome_unit": "percentage points",
+    "primary_horizon_months": 6,
+    "diagnostics_horizons_months": [
+      3,
+      12
+    ],
+    "latest_frozen_outcome_month": "2025-12",
+    "latest_primary_forecast_origin": "2025-06"
+  },
+  "model_ladder": {
+    "M0": {
+      "label": "macro levels",
+      "features": [
+        "GPI",
+        "IPI"
+      ]
+    },
+    "M1": {
+      "label": "levels + policy starting point",
+      "features": [
+        "GPI",
+        "IPI",
+        "real_policy_rate"
+      ]
+    },
+    "M2": {
+      "label": "levels + stance + trajectory",
+      "features": [
+        "GPI",
+        "IPI",
+        "real_policy_rate",
+        "fast_slope_GPI",
+        "mid_slope_GPI",
+        "acceleration_GPI",
+        "fast_slope_IPI",
+        "mid_slope_IPI",
+        "acceleration_IPI"
+      ]
+    }
+  },
+  "estimation": {
+    "primary": "expanding-window OLS with intercept",
+    "feature_standardization": "training-window mean/std only",
+    "zero_std_policy": "drop no feature dynamically; fail closed if a training feature has zero variance",
+    "first_oos_origin": "2015-01",
+    "coefficient_information_rule": "training row is eligible only when its 6M policy outcome would already be known before the current forecast origin",
+    "full_sample_fit_not_predictive_evidence": true,
+    "rolling_8y_diagnostic_only": true,
+    "initial_training_information_date": "2014-12",
+    "first_oos_latest_eligible_training_origin": "2014-06",
+    "training_origin_cutoff_rule": "For forecast origin m with H=6, training origins must be <= m-(H+1) months, so their full 6M outcome is known strictly before m.",
+    "minimum_complete_training_rows": 36,
+    "minimum_complete_training_rows_reason": "At least four observations per M2 feature before OOS estimation; engineering guard only, fixed before outcomes.",
+    "comparison_sample_policy": "M0/M1/M2 use the same complete-case rows: all M2 features and the primary 6M outcome must be finite for both training and evaluation."
+  },
+  "metrics": {
+    "primary": [
+      "RMSE",
+      "MAE",
+      "Pearson correlation"
+    ],
+    "directional_diagnostic": {
+      "realized_nontrivial_move_threshold_pp": 0.25,
+      "metric": "sign agreement on observations with abs(realized 6M change) > 0.25pp",
+      "not_a_model_label": true
+    },
+    "incremental": [
+      "M1 minus M0",
+      "M2 minus M1"
+    ]
+  },
+  "temporal_validation": [
+    {
+      "label": "pre_COVID_modern",
+      "start": "2015-01",
+      "end": "2019-12"
+    },
+    {
+      "label": "COVID_inflation_transition",
+      "start": "2020-01",
+      "end": "2022-12"
+    },
+    {
+      "label": "higher_rate_disinflation",
+      "start": "2023-01",
+      "end": "2025-06"
+    }
+  ],
+  "phase_A_verdicts": [
+    "continuous_policy_information_stable",
+    "levels_and_stance_sufficient_dynamics_add_no_value",
+    "modern_policy_relation_period_dependent",
+    "no_useful_policy_information",
+    "inconclusive_short_sample"
+  ],
+  "phase_A_decision_rules": {
+    "continuous_policy_information_stable": "M2 improves primary OOS error versus M1, does not materially degrade directional diagnostics, and the improvement is not isolated to only one predeclared temporal segment. A1 alone is still screening and requires A2 confirmation.",
+    "levels_and_stance_sufficient_dynamics_add_no_value": "M1 improves over M0 but M2 does not provide stable incremental value over M1.",
+    "modern_policy_relation_period_dependent": "Useful full-sample relation exists but incremental signs/performance materially reverse or concentrate in one temporal segment.",
+    "no_useful_policy_information": "Neither stance nor trajectory produces useful OOS information over M0.",
+    "inconclusive_short_sample": "Effective OOS sample or period counts are too small/conflicting to classify defensibly."
+  },
+  "phase_B_boundary": {
+    "authorized_only_if": "A2 TradingView-feed confirmation earns continuous_policy_information_stable",
+    "display_name": "Policy Pressure Proxy",
+    "display_only": true,
+    "categorical_labels_default": false,
+    "thresholds_for_hawk_dove_forbidden": true,
+    "formula_must_be_preregistered_after_phase_A": true
+  },
+  "forbidden": [
+    "Treasury/equity/gold/ETF returns",
+    "portfolio metrics or allocation logic",
+    "JOLTS",
+    "yield curve",
+    "term premium",
+    "market-implied cuts",
+    "10Y real yield as extra policy input",
+    "FCPI as reaction input",
+    "balance-sheet/QE variable",
+    "changing 20/63 windows",
+    "interaction terms in primary ladder",
+    "promoting 3M or 12M horizon because it looks better",
+    "hard hawkish/dovish model labels",
+    "production Policy Pressure line before A2 confirmation"
+  ]
+}
