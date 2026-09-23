@@ -1,0 +1,370 @@
+//@version=5
+indicator("BCI-10 Intended v0.1 — Fed Validation", shorttitle="BCI10-I-Fed", overlay=false)
+
+// Issue #105 preregistered research harness.
+// Run on a MONTHLY chart. No Treasury or portfolio data are used.
+
+// ─────────────────────────────────────────────────────────────
+// Frozen constants
+// ─────────────────────────────────────────────────────────────
+int ZLEN = 120
+float NAIRU = 4.0
+float W_G_LEAD_PMI = 0.60
+float W_G_MFG = 0.35
+float W_I_PRICE = 0.70
+float W_L_CORE = 0.60
+
+zscore_intended(float src, int len) =>
+    float m = ta.sma(src, len)
+    float s = ta.stdev(src, len)
+    na(m) or na(s) ? na : s == 0.0 ? 0.0 : (src - m) / s
+
+class_signal(float x) =>
+    x > 0.3 ? 1 : x < -0.3 ? -1 : 0
+
+class_actual(float x) =>
+    x > 0.25 ? 1 : x < -0.25 ? -1 : 0
+
+class_index(int c) =>
+    c + 1
+
+corr_from_sums(int n, float sx, float sy, float sxx, float syy, float sxy) =>
+    float nf = n
+    float num = nf * sxy - sx * sy
+    float den2 = (nf * sxx - sx * sx) * (nf * syy - sy * sy)
+    n >= 2 and den2 > 0.0 ? num / math.sqrt(den2) : na
+
+balanced_accuracy(array<int> cm) =>
+    float sumRecall = 0.0
+    int used = 0
+    for row = 0 to 2
+        int total = array.get(cm, row * 3) + array.get(cm, row * 3 + 1) + array.get(cm, row * 3 + 2)
+        if total > 0
+            sumRecall += float(array.get(cm, row * 3 + row)) / float(total)
+            used += 1
+    used > 0 ? sumRecall / float(used) : na
+
+direction_accuracy(array<int> cm) =>
+    int easeTotal = array.get(cm, 0) + array.get(cm, 1) + array.get(cm, 2)
+    int tightTotal = array.get(cm, 6) + array.get(cm, 7) + array.get(cm, 8)
+    int denom = easeTotal + tightTotal
+    int correct = array.get(cm, 0) + array.get(cm, 8)
+    denom > 0 ? float(correct) / float(denom) : na
+
+fmt(float x) =>
+    na(x) ? "NA" : str.tostring(x, "#.###")
+
+fmt_pct(float x) =>
+    na(x) ? "NA" : str.tostring(100.0 * x, "#.0") + "%"
+
+// ─────────────────────────────────────────────────────────────
+// Intended-semantics source repairs
+// ─────────────────────────────────────────────────────────────
+float pmi_mfg = request.economic("US", "BCOI")
+float pmi_svs = request.economic("US", "NMPMI")
+float cpi_headline_yoy = request.economic("US", "IRYY")
+float cpi_core_yoy = request.economic("US", "CIR")
+float core_pce_level = request.security("FRED:PCEPILFE", "M", close)  // pre-outcome transport amendment: same BEA Core PCE index
+
+float fed_funds = request.security("FRED:FEDFUNDS", "M", close)
+float y10 = request.security("FRED:DGS10", "M", close)
+float y2 = request.security("FRED:DGS2", "M", close)
+float unemployment = request.security("FRED:UNRATE", "M", close)
+float nfp_level = request.security("FRED:PAYEMS", "M", close)
+float wage_level = request.security("FRED:CES0500000003", "M", close)
+float jolts_openings_rate = request.security("FRED:JTSJOR", "M", close)
+float jolts_quits_rate = request.security("FRED:JTSQUR", "M", close)
+
+// ─────────────────────────────────────────────────────────────
+// Original factor architecture, repaired source semantics
+// ─────────────────────────────────────────────────────────────
+float z_pmi_m = zscore_intended(pmi_mfg, ZLEN)
+float z_pmi_s = zscore_intended(pmi_svs, ZLEN)
+float dpmi_m = pmi_mfg - pmi_mfg[1]
+float dpmi_s = pmi_svs - pmi_svs[1]
+float z_dpm = zscore_intended(dpmi_m, ZLEN)
+float z_dps = zscore_intended(dpmi_s, ZLEN)
+
+float core_pce_yoy = (core_pce_level / core_pce_level[12] - 1.0) * 100.0
+float z_cpi_h = zscore_intended(cpi_headline_yoy, ZLEN)
+float z_cpi_c = zscore_intended(cpi_core_yoy, ZLEN)
+float z_pce_c = zscore_intended(core_pce_yoy, ZLEN)
+float i_price = 0.20 * z_cpi_h + 0.40 * z_cpi_c + 0.40 * z_pce_c
+
+float wage_yoy = (wage_level / wage_level[12] - 1.0) * 100.0
+float z_wage = zscore_intended(wage_yoy, ZLEN)
+float i_axis = W_I_PRICE * i_price + (1.0 - W_I_PRICE) * z_wage
+float di_raw = i_axis - i_axis[1]
+float z_di = zscore_intended(di_raw, ZLEN)
+
+float uer_gap = unemployment - NAIRU
+float z_uer = zscore_intended(unemployment, ZLEN)
+float z_uergap = zscore_intended(uer_gap, ZLEN)
+float duer_3m = unemployment - unemployment[3]
+float z_du = zscore_intended(duer_3m, ZLEN)
+
+float nfp_ma3 = ta.sma(nfp_level, 3)
+float nfp_d6m = nfp_ma3 - nfp_ma3[6]
+float z_dnfp = zscore_intended(nfp_d6m, ZLEN)
+
+float rir = fed_funds - cpi_core_yoy
+float z_rir = zscore_intended(rir, ZLEN)
+float yc = y10 - y2
+float z_yc = zscore_intended(yc, ZLEN)
+
+float z_jo = zscore_intended(jolts_openings_rate, ZLEN)
+float z_qo = zscore_intended(jolts_quits_rate, ZLEN)
+float lt_axis = 0.40 * z_jo + 0.30 * z_qo + 0.30 * z_wage
+
+float g_lead = W_G_LEAD_PMI * z_pmi_m + (1.0 - W_G_LEAD_PMI) * z_dpm
+float g_mfg = W_G_LEAD_PMI * z_pmi_m + (1.0 - W_G_LEAD_PMI) * z_dpm
+float g_svs = W_G_LEAD_PMI * z_pmi_s + (1.0 - W_G_LEAD_PMI) * z_dps
+float g_total = W_G_MFG * g_mfg + (1.0 - W_G_MFG) * g_svs
+
+float l_core = 0.70 * z_uer + 1.30 * z_du
+float l_axis = W_L_CORE * l_core + (1.0 - W_L_CORE) * (-z_dnfp)
+
+float p_axis = 0.50 * z_rir + 0.30 * i_axis + 0.20 * (-z_uergap)
+
+float inflation_panic = math.max(0.0, i_axis - 1.5)
+float r_literal = 0.25 * (-g_lead) + 0.25 * z_du + 0.15 * (-z_yc) - 0.15 * i_axis - 0.10 * z_di - 0.10 * lt_axis - 0.20 * inflation_panic
+float r_hawk = -r_literal
+
+float ps_intended = 0.40 * p_axis + 0.40 * r_hawk + 0.20 * (p_axis * r_hawk)
+
+// ─────────────────────────────────────────────────────────────
+// Primary preregistered validation alignment
+// Current realization bar t = forecast origin m + 6.
+// Signal observation = m - 2 = t - 8.
+// Freeze realized outcomes at Dec-2025.
+// ─────────────────────────────────────────────────────────────
+float actual_6m = fed_funds - fed_funds[6]
+float sig_p = p_axis[8]
+float sig_r = r_hawk[8]
+float sig_ps = ps_intended[8]
+
+bool frozen_end = year <= 2025
+bool valid_eval = frozen_end and not na(actual_6m) and not na(sig_p) and not na(sig_r) and not na(sig_ps)
+
+var int n = 0
+var float sy = 0.0
+var float syy = 0.0
+
+var float sum_p = 0.0
+var float sum_p2 = 0.0
+var float sum_p_y = 0.0
+
+var float sum_r = 0.0
+var float sum_r2 = 0.0
+var float sum_r_y = 0.0
+
+var float sum_ps = 0.0
+var float sum_ps2 = 0.0
+var float sum_ps_y = 0.0
+
+var array<int> cmP = array.new_int(9, 0)
+var array<int> cmR = array.new_int(9, 0)
+var array<int> cmPS = array.new_int(9, 0)
+
+var int firstOrigin = na
+var int lastOrigin = na
+
+if valid_eval
+    n += 1
+    sy += actual_6m
+    syy += actual_6m * actual_6m
+
+    sum_p += sig_p
+    sum_p2 += sig_p * sig_p
+    sum_p_y += sig_p * actual_6m
+
+    sum_r += sig_r
+    sum_r2 += sig_r * sig_r
+    sum_r_y += sig_r * actual_6m
+
+    sum_ps += sig_ps
+    sum_ps2 += sig_ps * sig_ps
+    sum_ps_y += sig_ps * actual_6m
+
+    int a = class_actual(actual_6m)
+    int cp = class_signal(sig_p)
+    int cr = class_signal(sig_r)
+    int cps = class_signal(sig_ps)
+
+    int ai = class_index(a)
+    int ip = ai * 3 + class_index(cp)
+    int ir = ai * 3 + class_index(cr)
+    int ips = ai * 3 + class_index(cps)
+
+    array.set(cmP, ip, array.get(cmP, ip) + 1)
+    array.set(cmR, ir, array.get(cmR, ir) + 1)
+    array.set(cmPS, ips, array.get(cmPS, ips) + 1)
+
+    if na(firstOrigin)
+        firstOrigin := time[6]
+    lastOrigin := time[6]
+
+float corrP = corr_from_sums(n, sum_p, sy, sum_p2, syy, sum_p_y)
+float corrR = corr_from_sums(n, sum_r, sy, sum_r2, syy, sum_r_y)
+float corrPS = corr_from_sums(n, sum_ps, sy, sum_ps2, syy, sum_ps_y)
+
+float balP = balanced_accuracy(cmP)
+float balR = balanced_accuracy(cmR)
+float balPS = balanced_accuracy(cmPS)
+float dirP = direction_accuracy(cmP)
+float dirR = direction_accuracy(cmR)
+float dirPS = direction_accuracy(cmPS)
+
+// ─────────────────────────────────────────────────────────────
+// Policy Pivot event study.
+// Pivot observed at s, conservatively recognized at s+2.
+// At current bar t, +H outcome uses event at t-(H+2).
+// ─────────────────────────────────────────────────────────────
+bool pivotUp = ta.crossover(ps_intended, 0.0)
+bool pivotDn = ta.crossunder(ps_intended, 0.0)
+
+var int up3N = 0
+var float up3Sum = 0.0
+var int dn3N = 0
+var float dn3Sum = 0.0
+
+var int up6N = 0
+var float up6Sum = 0.0
+var int dn6N = 0
+var float dn6Sum = 0.0
+
+var int up12N = 0
+var float up12Sum = 0.0
+var int dn12N = 0
+var float dn12Sum = 0.0
+
+if frozen_end and pivotUp[5] and not na(fed_funds[3])
+    up3N += 1
+    up3Sum += fed_funds - fed_funds[3]
+if frozen_end and pivotDn[5] and not na(fed_funds[3])
+    dn3N += 1
+    dn3Sum += fed_funds - fed_funds[3]
+
+if frozen_end and pivotUp[8] and not na(fed_funds[6])
+    up6N += 1
+    up6Sum += fed_funds - fed_funds[6]
+if frozen_end and pivotDn[8] and not na(fed_funds[6])
+    dn6N += 1
+    dn6Sum += fed_funds - fed_funds[6]
+
+if frozen_end and pivotUp[14] and not na(fed_funds[12])
+    up12N += 1
+    up12Sum += fed_funds - fed_funds[12]
+if frozen_end and pivotDn[14] and not na(fed_funds[12])
+    dn12N += 1
+    dn12Sum += fed_funds - fed_funds[12]
+
+float up3Mean = up3N > 0 ? up3Sum / up3N : na
+float dn3Mean = dn3N > 0 ? dn3Sum / dn3N : na
+float up6Mean = up6N > 0 ? up6Sum / up6N : na
+float dn6Mean = dn6N > 0 ? dn6Sum / dn6N : na
+float up12Mean = up12N > 0 ? up12Sum / up12N : na
+float dn12Mean = dn12N > 0 ? dn12Sum / dn12N : na
+
+// ─────────────────────────────────────────────────────────────
+// Visual diagnostics
+// ─────────────────────────────────────────────────────────────
+plot(p_axis, "P — stance", color=color.gray, linewidth=1)
+plot(r_hawk, "R_hawk — momentum", color=color.blue, linewidth=1)
+plot(ps_intended, "PS intended", color=color.white, linewidth=3)
+hline(1.0, "Strong hawkish", color=color.new(color.red, 50))
+hline(0.3, "Mild hawkish", color=color.new(color.orange, 60))
+hline(0.0, "Neutral", color=color.new(color.gray, 50))
+hline(-0.3, "Mild dovish", color=color.new(color.aqua, 60))
+hline(-1.0, "Strong dovish", color=color.new(color.blue, 50))
+
+plotshape(pivotUp, title="Pivot hawkish", style=shape.triangleup, location=location.bottom, size=size.tiny, color=color.red, text="H")
+plotshape(pivotDn, title="Pivot dovish", style=shape.triangledown, location=location.top, size=size.tiny, color=color.aqua, text="D")
+
+// Hidden plots make chart-data export easier without cluttering the pane.
+plot(actual_6m, "Realized 6M EFFR change at realization month", display=display.none)
+plot(sig_p, "Aligned P signal m-2", display=display.none)
+plot(sig_r, "Aligned R_hawk signal m-2", display=display.none)
+plot(sig_ps, "Aligned PS signal m-2", display=display.none)
+plot(valid_eval ? 1.0 : 0.0, "Validation row", display=display.none)
+
+// ─────────────────────────────────────────────────────────────
+// Result table
+// ─────────────────────────────────────────────────────────────
+var table t = table.new(position.top_right, 4, 16, bgcolor=color.new(color.black, 15), frame_color=color.gray, frame_width=1)
+
+if barstate.islast
+    table.cell(t, 0, 0, "BCI-10 Intended v0.1", bgcolor=color.new(color.gray, 55), text_color=color.white)
+    table.cell(t, 1, 0, "P", bgcolor=color.new(color.gray, 55), text_color=color.white)
+    table.cell(t, 2, 0, "R_hawk", bgcolor=color.new(color.gray, 55), text_color=color.white)
+    table.cell(t, 3, 0, "PS", bgcolor=color.new(color.gray, 55), text_color=color.white)
+
+    table.cell(t, 0, 1, "Latest")
+    table.cell(t, 1, 1, fmt(p_axis))
+    table.cell(t, 2, 1, fmt(r_hawk))
+    table.cell(t, 3, 1, fmt(ps_intended))
+
+    table.cell(t, 0, 2, "OOS rows")
+    table.cell(t, 1, 2, str.tostring(n))
+    table.cell(t, 2, 2, "")
+    table.cell(t, 3, 2, "")
+
+    table.cell(t, 0, 3, "First origin")
+    table.cell(t, 1, 3, na(firstOrigin) ? "NA" : str.format("{0,date,yyyy-MM}", firstOrigin))
+    table.cell(t, 0, 4, "Last origin")
+    table.cell(t, 1, 4, na(lastOrigin) ? "NA" : str.format("{0,date,yyyy-MM}", lastOrigin))
+
+    table.cell(t, 0, 5, "Corr vs future 6M EFFR")
+    table.cell(t, 1, 5, fmt(corrP))
+    table.cell(t, 2, 5, fmt(corrR))
+    table.cell(t, 3, 5, fmt(corrPS))
+
+    table.cell(t, 0, 6, "Balanced accuracy")
+    table.cell(t, 1, 6, fmt_pct(balP))
+    table.cell(t, 2, 6, fmt_pct(balR))
+    table.cell(t, 3, 6, fmt_pct(balPS))
+
+    table.cell(t, 0, 7, "Tight/Ease accuracy")
+    table.cell(t, 1, 7, fmt_pct(dirP))
+    table.cell(t, 2, 7, fmt_pct(dirR))
+    table.cell(t, 3, 7, fmt_pct(dirPS))
+
+    table.cell(t, 0, 8, "Pivot outcome")
+    table.cell(t, 1, 8, "Hawk cross")
+    table.cell(t, 2, 8, "Dove cross")
+    table.cell(t, 3, 8, "")
+
+    table.cell(t, 0, 9, "+3M EFFR")
+    table.cell(t, 1, 9, fmt(up3Mean) + " (n=" + str.tostring(up3N) + ")")
+    table.cell(t, 2, 9, fmt(dn3Mean) + " (n=" + str.tostring(dn3N) + ")")
+
+    table.cell(t, 0, 10, "+6M EFFR")
+    table.cell(t, 1, 10, fmt(up6Mean) + " (n=" + str.tostring(up6N) + ")")
+    table.cell(t, 2, 10, fmt(dn6Mean) + " (n=" + str.tostring(dn6N) + ")")
+
+    table.cell(t, 0, 11, "+12M EFFR")
+    table.cell(t, 1, 11, fmt(up12Mean) + " (n=" + str.tostring(up12N) + ")")
+    table.cell(t, 2, 11, fmt(dn12Mean) + " (n=" + str.tostring(dn12N) + ")")
+
+    table.cell(t, 0, 12, "PS confusion rows")
+    table.cell(t, 1, 12, "Pred Dove")
+    table.cell(t, 2, 12, "Pred Neutral")
+    table.cell(t, 3, 12, "Pred Hawk")
+
+    table.cell(t, 0, 13, "Actual Ease")
+    table.cell(t, 1, 13, str.tostring(array.get(cmPS, 0)))
+    table.cell(t, 2, 13, str.tostring(array.get(cmPS, 1)))
+    table.cell(t, 3, 13, str.tostring(array.get(cmPS, 2)))
+
+    table.cell(t, 0, 14, "Actual Neutral")
+    table.cell(t, 1, 14, str.tostring(array.get(cmPS, 3)))
+    table.cell(t, 2, 14, str.tostring(array.get(cmPS, 4)))
+    table.cell(t, 3, 14, str.tostring(array.get(cmPS, 5)))
+
+    table.cell(t, 0, 15, "Actual Tighten")
+    table.cell(t, 1, 15, str.tostring(array.get(cmPS, 6)))
+    table.cell(t, 2, 15, str.tostring(array.get(cmPS, 7)))
+    table.cell(t, 3, 15, str.tostring(array.get(cmPS, 8)))
+
+if not timeframe.ismonthly and barstate.islast
+    label.new(bar_index, ps_intended, "Issue #105 validation must run on a monthly chart.", style=label.style_label_down, color=color.red, textcolor=color.white)

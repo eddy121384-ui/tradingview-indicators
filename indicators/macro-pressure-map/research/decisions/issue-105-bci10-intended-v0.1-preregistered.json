@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "issue": 105,
+  "phase": "bci10-intended-semantics-v0.1-fed-validation-preregistration",
+  "created_before_fed_validation_results": true,
+  "created_before_treasury_results": true,
+  "upstream_audit_issue": 103,
+  "upstream_audit_commit": "d718a5521a31b6b20fce015b4e6b22cedc5274f1",
+  "model_identity": "BCI-10 Intended-semantics v0.1",
+  "exact_original_claim": false,
+  "production_v66_modified": false,
+  "treasury_validation_in_scope": false,
+  "frozen_defaults": {
+    "zscore_period_months": 120,
+    "nairu_percent": 4,
+    "w_g_lead_pmi": 0.6,
+    "w_g_mfg": 0.35,
+    "w_i_price": 0.7,
+    "w_l_core": 0.6
+  },
+  "source_repairs": {
+    "manufacturing_pmi": {
+      "original": "ECONOMICS:USISMMP (commented as PMI)",
+      "intended": "TradingView request.economic('US','BCOI')",
+      "rationale": "Current TradingView U.S. BCOI page identifies the series as ISM Manufacturing PMI / business confidence."
+    },
+    "services_pmi": {
+      "original": "ECONOMICS:USNMPR",
+      "intended": "TradingView request.economic('US','NMPMI')",
+      "rationale": "USNMPR is non-manufacturing Prices, while NMPMI is the non-manufacturing PMI."
+    },
+    "headline_inflation": {
+      "original": "ECONOMICS:USIRYY",
+      "intended": "TradingView request.economic('US','IRYY')",
+      "transform": "use directly as YoY percent"
+    },
+    "core_cpi": {
+      "original": "ECONOMICS:USCCPI",
+      "intended": "TradingView request.economic('US','CIR')",
+      "transform": "use directly as core inflation YoY percent"
+    },
+    "core_pce": {
+      "original": "ECONOMICS:USPCEPIAC incorrectly named pce_core then YoY-transformed again",
+      "intended": "TradingView request.economic('US','CPCEPI')",
+      "transform": "100 * (CPCEPI / CPCEPI[12] - 1)",
+      "rationale": "CPCEPI is Core PCE Price Index level; compute YoY exactly once."
+    },
+    "jolts_openings": {
+      "original": "FRED:JTSJOL level",
+      "intended": "FRED:JTSJOR rate",
+      "rationale": "Original comments intended rate-form JOLTS inputs."
+    },
+    "jolts_quits": {
+      "original": "FRED:JTSQUR",
+      "intended": "FRED:JTSQUR rate",
+      "change": "none"
+    },
+    "zscore_startup": {
+      "original": "std > 0 ? (src - mean) / std : 0",
+      "intended": "if mean/std unavailable -> na; else if std == 0 -> 0; else (src-mean)/std",
+      "rationale": "The literal helper zero-fills insufficient lookback history in Pine v5. Intended semantics require a real 120-month normalization window before the score is considered available."
+    }
+  },
+  "unchanged_sources": {
+    "fed_funds": "FRED:FEDFUNDS",
+    "y10": "FRED:DGS10",
+    "y2": "FRED:DGS2",
+    "unemployment": "FRED:UNRATE",
+    "nfp_level": "FRED:PAYEMS",
+    "wage_level": "FRED:CES0500000003"
+  },
+  "formulas": {
+    "zscore": "if sma/stdev over 120 months are unavailable -> na; if populated stdev == 0 -> 0; otherwise (src - sma120) / stdev120",
+    "g_lead": "0.60*z_pmi_mfg + 0.40*z_delta_pmi_mfg",
+    "g_mfg": "0.60*z_pmi_mfg + 0.40*z_delta_pmi_mfg",
+    "g_services": "0.60*z_pmi_services + 0.40*z_delta_pmi_services",
+    "g_total": "0.35*g_mfg + 0.65*g_services",
+    "i_price": "0.20*z_headline_cpi_yoy + 0.40*z_core_cpi_yoy + 0.40*z_core_pce_yoy",
+    "wage_yoy": "100 * (wage_level / wage_level[12] - 1)",
+    "i_axis": "0.70*i_price + 0.30*z_wage_yoy",
+    "z_di": "zscore(i_axis - i_axis[1],120)",
+    "l_core": "0.7*z_unemployment + 1.3*z_unemployment_3m_change",
+    "l_axis": "0.60*l_core + 0.40*(-z_nfp_6m_change)",
+    "lt_axis": "0.4*z_jolts_openings_rate + 0.3*z_jolts_quits_rate + 0.3*z_wage_yoy",
+    "z_real_rate": "zscore(fed_funds - core_cpi_yoy,120)",
+    "z_yield_curve": "zscore(y10 - y2,120)",
+    "p_axis": "0.5*z_real_rate + 0.3*i_axis + 0.2*(-z_unemployment_gap)",
+    "inflation_panic": "max(0, i_axis - 1.5)",
+    "r_literal": "0.25*(-g_lead) + 0.25*z_unemployment_3m_change + 0.15*(-z_yield_curve) - 0.15*i_axis - 0.10*z_di - 0.10*lt_axis - 0.20*inflation_panic",
+    "r_hawk": "-1 * r_literal",
+    "ps_intended": "0.4*p_axis + 0.4*r_hawk + 0.2*(p_axis*r_hawk)"
+  },
+  "sign_semantics": {
+    "p_axis_positive": "hawkish/restrictive",
+    "r_hawk_positive": "hawkish/tightening momentum",
+    "ps_intended_positive": "hawkish",
+    "ps_intended_negative": "dovish"
+  },
+  "ps_thresholds": {
+    "strong_hawkish": "> 1.0",
+    "mild_hawkish": "0.3 to 1.0",
+    "neutral": "-0.3 to 0.3 inclusive",
+    "mild_dovish": "-1.0 to -0.3",
+    "strong_dovish": "< -1.0"
+  },
+  "normalization_and_sample": {
+    "zscore_period_months": 120,
+    "wage_series_start": "2006-03",
+    "first_wage_yoy_expected": "2007-03",
+    "first_fully_populated_wage_zscore_expected": "2017-02",
+    "expected_full_surface_start_no_earlier_than": "2017-02",
+    "primary_signal_lag_months": 2,
+    "expected_first_forecast_origin_no_earlier_than": "2017-04",
+    "latest_primary_forecast_origin_given_effr_through_2025_12": "2025-06",
+    "warning": "The usable modern sample is short and contains only a few policy cycles. No structural multi-era claim is permitted.",
+    "startup_policy": "No zero-fill for insufficient history. Full dependent chain must be non-na before P/R/PS is eligible for validation."
+  },
+  "data_access_boundary": {
+    "ism_raw_history_committed_to_repo": false,
+    "ism_history_reason": "ISM historical PMI data are subject to access/usage restrictions. Use TradingView runtime data; do not scrape or redistribute raw ISM history.",
+    "tradingview_runtime_fields": [
+      "BCOI",
+      "NMPMI",
+      "IRYY",
+      "CIR",
+      "CPCEPI"
+    ],
+    "fred_runtime_symbols": [
+      "FEDFUNDS",
+      "DGS10",
+      "DGS2",
+      "UNRATE",
+      "PAYEMS",
+      "CES0500000003",
+      "JTSJOR",
+      "JTSQUR"
+    ]
+  },
+  "validation_timing": {
+    "evaluation_month": "m",
+    "signal_month": "m-2",
+    "primary_signal": "PS_intended[m-2]",
+    "comparison_signals": [
+      "P[m-2]",
+      "R_hawk[m-2]"
+    ],
+    "primary_outcome": "FEDFUNDS[m+6] - FEDFUNDS[m]",
+    "unit": "percentage points",
+    "rationale": "Two-month signal lag reduces macro publication-timing leakage."
+  },
+  "realized_policy_classes": {
+    "tightening": "> +0.25 percentage point over next 6 months",
+    "neutral": "[-0.25,+0.25]",
+    "easing": "< -0.25"
+  },
+  "signal_classes": {
+    "hawkish": "PS_intended > +0.3",
+    "neutral": "[-0.3,+0.3]",
+    "dovish": "PS_intended < -0.3"
+  },
+  "primary_tests": {
+    "no_model_fitting": true,
+    "continuous": [
+      "Pearson correlation P[m-2] vs future 6m EFFR change",
+      "Pearson correlation R_hawk[m-2] vs future 6m EFFR change",
+      "Pearson correlation PS_intended[m-2] vs future 6m EFFR change"
+    ],
+    "classification": [
+      "3-class confusion matrix for PS_intended",
+      "balanced accuracy",
+      "tighten/ease accuracy excluding realized neutral"
+    ],
+    "incremental_question": "Does PS_intended add useful policy information versus P alone, without optimizing weights?"
+  },
+  "pivot_event_study": {
+    "event": "PS_intended zero crossing at signal observation month s",
+    "recognition_month": "s+2",
+    "directions": [
+      "dovish_to_hawkish",
+      "hawkish_to_dovish"
+    ],
+    "horizons_months": [
+      3,
+      6,
+      12
+    ],
+    "outcome": "FEDFUNDS change from recognition month s+2 to recognition+horizon",
+    "publication_lag_months": 2,
+    "no_event_threshold_tuning": true
+  },
+  "verdict_categories": [
+    "modern_sample_policy_information_present",
+    "P_only_sufficient_R_adds_no_value",
+    "policy_surface_directionally_useful_but_sample_too_short",
+    "no_useful_modern_policy_information",
+    "inconclusive_short_sample"
+  ],
+  "hard_rules": [
+    "Do not alter original default weights or the 120-month z-score window.",
+    "Do not tune PS thresholds after outcomes are viewed.",
+    "Do not add Treasury or portfolio returns.",
+    "Do not call this exact original BCI-10.",
+    "Do not replace PMI runtime fields with scraped or redistributed ISM history.",
+    "Do not change R_hawk sign repair after validation."
+  ],
+  "comparison_signal_classes": {
+    "p_axis": {
+      "hawkish": "> +0.3",
+      "neutral": "[-0.3,+0.3]",
+      "dovish": "< -0.3"
+    },
+    "r_hawk": {
+      "hawkish": "> +0.3",
+      "neutral": "[-0.3,+0.3]",
+      "dovish": "< -0.3"
+    },
+    "rule": "Same +/-0.3 cutoffs as PS are used only for fixed diagnostic classification; no cutoff optimization."
+  }
+}

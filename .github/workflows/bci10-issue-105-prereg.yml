@@ -1,0 +1,38 @@
+name: BCI-10 Issue 105 Prereg
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/decisions/issue-105-*"
+      - "indicators/macro-pressure-map/research/test_issue_105_*"
+      - ".github/workflows/bci10-issue-105-prereg.yml"
+permissions:
+  contents: read
+jobs:
+  prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "pytest==9.1.1"
+      - name: Validate preregistration
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_105_bci10_intended_prereg.py
+      - name: Confirm historical prereg commit preceded validation code
+        run: |
+          PREREG_SHA=94ec3e9ebcf7b1d2cbd8c2fa9e311085c9d30cae
+          git cat-file -e "$PREREG_SHA:indicators/macro-pressure-map/research/decisions/issue-105-bci10-intended-v0.1-preregistered.json"
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/bci10_intended_v01_fed_validation.pine'; then
+            echo "Fed validation code existed in prereg commit"
+            exit 1
+          fi
+          if git ls-tree -r "$PREREG_SHA" --name-only | grep -Fxq 'indicators/macro-pressure-map/research/decisions/issue-105-bci10-intended-decision.json'; then
+            echo "Decision existed in prereg commit"
+            exit 1
+          fi
+          echo "Historical prereg commit cleanly precedes validation implementation."
