@@ -16,13 +16,31 @@ from pathlib import Path
 import generate_issue76_forward_behavior_logger_pine as base
 
 OLD_DECL = 'indicator("Wyckoff Regime Radar｜Issue #76 Forward Behavior Logger", shorttitle="#76 Forward Logger", overlay=false, precision=1)'
-NEW_DECL = 'indicator("Wyckoff Regime Radar｜Issue #78 Heterogeneous OOS1 Logger", shorttitle="#78 HET OOS1", overlay=false, precision=1)'
+NEW_DECL = 'indicator("Wyckoff Regime Radar｜Issue #78 Heterogeneous OOS1 Logger v2", shorttitle="#78 HET OOS1 v2", overlay=false, precision=1)'
 
 OLD_ALLOWED = 'issue76AllowedFeed = syminfo.tickerid == "OANDA:EURUSD" or syminfo.tickerid == "OANDA:GBPUSD" or syminfo.tickerid == "OANDA:USDJPY" or syminfo.tickerid == "TVC:US10Y" or syminfo.tickerid == "TVC:DE10Y" or syminfo.tickerid == "TVC:FR10Y" or syminfo.tickerid == "TVC:GB10Y" or syminfo.tickerid == "TVC:AU10Y" or syminfo.tickerid == "TVC:JP10Y"'
 NEW_ALLOWED = 'issue76AllowedFeed = syminfo.tickerid == "TVC:SPX" or syminfo.tickerid == "NASDAQ:NDX" or syminfo.tickerid == "OANDA:XAUUSD" or syminfo.tickerid == "OANDA:XAGUSD" or syminfo.tickerid == "BITSTAMP:BTCUSD" or syminfo.tickerid == "BITSTAMP:ETHUSD"'
 
 OLD_MARKER = '"ISSUE76|schema=1" +'
 NEW_MARKER = '"ISSUE76|schema=1|cohort=HET_OOS1" +'
+
+
+# Export-only memory safeguard.
+# In the frozen Issue #68 RC, MTF defaults to "Observe Only", which forces
+# mtfRawWeight to zero. The lower-timeframe arrays are therefore diagnostic-only
+# and cannot affect stage scores/formalId. OOS1 v2 replaces just those eight
+# array requests with empty arrays to avoid TradingView memory exhaustion on
+# long-history feeds such as XAUUSD.
+LIGHTWEIGHT_MTF_REPLACEMENTS = (
+    ('ltfBearEffortArr0 = request.security_lower_tf(syminfo.tickerid, mtfLowerTf, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)', 'ltfBearEffortArr0 = array.new_float(0)'),
+    ('ltfBullEffortArr0 = request.security_lower_tf(syminfo.tickerid, mtfLowerTf, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)', 'ltfBullEffortArr0 = array.new_float(0)'),
+    ('ltfBearEffortArr1 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf1, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)', 'ltfBearEffortArr1 = array.new_float(0)'),
+    ('ltfBullEffortArr1 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf1, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)', 'ltfBullEffortArr1 = array.new_float(0)'),
+    ('ltfBearEffortArr2 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf2, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)', 'ltfBearEffortArr2 = array.new_float(0)'),
+    ('ltfBullEffortArr2 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf2, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)', 'ltfBullEffortArr2 = array.new_float(0)'),
+    ('ltfBearEffortArr3 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf3, f_ltfBearEffortBar(), ignore_invalid_timeframe=true)', 'ltfBearEffortArr3 = array.new_float(0)'),
+    ('ltfBullEffortArr3 = request.security_lower_tf(syminfo.tickerid, mtfFallbackTf3, f_ltfBullEffortBar(), ignore_invalid_timeframe=true)', 'ltfBullEffortArr3 = array.new_float(0)'),
+)
 
 EXPECTED_FEEDS = (
     "TVC:SPX",
@@ -45,6 +63,12 @@ def generate(source: Path) -> str:
     candidate = replace_once(candidate, OLD_DECL, NEW_DECL, "logger declaration")
     candidate = replace_once(candidate, OLD_ALLOWED, NEW_ALLOWED, "allowed-feed line")
     candidate = replace_once(candidate, OLD_MARKER, NEW_MARKER, "cohort marker")
+
+    frozen_mtf_default = 'mtfMode = input.string("Observe Only"'
+    if frozen_mtf_default not in candidate:
+        raise RuntimeError("frozen MTF default drifted from Observe Only; lightweight OOS logger would be unsafe")
+    for old, new in LIGHTWEIGHT_MTF_REPLACEMENTS:
+        candidate = replace_once(candidate, old, new, "MTF observe-only request")
 
     # Diagnostic heartbeat is deliberately outside issue76Ready. It prints one
     # status line on the last confirmed historical bar so a silent ready-gate
@@ -97,6 +121,8 @@ def generate(source: Path) -> str:
         "issue76EventScale = symATR[20]",
         "issue76Move20 = f_issue76RawMove(close, issue76EventClose)",
         "ISSUE76|schema=1|cohort=HET_OOS1",
+        'mtfMode = input.string("Observe Only"',
+        "ltfBearEffortArr0 = array.new_float(0)",
     )
     for token in required:
         if token not in candidate:
