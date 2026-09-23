@@ -16,7 +16,7 @@ from pathlib import Path
 import generate_issue76_forward_behavior_logger_pine as base
 
 OLD_DECL = 'indicator("Wyckoff Regime Radar｜Issue #76 Forward Behavior Logger", shorttitle="#76 Forward Logger", overlay=false, precision=1)'
-NEW_DECL = 'indicator("Wyckoff Regime Radar｜Issue #78 Heterogeneous OOS1 Logger v2", shorttitle="#78 HET OOS1 v2", overlay=false, precision=1)'
+NEW_DECL = 'indicator("Wyckoff Regime Radar｜Issue #78 Heterogeneous OOS1 Logger v3", shorttitle="#78 HET OOS1 v3", overlay=false, precision=1, calc_bars_count=10000)'
 
 OLD_ALLOWED = 'issue76AllowedFeed = syminfo.tickerid == "OANDA:EURUSD" or syminfo.tickerid == "OANDA:GBPUSD" or syminfo.tickerid == "OANDA:USDJPY" or syminfo.tickerid == "TVC:US10Y" or syminfo.tickerid == "TVC:DE10Y" or syminfo.tickerid == "TVC:FR10Y" or syminfo.tickerid == "TVC:GB10Y" or syminfo.tickerid == "TVC:AU10Y" or syminfo.tickerid == "TVC:JP10Y"'
 NEW_ALLOWED = 'issue76AllowedFeed = syminfo.tickerid == "TVC:SPX" or syminfo.tickerid == "NASDAQ:NDX" or syminfo.tickerid == "OANDA:XAUUSD" or syminfo.tickerid == "OANDA:XAGUSD" or syminfo.tickerid == "BITSTAMP:BTCUSD" or syminfo.tickerid == "BITSTAMP:ETHUSD"'
@@ -121,6 +121,7 @@ def generate(source: Path) -> str:
         "issue76EventScale = symATR[20]",
         "issue76Move20 = f_issue76RawMove(close, issue76EventClose)",
         "ISSUE76|schema=1|cohort=HET_OOS1",
+        "calc_bars_count=10000",
         'mtfMode = input.string("Observe Only"',
         "ltfBearEffortArr0 = array.new_float(0)",
     )
