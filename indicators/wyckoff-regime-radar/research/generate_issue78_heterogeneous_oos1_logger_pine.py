@@ -50,7 +50,7 @@ def generate(source: Path) -> str:
     # status line on the last confirmed historical bar so a silent ready-gate
     # failure can be diagnosed without changing any research row semantics.
     heartbeat_anchor = "if issue76LogEnabled and issue76Ready and barstate.isconfirmed"
-    heartbeat = r'''if issue76LogEnabled and barstate.islastconfirmedhistory
+    heartbeat = r'''if issue76LogEnabled and barstate.islast
     log.warning(
          "HET_OOS1_STATUS" +
          "|ticker=" + syminfo.tickerid +
