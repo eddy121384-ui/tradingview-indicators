@@ -17,7 +17,7 @@ Do not use Heikin-Ashi, Renko, or another synthetic chart type.
 ## Export exactly these six feeds
 
 1. `TVC:SPX`
-2. `NASDAQ:NDX`
+2. `NASDAQ_DLY:NDX`
 3. `OANDA:XAUUSD`
 4. `OANDA:XAGUSD`
 5. `BITSTAMP:BTCUSD`

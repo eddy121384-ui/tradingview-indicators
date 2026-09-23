@@ -46,3 +46,9 @@ def test_calendarized_metrics_do_not_assume_252_bars():
 
 def test_profit_factor_basic():
     assert math.isclose(m.profit_factor([2.0, -1.0, 1.0]), 3.0)
+
+
+def test_ndx_runtime_feed_namespace_is_frozen():
+    assert "NASDAQ_DLY:NDX" in m.EXPECTED_MARKETS
+    assert "NASDAQ:NDX" not in m.EXPECTED_MARKETS
+    assert m.ASSET_CLASS["NASDAQ_DLY:NDX"] == "EquityIndex"

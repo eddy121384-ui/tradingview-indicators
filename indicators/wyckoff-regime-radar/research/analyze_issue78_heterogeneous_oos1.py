@@ -23,7 +23,7 @@ import analyze_issue78_r0_warning_first_composition as comp
 
 EXPECTED_MARKETS = (
     "TVC:SPX",
-    "NASDAQ:NDX",
+    "NASDAQ_DLY:NDX",
     "OANDA:XAUUSD",
     "OANDA:XAGUSD",
     "BITSTAMP:BTCUSD",
@@ -31,7 +31,7 @@ EXPECTED_MARKETS = (
 )
 ASSET_CLASS = {
     "TVC:SPX": "EquityIndex",
-    "NASDAQ:NDX": "EquityIndex",
+    "NASDAQ_DLY:NDX": "EquityIndex",
     "OANDA:XAUUSD": "PreciousMetals",
     "OANDA:XAGUSD": "PreciousMetals",
     "BITSTAMP:BTCUSD": "Crypto",

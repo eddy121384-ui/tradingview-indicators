@@ -1,5 +1,5 @@
 //@version=6
-indicator("Wyckoff Regime Radar｜Issue #78 Heterogeneous OOS1 Logger v3", shorttitle="#78 HET OOS1 v3", overlay=false, precision=1, calc_bars_count=10000)
+indicator("Wyckoff Regime Radar｜Issue #78 Heterogeneous OOS1 Logger v4", shorttitle="#78 HET OOS1 v4", overlay=false, precision=1, calc_bars_count=10000)
 
 // Chase Risk Market Regime Radar — Issue #68 release candidate.
 // Lineage: frozen v0.5.2.1 + accepted Issue #66 C-2 + Issue #68 yield-safe representation + exact symmetric HARD current-context cap.
@@ -1561,7 +1561,7 @@ issue76LogEnabled = input.bool(true, "Enable Issue #76 Pine Logs", group=groupIs
 issue76LogStart = input.time(0, "Event start time (1970 = all)", group=groupIssue76)
 issue76LogEnd = input.time(4102444800000, "Event end time (2100 = all)", group=groupIssue76)
 
-issue76AllowedFeed = syminfo.tickerid == "TVC:SPX" or syminfo.tickerid == "NASDAQ:NDX" or syminfo.tickerid == "OANDA:XAUUSD" or syminfo.tickerid == "OANDA:XAGUSD" or syminfo.tickerid == "BITSTAMP:BTCUSD" or syminfo.tickerid == "BITSTAMP:ETHUSD"
+issue76AllowedFeed = syminfo.tickerid == "TVC:SPX" or syminfo.tickerid == "NASDAQ_DLY:NDX" or syminfo.tickerid == "OANDA:XAUUSD" or syminfo.tickerid == "OANDA:XAGUSD" or syminfo.tickerid == "BITSTAMP:BTCUSD" or syminfo.tickerid == "BITSTAMP:ETHUSD"
 issue76D1 = timeframe.isdaily and timeframe.multiplier == 1
 issue76Representation = useYieldLevel ? "YIELD_LEVEL" : "PRICE_LOG"
 

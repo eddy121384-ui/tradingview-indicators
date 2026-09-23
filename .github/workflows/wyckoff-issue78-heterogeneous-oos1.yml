@@ -11,6 +11,7 @@ on:
       - 'indicators/wyckoff-regime-radar/research/test_issue78_heterogeneous_oos1.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-heterogeneous-oos1-preregistration.md'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-heterogeneous-oos1-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-heterogeneous-oos1-ndx-feed-amendment.md'
       - 'indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-heterogeneous-oos1-forward-logger.pine'
       - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-heterogeneous-oos1-*.csv'
 
@@ -52,7 +53,7 @@ jobs:
           FILE=indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-heterogeneous-oos1-forward-logger.pine
           grep -F 'ISSUE76|schema=1|cohort=HET_OOS1' "$FILE"
           grep -F 'syminfo.tickerid == "TVC:SPX"' "$FILE"
-          grep -F 'syminfo.tickerid == "NASDAQ:NDX"' "$FILE"
+          grep -F 'syminfo.tickerid == "NASDAQ_DLY:NDX"' "$FILE"
           grep -F 'syminfo.tickerid == "OANDA:XAUUSD"' "$FILE"
           grep -F 'syminfo.tickerid == "OANDA:XAGUSD"' "$FILE"
           grep -F 'syminfo.tickerid == "BITSTAMP:BTCUSD"' "$FILE"
