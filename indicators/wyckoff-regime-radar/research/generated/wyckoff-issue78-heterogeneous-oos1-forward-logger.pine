@@ -1639,6 +1639,20 @@ issue76Ready = issue76AllowedFeed and issue76D1 and issue76InWindow and issue76E
 plot(issue76AllowedFeed and issue76D1 ? formalId : na, "#76 Formal Stage ID", display=display.none)
 plot(issue76AllowedFeed and issue76D1 ? symATR : na, "#76 Event-time SymATR", display=display.none)
 
+if issue76LogEnabled and barstate.islastconfirmedhistory
+    log.warning(
+         "HET_OOS1_STATUS" +
+         "|ticker=" + syminfo.tickerid +
+         "|tf=" + timeframe.period +
+         "|allowed=" + str.tostring(issue76AllowedFeed) +
+         "|d1=" + str.tostring(issue76D1) +
+         "|in_window=" + str.tostring(issue76InWindow) +
+         "|formal=" + str.tostring(issue76EventFormal) +
+         "|scale=" + str.tostring(issue76EventScale) +
+         "|move20=" + str.tostring(issue76Move20) +
+         "|rv20=" + str.tostring(issue76Rv20) +
+         "|ready=" + str.tostring(issue76Ready))
+
 if issue76LogEnabled and issue76Ready and barstate.isconfirmed
     log.info(
          "ISSUE76|schema=1|cohort=HET_OOS1" +
