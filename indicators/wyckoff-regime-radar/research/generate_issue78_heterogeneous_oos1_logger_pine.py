@@ -46,6 +46,32 @@ def generate(source: Path) -> str:
     candidate = replace_once(candidate, OLD_ALLOWED, NEW_ALLOWED, "allowed-feed line")
     candidate = replace_once(candidate, OLD_MARKER, NEW_MARKER, "cohort marker")
 
+    # Diagnostic heartbeat is deliberately outside issue76Ready. It prints one
+    # status line on the last confirmed historical bar so a silent ready-gate
+    # failure can be diagnosed without changing any research row semantics.
+    heartbeat_anchor = "if issue76LogEnabled and issue76Ready and barstate.isconfirmed"
+    heartbeat = r'''if issue76LogEnabled and barstate.islastconfirmedhistory
+    log.warning(
+         "HET_OOS1_STATUS" +
+         "|ticker=" + syminfo.tickerid +
+         "|tf=" + timeframe.period +
+         "|allowed=" + str.tostring(issue76AllowedFeed) +
+         "|d1=" + str.tostring(issue76D1) +
+         "|in_window=" + str.tostring(issue76InWindow) +
+         "|formal=" + str.tostring(issue76EventFormal) +
+         "|scale=" + str.tostring(issue76EventScale) +
+         "|move20=" + str.tostring(issue76Move20) +
+         "|rv20=" + str.tostring(issue76Rv20) +
+         "|ready=" + str.tostring(issue76Ready))
+
+'''
+    candidate = replace_once(
+        candidate,
+        heartbeat_anchor,
+        heartbeat + heartbeat_anchor,
+        "OOS diagnostic heartbeat anchor",
+    )
+
     # Reuse the accepted ISSUE76 schema intentionally so the same causal parser
     # and OHLC reconstruction can be used without a second implementation.
     for feed in EXPECTED_FEEDS:
