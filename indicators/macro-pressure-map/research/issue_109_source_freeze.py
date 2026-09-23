@@ -136,6 +136,7 @@ def build_cpi_snapshot() -> tuple[pd.DataFrame, dict]:
     chunks = [(2005, 2014), (2015, 2024), (2025, 2026)]
     observations: list[dict] = []
     raw_hashes: list[dict] = []
+    skipped_non_numeric: list[dict] = []
 
     for start_year, end_year in chunks:
         data, raw = _bls_request(start_year, end_year)
@@ -155,9 +156,19 @@ def build_cpi_snapshot() -> tuple[pd.DataFrame, dict]:
             month = int(period[1:])
             if not 1 <= month <= 12:
                 continue
+            raw_value = str(item["value"]).strip().replace(",", "")
+            try:
+                value = float(raw_value)
+            except ValueError:
+                skipped_non_numeric.append({
+                    "year": int(item["year"]),
+                    "period": period,
+                    "raw_value": raw_value,
+                })
+                continue
             observations.append({
                 "date": f"{int(item['year']):04d}-{month:02d}-01",
-                "CPI_U_NSA": float(item["value"]),
+                "CPI_U_NSA": value,
             })
 
     frame = pd.DataFrame(observations)
@@ -174,6 +185,7 @@ def build_cpi_snapshot() -> tuple[pd.DataFrame, dict]:
         "series_id": BLS_SERIES,
         "concept": "CPI-U U.S. city average, All items, not seasonally adjusted",
         "chunks": raw_hashes,
+        "skipped_non_numeric_observations": skipped_non_numeric,
         "rows": int(len(frame)),
         "first_month": frame["date"].min().strftime("%Y-%m"),
         "last_month": frame["date"].max().strftime("%Y-%m"),
