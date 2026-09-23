@@ -13,7 +13,7 @@ def test_intended_sources_are_present():
         'request.economic("US", "NMPMI")',
         'request.economic("US", "IRYY")',
         'request.economic("US", "CIR")',
-        'request.economic("US", "CPCEPI")',
+        'request.security("FRED:PCEPILFE"',
         'request.security("FRED:JTSJOR"',
         'request.security("FRED:JTSQUR"',
     ]:
@@ -43,3 +43,10 @@ def test_no_treasury_or_portfolio_outcomes():
     s=text().lower()
     forbidden=["treasury return","t-bill return","portfolio return","spy","tlt","gld"]
     assert all(x not in s for x in forbidden)
+
+
+def test_core_pce_transport_amendment_is_documented_preoutcome():
+    amendment = Path("decisions/issue-105-preoutcome-runtime-source-amendment.md").read_text(encoding="utf-8")
+    assert "BEFORE ANY #105 OUTCOME WAS VIEWED" in amendment
+    assert 'request.security("FRED:PCEPILFE", "M", close)' in amendment
+    assert 'request.economic("US", "CPCEPI")' in amendment
