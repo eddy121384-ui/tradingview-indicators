@@ -66,7 +66,7 @@ def _log_block() -> str:
     return f"""
 // ============================================================================
 // Issue #78 — Python classifier parity Pine Logs transport.
-// Schema after I78P1| : {{schema}}
+// Schema after I78P1| : {schema}
 // Engineering parity only. No policy economics.
 // ============================================================================
 groupIssue78ParityLog = "研究｜Issue #78 Python Parity Logs"
@@ -77,7 +77,7 @@ f_i78pNum(_x) => na(_x) ? "na" : str.tostring(_x, "#.###############")
 issue78ParityInWindow = bar_index >= math.max(last_bar_index - issue78ParityCaptureBars + 1, 0)
 
 if issue78ParityLogEnabled and barstate.isconfirmed and issue78ParityInWindow
-    log.info({{expression}})
+    log.info({expression})
 """.strip() + "\n"
 
 
