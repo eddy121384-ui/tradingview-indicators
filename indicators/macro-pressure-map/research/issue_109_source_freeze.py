@@ -135,6 +135,7 @@ def _bls_request(start_year: int, end_year: int) -> tuple[dict, bytes]:
 def build_cpi_snapshot() -> tuple[pd.DataFrame, dict]:
     chunks = [(2005, 2014), (2015, 2024), (2025, 2026)]
     observations: list[dict] = []
+    missing_or_nonnumeric: list[dict] = []
     raw_hashes: list[dict] = []
     skipped_non_numeric: list[dict] = []
 
@@ -191,6 +192,8 @@ def build_cpi_snapshot() -> tuple[pd.DataFrame, dict]:
         "last_month": frame["date"].max().strftime("%Y-%m"),
         "transformation_reserved_for_later_diagnostic": "100 * (CPI_t / CPI_t-12 - 1)",
         "availability_lag_months_reserved_for_later_diagnostic": 2,
+        "missing_or_nonnumeric_observations": missing_or_nonnumeric,
+        "missing_value_policy": "exclude nonnumeric observations; no zero-fill, interpolation, or forward-fill",
         "no_issue109_payoff_computed": True,
     }
     return frame, manifest
