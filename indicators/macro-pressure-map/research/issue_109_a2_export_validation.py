@@ -68,15 +68,15 @@ def parse_export(path: Path) -> tuple[pd.DataFrame, dict]:
     date_col = find_date_column(cols)
 
     mapping = {
-        "raw_gpi": find_column(cols, ("a2", "raw", "gpi")),
-        "raw_ipi": find_column(cols, ("a2", "raw", "ipi")),
-        "gpi_fast": find_column(cols, ("a2", "gpi", "fast", "slope", "20")),
-        "gpi_mid": find_column(cols, ("a2", "gpi", "mid", "slope", "63")),
-        "gpi_acc": find_column(cols, ("a2", "gpi", "acceleration")),
-        "ipi_fast": find_column(cols, ("a2", "ipi", "fast", "slope", "20")),
-        "ipi_mid": find_column(cols, ("a2", "ipi", "mid", "slope", "63")),
-        "ipi_acc": find_column(cols, ("a2", "ipi", "acceleration")),
-        "regime_id": find_column(cols, ("a2", "reconstructed", "regime", "id")),
+        "raw_gpi": find_column(cols, ("a2", "raw", "gpi"), exact_any=("raw gpi",)),
+        "raw_ipi": find_column(cols, ("a2", "raw", "ipi"), exact_any=("raw ipi",)),
+        "gpi_fast": find_column(cols, ("a2", "gpi", "fast", "slope", "20"), exact_any=("gpi fast20",)),
+        "gpi_mid": find_column(cols, ("a2", "gpi", "mid", "slope", "63"), exact_any=("gpi mid63",)),
+        "gpi_acc": find_column(cols, ("a2", "gpi", "acceleration"), exact_any=("gpi acc",)),
+        "ipi_fast": find_column(cols, ("a2", "ipi", "fast", "slope", "20"), exact_any=("ipi fast20",)),
+        "ipi_mid": find_column(cols, ("a2", "ipi", "mid", "slope", "63"), exact_any=("ipi mid63",)),
+        "ipi_acc": find_column(cols, ("a2", "ipi", "acceleration"), exact_any=("ipi acc",)),
+        "regime_id": find_column(cols, ("a2", "reconstructed", "regime", "id"), exact_any=("regime id",)),
     }
 
     out = pd.DataFrame()
