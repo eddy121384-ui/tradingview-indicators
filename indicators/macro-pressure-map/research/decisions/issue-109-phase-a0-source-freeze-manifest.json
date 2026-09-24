@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "issue": 109,
+  "phase": "A0-source-freeze-durable",
+  "created_before_issue109_payoff_results": true,
+  "payoff_results_computed": false,
+  "pairwise_spreads_computed": false,
+  "portfolio_metrics_computed": false,
+  "v66_states_loaded_during_source_freeze": false,
+  "workflow": {
+    "run_id": 35948049729,
+    "head_sha": "6e4a41e0efad8c3ff374b9839b10f119fd6982cc",
+    "artifact_id": 10787885580,
+    "artifact_name": "issue-109-a0-source-freeze",
+    "artifact_digest": "sha256:1bb0af2a2bf0504d898bc1599b983df605b0fa15760eea3ed53e5f5875dc7982"
+  },
+  "prices": {
+    "file": "data/issue-109-shv-gsg-adjusted-prices.csv",
+    "csv_sha256": "7dbfe3cff58be172098aa09b9c86fd70a23672834f5829e4b650c94cf72d6833",
+    "provider": "Yahoo Finance via yfinance",
+    "semantics": "auto_adjust=True adjusted Close; dividend/split-adjusted investable price proxy",
+    "symbols": [
+      "SHV",
+      "GSG"
+    ],
+    "rows": 4956,
+    "first_date": "2007-01-11",
+    "last_date": "2026-09-23",
+    "individual_coverage": {
+      "SHV": {
+        "rows": 4956,
+        "first_date": "2007-01-11",
+        "last_date": "2026-09-23"
+      },
+      "GSG": {
+        "rows": 4962,
+        "first_date": "2007-01-03",
+        "last_date": "2026-09-23"
+      }
+    },
+    "no_outcome_forward_fill": true
+  },
+  "cpi": {
+    "file": "data/issue-109-cpi-u-nsa-monthly.csv",
+    "csv_sha256": "4afea21e4914a848a16fa9c77e51099534ce876aedb01dbbd77d95802531fc93",
+    "provider": "U.S. Bureau of Labor Statistics Public Data API v2",
+    "series_id": "CUUR0000SA0",
+    "concept": "CPI-U U.S. city average, All items, not seasonally adjusted",
+    "rows": 259,
+    "first_month": "2005-01",
+    "last_month": "2026-08",
+    "request_chunk_raw_sha256": [
+      {
+        "start_year": 2005,
+        "end_year": 2014,
+        "sha256": "5ef6ed3566a883e2f1dbec31d12fe13967e37aa9c327abe7fb55eef6a1578bef"
+      },
+      {
+        "start_year": 2015,
+        "end_year": 2024,
+        "sha256": "51b37754a7a3f356728486dfe6ae5977ee355434e70ef5c2cb95215ffbdd95bd"
+      },
+      {
+        "start_year": 2025,
+        "end_year": 2026,
+        "sha256": "2c3bd1ff28f70742ff9534e832f3b21bebf1f4cef9a98e82d37e0c4a639be948"
+      }
+    ],
+    "excluded_nonnumeric": [
+      {
+        "year": 2025,
+        "period": "M10",
+        "raw_value": "-",
+        "handling": "excluded_no_imputation"
+      }
+    ],
+    "missing_value_policy": "exclude nonnumeric observations; no zero-fill, interpolation, or forward-fill",
+    "yoy_transform": "100 * (CPI_t / CPI_t-12 - 1)",
+    "publication_safety_lag_months": 2,
+    "threshold_percent": 4,
+    "threshold_role": "diagnostic anchor inherited from Issue #91; not production threshold"
+  },
+  "a1_state_only_gate": "AUTHORIZED",
+  "a2_trajectory_gate": "BLOCKED_PENDING_FULL_EXACT_V66_GPI_IPI_SERIES"
+}
