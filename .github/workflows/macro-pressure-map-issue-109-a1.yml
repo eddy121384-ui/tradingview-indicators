@@ -98,6 +98,11 @@ jobs:
           })
           PY
 
+      - name: Validate durable A1 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_109_a1_completion_validation.py --evidence-dir generated/issue-109-a1
+
       - name: Upload Issue 109 A1 evidence
         uses: actions/upload-artifact@v4
         with:
