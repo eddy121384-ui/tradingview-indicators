@@ -11,7 +11,11 @@ on:
       - 'indicators/wyckoff-regime-radar/research/generate_issue78_rc_python.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue78_rc_python.py'
       - 'indicators/wyckoff-regime-radar/research/compare_issue78_python_parity.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_log_pine.py'
+      - 'indicators/wyckoff-regime-radar/research/parse_issue78_python_parity_logs.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue78_python_parity_logs.py'
       - 'indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-export.pine'
+      - 'indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-log.pine'
       - 'indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-rc-python.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-python-classifier-parity-plan.md'
 
@@ -39,9 +43,15 @@ jobs:
           python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_rc_python.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_rc_python.py
           python -m py_compile indicators/wyckoff-regime-radar/research/compare_issue78_python_parity.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_log_pine.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/parse_issue78_python_parity_logs.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_python_parity_logs.py
 
       - name: Regenerate parity Pine
         run: python indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_export_pine.py
+
+      - name: Generate Pine Logs parity harness
+        run: python indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_log_pine.py
 
       - name: Generate Python RC mirror
         run: python indicators/wyckoff-regime-radar/research/generate_issue78_rc_python.py
@@ -51,10 +61,12 @@ jobs:
         run: |
           python -m pytest -q test_issue78_python_parity_export.py
           python -m pytest -q test_issue78_rc_python.py
+          python -m pytest -q test_issue78_python_parity_logs.py
 
       - name: Generated Pine is committed and current
         run: |
           git diff --exit-code -- indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-export.pine
+          git diff --exit-code -- indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-log.pine
           git diff --check
 
       - name: Commit generated Python RC mirror when changed

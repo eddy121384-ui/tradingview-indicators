@@ -1,14 +1,14 @@
-# Issue #78 — Python Classifier Parity Export Checklist
+# Issue #78 — Python Classifier Parity Pine Logs Checklist
 
 ## Purpose
 
-This checklist produces TradingView runtime evidence for the scalable Issue #78 Python mirror.
+TradingView chart-data export is not required.
 
-This is an **engineering parity capture only**.
+This checklist uses **Pine Logs** to provide the exact TradingView OHLCV and frozen classifier outputs needed for Pine ↔ Python parity.
 
-Do not inspect or calculate R0 / Warning-First economics on the calibration stocks.
+This is engineering parity only. Do not inspect R0 / Warning-First economics on calibration stocks.
 
-Formal OOS2 remains behind the parity gate.
+Formal OOS2 remains behind this gate.
 
 ---
 
@@ -18,132 +18,120 @@ Branch:
 
 `research/issue-78-trend-capture-frontier`
 
-Pine file:
+Use this Pine file:
 
-`indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-export.pine`
+`indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-log.pine`
 
-Indicator short title:
+Indicator short title remains:
 
 `#78 PY PARITY`
 
-Python mirror:
+The logger emits records beginning with:
 
-`indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-rc-python.py`
+`I78P1|`
 
-Comparator:
+Default capture window:
 
-`indicators/wyckoff-regime-radar/research/compare_issue78_python_parity.py`
+`2500` daily bars.
+
+This is deliberately longer than the classifier warm-up so Python can rebuild the rolling state from the exact same OHLCV rows and still leave a large post-warm-up comparison window.
 
 ---
 
 ## Calibration order
 
-Run one symbol at a time.
-
 1. `NASDAQ:AAPL`
 2. `NYSE:JPM`
 3. `NYSE:XOM`
 
-All three are engineering fixtures and are permanently excluded from formal OOS2 economics.
+These three symbols are engineering fixtures only and are excluded from formal OOS2 economics.
 
-Start with AAPL. Do not proceed to policy economics after AAPL; the first CSV is used only to diagnose implementation parity.
+Start with AAPL.
 
 ---
 
 ## TradingView settings
 
-For each symbol:
-
+- symbol: `NASDAQ:AAPL`
 - timeframe: **1D**
-- use the `#78 PY PARITY` indicator;
-- leave all classifier inputs at their frozen defaults;
-- Representation Mode: **Auto** (for stocks this must resolve to Price Log);
+- use the generated parity-log Pine above;
+- leave classifier inputs at frozen defaults;
+- Representation Mode: **Auto**;
 - Volume Mode: **Auto**;
 - MTF Mode: **Observe Only**;
 - Divergence Mode: **Observe Only**;
 - Witness Stage Bias Mode: **Balanced**;
-- do not alter thresholds;
-- use the same chart feed for OHLCV and Pine reference channels.
+- `Enable parity Pine Logs`: ON;
+- `Parity log capture bars`: leave at **2500**.
 
-The parity build is capped at 10,000 bars for memory safety.
-
----
-
-## Export
-
-Use TradingView **Export chart data** after the indicator has fully loaded.
-
-The CSV must contain the chart OHLCV plus the parity channels.
-
-Required chart fields:
-
-- Time / Date
-- Open
-- High
-- Low
-- Close
-- Volume
-
-Required parity fields include:
-
-- PARITY formalId
-- PARITY symATR
-- PARITY volumeQuality
-- PARITY volumeWeight
-- PARITY volumeAbsorption
-- PARITY volumeDistribution
-- PARITY volumeBreakout
-- PARITY volumeBreakdown
-- PARITY accGate
-- PARITY markupGate
-- PARITY reaccGate
-- PARITY distGate
-- PARITY markdownGate
-- PARITY redistGate
-- PARITY probAcc
-- PARITY probMarkup
-- PARITY probReacc
-- PARITY probDist
-- PARITY probMarkdown
-- PARITY probRedist
-- PARITY topId
-- PARITY topGap
-- PARITY evidence
-- PARITY candidateDisplayId
-- PARITY stalePressureBars
-- PARITY stalePressureReason
-
-Do not rename or manually edit the CSV.
+The build keeps `calc_bars_count=10000` and removes the lower-timeframe arrays that are inert under the frozen Observe-Only MTF mode.
 
 ---
 
-## First runtime gate
+## What to send back
 
-Upload the AAPL CSV unchanged.
+Open Pine Logs after the script finishes and save / download / copy the log output in whatever form TradingView allows.
 
-The comparator replays the **exact TradingView OHLCV rows** through Python, avoiding cross-vendor feed differences.
+The usable rows start with:
+
+`I78P1|`
+
+You do **not** need to clean the file.
+
+A TradingView Pine-Logs CSV containing timestamp + message is fine.
+
+Upload it unchanged.
+
+The parser tolerates surrounding TradingView log text and extracts only `I78P1|` records.
+
+---
+
+## Logged payload
+
+Each record contains the exact chart:
+
+- ticker / timeframe / timestamp;
+- open / high / low / close / volume;
+
+plus:
+
+- Price-Log routing flag;
+- formalId;
+- symATR;
+- volume quality / weight;
+- volume absorption / distribution / breakout / breakdown;
+- six stage gates;
+- six stage probabilities / weights;
+- topId / topGap;
+- evidence;
+- candidateDisplayId;
+- stale-pressure bars / reason.
+
+No policy PnL is logged.
+
+---
+
+## Runtime acceptance
+
+The uploaded Pine Logs are parsed and the exact TradingView OHLCV rows are replayed through Python.
 
 Hard gate:
 
-- formalId agreement >= 99.99% on the common post-warmup window;
-- fresh Markup / Markdown transitions = 100% exact;
-- episode-start timestamps = 100% exact;
-- symATR within the frozen numeric tolerance;
-- continuous diagnostic P99 error <= 0.50 points.
+- formalId agreement >= **99.99%** on the common post-warm-up window;
+- fresh Markup / Markdown transitions = **100% exact**;
+- episode-start timestamps = **100% exact**;
+- symATR within the frozen numerical tolerance;
+- continuous diagnostic P99 error <= **0.50 points**;
+- stock representation must resolve to Price Log.
 
-A failure authorizes only implementation-semantic fixes.
-
-It does not authorize classifier tuning.
+A failure authorizes implementation-semantic fixes only, never classifier tuning.
 
 ---
 
 ## After AAPL
 
-If AAPL passes:
+If AAPL passes, repeat unchanged on JPM and XOM.
 
-- repeat unchanged on JPM;
-- repeat unchanged on XOM.
-
-Only after all three calibration stocks pass may the Python commit SHA be frozen for formal Cross-Sectional OOS2.
+Only after all three calibration stocks pass may the Python implementation SHA be frozen for formal Cross-Sectional OOS2.
 
 Refs #78, #80.
