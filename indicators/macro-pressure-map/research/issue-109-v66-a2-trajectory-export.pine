@@ -18,6 +18,7 @@ indicator("MPM V6.6 A2 Exact Trajectory Export", shorttitle="MPM V6.6 A2 EXPORT"
 
 tvGpiPlot = input.source(close, "Frozen V6.6 plot: GPI - Growth Pressure")
 tvIpiPlot = input.source(close, "Frozen V6.6 plot: IPI - Inflation Pressure")
+logFromYear = input.int(2007, "Pine Logs start year", minval=2000, maxval=2100)
 
 const int SMOOTH_LEN = 5
 const int FAST_LEN = 20
@@ -74,6 +75,20 @@ plot(midSlopeIPI, "A2 IPI mid slope 63", color=color.new(color.maroon, 100), lin
 plot(accelerationIPI, "A2 IPI acceleration", color=color.new(color.red, 100), linewidth=1)
 
 plot(regimeId, "A2 reconstructed regime id", color=color.new(color.gray, 100), linewidth=1)
+
+// Essential-plan fallback: one compact historical Pine Log row per confirmed daily bar.
+// 2007-present SPY daily history is below TradingView's 10,000 historical-log display cap.
+f_num(v) =>
+    str.tostring(v, "#.########")
+
+if barstate.isconfirmed and year >= logFromYear and not na(rawGPI) and not na(rawIPI)
+    string msg = "MPM_A2" +
+      "|date=" + str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) +
+      "|raw_gpi=" + f_num(rawGPI) + "|raw_ipi=" + f_num(rawIPI) +
+      "|gpi_fast20=" + f_num(fastSlopeGPI) + "|gpi_mid63=" + f_num(midSlopeGPI) + "|gpi_acc=" + f_num(accelerationGPI) +
+      "|ipi_fast20=" + f_num(fastSlopeIPI) + "|ipi_mid63=" + f_num(midSlopeIPI) + "|ipi_acc=" + f_num(accelerationIPI) +
+      "|regime_id=" + f_num(regimeId)
+    log.info(msg)
 
 var table status = table.new(position.top_right, 2, 6, border_width=1)
 if barstate.islast
