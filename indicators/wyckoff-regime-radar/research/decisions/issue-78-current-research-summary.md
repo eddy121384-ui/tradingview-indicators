@@ -309,21 +309,25 @@ The research has **not** yet established:
 
 ---
 
-## 10. Next legitimate gate
+## 10. Next legitimate gates
 
-Primary next step:
+Primary historical next step:
 
-> **Prospective / forward validation of the frozen R0 No De-risk and R0 + Warning-First survivors.**
+> **Cross-Sectional OOS2 on a large, previously unused U.S. individual-equity universe.**
 
-No tuning should occur during that collection.
+The frozen R0 No De-risk and R0 + Warning-First policies must be applied without stock-, sector-, direction-, or era-specific retuning.
 
-If prospective collection is impractical, a separately preregistered second historical OOS cohort is acceptable, but OOS1 must remain untouched.
+Before any OOS2 economic outcome is inspected:
 
-A separate **Break-even Risk Aversion / Utility Study** may also be preregistered to answer a different question:
+- freeze the stock eligibility rule, historical window, liquidity filter, corporate-action treatment, survivorship / delisting treatment, weighting, breadth / concentration metrics and interpretation gates;
+- complete a Pine -> Python classifier parity gate on calibration instruments that are excluded from formal OOS2.
 
-> At what penalty on volatility / drawdown / tail loss does the defensive Warning-First profile become preferable to the higher-expectancy R0 profile?
+In parallel:
 
-That study should compare frozen policies only. It must not be used as a backdoor optimizer for new thresholds.
+- begin prospective / forward shadow collection of the same frozen survivors;
+- optionally preregister a separate **Break-even Risk Aversion / Utility Study** to ask at what penalty on volatility / drawdown / tail loss Warning-First becomes preferable to R0.
+
+The utility study compares frozen policies only and must not become a backdoor optimizer for new thresholds.
 
 ---
 
