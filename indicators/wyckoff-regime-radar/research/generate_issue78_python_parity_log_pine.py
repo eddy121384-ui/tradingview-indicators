@@ -10,8 +10,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from generate_issue78_python_parity_export_pine import generate as generate_parent
 import generate_issue76_forward_behavior_logger_pine as base
+import generate_issue78_heterogeneous_oos1_logger_pine as oos1
 
 HERE = Path(__file__).resolve().parent
 
@@ -81,12 +81,43 @@ if issue78ParityLogEnabled and barstate.isconfirmed and issue78ParityInWindow
 """.strip() + "\n"
 
 
+def _replace_once(text: str, old: str, new: str, label: str) -> str:
+    if text.count(old) != 1:
+        raise RuntimeError(f"{label} missing or duplicated")
+    return text.replace(old, new, 1)
+
+
 def generate(source_path: Path) -> str:
-    parent = generate_parent(source_path)
+    source_bytes = source_path.read_bytes()
+    actual_blob = base.git_blob_sha(source_bytes)
+    if actual_blob != base.FROZEN_SOURCE_BLOB:
+        raise RuntimeError(
+            f"frozen source blob mismatch: expected {base.FROZEN_SOURCE_BLOB}, got {actual_blob}"
+        )
+
+    source = source_bytes.decode("utf-8")
+    decl_new = (
+        'indicator("Wyckoff Regime Radar｜Issue #78 Python Parity Logs", '
+        'shorttitle="#78 PY PARITY LOG", overlay=false, precision=10, calc_bars_count=10000)'
+    )
+    text = _replace_once(source, base.DECL_OLD, decl_new, "indicator declaration")
+
+    frozen_mtf_default = 'mtfMode = input.string("Observe Only"'
+    if frozen_mtf_default not in text:
+        raise RuntimeError("frozen MTF default drifted from Observe Only")
+
+    for old, new in oos1.LIGHTWEIGHT_MTF_REPLACEMENTS:
+        text = _replace_once(text, old, new, "MTF observe-only request")
+
     marker = "// Issue #78 — Python classifier parity Pine Logs transport."
-    if marker in parent:
-        raise RuntimeError("parent parity export unexpectedly already contains log transport")
-    text = parent.rstrip() + "\n\n" + _log_block()
+    if marker in text:
+        raise RuntimeError("frozen source unexpectedly already contains log transport")
+
+    # Deliberately do NOT add parity plot channels here. Pine Logs already carry
+    # all parity fields, and avoiding those plots keeps the script below
+    # TradingView's plot-count limit.
+    text = text.rstrip() + "\n\n" + _log_block()
+
     required = (
         '"I78P1" + "|" + syminfo.tickerid',
         'input.int(2500, "Parity log capture bars"',
@@ -96,10 +127,17 @@ def generate(source_path: Path) -> str:
         "f_i78pNum(symATR)",
         "f_i78pNum(volumeQualityScore)",
         "f_i78pNum(float(candidateDisplayId))",
+        'shorttitle="#78 PY PARITY LOG"',
+        "calc_bars_count=10000",
     )
     for token in required:
         if token not in text:
             raise RuntimeError(f"generated parity log harness missing: {token}")
+
+    if "request.security_lower_tf" in text:
+        raise RuntimeError("lower-timeframe request leaked into memory-safe parity log harness")
+    if '"PARITY formalId"' in text:
+        raise RuntimeError("plot-based parity channels leaked into log-only harness")
     return text
 
 

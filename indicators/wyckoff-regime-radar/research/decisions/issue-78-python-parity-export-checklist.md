@@ -18,13 +18,13 @@ Branch:
 
 `research/issue-78-trend-capture-frontier`
 
-Use this Pine file:
+Use this **log-only** Pine file (do not use the earlier plot-based parity-export build):
 
 `indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-log.pine`
 
 Indicator short title remains:
 
-`#78 PY PARITY`
+`#78 PY PARITY LOG`
 
 The logger emits records beginning with:
 
@@ -135,3 +135,12 @@ If AAPL passes, repeat unchanged on JPM and XOM.
 Only after all three calibration stocks pass may the Python implementation SHA be frozen for formal Cross-Sectional OOS2.
 
 Refs #78, #80.
+
+
+## Plot-limit note
+
+The Pine-Logs build intentionally adds **zero parity plots**.
+
+The earlier chart-export helper exposed many diagnostic series through `plot()`, which can exceed TradingView's plot-count limit when combined with the frozen RC's existing visuals.
+
+For Pine Logs, those plots are unnecessary: all parity fields are serialized directly into each `I78P1|` log record.

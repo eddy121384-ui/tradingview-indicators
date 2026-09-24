@@ -13,7 +13,7 @@ def frozen_source() -> Path:
 
 def test_log_harness_is_parent_plus_transport():
     text = m.generate(frozen_source())
-    assert '#78 PY PARITY' in text
+    assert '#78 PY PARITY LOG' in text
     assert '"I78P1" + "|" + syminfo.tickerid' in text
     assert 'input.int(2500, "Parity log capture bars"' in text
     assert "log.info(" in text
@@ -22,6 +22,8 @@ def test_log_harness_is_parent_plus_transport():
     assert "f_i78pNum(symATR)" in text
     assert "f_i78pNum(volumeQualityScore)" in text
     assert "strategy.entry" not in text
+    assert '"PARITY formalId"' not in text
+    assert "request.security_lower_tf" not in text
 
 
 def test_parser_accepts_plain_pine_log_line():
@@ -51,3 +53,13 @@ def test_parser_accepts_tradingview_csv_wrapper_and_deduplicates():
 
 def test_parser_schema_matches_fields():
     assert len(LOG_COLUMNS) == 8 + len(m.FIELDS)
+
+
+def test_log_only_build_does_not_add_plot_budget():
+    text = m.generate(frozen_source())
+    frozen = frozen_source().read_text(encoding="utf-8")
+    # The logger should inherit only the frozen RC's own visuals; it must not
+    # add the 29 plot-based parity channels from the chart-export harness.
+    assert text.count("plot(") == frozen.count("plot(")
+    assert text.count("plotshape(") == frozen.count("plotshape(")
+    assert text.count("plotchar(") == frozen.count("plotchar(")
