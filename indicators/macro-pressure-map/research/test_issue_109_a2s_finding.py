@@ -58,7 +58,7 @@ def test_a2s_prereg_forbids_posthoc_rescue():
     s = PREREG.read_text(encoding="utf-8")
     assert "current TradingView-feed" in s
     assert "screening study only" in s
-    assert "Negative A2S result is sufficient to stop further trajectory rescue work" in s
+    assert "negative A2S result is sufficient to stop further trajectory rescue work" in s.lower()
     assert "Do not:" in s
     assert "change 20/63" in s
     assert "claim the current-feed r4 history is exact frozen V6.6" in s
