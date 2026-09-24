@@ -1,5 +1,5 @@
 //@version=6
-indicator("MPM V6.6 A2 Exact Trajectory Export", shorttitle="MPM V6.6 A2 EXPORT", overlay=false, precision=8)
+indicator("MPM V6.6 A2 Exact Trajectory Export r3", shorttitle="MPM V6.6 A2 EXPORT r3", overlay=false, precision=8)
 
 // Issue #109 research-only transport helper.
 //
@@ -97,12 +97,12 @@ if barstate.isconfirmed and year >= logFromYear and sourcesReady and not na(rawG
       "|raw_gpi=" + f_num(rawGPI) + "|raw_ipi=" + f_num(rawIPI) +
       "|gpi_fast20=" + f_num(fastSlopeGPI) + "|gpi_mid63=" + f_num(midSlopeGPI) + "|gpi_acc=" + f_num(accelerationGPI) +
       "|ipi_fast20=" + f_num(fastSlopeIPI) + "|ipi_mid63=" + f_num(midSlopeIPI) + "|ipi_acc=" + f_num(accelerationIPI) +
-      "|regime_id=" + f_num(regimeId)
+      "|regime_id=" + f_num(regimeId) + "|helper_rev=r3"
     log.info(msg)
 
 var table status = table.new(position.top_right, 2, 6, border_width=1)
 if barstate.islast
-    table.cell(status, 0, 0, "Issue #109 A2 Export")
+    table.cell(status, 0, 0, "Issue #109 A2 Export r3")
     table.cell(status, 1, 0, "SPY 1D")
     table.cell(status, 0, 1, "EMA source")
     table.cell(status, 1, 1, "V6.6 smooth=ON / len=5")
