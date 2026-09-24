@@ -93,3 +93,34 @@ versus:
 on the already-frozen pairwise asset outcomes.
 
 No production V6.7 Action Layer is authorized by merely exporting the data.
+
+
+## Essential plan fallback — Pine Logs instead of chart-data export
+
+If the TradingView plan does not provide **Export chart data**, do not upgrade the plan and do not change the research source.
+
+The helper now emits one compact `MPM_A2|...` Pine Log message per confirmed historical daily bar.
+
+TradingView documents that Pine Logs work on historical bars and the Pine Logs pane keeps the most recent 10,000 historical log messages. Essential charts expose at least 10,000 historical bars when available, so one daily log per bar is sufficient for the required 2007-present SPY history.
+
+### Steps
+
+1. Use the same SPY / 1D / frozen V6.6 setup above.
+2. Add the latest `issue-109-v66-a2-trajectory-export.pine`.
+3. Bind the GPI and IPI source inputs to the production V6.6 plots.
+4. Leave `Pine Logs start year = 2007`.
+5. Open **Pine Logs** from the Pine Editor More menu or from the helper indicator's More menu.
+6. Confirm the messages contain payloads beginning with:
+
+   `MPM_A2|date=...`
+
+7. Copy the Pine Logs text into a plain `.txt` file. It is fine if TradingView UI timestamps / labels are included around each message; the parser ignores unrelated text.
+8. Upload the raw `.txt` file to ChatGPT without editing individual payload values.
+
+The repo parser:
+
+`issue_109_a2_pine_log_parser.py`
+
+extracts the `MPM_A2` payloads into a canonical CSV. That CSV must then pass the exact same `issue_109_a2_export_validation.py` gate before any A2 payoff evaluation.
+
+If copying all logs in one operation is awkward, do not manually retype them. Send screenshots / tell us where copying stops; the helper can be temporarily filtered into date chunks without changing any research variable.
