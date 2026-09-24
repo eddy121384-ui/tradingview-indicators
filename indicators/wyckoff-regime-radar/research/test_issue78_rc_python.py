@@ -33,7 +33,7 @@ def compute(frame: pd.DataFrame) -> pd.DataFrame:
 
 def test_generated_source_contains_frozen_production_deltas():
     text = m.render_issue78_rc_python_source()
-    assert "Issue #66 PHASE C-2" in text
+    assert "ISSUE #66 PHASE C-2" in text
     assert "ctx_down_ex_gate = np.minimum(downside_exhaustion_gate, current_bear_gate)" in text
     assert "ctx_up_ex_gate = np.minimum(upside_exhaustion_gate, current_bull_gate)" in text
     assert "volume_quality_score" in text

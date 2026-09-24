@@ -397,7 +397,7 @@ def render_issue78_rc_python_source() -> str:
     )
 
     required = (
-        "Issue #66 PHASE C-2",
+        "ISSUE #66 PHASE C-2",
         "candidate_conflict |= (top_id == 1) & (resistance_holding >= cfg.absorb_threshold) & (upside_exhaustion >= cfg.absorb_threshold)",
         "stale_pressure_bars",
         "ctx_down_ex_gate = np.minimum(downside_exhaustion_gate, current_bear_gate)",
