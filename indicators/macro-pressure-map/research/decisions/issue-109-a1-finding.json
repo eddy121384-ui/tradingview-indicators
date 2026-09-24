@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "issue": 109,
+  "phase": "A1-state-only",
+  "workflow_run": 35948653281,
+  "head_sha": "7334a4c2aa8f5b5677e8606135256d70fb8cc1db",
+  "artifact": {
+    "id": 10787049104,
+    "name": "issue-109-a1-state-only",
+    "digest": "sha256:316e1b12b7a8dc3dde4766047fc294212771667c097aee29557a3f36e276e963"
+  },
+  "leg_summary": {
+    "equity_vs_duration": "stable_directional_relationship",
+    "duration_vs_cash": "no_material_pairwise_information",
+    "gold_vs_cash": "stable_directional_relationship",
+    "commodities_vs_cash": "no_material_pairwise_information"
+  },
+  "stable_state_candidates": [
+    {
+      "leg": "equity_vs_duration",
+      "regime_id": 8,
+      "regime": "Growth Slowdown / Stable Inflation",
+      "n": 13,
+      "mean": 0.0481501991561,
+      "ci_low": 0.0193364763214,
+      "ci_high": 0.0788072465889,
+      "top_supporting_share": 0.242000545307,
+      "leaveout_n": 12,
+      "leaveout_mean": 0.0375069440814,
+      "classification": "stable_directional_candidate"
+    },
+    {
+      "leg": "gold_vs_cash",
+      "regime_id": 7,
+      "regime": "Slowdown / Disinflation",
+      "n": 24,
+      "mean": 0.0479694212839,
+      "ci_low": 0.0143135378118,
+      "ci_high": 0.083196565342,
+      "top_supporting_share": 0.209309420721,
+      "leaveout_n": 22,
+      "leaveout_mean": 0.0432033895291,
+      "classification": "stable_directional_candidate"
+    },
+    {
+      "leg": "gold_vs_cash",
+      "regime_id": 8,
+      "regime": "Growth Slowdown / Stable Inflation",
+      "n": 13,
+      "mean": 0.0440559954358,
+      "ci_low": 0.0169224350246,
+      "ci_high": 0.0724436830492,
+      "top_supporting_share": 0.368287512111,
+      "leaveout_n": 12,
+      "leaveout_mean": 0.0391196006353,
+      "classification": "stable_directional_candidate"
+    },
+    {
+      "leg": "gold_vs_cash",
+      "regime_id": 9,
+      "regime": "Stagflation Pressure",
+      "n": 12,
+      "mean": 0.0459900921096,
+      "ci_low": 0.00643437043848,
+      "ci_high": 0.0837750727673,
+      "top_supporting_share": 0.461585569083,
+      "leaveout_n": 11,
+      "leaveout_mean": 0.0384427701752,
+      "classification": "stable_directional_candidate"
+    }
+  ],
+  "reflation_equity_vs_duration": {
+    "regime_id": 3,
+    "n": 21,
+    "mean": 0.0298812583718,
+    "ci_low": -0.00566320185156,
+    "ci_high": 0.0636329262919,
+    "classification": "no_clear_state_edge"
+  },
+  "a2_exact_trajectory_authorized": false,
+  "production_authorized": false
+}
