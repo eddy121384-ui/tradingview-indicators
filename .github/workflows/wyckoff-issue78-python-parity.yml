@@ -8,6 +8,9 @@ on:
       - '.github/workflows/wyckoff-issue78-python-parity.yml'
       - 'indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_export_pine.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue78_python_parity_export.py'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue78_rc_python.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue78_rc_python.py'
+      - 'indicators/wyckoff-regime-radar/research/compare_issue78_python_parity.py'
       - 'indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-export.pine'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-python-classifier-parity-plan.md'
 
@@ -22,23 +25,30 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install test dependency
-        run: python -m pip install --quiet pytest
+      - name: Install dependencies
+        run: python -m pip install --quiet numpy pandas pytest
 
       - name: Syntax checks
         run: |
           python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_export_pine.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_python_parity_export.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_rc_python.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_rc_python.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/compare_issue78_python_parity.py
 
       - name: Regenerate parity Pine
-        run: |
-          python indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_export_pine.py
+        run: python indicators/wyckoff-regime-radar/research/generate_issue78_python_parity_export_pine.py
 
-      - name: Parity export contract tests
+      - name: Generate Python RC mirror
+        run: python indicators/wyckoff-regime-radar/research/generate_issue78_rc_python.py --output /tmp/wyckoff-issue78-rc-python.py
+
+      - name: Parity engineering tests
         working-directory: indicators/wyckoff-regime-radar/research
-        run: python -m pytest -q test_issue78_python_parity_export.py
+        run: |
+          python -m pytest -q test_issue78_python_parity_export.py
+          python -m pytest -q test_issue78_rc_python.py
 
-      - name: Generated file is committed and current
+      - name: Generated Pine is committed and current
         run: |
           git diff --exit-code -- indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-python-parity-export.pine
           git diff --check
