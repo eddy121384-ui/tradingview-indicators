@@ -112,6 +112,8 @@ other
 
 def test_a2_helper_fails_closed_when_sources_are_not_bound():
     s = PINE.read_text(encoding="utf-8")
+    assert "ta.sum(" not in s
+    assert "float sameSourceRatio20 = ta.sma(" in s
     assert "bool sourcesNotBound" in s
     assert "bool sourcesReady = not sourcesNotBound" in s
     assert 'sourcesReady and not na(tvGpiPlot[1])' in s
