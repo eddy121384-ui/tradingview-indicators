@@ -326,3 +326,76 @@ Do not:
 - convert an era-dependent result into a production tilt.
 
 No Issue #109 payoff result had been viewed when this protocol was committed.
+
+
+---
+
+## Pre-A1 clarification — frozen before A1 payoff generation
+
+This clarification resolves implementation ambiguity without changing any asset, horizon, state, or source definition.
+
+### Non-overlap grouping
+
+The primary horizon embargo is applied **within each V6.6 state**.
+
+For a given leg / horizon / state:
+
+1. sort eligible monthly decision origins chronologically;
+2. keep the first eligible origin;
+3. keep a later origin only if at least the horizon's number of common trading rows has elapsed since the last kept origin in that same state.
+
+Temporal segment summaries are then calculated from those already-selected state-level non-overlap origins. The selector is not restarted at each segment boundary.
+
+### Episode definition
+
+An episode is a consecutive run of monthly decision origins carrying the same lagged V6.6 state.
+
+For the 3M primary horizon:
+
+- episode contribution = sum of the pairwise 3M spread across all eligible monthly origins inside that episode;
+- largest positive episode = episode with the largest positive contribution;
+- top-positive share = largest positive episode contribution / sum of all positive episode contributions for that state/leg;
+- leaveout removes every monthly origin belonging to that episode and then reruns the state-level primary non-overlap selector from scratch.
+
+No alternative episode rule may be selected after results.
+
+### State-level A1 classification
+
+Use the primary 3M non-overlap sample.
+
+Sample labels:
+- n < 3: `insufficient_sample`;
+- n = 3..9: `sparse`;
+- n >= 10: `regular`.
+
+A state/leg may be labeled `stable_directional_candidate` only if:
+
+1. full-sample primary n >= 10;
+2. the full-sample 10,000-resample bootstrap 95% CI of mean pairwise spread excludes zero;
+3. every preregistered temporal segment with n >= 3 has the same mean sign as the full sample;
+4. largest-positive-episode leaveout retains the full-sample mean sign;
+5. top-positive episode share is <= 50%.
+
+A state/leg is `era_dependent_candidate` if:
+
+- full-sample n >= 10 and full-sample CI excludes zero;
+- but at least one temporal segment with n >= 3 reverses sign, or the largest-positive-episode leaveout reverses sign, or top-positive episode share exceeds 50%.
+
+A state/leg is `no_clear_state_edge` if:
+
+- full-sample n >= 10;
+- full-sample CI includes zero;
+- and there is no stronger preregistered evidence that qualifies it above.
+
+Otherwise it is `inconclusive_insufficient_sample`.
+
+### A1 leg-level summary
+
+Before trajectory is opened, each pairwise leg receives a provisional A1 summary:
+
+- if at least one state is `stable_directional_candidate`: `stable_directional_relationship`;
+- else if at least one state is `era_dependent_candidate`: `useful_but_era_dependent`;
+- else if at least five states have regular samples and none is stable/era-dependent: `no_material_pairwise_information`;
+- otherwise: `inconclusive_insufficient_sample`.
+
+The A1 leg summary does not authorize production. A2 remains separately gated.
