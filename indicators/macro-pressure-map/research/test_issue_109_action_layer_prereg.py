@@ -24,9 +24,9 @@ def test_issue109_source_contract_is_preoutcome_and_fail_closed():
     assert m["existing_modern_outcomes"]["csv_sha256"] == "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57"
     assert m["primary_horizon_common_trading_rows"] == 63
     assert m["diagnostic_horizons_common_trading_rows"] == [21, 126]
-    assert m["a1_authorized"] is False
+    assert m["a1_authorized"] is True
     assert m["a2_trajectory_authorized"] is False
-    assert m["new_modern_outcomes"]["current_status"] == "PENDING_SNAPSHOT_DO_NOT_RUN_A1"
+    assert m["new_modern_outcomes"]["current_status"] == "FROZEN_AUTHORIZED_FOR_A1"
     assert "blocked" in m["exact_v66_signal"]["trajectory_gate"]
 
 
@@ -69,3 +69,33 @@ def test_issue109_no_production_authorization():
     assert "no v6.7 action layer pine is authorized by a0" in s
     assert "no portfolio optimizer" in s
     assert "retune v6.6" in s
+
+
+def _sha256(path: Path) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def test_issue109_durable_source_freeze_matches_contract():
+    manifest = json.loads((DECISIONS / "issue-109-phase-a0-source-freeze-manifest.json").read_text(encoding="utf-8"))
+    contract = json.loads(SOURCE.read_text(encoding="utf-8"))
+
+    price_path = HERE / "data" / "issue-109-shv-gsg-adjusted-prices.csv"
+    cpi_path = HERE / "data" / "issue-109-cpi-u-nsa-monthly.csv"
+
+    assert manifest["created_before_issue109_payoff_results"] is True
+    assert manifest["payoff_results_computed"] is False
+    assert manifest["pairwise_spreads_computed"] is False
+    assert manifest["portfolio_metrics_computed"] is False
+
+    assert _sha256(price_path) == manifest["prices"]["csv_sha256"]
+    assert _sha256(cpi_path) == manifest["cpi"]["csv_sha256"]
+
+    assert contract["new_modern_outcomes"]["csv_sha256"] == manifest["prices"]["csv_sha256"]
+    assert contract["absolute_inflation_diagnostic"]["csv_sha256"] == manifest["cpi"]["csv_sha256"]
+    assert contract["a1_authorized"] is True
+    assert contract["a2_trajectory_authorized"] is False
