@@ -34,8 +34,8 @@ float sourceDiff = math.abs(tvGpiPlot - tvIpiPlot)
 bool sameSourceNow = not na(sourceDiff) and sourceDiff < 1e-10
 bool gpiIsChartClose = not na(tvGpiPlot) and not na(close) and math.abs(tvGpiPlot - close) < 1e-10
 bool ipiIsChartClose = not na(tvIpiPlot) and not na(close) and math.abs(tvIpiPlot - close) < 1e-10
-float sameSourceCount20 = ta.sum(sameSourceNow ? 1.0 : 0.0, 20)
-bool sourcesNotBound = gpiIsChartClose or ipiIsChartClose or (not na(sameSourceCount20) and sameSourceCount20 >= 20.0)
+float sameSourceRatio20 = ta.sma(sameSourceNow ? 1.0 : 0.0, 20)
+bool sourcesNotBound = gpiIsChartClose or ipiIsChartClose or (not na(sameSourceRatio20) and sameSourceRatio20 >= 0.999999)
 bool sourcesReady = not sourcesNotBound and not na(tvGpiPlot) and not na(tvIpiPlot)
 
 // Exact inversion of EMA(5):
