@@ -1,0 +1,33 @@
+name: Macro Pressure Map Issue 109 A2S Finding Guard
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_109_a2s_current_feed_screen.py"
+      - "indicators/macro-pressure-map/research/test_issue_109_a2s_finding.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-109-a2s-*"
+      - ".github/workflows/macro-pressure-map-issue-109-a2s.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  finding-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install test dependencies
+        run: python -m pip install "pytest==9.1.1" "numpy==2.3.5" "pandas==2.3.3"
+
+      - name: Validate preregistered A2S finding contract
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_109_a2s_finding.py
+          python -m py_compile issue_109_a2s_current_feed_screen.py
