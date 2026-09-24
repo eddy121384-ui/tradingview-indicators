@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from issue_109_a2_pine_log_parser import parse as parse_pine_logs
+
 HERE = Path(__file__).resolve().parent
 PINE = HERE / "issue-109-v66-a2-trajectory-export.pine"
 SPEC = HERE / "decisions" / "issue-109-a2-exact-trajectory-export-preregistered.md"
@@ -93,3 +95,16 @@ def test_runtime_instructions_include_essential_plan_fallback():
     assert "Essential plan fallback" in s
     assert "Pine Logs" in s
     assert "issue_109_a2_pine_log_parser.py" in s
+
+
+def test_pine_log_parser_extracts_payloads_from_ui_noise():
+    text = """UI stuff
+11:00:00 Info MPM_A2|date=2007-1-4|raw_gpi=-15.1|raw_ipi=-36.7|gpi_fast20=na|gpi_mid63=na|gpi_acc=na|ipi_fast20=na|ipi_mid63=na|ipi_acc=na|regime_id=7
+other
+11:00:01 Info MPM_A2|date=2007-1-5|raw_gpi=-14.0|raw_ipi=-30.0|gpi_fast20=0.1|gpi_mid63=na|gpi_acc=na|ipi_fast20=0.2|ipi_mid63=na|ipi_acc=na|regime_id=7
+"""
+    rows = parse_pine_logs(text)
+    assert len(rows) == 2
+    assert rows[0]["date"] == "2007-1-4"
+    assert rows[0]["gpi_fast20"] == ""
+    assert rows[1]["raw_gpi"] == "-14.0"
