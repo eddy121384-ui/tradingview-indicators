@@ -78,3 +78,18 @@ def test_runtime_instructions_require_spy_1d_and_ema5():
     assert "Smooth Main Pressure Lines = **ON**" in s
     assert "Pressure Line Smoothing Length = **5**" in s
     assert "Do not edit the CSV." in s
+
+
+def test_pine_logs_fallback_is_one_payload_per_confirmed_bar():
+    s = PINE.read_text(encoding="utf-8")
+    assert 'logFromYear = input.int(2007' in s
+    assert 'if barstate.isconfirmed and year >= logFromYear' in s
+    assert '"MPM_A2"' in s
+    assert 'log.info(msg)' in s
+
+
+def test_runtime_instructions_include_essential_plan_fallback():
+    s = INSTRUCTIONS.read_text(encoding="utf-8")
+    assert "Essential plan fallback" in s
+    assert "Pine Logs" in s
+    assert "issue_109_a2_pine_log_parser.py" in s
