@@ -108,3 +108,13 @@ other
     assert rows[0]["date"] == "2007-1-4"
     assert rows[0]["gpi_fast20"] == ""
     assert rows[1]["raw_gpi"] == "-14.0"
+
+
+def test_a2_helper_fails_closed_when_sources_are_not_bound():
+    s = PINE.read_text(encoding="utf-8")
+    assert "bool sourcesNotBound" in s
+    assert "bool sourcesReady = not sourcesNotBound" in s
+    assert 'sourcesReady and not na(tvGpiPlot[1])' in s
+    assert 'if barstate.isconfirmed and year >= logFromYear and sourcesReady' in s
+    assert '"NOT BOUND"' in s
+    assert '"SAME SOURCE"' in s
