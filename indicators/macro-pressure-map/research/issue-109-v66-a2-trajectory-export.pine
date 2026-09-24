@@ -1,0 +1,91 @@
+//@version=6
+indicator("MPM V6.6 A2 Exact Trajectory Export", shorttitle="MPM V6.6 A2 EXPORT", overlay=false, precision=8)
+
+// Issue #109 research-only transport helper.
+//
+// REQUIRED SETUP:
+// 1) SPY chart, 1D timeframe.
+// 2) Add the frozen production "Macro Pressure Map V6.6 [Tiered GPI/IPI/FCPI]".
+// 3) Keep V6.6 smoothing ON with Smooth Main Pressure Lines length = 5.
+// 4) In this helper's two source inputs, select the production V6.6 plots:
+//      GPI - Growth Pressure
+//      IPI - Inflation Pressure
+// 5) Export chart data as CSV.
+//
+// This helper does not request market/economic data and does not compute asset payoffs.
+// It only reconstructs raw axes from the selected exact V6.6 EMA(5) plots and exports
+// the preregistered 20/63 trajectory features.
+
+tvGpiPlot = input.source(close, "Frozen V6.6 plot: GPI - Growth Pressure")
+tvIpiPlot = input.source(close, "Frozen V6.6 plot: IPI - Inflation Pressure")
+
+const int SMOOTH_LEN = 5
+const int FAST_LEN = 20
+const int MID_LEN = 63
+const float GROWTH_THRESHOLD = 10.0
+const float INFLATION_THRESHOLD = 10.0
+
+float alpha = 2.0 / (SMOOTH_LEN + 1.0)
+
+// Exact inversion of EMA(5):
+// plot_t = alpha * raw_t + (1-alpha) * plot_(t-1)
+float rawGPI = not na(tvGpiPlot) and not na(tvGpiPlot[1]) ? (tvGpiPlot - (1.0 - alpha) * tvGpiPlot[1]) / alpha : na
+float rawIPI = not na(tvIpiPlot) and not na(tvIpiPlot[1]) ? (tvIpiPlot - (1.0 - alpha) * tvIpiPlot[1]) / alpha : na
+
+float fastSlopeGPI = not na(rawGPI[FAST_LEN]) ? (rawGPI - rawGPI[FAST_LEN]) / FAST_LEN : na
+float midSlopeGPI = not na(rawGPI[MID_LEN]) ? (rawGPI - rawGPI[MID_LEN]) / MID_LEN : na
+float accelerationGPI = not na(fastSlopeGPI) and not na(midSlopeGPI) ? fastSlopeGPI - midSlopeGPI : na
+
+float fastSlopeIPI = not na(rawIPI[FAST_LEN]) ? (rawIPI - rawIPI[FAST_LEN]) / FAST_LEN : na
+float midSlopeIPI = not na(rawIPI[MID_LEN]) ? (rawIPI - rawIPI[MID_LEN]) / MID_LEN : na
+float accelerationIPI = not na(fastSlopeIPI) and not na(midSlopeIPI) ? fastSlopeIPI - midSlopeIPI : na
+
+bool growthPositive = rawGPI > GROWTH_THRESHOLD
+bool growthNeutral = rawGPI <= GROWTH_THRESHOLD and rawGPI >= -GROWTH_THRESHOLD
+bool growthNegative = rawGPI < -GROWTH_THRESHOLD
+
+bool inflationPositive = rawIPI > INFLATION_THRESHOLD
+bool inflationNeutral = rawIPI <= INFLATION_THRESHOLD and rawIPI >= -INFLATION_THRESHOLD
+bool inflationNegative = rawIPI < -INFLATION_THRESHOLD
+
+float regimeId = na(rawGPI) or na(rawIPI) ? na :
+     growthPositive and inflationNegative ? 1 :
+     growthPositive and inflationNeutral ? 2 :
+     growthPositive and inflationPositive ? 3 :
+     growthNeutral and inflationNegative ? 4 :
+     growthNeutral and inflationNeutral ? 5 :
+     growthNeutral and inflationPositive ? 6 :
+     growthNegative and inflationNegative ? 7 :
+     growthNegative and inflationNeutral ? 8 : 9
+
+// Transparent plots keep the pane visually quiet while remaining exportable columns.
+plot(tvGpiPlot, "A2 source smoothed GPI", color=color.new(color.lime, 100), linewidth=1)
+plot(tvIpiPlot, "A2 source smoothed IPI", color=color.new(color.orange, 100), linewidth=1)
+
+plot(rawGPI, "A2 raw GPI", color=color.new(color.lime, 100), linewidth=1)
+plot(rawIPI, "A2 raw IPI", color=color.new(color.orange, 100), linewidth=1)
+
+plot(fastSlopeGPI, "A2 GPI fast slope 20", color=color.new(color.green, 100), linewidth=1)
+plot(midSlopeGPI, "A2 GPI mid slope 63", color=color.new(color.teal, 100), linewidth=1)
+plot(accelerationGPI, "A2 GPI acceleration", color=color.new(color.aqua, 100), linewidth=1)
+
+plot(fastSlopeIPI, "A2 IPI fast slope 20", color=color.new(color.yellow, 100), linewidth=1)
+plot(midSlopeIPI, "A2 IPI mid slope 63", color=color.new(color.maroon, 100), linewidth=1)
+plot(accelerationIPI, "A2 IPI acceleration", color=color.new(color.red, 100), linewidth=1)
+
+plot(regimeId, "A2 reconstructed regime id", color=color.new(color.gray, 100), linewidth=1)
+
+var table status = table.new(position.top_right, 2, 6, border_width=1)
+if barstate.islast
+    table.cell(status, 0, 0, "Issue #109 A2 Export")
+    table.cell(status, 1, 0, "SPY 1D")
+    table.cell(status, 0, 1, "EMA source")
+    table.cell(status, 1, 1, "V6.6 smooth=ON / len=5")
+    table.cell(status, 0, 2, "GPI source")
+    table.cell(status, 1, 2, na(tvGpiPlot) ? "NA" : "OK")
+    table.cell(status, 0, 3, "IPI source")
+    table.cell(status, 1, 3, na(tvIpiPlot) ? "NA" : "OK")
+    table.cell(status, 0, 4, "Raw axes")
+    table.cell(status, 1, 4, not na(rawGPI) and not na(rawIPI) ? "READY" : "NA")
+    table.cell(status, 0, 5, "Trajectory")
+    table.cell(status, 1, 5, not na(accelerationGPI) and not na(accelerationIPI) ? "READY" : "WARMUP")
