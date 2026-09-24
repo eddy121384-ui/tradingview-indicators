@@ -28,10 +28,20 @@ const float INFLATION_THRESHOLD = 10.0
 
 float alpha = 2.0 / (SMOOTH_LEN + 1.0)
 
+// Source-binding guards. input.source() defaults to chart close; do not emit
+// research payloads until GPI and IPI are actually bound to different V6.6 plots.
+float sourceDiff = math.abs(tvGpiPlot - tvIpiPlot)
+bool sameSourceNow = not na(sourceDiff) and sourceDiff < 1e-10
+bool gpiIsChartClose = not na(tvGpiPlot) and not na(close) and math.abs(tvGpiPlot - close) < 1e-10
+bool ipiIsChartClose = not na(tvIpiPlot) and not na(close) and math.abs(tvIpiPlot - close) < 1e-10
+float sameSourceCount20 = ta.sum(sameSourceNow ? 1.0 : 0.0, 20)
+bool sourcesNotBound = gpiIsChartClose or ipiIsChartClose or (not na(sameSourceCount20) and sameSourceCount20 >= 20.0)
+bool sourcesReady = not sourcesNotBound and not na(tvGpiPlot) and not na(tvIpiPlot)
+
 // Exact inversion of EMA(5):
 // plot_t = alpha * raw_t + (1-alpha) * plot_(t-1)
-float rawGPI = not na(tvGpiPlot) and not na(tvGpiPlot[1]) ? (tvGpiPlot - (1.0 - alpha) * tvGpiPlot[1]) / alpha : na
-float rawIPI = not na(tvIpiPlot) and not na(tvIpiPlot[1]) ? (tvIpiPlot - (1.0 - alpha) * tvIpiPlot[1]) / alpha : na
+float rawGPI = sourcesReady and not na(tvGpiPlot[1]) ? (tvGpiPlot - (1.0 - alpha) * tvGpiPlot[1]) / alpha : na
+float rawIPI = sourcesReady and not na(tvIpiPlot[1]) ? (tvIpiPlot - (1.0 - alpha) * tvIpiPlot[1]) / alpha : na
 
 float fastSlopeGPI = not na(rawGPI[FAST_LEN]) ? (rawGPI - rawGPI[FAST_LEN]) / FAST_LEN : na
 float midSlopeGPI = not na(rawGPI[MID_LEN]) ? (rawGPI - rawGPI[MID_LEN]) / MID_LEN : na
@@ -81,7 +91,7 @@ plot(regimeId, "A2 reconstructed regime id", color=color.new(color.gray, 100), l
 f_num(v) =>
     str.tostring(v, "#.########")
 
-if barstate.isconfirmed and year >= logFromYear and not na(rawGPI) and not na(rawIPI)
+if barstate.isconfirmed and year >= logFromYear and sourcesReady and not na(rawGPI) and not na(rawIPI)
     string msg = "MPM_A2" +
       "|date=" + str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) +
       "|raw_gpi=" + f_num(rawGPI) + "|raw_ipi=" + f_num(rawIPI) +
@@ -96,11 +106,11 @@ if barstate.islast
     table.cell(status, 1, 0, "SPY 1D")
     table.cell(status, 0, 1, "EMA source")
     table.cell(status, 1, 1, "V6.6 smooth=ON / len=5")
-    table.cell(status, 0, 2, "GPI source")
-    table.cell(status, 1, 2, na(tvGpiPlot) ? "NA" : "OK")
-    table.cell(status, 0, 3, "IPI source")
-    table.cell(status, 1, 3, na(tvIpiPlot) ? "NA" : "OK")
+    table.cell(status, 0, 2, "Source binding")
+    table.cell(status, 1, 2, sourcesNotBound ? "NOT BOUND" : "OK")
+    table.cell(status, 0, 3, "GPI / IPI")
+    table.cell(status, 1, 3, sameSourceNow ? "SAME SOURCE" : "DIFFERENT")
     table.cell(status, 0, 4, "Raw axes")
-    table.cell(status, 1, 4, not na(rawGPI) and not na(rawIPI) ? "READY" : "NA")
+    table.cell(status, 1, 4, not na(rawGPI) and not na(rawIPI) ? "READY" : "BLOCKED")
     table.cell(status, 0, 5, "Trajectory")
     table.cell(status, 1, 5, not na(accelerationGPI) and not na(accelerationIPI) ? "READY" : "WARMUP")
