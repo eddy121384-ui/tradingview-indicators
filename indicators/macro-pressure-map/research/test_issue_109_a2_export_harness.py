@@ -8,6 +8,7 @@ HERE = Path(__file__).resolve().parent
 PINE = HERE / "issue-109-v66-a2-trajectory-export.pine"
 SPEC = HERE / "decisions" / "issue-109-a2-exact-trajectory-export-preregistered.md"
 INSTRUCTIONS = HERE / "decisions" / "issue-109-a2-runtime-instructions.md"
+SELF_CONTAINED = HERE / "issue-109-v66-a2-selfcontained-export.pine"
 
 
 def test_a2_export_files_exist():
@@ -120,3 +121,46 @@ def test_a2_helper_fails_closed_when_sources_are_not_bound():
     assert 'if barstate.isconfirmed and year >= logFromYear and sourcesReady' in s
     assert '"NOT BOUND"' in s
     assert '"SAME SOURCE"' in s
+
+
+def test_selfcontained_r4_exists_and_has_no_input_source_dependency():
+    assert SELF_CONTAINED.exists()
+    s = SELF_CONTAINED.read_text(encoding="utf-8")
+    assert "input.source" not in s
+    assert "helper_rev=r4sc" in s
+    assert 'syminfo.ticker == "SPY"' in s
+    assert "timeframe.isdaily and timeframe.multiplier == 1" in s
+
+
+def test_selfcontained_r4_freezes_v66_market_axis_sources():
+    s = SELF_CONTAINED.read_text(encoding="utf-8")
+    for symbol in [
+        "AMEX:SPY", "AMEX:IWM", "AMEX:RSP", "AMEX:XLY", "AMEX:XLP",
+        "AMEX:XLI", "AMEX:XLU", "COMEX:HG1!", "COMEX:GC1!",
+        "FRED:T10YIE", "AMEX:DBC", "NYMEX:CL1!", "NYMEX:RB1!",
+    ]:
+        assert symbol in s
+    assert "FRED:T5YIE" not in s
+    assert "AMEX:DBB" not in s
+
+
+def test_selfcontained_r4_freezes_v66_formula_and_a2_trajectory():
+    s = SELF_CONTAINED.read_text(encoding="utf-8")
+    assert "const int Z_LEN = 252" in s
+    assert "const int FAST_LEN = 20" in s
+    assert "const int MID_LEN = 63" in s
+    assert "const float W_BREAKEVEN = 0.35" in s
+    assert "const float W_COMMODITY = 0.40" in s
+    assert "const float W_ENERGY = 0.25" in s
+    assert "rawGPI = f_avg5(" in s
+    assert "rawIPI = f_wavg3(" in s
+    assert "(rawGPI - rawGPI[FAST_LEN]) / FAST_LEN" in s
+    assert "(rawGPI - rawGPI[MID_LEN]) / MID_LEN" in s
+    assert "(rawIPI - rawIPI[FAST_LEN]) / FAST_LEN" in s
+    assert "(rawIPI - rawIPI[MID_LEN]) / MID_LEN" in s
+
+
+def test_selfcontained_r4_contains_no_payoff_logic():
+    s = SELF_CONTAINED.read_text(encoding="utf-8").lower()
+    for forbidden in ["pairwise_spread", "asset_a_return", "sharpe", "cagr", "drawdown", "strategy("]:
+        assert forbidden not in s
