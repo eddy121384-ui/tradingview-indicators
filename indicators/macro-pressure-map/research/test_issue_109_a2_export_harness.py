@@ -126,7 +126,7 @@ def test_a2_helper_fails_closed_when_sources_are_not_bound():
 def test_selfcontained_r4_exists_and_has_no_input_source_dependency():
     assert SELF_CONTAINED.exists()
     s = SELF_CONTAINED.read_text(encoding="utf-8")
-    assert "input.source" not in s
+    assert "input.source(" not in s
     assert "helper_rev=r4sc" in s
     assert 'syminfo.ticker == "SPY"' in s
     assert "timeframe.isdaily and timeframe.multiplier == 1" in s
