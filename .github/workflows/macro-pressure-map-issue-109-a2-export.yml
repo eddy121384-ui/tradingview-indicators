@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - "indicators/macro-pressure-map/research/issue-109-v66-a2-trajectory-export.pine"
+      - "indicators/macro-pressure-map/research/issue-109-v66-a2-selfcontained-export.pine"
       - "indicators/macro-pressure-map/research/issue_109_a2_export_validation.py"
       - "indicators/macro-pressure-map/research/issue_109_a2_pine_log_parser.py"
       - "indicators/macro-pressure-map/research/test_issue_109_a2_export_harness.py"
