@@ -1,0 +1,33 @@
+name: Wyckoff Issue 78 add-risk evidence study
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-add-risk-evidence.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_add_risk_evidence.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-add-risk-evidence-incrementality-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-add-risk-evidence-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_add_risk_evidence.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue78_add_risk_evidence.py
+          grep -F 'CHECKPOINTS = (5, 10)' "$FILE"
+          grep -F 'future_mfe_atr' "$FILE"
+          grep -F 'future_mae_atr' "$FILE"
+          grep -F 'progress_q' "$FILE"
+          grep -F 'eff_q' "$FILE"
+          grep -F 'event count drift' "$FILE"
+          grep -F 'episode count drift' "$FILE"
+          git diff --check

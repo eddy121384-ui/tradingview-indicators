@@ -1,0 +1,9 @@
+policy,benchmark,eq_mean_sharpe_diff,sharpe_improve_markets,eq_mean_sortino_diff,maxdd_improve_markets,es5_improve_markets,equal_vol_return_diff_eq_mean,equal_vol_return_improve_markets,eq_mean_turnover_diff
+simple_warning,simple_none,-0.015846,3,-0.019254,8,9,-0.112014,3,2.048417
+simple_gentle,simple_none,-0.029260,3,-0.033468,8,9,-0.274824,3,4.952762
+simple_balanced,simple_none,-0.065406,2,-0.082079,7,9,-0.862152,2,9.247008
+progressive_warning,progressive_none,-0.018859,3,-0.023617,8,9,-0.156396,3,2.128953
+progressive_gentle,progressive_none,-0.028434,3,-0.032328,8,9,-0.238371,3,4.557450
+progressive_balanced,progressive_none,-0.060963,2,-0.075437,7,9,-0.779656,2,8.609100
+simple_none,formal_hold,-0.005827,4,-0.012264,7,9,-0.248570,4,-3.436828
+progressive_none,formal_hold,-0.002601,5,-0.008278,8,9,-0.196216,5,-3.578758
