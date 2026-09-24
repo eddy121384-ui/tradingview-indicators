@@ -1,0 +1,214 @@
+//@version=6
+indicator("MPM V6.6 A2 Self-Contained Export r4", shorttitle="MPM V6.6 A2 SC r4", overlay=false, precision=8, max_bars_back=5000)
+
+// Issue #109 A2 research-only transport helper.
+// Frozen V6.6 default market-axis configuration.
+// No production indicator, input.source binding, asset payoff, or portfolio logic.
+
+const string MARKET_TF = "D"
+const int Z_LEN = 252
+const int FAST_LEN = 20
+const int MID_LEN = 63
+const float GROWTH_THRESHOLD = 10.0
+const float INFLATION_THRESHOLD = 10.0
+
+const float W_BREAKEVEN = 0.35
+const float W_COMMODITY = 0.40
+const float W_ENERGY = 0.25
+
+f_req(symbol) =>
+    request.security(symbol, MARKET_TF, close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off, ignore_invalid_symbol=true)
+
+f_safeRatio(a, b) =>
+    not na(a) and not na(b) and b != 0.0 ? a / b : na
+
+f_zscore(src, len) =>
+    mean = ta.sma(src, len)
+    sd = ta.stdev(src, len)
+    not na(src) and not na(mean) and not na(sd) and sd != 0.0 ? (src - mean) / sd : na
+
+f_tanh(x) =>
+    if na(x)
+        na
+    else if x > 10.0
+        1.0
+    else if x < -10.0
+        -1.0
+    else
+        e2x = math.exp(2.0 * x)
+        (e2x - 1.0) / (e2x + 1.0)
+
+f_componentScore(src) =>
+    lvl = f_zscore(src, Z_LEN)
+    rocFast = ta.roc(src, FAST_LEN)
+    rocMid = ta.roc(src, MID_LEN)
+    momRaw = 0.6 * rocFast + 0.4 * rocMid
+    mom = f_zscore(momRaw, Z_LEN)
+    sd = ta.stdev(src, Z_LEN)
+    fastSma = ta.sma(src, FAST_LEN)
+    midSma = ta.sma(src, MID_LEN)
+    dirRaw = not na(sd) and sd != 0.0 and not na(fastSma) and not na(midSma) ? (fastSma - midSma) / sd : na
+    dir = not na(dirRaw) ? f_tanh(dirRaw) : na
+    raw = not na(lvl) and not na(mom) and not na(dir) ? 0.5 * lvl + 0.3 * mom + 0.2 * dir : na
+    not na(raw) ? 100.0 * f_tanh(raw / 2.0) : na
+
+f_avg2(v1, v2) =>
+    float sum = 0.0
+    float count = 0.0
+    if not na(v1)
+        sum += v1
+        count += 1.0
+    if not na(v2)
+        sum += v2
+        count += 1.0
+    count > 0.0 ? sum / count : na
+
+f_avg5(v1, v2, v3, v4, v5) =>
+    float sum = 0.0
+    float count = 0.0
+    if not na(v1)
+        sum += v1
+        count += 1.0
+    if not na(v2)
+        sum += v2
+        count += 1.0
+    if not na(v3)
+        sum += v3
+        count += 1.0
+    if not na(v4)
+        sum += v4
+        count += 1.0
+    if not na(v5)
+        sum += v5
+        count += 1.0
+    count > 0.0 ? sum / count : na
+
+f_wavg3(v1, w1, v2, w2, v3, w3) =>
+    float sum = 0.0
+    float wsum = 0.0
+    if not na(v1) and w1 > 0.0
+        sum += v1 * w1
+        wsum += w1
+    if not na(v2) and w2 > 0.0
+        sum += v2 * w2
+        wsum += w2
+    if not na(v3) and w3 > 0.0
+        sum += v3 * w3
+        wsum += w3
+    wsum > 0.0 ? sum / wsum : na
+
+f_num(v) =>
+    str.tostring(v, "#.########")
+
+// Frozen V6.6 market sources.
+spy = f_req("AMEX:SPY")
+iwm = f_req("AMEX:IWM")
+rsp = f_req("AMEX:RSP")
+xly = f_req("AMEX:XLY")
+xlp = f_req("AMEX:XLP")
+xli = f_req("AMEX:XLI")
+xlu = f_req("AMEX:XLU")
+copper = f_req("COMEX:HG1!")
+gold = f_req("COMEX:GC1!")
+
+breakeven10y = f_req("FRED:T10YIE")
+oil = f_req("NYMEX:CL1!")
+gasoline = f_req("NYMEX:RB1!")
+commodityBasket = f_req("AMEX:DBC")
+
+// GPI exact frozen market-only path.
+iwmSpyRatio = f_safeRatio(iwm, spy)
+rspSpyRatio = f_safeRatio(rsp, spy)
+xlyXlpRatio = f_safeRatio(xly, xlp)
+xliXluRatio = f_safeRatio(xli, xlu)
+copperGoldRatio = f_safeRatio(copper, gold)
+
+scoreIwmSpy = f_componentScore(iwmSpyRatio)
+scoreRspSpy = f_componentScore(rspSpyRatio)
+scoreXlyXlp = f_componentScore(xlyXlpRatio)
+scoreXliXlu = f_componentScore(xliXluRatio)
+scoreCopperGold = f_componentScore(copperGoldRatio)
+
+rawGPI = f_avg5(scoreIwmSpy, scoreRspSpy, scoreXlyXlp, scoreXliXlu, scoreCopperGold)
+
+// IPI exact frozen market-only path.
+scoreBreakeven10y = f_componentScore(breakeven10y)
+scoreCommodityBasket = f_componentScore(commodityBasket)
+scoreOil = f_componentScore(oil)
+scoreGasoline = f_componentScore(gasoline)
+scoreEnergyPressure = f_avg2(scoreOil, scoreGasoline)
+
+rawIPI = f_wavg3(
+     scoreBreakeven10y, W_BREAKEVEN,
+     scoreCommodityBasket, W_COMMODITY,
+     scoreEnergyPressure, W_ENERGY)
+
+// Frozen A2 trajectory family.
+fastSlopeGPI = not na(rawGPI[FAST_LEN]) ? (rawGPI - rawGPI[FAST_LEN]) / FAST_LEN : na
+midSlopeGPI = not na(rawGPI[MID_LEN]) ? (rawGPI - rawGPI[MID_LEN]) / MID_LEN : na
+accelerationGPI = not na(fastSlopeGPI) and not na(midSlopeGPI) ? fastSlopeGPI - midSlopeGPI : na
+
+fastSlopeIPI = not na(rawIPI[FAST_LEN]) ? (rawIPI - rawIPI[FAST_LEN]) / FAST_LEN : na
+midSlopeIPI = not na(rawIPI[MID_LEN]) ? (rawIPI - rawIPI[MID_LEN]) / MID_LEN : na
+accelerationIPI = not na(fastSlopeIPI) and not na(midSlopeIPI) ? fastSlopeIPI - midSlopeIPI : na
+
+growthPositive = rawGPI > GROWTH_THRESHOLD
+growthNeutral = rawGPI <= GROWTH_THRESHOLD and rawGPI >= -GROWTH_THRESHOLD
+growthNegative = rawGPI < -GROWTH_THRESHOLD
+
+inflationPositive = rawIPI > INFLATION_THRESHOLD
+inflationNeutral = rawIPI <= INFLATION_THRESHOLD and rawIPI >= -INFLATION_THRESHOLD
+inflationNegative = rawIPI < -INFLATION_THRESHOLD
+
+regimeId = na(rawGPI) or na(rawIPI) ? na :
+     growthPositive and inflationNegative ? 1 :
+     growthPositive and inflationNeutral ? 2 :
+     growthPositive and inflationPositive ? 3 :
+     growthNeutral and inflationNegative ? 4 :
+     growthNeutral and inflationNeutral ? 5 :
+     growthNeutral and inflationPositive ? 6 :
+     growthNegative and inflationNegative ? 7 :
+     growthNegative and inflationNeutral ? 8 : 9
+
+supportedSymbol = syminfo.ticker == "SPY"
+supportedTimeframe = timeframe.isdaily and timeframe.multiplier == 1
+supportedChart = supportedSymbol and supportedTimeframe
+axesReady = supportedChart and not na(rawGPI) and not na(rawIPI)
+
+// Hidden/exportable diagnostic plots.
+plot(rawGPI, "A2 raw GPI", color=color.new(color.lime, 100))
+plot(rawIPI, "A2 raw IPI", color=color.new(color.orange, 100))
+plot(fastSlopeGPI, "A2 GPI fast slope 20", color=color.new(color.green, 100))
+plot(midSlopeGPI, "A2 GPI mid slope 63", color=color.new(color.teal, 100))
+plot(accelerationGPI, "A2 GPI acceleration", color=color.new(color.aqua, 100))
+plot(fastSlopeIPI, "A2 IPI fast slope 20", color=color.new(color.yellow, 100))
+plot(midSlopeIPI, "A2 IPI mid slope 63", color=color.new(color.maroon, 100))
+plot(accelerationIPI, "A2 IPI acceleration", color=color.new(color.red, 100))
+plot(regimeId, "A2 reconstructed regime id", color=color.new(color.gray, 100))
+
+// Essential-plan transport: one compact Pine Log payload per confirmed SPY daily bar.
+if barstate.isconfirmed and year >= 2007 and axesReady
+    string msg = "MPM_A2" +
+      "|date=" + str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) +
+      "|raw_gpi=" + f_num(rawGPI) + "|raw_ipi=" + f_num(rawIPI) +
+      "|gpi_fast20=" + f_num(fastSlopeGPI) + "|gpi_mid63=" + f_num(midSlopeGPI) + "|gpi_acc=" + f_num(accelerationGPI) +
+      "|ipi_fast20=" + f_num(fastSlopeIPI) + "|ipi_mid63=" + f_num(midSlopeIPI) + "|ipi_acc=" + f_num(accelerationIPI) +
+      "|regime_id=" + f_num(regimeId) + "|helper_rev=r4sc"
+    log.info(msg)
+
+var table status = table.new(position.top_right, 2, 7, border_width=1)
+if barstate.islast
+    table.cell(status, 0, 0, "Issue #109 A2")
+    table.cell(status, 1, 0, "SELF-CONTAINED r4")
+    table.cell(status, 0, 1, "Chart symbol")
+    table.cell(status, 1, 1, supportedSymbol ? "SPY OK" : "USE SPY")
+    table.cell(status, 0, 2, "Chart timeframe")
+    table.cell(status, 1, 2, supportedTimeframe ? "1D OK" : "USE 1D")
+    table.cell(status, 0, 3, "GPI axis")
+    table.cell(status, 1, 3, not na(rawGPI) ? "READY" : "WARMUP/NA")
+    table.cell(status, 0, 4, "IPI axis")
+    table.cell(status, 1, 4, not na(rawIPI) ? "READY" : "WARMUP/NA")
+    table.cell(status, 0, 5, "Trajectory")
+    table.cell(status, 1, 5, not na(accelerationGPI) and not na(accelerationIPI) ? "READY" : "WARMUP")
+    table.cell(status, 0, 6, "Pine Logs")
+    table.cell(status, 1, 6, axesReady ? "MPM_A2 r4sc" : "BLOCKED")

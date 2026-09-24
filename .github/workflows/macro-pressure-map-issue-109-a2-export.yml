@@ -1,0 +1,36 @@
+name: Macro Pressure Map Issue 109 A2 Export Prereg
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue-109-v66-a2-trajectory-export.pine"
+      - "indicators/macro-pressure-map/research/issue-109-v66-a2-selfcontained-export.pine"
+      - "indicators/macro-pressure-map/research/issue_109_a2_export_validation.py"
+      - "indicators/macro-pressure-map/research/issue_109_a2_pine_log_parser.py"
+      - "indicators/macro-pressure-map/research/test_issue_109_a2_export_harness.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-109-a2-*"
+      - ".github/workflows/macro-pressure-map-issue-109-a2-export.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  export-prereg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install pytest
+        run: python -m pip install "pytest==9.1.1"
+
+      - name: Validate A2 export harness boundary
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_109_a2_export_harness.py
+          python -m py_compile issue_109_a2_export_validation.py issue_109_a2_pine_log_parser.py
