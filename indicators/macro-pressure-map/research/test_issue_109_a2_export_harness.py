@@ -74,13 +74,13 @@ def test_prereg_requires_checkpoint_and_transition_gate():
     assert "only after the exact-axis gate passes may A2 trajectory payoff evaluation begin" in s
 
 
-def test_runtime_instructions_require_spy_1d_and_ema5():
+def test_runtime_instructions_require_selfcontained_spy_1d_path():
     s = INSTRUCTIONS.read_text(encoding="utf-8")
     assert "symbol: **SPY**" in s
     assert "timeframe: **1D**" in s
-    assert "Smooth Main Pressure Lines = **ON**" in s
-    assert "Pressure Line Smoothing Length = **5**" in s
-    assert "Do not edit the CSV." in s
+    assert "issue-109-v66-a2-selfcontained-export.pine" in s
+    assert "You do **not** need to add the production V6.6 indicator" in s
+    assert "MPM_A2 r4sc" in s
 
 
 def test_pine_logs_fallback_is_one_payload_per_confirmed_bar():
@@ -91,9 +91,9 @@ def test_pine_logs_fallback_is_one_payload_per_confirmed_bar():
     assert 'log.info(msg)' in s
 
 
-def test_runtime_instructions_include_essential_plan_fallback():
+def test_runtime_instructions_include_essential_pine_logs_path():
     s = INSTRUCTIONS.read_text(encoding="utf-8")
-    assert "Essential plan fallback" in s
+    assert "Essential plan path" in s
     assert "Pine Logs" in s
     assert "issue_109_a2_pine_log_parser.py" in s
 
