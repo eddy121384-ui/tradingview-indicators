@@ -1548,7 +1548,6 @@ paceOneLine = paceTitle + "｜空手:" + flatGuide + "｜多單:" + longGuide + 
 paceChanged = paceCode != paceCode[1]
 flatActionChanged = enableFlatAction and flatActionLevel != flatActionLevel[1]
 
-
 // Visuals
 
 upColor = f_riskColor(endRiskUp, redUp, breakoutModeUp, false)
