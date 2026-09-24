@@ -353,9 +353,13 @@ An episode is a consecutive run of monthly decision origins carrying the same la
 For the 3M primary horizon:
 
 - episode contribution = sum of the pairwise 3M spread across all eligible monthly origins inside that episode;
-- largest positive episode = episode with the largest positive contribution;
-- top-positive share = largest positive episode contribution / sum of all positive episode contributions for that state/leg;
-- leaveout removes every monthly origin belonging to that episode and then reruns the state-level primary non-overlap selector from scratch.
+- determine the full-sample state/leg mean sign first;
+- supporting contribution = episode contribution multiplied by that full-sample sign;
+- strongest supporting episode = episode with the largest positive supporting contribution;
+- top-supporting share = strongest supporting contribution / sum of all positive supporting contributions for that state/leg;
+- leaveout removes every monthly origin belonging to that strongest supporting episode and then reruns the state-level primary non-overlap selector from scratch.
+
+This makes episode concentration symmetric: a positive edge removes its strongest positive episode; a negative edge removes its strongest negative episode.
 
 No alternative episode rule may be selected after results.
 
@@ -373,13 +377,13 @@ A state/leg may be labeled `stable_directional_candidate` only if:
 1. full-sample primary n >= 10;
 2. the full-sample 10,000-resample bootstrap 95% CI of mean pairwise spread excludes zero;
 3. every preregistered temporal segment with n >= 3 has the same mean sign as the full sample;
-4. largest-positive-episode leaveout retains the full-sample mean sign;
-5. top-positive episode share is <= 50%.
+4. strongest-supporting-episode leaveout retains the full-sample mean sign;
+5. top-supporting episode share is <= 50%.
 
 A state/leg is `era_dependent_candidate` if:
 
 - full-sample n >= 10 and full-sample CI excludes zero;
-- but at least one temporal segment with n >= 3 reverses sign, or the largest-positive-episode leaveout reverses sign, or top-positive episode share exceeds 50%.
+- but at least one temporal segment with n >= 3 reverses sign, or the strongest-supporting-episode leaveout reverses sign, or top-supporting episode share exceeds 50%.
 
 A state/leg is `no_clear_state_edge` if:
 

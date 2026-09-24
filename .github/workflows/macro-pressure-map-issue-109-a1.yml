@@ -1,0 +1,112 @@
+name: Macro Pressure Map Issue 109 A1 State Only
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_109_action_layer_a1.py"
+      - "indicators/macro-pressure-map/research/test_issue_109_action_layer_a1.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-109-*"
+      - "indicators/macro-pressure-map/research/data/issue-109-*"
+      - ".github/workflows/macro-pressure-map-issue-109-a1.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  a1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Revalidate Issue 109 preregistration and source freeze
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q             test_issue_109_action_layer_prereg.py             test_issue_109_action_layer_a1.py
+
+      - name: Generate preregistered Issue 109 A1 evidence
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-109-a1
+          python issue_109_action_layer_a1.py --output-dir generated/issue-109-a1
+
+      - name: Validate A1 research boundary and evidence contract
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m json.tool generated/issue-109-a1/issue-109-a1-manifest.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          root = Path("generated/issue-109-a1")
+          m = json.loads((root / "issue-109-a1-manifest.json").read_text())
+
+          assert m["phase"] == "A1-state-only"
+          assert m["primary_horizon"] == "3M"
+          assert m["primary_horizon_rows"] == 63
+          assert m["trajectory_loaded"] is False
+          assert m["fcpi_loaded_as_predictor"] is False
+          assert m["portfolio_metrics_computed"] is False
+          assert m["weights_optimized"] is False
+          assert set(m["legs"]) == {
+              "equity_vs_duration",
+              "duration_vs_cash",
+              "gold_vs_cash",
+              "commodities_vs_cash",
+          }
+
+          allowed = {
+              "stable_directional_relationship",
+              "useful_but_era_dependent",
+              "no_material_pairwise_information",
+              "inconclusive_insufficient_sample",
+          }
+          assert set(m["leg_summary"].values()) <= allowed
+
+          c = pd.read_csv(root / "issue-109-a1-state-classification.csv")
+          assert len(c) == 36
+          assert c.groupby("leg")["regime_id"].nunique().eq(9).all()
+
+          for name in [
+              "issue-109-a1-monthly-origins.csv",
+              "issue-109-a1-state-summary.csv",
+              "issue-109-a1-all-monthly-summary.csv",
+              "issue-109-a1-episodes.csv",
+              "issue-109-a1-episode-robustness.csv",
+              "issue-109-a1-state-classification.csv",
+              "issue-109-a1-duration-cash-inflation-diagnostic.csv",
+          ]:
+              assert (root / name).is_file() and (root / name).stat().st_size > 0
+
+          print({
+              "leg_summary": m["leg_summary"],
+              "state_classification_counts": m["state_classification_counts"],
+              "primary_inference_rows": m["rows"]["primary_inference_rows"],
+          })
+          PY
+
+      - name: Validate durable A1 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_109_a1_completion_validation.py --evidence-dir generated/issue-109-a1
+
+      - name: Upload Issue 109 A1 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-109-a1-state-only
+          path: indicators/macro-pressure-map/research/generated/issue-109-a1
+          retention-days: 7
+          if-no-files-found: error
