@@ -1,0 +1,75 @@
+name: Macro Pressure Map Issue 109 Source Freeze
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_109_source_freeze.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-109-phase-a0-*"
+      - ".github/workflows/macro-pressure-map-issue-109-source-freeze.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Revalidate Issue 109 preregistration
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_109_action_layer_prereg.py
+
+      - name: Freeze SHV/GSG and CPI source inputs only
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-109-source-freeze
+          python issue_109_source_freeze.py --output-dir generated/issue-109-source-freeze
+
+      - name: Validate source-only boundary
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m json.tool generated/issue-109-source-freeze/issue-109-source-freeze-manifest.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("generated/issue-109-source-freeze")
+          m = json.loads((root / "issue-109-source-freeze-manifest.json").read_text())
+          assert m["created_before_issue109_payoff_results"] is True
+          assert m["payoff_results_computed"] is False
+          assert m["pairwise_spreads_computed"] is False
+          assert m["portfolio_metrics_computed"] is False
+          assert m["v66_states_loaded"] is False
+          assert m["prices"]["symbols"] == ["SHV", "GSG"]
+          assert m["cpi"]["series_id"] == "CUUR0000SA0"
+          assert (root / m["prices"]["file"]).is_file()
+          assert (root / m["cpi"]["file"]).is_file()
+          print({
+              "price_rows": m["prices"]["rows"],
+              "price_sha": m["prices"]["csv_sha256"],
+              "cpi_rows": m["cpi"]["rows"],
+              "cpi_sha": m["cpi"]["csv_sha256"],
+          })
+          PY
+
+      - name: Upload Issue 109 source freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-109-a0-source-freeze
+          path: indicators/macro-pressure-map/research/generated/issue-109-source-freeze
+          retention-days: 7
+          if-no-files-found: error

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "issue": 109,
+  "phase": "A0-source-contract",
+  "created_before_issue109_payoff_results": true,
+  "branch_parent": {
+    "branch": "research/issue-89-ex-ante-regime-policy",
+    "sha": "ff4d772adb81e22a29918c58d4c3e02b5f7f7849",
+    "reason": "reuse frozen exact-V6.6 modern signal and SPY/TLT/GLD outcome infrastructure without merging prior research PRs"
+  },
+  "exact_v66_signal": {
+    "transition_path": "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv",
+    "transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+    "source_pine_log_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
+    "first_exact_state_date": "2007-01-04",
+    "last_exact_state_date": "2026-08-14",
+    "no_forward_fill_after_cutoff": true,
+    "full_exact_daily_axes_committed": false,
+    "trajectory_gate": "blocked_until_full_exact_gpi_ipi_series_is_durably_available"
+  },
+  "existing_modern_outcomes": {
+    "assets": [
+      "SPY",
+      "TLT",
+      "GLD"
+    ],
+    "semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close; frozen Issue #64 strict-common-calendar snapshot",
+    "csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+    "archive_sha256": "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240",
+    "rows": 4941,
+    "first_date": "2007-01-03",
+    "last_date": "2026-08-24",
+    "reuse_status": "already_inspected_research_history"
+  },
+  "new_modern_outcomes": {
+    "asset_roles_frozen_before_issue109_results": {
+      "SHV": "0-1Y Treasury / cash-like exposure; inherited from Issue #74 preregistration",
+      "GSG": "broad S&P GSCI commodity-futures exposure; inherited from Issue #74 preregistration"
+    },
+    "provider_semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close",
+    "required_snapshot": "FROZEN: data/issue-109-shv-gsg-adjusted-prices.csv",
+    "common_start_rule": "use only dates where the relevant pair has finite observations; no outcome forward-fill",
+    "live_fallback_after_freeze": false,
+    "current_status": "FROZEN_AUTHORIZED_FOR_A1",
+    "csv_sha256": "7dbfe3cff58be172098aa09b9c86fd70a23672834f5829e4b650c94cf72d6833",
+    "rows": 4956,
+    "first_date": "2007-01-11",
+    "last_date": "2026-09-23"
+  },
+  "absolute_inflation_diagnostic": {
+    "concept": "U.S. CPI-U All Items YoY, not seasonally adjusted",
+    "transport": "Direct BLS CUUR0000SA0 via Public Data API v2",
+    "transformation": "100 * (CPI_t / CPI_t-12 - 1)",
+    "availability_lag_months": 2,
+    "diagnostic_threshold_percent": 4,
+    "threshold_role": "historical diagnostic anchor inherited from Issue #91; not a production threshold",
+    "current_status": "FROZEN_AUTHORIZED_FOR_A1_DIAGNOSTIC",
+    "csv_sha256": "4afea21e4914a848a16fa9c77e51099534ce876aedb01dbbd77d95802531fc93",
+    "rows": 259,
+    "first_month": "2005-01",
+    "last_month": "2026-08"
+  },
+  "long_history_reused_evidence": {
+    "damodaran_raw_sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+    "jst_r6_raw_sha256": "c1bb91fe56ea50d4f27af5c0fc897d481e89ae38ce41eaecab62134c9354981d",
+    "role": "context/robustness evidence only; not a substitute for exact modern V6.6 signals"
+  },
+  "pairwise_legs": {
+    "equity_vs_duration": "SPY - TLT",
+    "duration_vs_cash": "TLT - SHV",
+    "gold_vs_cash": "GLD - SHV",
+    "commodities_vs_cash": "GSG - SHV"
+  },
+  "primary_horizon_common_trading_rows": 63,
+  "diagnostic_horizons_common_trading_rows": [
+    21,
+    126
+  ],
+  "decision_frequency": "monthly",
+  "a1_authorized": true,
+  "a2_trajectory_authorized": false,
+  "authorization_rules": [
+    "A1 is authorized only against the exact durable SHV/GSG and CPI snapshots bound in issue-109-phase-a0-source-freeze-manifest.json.",
+    "A2 remains blocked until a full exact-V6.6 daily GPI/IPI series is durably available.",
+    "No public-feed reconstruction may be called exact TradingView-feed V6.6.",
+    "No production Pine changes are authorized by Phase A0."
+  ]
+}
