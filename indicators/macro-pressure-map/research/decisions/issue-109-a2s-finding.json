@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "issue": 109,
+  "phase": "A2/A2S",
+  "exact_a2": {
+    "status": "blocked",
+    "verdict": "exact_v66_trajectory_not_recoverable_from_current_feed",
+    "current_feed_r4_sha256": "6ceb8cf7ba0e9c17949a4d8892b91f9a8c3a94ea1f7462a5b0a4ce114cf5e1bc",
+    "raw_rows": 4965,
+    "unique_payload_dates": 4962,
+    "first_date": "2007-01-03",
+    "last_date": "2026-09-23",
+    "checkpoint_count": 51,
+    "checkpoint_gpi_max_abs_discrepancy": 0.06224,
+    "checkpoint_ipi_max_abs_discrepancy": 29.16793,
+    "checkpoint_regime_matches": 41,
+    "checkpoint_regime_total": 51,
+    "original_issue59_parity_log_sha256": "c0220d4974b2fd0154c4cf8f33b4b3effb27a58e21ee96a1b0109011ce638e3d",
+    "exact_payoff_was_run": false
+  },
+  "a2s": {
+    "preregistration": "decisions/issue-109-a2s-current-feed-trajectory-preregistered.md",
+    "evaluator": "issue_109_a2s_current_feed_screen.py",
+    "primary_horizon": "3M",
+    "min_training_rows": 84,
+    "features": [
+      "gpi_fast20",
+      "gpi_mid63",
+      "gpi_acc",
+      "ipi_fast20",
+      "ipi_mid63",
+      "ipi_acc"
+    ],
+    "verdicts": {
+      "equity_vs_duration": "trajectory_screen_negative",
+      "duration_vs_cash": "trajectory_screen_negative",
+      "gold_vs_cash": "trajectory_screen_negative",
+      "commodities_vs_cash": "trajectory_screen_negative"
+    },
+    "full_oos": {
+      "equity_vs_duration": {
+        "n": 145,
+        "first_origin": "2014-05-01",
+        "last_origin": "2026-05-01",
+        "m0": {
+          "rmse": 0.10416430306417156,
+          "mae": 0.08117978897733118,
+          "corr": 0.06183129628471131,
+          "sign_agreement": 0.5172413793103449
+        },
+        "m1": {
+          "rmse": 0.11714779389758763,
+          "mae": 0.09179386280240842,
+          "corr": -0.018239768427625955,
+          "sign_agreement": 0.5172413793103449
+        }
+      },
+      "duration_vs_cash": {
+        "n": 145,
+        "first_origin": "2014-05-01",
+        "last_origin": "2026-05-01",
+        "m0": {
+          "rmse": 0.07490510894879489,
+          "mae": 0.05633390786472107,
+          "corr": -0.1685843964657768,
+          "sign_agreement": 0.5103448275862069
+        },
+        "m1": {
+          "rmse": 0.07864378893109927,
+          "mae": 0.06148004138620371,
+          "corr": -0.10072898435774157,
+          "sign_agreement": 0.4206896551724138
+        }
+      },
+      "gold_vs_cash": {
+        "n": 145,
+        "first_origin": "2014-05-01",
+        "last_origin": "2026-05-01",
+        "m0": {
+          "rmse": 0.0795669438102188,
+          "mae": 0.06372264042753506,
+          "corr": 0.06826643318025152,
+          "sign_agreement": 0.5793103448275863
+        },
+        "m1": {
+          "rmse": 0.08186614120903386,
+          "mae": 0.06614093761856954,
+          "corr": 0.012337576120348135,
+          "sign_agreement": 0.5862068965517241
+        }
+      },
+      "commodities_vs_cash": {
+        "n": 146,
+        "first_origin": "2014-05-01",
+        "last_origin": "2026-06-01",
+        "m0": {
+          "rmse": 0.13992790981452163,
+          "mae": 0.10396594112918026,
+          "corr": -0.027518665852411077,
+          "sign_agreement": 0.4520547945205479
+        },
+        "m1": {
+          "rmse": 0.14342523781921776,
+          "mae": 0.10764400537389468,
+          "corr": -0.04120771805592992,
+          "sign_agreement": 0.4383561643835616
+        }
+      }
+    },
+    "supportive_eras": {
+      "equity_vs_duration": 0,
+      "duration_vs_cash": 1,
+      "gold_vs_cash": 0,
+      "commodities_vs_cash": 1
+    }
+  },
+  "research_decision": "stop_trajectory_rescue_keep_state_only_action_candidates",
+  "trajectory_role": "descriptive_ui_context_only",
+  "production_authorized": false
+}
