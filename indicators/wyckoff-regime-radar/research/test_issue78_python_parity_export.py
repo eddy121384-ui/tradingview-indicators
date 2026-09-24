@@ -24,6 +24,12 @@ def test_parity_channels_exist():
     assert '"PARITY symATR"' in text
     assert '"PARITY useYieldLevel"' in text
     assert '"PARITY volume"' in text
+    assert '"PARITY volumeQuality"' in text
+    assert '"PARITY volumeWeight"' in text
+    assert '"PARITY accGate"' in text
+    assert '"PARITY probMarkup"' in text
+    assert '"PARITY candidateDisplayId"' in text
+    assert '"PARITY stalePressureBars"' in text
 
 
 def test_observe_only_mtf_requests_are_removed():

@@ -30,11 +30,35 @@ PARITY_BLOCK = r'''
 groupIssue78Parity = "研究｜Issue #78 Python Parity Export"
 issue78ParityEnabled = input.bool(true, "Enable parity channels", group=groupIssue78Parity)
 
-plot(issue78ParityEnabled ? formalId : na, "PARITY formalId")
-plot(issue78ParityEnabled ? confirmedId : na, "PARITY confirmedId")
-plot(issue78ParityEnabled ? symATR : na, "PARITY symATR")
-plot(issue78ParityEnabled ? (useYieldLevel ? 1.0 : 0.0) : na, "PARITY useYieldLevel")
-plot(issue78ParityEnabled ? volume : na, "PARITY volume")
+plot(issue78ParityEnabled ? formalId : na, "PARITY formalId", display=display.data_window)
+plot(issue78ParityEnabled ? confirmedId : na, "PARITY confirmedId", display=display.data_window)
+plot(issue78ParityEnabled ? symATR : na, "PARITY symATR", display=display.data_window)
+plot(issue78ParityEnabled ? (useYieldLevel ? 1.0 : 0.0) : na, "PARITY useYieldLevel", display=display.data_window)
+plot(issue78ParityEnabled ? volume : na, "PARITY volume", display=display.data_window)
+plot(issue78ParityEnabled ? volumeQualityScore : na, "PARITY volumeQuality", display=display.data_window)
+plot(issue78ParityEnabled ? volumeWeightApplied : na, "PARITY volumeWeight", display=display.data_window)
+plot(issue78ParityEnabled ? volumeAbsorptionScore : na, "PARITY volumeAbsorption", display=display.data_window)
+plot(issue78ParityEnabled ? volumeDistributionScore : na, "PARITY volumeDistribution", display=display.data_window)
+plot(issue78ParityEnabled ? volumeBreakoutConfirmation : na, "PARITY volumeBreakout", display=display.data_window)
+plot(issue78ParityEnabled ? volumeBreakdownConfirmation : na, "PARITY volumeBreakdown", display=display.data_window)
+plot(issue78ParityEnabled ? accGate * 100.0 : na, "PARITY accGate", display=display.data_window)
+plot(issue78ParityEnabled ? markupGate * 100.0 : na, "PARITY markupGate", display=display.data_window)
+plot(issue78ParityEnabled ? reaccGate * 100.0 : na, "PARITY reaccGate", display=display.data_window)
+plot(issue78ParityEnabled ? distGate * 100.0 : na, "PARITY distGate", display=display.data_window)
+plot(issue78ParityEnabled ? markdownGate * 100.0 : na, "PARITY markdownGate", display=display.data_window)
+plot(issue78ParityEnabled ? redistGate * 100.0 : na, "PARITY redistGate", display=display.data_window)
+plot(issue78ParityEnabled ? probAcc : na, "PARITY probAcc", display=display.data_window)
+plot(issue78ParityEnabled ? probMarkup : na, "PARITY probMarkup", display=display.data_window)
+plot(issue78ParityEnabled ? probReacc : na, "PARITY probReacc", display=display.data_window)
+plot(issue78ParityEnabled ? probDist : na, "PARITY probDist", display=display.data_window)
+plot(issue78ParityEnabled ? probMarkdown : na, "PARITY probMarkdown", display=display.data_window)
+plot(issue78ParityEnabled ? probRedist : na, "PARITY probRedist", display=display.data_window)
+plot(issue78ParityEnabled ? float(topId) : na, "PARITY topId", display=display.data_window)
+plot(issue78ParityEnabled ? topGap : na, "PARITY topGap", display=display.data_window)
+plot(issue78ParityEnabled ? evidenceStrength : na, "PARITY evidence", display=display.data_window)
+plot(issue78ParityEnabled ? float(candidateDisplayId) : na, "PARITY candidateDisplayId", display=display.data_window)
+plot(issue78ParityEnabled ? float(stalePressureBars) : na, "PARITY stalePressureBars", display=display.data_window)
+plot(issue78ParityEnabled ? float(stalePressureReason) : na, "PARITY stalePressureReason", display=display.data_window)
 '''
 
 
@@ -73,8 +97,11 @@ def generate(source_path: Path) -> str:
         "formalId = confirmedId",
         "symATR  = ta.rma(modelTR, atrLen)",
         'mtfMode = input.string("Observe Only"',
-        'plot(issue78ParityEnabled ? formalId : na, "PARITY formalId")',
-        'plot(issue78ParityEnabled ? symATR : na, "PARITY symATR")',
+        'plot(issue78ParityEnabled ? formalId : na, "PARITY formalId", display=display.data_window)',
+        'plot(issue78ParityEnabled ? symATR : na, "PARITY symATR", display=display.data_window)',
+        'plot(issue78ParityEnabled ? volumeQualityScore : na, "PARITY volumeQuality", display=display.data_window)',
+        'plot(issue78ParityEnabled ? probMarkup : na, "PARITY probMarkup", display=display.data_window)',
+        'plot(issue78ParityEnabled ? float(candidateDisplayId) : na, "PARITY candidateDisplayId", display=display.data_window)',
         "calc_bars_count=10000",
     )
     for token in required:
