@@ -7,6 +7,7 @@ on:
       - "indicators/macro-pressure-map/research/issue_127_exact_reflation_translation.py"
       - "indicators/macro-pressure-map/research/issue_64_outcome_snapshot.py"
       - "indicators/macro-pressure-map/research/test_issue_127_exact_reflation_translation.py"
+      - "indicators/macro-pressure-map/research/issue_127_completion_validation.py"
       - "indicators/macro-pressure-map/research/decisions/issue-127-*"
       - "indicators/macro-pressure-map/research/data/issue-64-*"
       - "indicators/macro-pressure-map/research/data/issue-109-shv-gsg-adjusted-prices.csv"
@@ -74,6 +75,11 @@ jobs:
               "episode":r["episode_robustness"],
           })
           PY
+
+      - name: Validate durable Issue 127 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_127_completion_validation.py --result generated/issue-127/issue-127-result.json
 
       - name: Upload Issue 127 evidence
         uses: actions/upload-artifact@v4
