@@ -1,0 +1,67 @@
+name: Macro Pressure Map Issue 117 Modern Overlap Bridge
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_117_modern_overlap_bridge.py"
+      - "indicators/macro-pressure-map/research/issue_117_source_freeze.py"
+      - "indicators/macro-pressure-map/research/issue_117_long_history_gold_cash.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-117-*"
+      - ".github/workflows/macro-pressure-map-issue-117-bridge.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+      - name: Run fixed modern overlap bridge
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-117-bridge
+          python issue_117_modern_overlap_bridge.py --output generated/issue-117-bridge/issue-117-modern-overlap-bridge.json
+      - name: Validate bridge against durable finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+          actual=json.loads(Path("generated/issue-117-bridge/issue-117-modern-overlap-bridge.json").read_text())
+          finding=json.loads(Path("decisions/issue-117-long-history-gold-cash-finding.json").read_text())
+          expected=finding["bridge"]
+          c=actual["confusion"]
+          n=actual["nonoverlap_3m"]
+          assert actual["window"]["months"] == expected["window_months"]
+          assert math.isclose(c["agreement_rate"], expected["agreement_rate"], abs_tol=1e-12)
+          assert math.isclose(c["precision_hmra_vs_exact"], expected["precision"], abs_tol=1e-12)
+          assert math.isclose(c["recall_hmra_vs_exact"], expected["recall"], abs_tol=1e-12)
+          assert math.isclose(c["jaccard_defensive_overlap"], expected["jaccard"], abs_tol=1e-12)
+          assert n["hmra_defensive_n"] == expected["nonoverlap_3m"]["hmra_n"]
+          assert n["exact_defensive_n"] == expected["nonoverlap_3m"]["exact_v66_n"]
+          assert n["both_defensive_n"] == expected["nonoverlap_3m"]["intersection_n"]
+          assert math.isclose(n["hmra_defensive_mean_spread_3m"], expected["nonoverlap_3m"]["hmra_mean"], abs_tol=1e-12)
+          assert math.isclose(n["exact_defensive_mean_spread_3m"], expected["nonoverlap_3m"]["exact_v66_mean"], abs_tol=1e-12)
+          assert math.isclose(n["both_defensive_mean_spread_3m"], expected["nonoverlap_3m"]["intersection_mean"], abs_tol=1e-12)
+          print({"bridge_bound":True,"jaccard":c["jaccard_defensive_overlap"]})
+          PY
+
+      - name: Upload bridge
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-117-modern-overlap-bridge
+          path: indicators/macro-pressure-map/research/generated/issue-117-bridge
+          retention-days: 30
+          if-no-files-found: error

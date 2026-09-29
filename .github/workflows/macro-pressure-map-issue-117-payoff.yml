@@ -1,0 +1,86 @@
+name: Macro Pressure Map Issue 117 Long-History Gold Cash
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_117_long_history_gold_cash.py"
+      - "indicators/macro-pressure-map/research/test_issue_117_long_history_gold_cash.py"
+      - "indicators/macro-pressure-map/research/issue_117_source_freeze.py"
+      - "indicators/macro-pressure-map/research/issue_117_completion_validation.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-117-*"
+      - ".github/workflows/macro-pressure-map-issue-117-payoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  payoff-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Validate Issue 117 evaluator
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_117_source_freeze.py test_issue_117_long_history_gold_cash.py
+          python -m py_compile issue_117_source_freeze.py issue_117_long_history_gold_cash.py
+
+      - name: Run preregistered Issue 117 payoff
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-117
+          python issue_117_long_history_gold_cash.py --output-dir generated/issue-117
+
+      - name: Validate result contract
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("generated/issue-117/issue-117-result.json")
+          x=json.loads(p.read_text())
+          r=x["result"]
+          assert x["issue"] == 117
+          assert len(r["gates"]) == 9
+          assert r["verdict"] in {
+              "long_history_supports_structural_gold_cash_relationship",
+              "long_history_relationship_era_dependent",
+              "long_history_no_material_gold_cash_relationship",
+              "inconclusive_data_or_definition_limitations",
+          }
+          assert x["source_coverage"]["span_years"] >= 45
+          print({
+              "verdict":r["verdict"],
+              "gates":r["gates"],
+              "primary":r["primary_full"],
+              "eras":r["eras"],
+              "leaveout":r["episode_leaveout"],
+              "loo":r["leave_one_substate_out"],
+          })
+          PY
+
+      - name: Validate durable Issue 117 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_117_completion_validation.py --result generated/issue-117/issue-117-result.json
+
+      - name: Upload Issue 117 payoff evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-117-long-history-gold-cash
+          path: indicators/macro-pressure-map/research/generated/issue-117
+          retention-days: 30
+          if-no-files-found: error
