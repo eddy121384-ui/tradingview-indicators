@@ -6,6 +6,7 @@ on:
     paths:
       - "indicators/macro-pressure-map/research/issue_125_reflation_bridge.py"
       - "indicators/macro-pressure-map/research/test_issue_125_reflation_bridge.py"
+      - "indicators/macro-pressure-map/research/issue_125_completion_validation.py"
       - "indicators/macro-pressure-map/research/data/issue-64-frozen-regime-transitions.csv"
       - "indicators/macro-pressure-map/research/decisions/issue-125-*"
       - ".github/workflows/macro-pressure-map-issue-125.yml"
@@ -67,6 +68,11 @@ jobs:
               "binary":r["binary_monthly_diagnostic"],
           })
           PY
+
+      - name: Validate durable Issue 125 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_125_completion_validation.py --result generated/issue-125/issue-125-result.json
 
       - name: Upload Issue 125 evidence
         uses: actions/upload-artifact@v4
