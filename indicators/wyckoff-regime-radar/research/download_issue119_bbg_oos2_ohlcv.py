@@ -156,13 +156,31 @@ def download_universe(
             completed.pop(meta["figi"], None)
         pending.append(security)
 
-    for batch in chunked(pending, batch_size):
+    batches = chunked(pending, batch_size)
+    print(
+        f"[issue119] universe={len(universe)} completed={len(completed)} "
+        f"pending={len(pending)} batches={len(batches)}",
+        flush=True,
+    )
+
+    for batch_no, batch in enumerate(batches, start=1):
         remaining = list(batch)
         last_errors: dict[str, str] = {}
+        print(
+            f"[issue119] batch {batch_no}/{len(batches)} "
+            f"requesting {len(remaining)} securities",
+            flush=True,
+        )
 
         for attempt in range(1, max_attempts + 1):
             if not remaining:
                 break
+
+            print(
+                f"[issue119] batch {batch_no}/{len(batches)} "
+                f"attempt {attempt}/{max_attempts}; remaining={len(remaining)}",
+                flush=True,
+            )
 
             try:
                 response = client.historical_data(
@@ -224,8 +242,22 @@ def download_universe(
                 },
             )
 
+            done_in_batch = len(batch) - len(remaining)
+            print(
+                f"[issue119] batch {batch_no}/{len(batches)} "
+                f"completed_this_batch={done_in_batch}/{len(batch)} "
+                f"total_completed={len(completed)}",
+                flush=True,
+            )
+
             if remaining and attempt < max_attempts:
-                sleep(float(2 ** (attempt - 1)))
+                wait = float(2 ** (attempt - 1))
+                print(
+                    f"[issue119] retrying {len(remaining)} securities "
+                    f"after {wait:.0f}s",
+                    flush=True,
+                )
+                sleep(wait)
 
         for security in remaining:
             meta = rows[security]
@@ -296,6 +328,12 @@ def download_universe(
         output_dir / "issue119_bbg_oos2_raw_manifest.json"
     )
     _write_json_atomic(manifest_path, manifest)
+
+    print(
+        f"[issue119] snapshot finished completed={len(completed)} "
+        f"failures={len(failures)} manifest={manifest_path}",
+        flush=True,
+    )
 
     if failures:
         raise RuntimeError(
