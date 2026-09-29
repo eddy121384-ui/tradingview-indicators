@@ -6,6 +6,7 @@ on:
     paths:
       - "indicators/macro-pressure-map/research/issue_121_long_history_rematch.py"
       - "indicators/macro-pressure-map/research/test_issue_121_long_history_rematch.py"
+      - "indicators/macro-pressure-map/research/issue_121_completion_validation.py"
       - "indicators/macro-pressure-map/research/decisions/issue-121-*"
       - ".github/workflows/macro-pressure-map-issue-121.yml"
 
@@ -69,6 +70,11 @@ jobs:
               "revived_candidates":r["revived_candidates"],
           })
           PY
+
+      - name: Validate durable Issue 121 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_121_completion_validation.py --result generated/issue-121/issue-121-result.json
 
       - name: Upload Issue 121 evidence
         uses: actions/upload-artifact@v4
