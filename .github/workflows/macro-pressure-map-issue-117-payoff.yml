@@ -7,6 +7,7 @@ on:
       - "indicators/macro-pressure-map/research/issue_117_long_history_gold_cash.py"
       - "indicators/macro-pressure-map/research/test_issue_117_long_history_gold_cash.py"
       - "indicators/macro-pressure-map/research/issue_117_source_freeze.py"
+      - "indicators/macro-pressure-map/research/issue_117_completion_validation.py"
       - "indicators/macro-pressure-map/research/decisions/issue-117-*"
       - ".github/workflows/macro-pressure-map-issue-117-payoff.yml"
 
@@ -70,6 +71,11 @@ jobs:
               "loo":r["leave_one_substate_out"],
           })
           PY
+
+      - name: Validate durable Issue 117 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_117_completion_validation.py --result generated/issue-117/issue-117-result.json
 
       - name: Upload Issue 117 payoff evidence
         uses: actions/upload-artifact@v4
