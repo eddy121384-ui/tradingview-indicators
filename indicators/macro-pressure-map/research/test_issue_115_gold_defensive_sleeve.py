@@ -24,7 +24,7 @@ def test_issue115_prereg_is_explicitly_posthoc_and_fixed():
     assert "No Issue #115 portfolio result had been viewed" in s
     assert "Regime 7" in s and "Regime 8" in s and "Regime 9" in s
     assert "GLD 0.15" in s and "SHV 0.05" in s
-    assert "all three leave-one-state-out variants" in s
+    assert "L7, L8, and L9 all retain positive CAGR advantage vs C0" in s
     assert "all eight gates pass" in s
 
 
