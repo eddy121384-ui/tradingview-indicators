@@ -77,6 +77,11 @@ jobs:
           })
           PY
 
+      - name: Validate durable Issue 113 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_113_completion_validation.py --result generated/issue-113/issue-113-result.json
+
       - name: Upload Issue 113 evidence
         uses: actions/upload-artifact@v4
         with:
