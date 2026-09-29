@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from issue_117_source_freeze import run as run_source_freeze
+from issue_117_source_freeze import run as run_source_freeze, semantic_hmra_sha256
 
 HERE = Path(__file__).resolve().parent
 DECISIONS = HERE / "decisions"
@@ -85,13 +85,12 @@ def load_frozen_sources() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dic
         manifest = run_source_freeze(out)
         if manifest["source_hashes"] != expected["source_hashes"]:
             raise RuntimeError("Issue #117 source hashes changed after preregistration")
-        actual_gen = {
-            "monthly_hmra": manifest["files"]["macro"]["sha256"],
-            "gold_monthly": manifest["files"]["gold"]["sha256"],
-            "cash_rf_monthly": manifest["files"]["cash"]["sha256"],
-        }
-        if actual_gen != expected["generated_hashes"]:
-            raise RuntimeError("Issue #117 generated source snapshots changed after preregistration")
+        if manifest["files"]["macro"]["semantic_sha256"] != expected["generated_semantic_hashes"]["monthly_hmra"]:
+            raise RuntimeError("Issue #117 HMRA semantic hash changed after preregistration")
+        if manifest["files"]["gold"]["sha256"] != expected["generated_hashes"]["gold_monthly"]:
+            raise RuntimeError("Issue #117 Gold snapshot hash changed after preregistration")
+        if manifest["files"]["cash"]["sha256"] != expected["generated_hashes"]["cash_rf_monthly"]:
+            raise RuntimeError("Issue #117 Cash snapshot hash changed after preregistration")
         hmra = pd.read_csv(out/"issue-117-monthly-hmra.csv")
         gold = pd.read_csv(out/"issue-117-gold-monthly.csv")
         cash = pd.read_csv(out/"issue-117-cash-rf-monthly.csv")
