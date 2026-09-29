@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
+
 import generate_issue76_forward_behavior_logger_pine as base
 import generate_issue78_python_parity_log_pine as m
 from parse_issue78_python_parity_logs import LOG_COLUMNS, parse_text
+from compare_issue78_python_parity import state_sync_anchor
 
 
 def frozen_source() -> Path:
@@ -63,3 +66,16 @@ def test_log_only_build_does_not_add_plot_budget():
     assert text.count("plot(") == frozen.count("plot(")
     assert text.count("plotshape(") == frozen.count("plotshape(")
     assert text.count("plotchar(") == frozen.count("plotchar(")
+
+
+
+def test_state_sync_anchor_waits_for_replay_owned_confirmation():
+    common = np.array([False, True, True, True, True, True], dtype=bool)
+    py_formal = np.array([0, 0, 0, 2, 2, 2], dtype=float)
+    assert state_sync_anchor(py_formal, common) == 3
+
+
+def test_state_sync_anchor_is_none_without_replay_confirmation():
+    common = np.array([False, True, True, True], dtype=bool)
+    py_formal = np.zeros(4, dtype=float)
+    assert state_sync_anchor(py_formal, common) is None

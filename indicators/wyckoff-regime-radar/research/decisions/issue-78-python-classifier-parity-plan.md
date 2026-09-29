@@ -150,6 +150,26 @@ The warm-up length must be derived from the frozen source, documented in code, a
 
 Do not choose a shorter warm-up because it improves parity.
 
+### Runtime state-synchronization amendment
+
+The XOM engineering fixture exposed one additional requirement that was not captured by the initial "all numeric channels finite" implementation rule:
+
+- Pine enters the 2,500-bar capture with a pre-existing recursive `formalId` state from chart history before the logged window;
+- the Python replay intentionally cold-starts its persistence state at neutral;
+- therefore all numeric classifier channels can already be finite while the Python persistence machine still needs a replay-owned confirmation event to become independent of its artificial cold-start seed.
+
+The accepted state-comparison window therefore begins at:
+
+> **the first replay-owned nonzero Python formal confirmation at or after all required numeric parity channels are finite.**
+
+This synchronization anchor is determined from the Python replay only. It does not inspect Pine's expected `formalId`, policy returns, or any OOS2 economic outcome.
+
+This rule changes only the parity harness warm-up boundary. It does **not** change Pine, Python classifier semantics, thresholds, or acceptance criteria.
+
+The technical amendment is documented in:
+
+`issue-78-python-parity-state-sync-amendment.md`.
+
 ---
 
 ## 8. Hard acceptance criteria

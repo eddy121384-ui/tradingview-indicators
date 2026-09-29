@@ -90,6 +90,31 @@ def compute_python(frame: pd.DataFrame) -> pd.DataFrame:
     return ns["compute_price_only"](frame)  # type: ignore[operator]
 
 
+def state_sync_anchor(py_formal: np.ndarray, common: np.ndarray) -> int | None:
+    """Return the first replay-owned nonzero formal confirmation after warm-up.
+
+    TradingView Pine can enter a truncated parity capture carrying a recursive
+    formal state from bars before the logged window, while Python deliberately
+    cold-starts at neutral.  We therefore wait until the Python replay itself
+    establishes a nonzero formal state after all parity channels are finite.
+
+    The anchor depends only on Python replay state and finite-channel
+    availability; it never inspects Pine's expected formal state or economics.
+    """
+    ids = np.flatnonzero(common)
+    if not len(ids):
+        return None
+    start = int(ids[0])
+    formal = np.rint(np.asarray(py_formal, dtype=float)).astype(int)
+    for i in range(start, len(formal)):
+        if not common[i]:
+            continue
+        previous = formal[i - 1] if i > 0 else 0
+        if formal[i] != 0 and previous == 0:
+            return i
+    return None
+
+
 def compare(path: Path) -> dict:
     raw = pd.read_csv(path)
     columns = list(raw.columns)
@@ -135,11 +160,19 @@ def compare(path: Path) -> dict:
             comparisons[py_name] = {"comparable_rows": 0}
 
     ids = np.flatnonzero(common)
+    py_formal = np.rint(aligned["formal_id"][1]).astype(int)
+    tv_formal = np.rint(aligned["formal_id"][0]).astype(int)
+
+    sync_anchor = state_sync_anchor(py_formal, common)
+    analysis_mask = np.zeros(len(raw), dtype=bool)
+    if sync_anchor is not None:
+        analysis_mask[sync_anchor:] = common[sync_anchor:]
+
     common_cmp = {}
-    if len(ids):
+    if analysis_mask.any():
         for name, (tv, pv) in aligned.items():
-            a = tv[common]
-            b = pv[common]
+            a = tv[analysis_mask]
+            b = pv[analysis_mask]
             diff = np.abs(a - b)
             entry = {
                 "comparable_rows": int(len(a)),
@@ -155,21 +188,21 @@ def compare(path: Path) -> dict:
 
     formal = common_cmp.get("formal_id", {})
     candidate = common_cmp.get("candidate_display_id", {})
-    # Fresh Markup / Markdown transitions must match exactly on the common window.
-    py_formal = np.rint(aligned["formal_id"][1]).astype(int)
-    tv_formal = np.rint(aligned["formal_id"][0]).astype(int)
-    common_idx = np.flatnonzero(common)
-    transition_ok = True
-    episode_start_ok = True
+
+    # Fresh Markup / Markdown transitions must match exactly after the
+    # replay-owned state synchronization anchor.
+    transition_ok = False
+    episode_start_ok = False
     transition_count = 0
-    if len(common_idx) > 1:
-        mask = common.copy()
-        prev_common = np.zeros(len(mask), dtype=bool)
-        prev_common[1:] = common[:-1]
-        pair = mask & prev_common
+    python_transition_count = 0
+    if analysis_mask.any():
+        prev_valid = np.zeros(len(analysis_mask), dtype=bool)
+        prev_valid[1:] = analysis_mask[:-1]
+        pair = analysis_mask & prev_valid
         tv_fresh = pair & np.isin(tv_formal, [2, 5]) & (tv_formal != np.roll(tv_formal, 1))
         py_fresh = pair & np.isin(py_formal, [2, 5]) & (py_formal != np.roll(py_formal, 1))
         transition_count = int(tv_fresh.sum())
+        python_transition_count = int(py_fresh.sum())
         transition_ok = bool(np.array_equal(tv_fresh, py_fresh))
         episode_start_ok = transition_ok
 
@@ -194,15 +227,20 @@ def compare(path: Path) -> dict:
         "gate": "Python classifier parity",
         "source_csv": str(path),
         "rows": int(len(raw)),
-        "all_fields_comparable_rows": int(common.sum()),
-        "first_all_fields_comparable_row_index": int(ids[0]) if len(ids) else None,
-        "fresh_markup_markdown_transitions": transition_count,
+        "all_fields_finite_rows": int(common.sum()),
+        "first_all_fields_finite_row_index": int(ids[0]) if len(ids) else None,
+        "state_sync_anchor_row_index": int(sync_anchor) if sync_anchor is not None else None,
+        "post_sync_comparable_rows": int(analysis_mask.sum()),
+        "fresh_markup_markdown_transitions_pine": transition_count,
+        "fresh_markup_markdown_transitions_python": python_transition_count,
         "column_mapping": mapping,
         "comparisons": comparisons,
         "common_window_comparisons": common_cmp,
         "acceptance": acceptance,
         "notes": [
             "TradingView OHLCV is replayed exactly in Python.",
+            "The state-comparison window begins at the first replay-owned nonzero Python formal confirmation after all parity channels are finite.",
+            "The synchronization anchor depends only on Python replay state, not Pine expected state or economics.",
             "A parity failure authorizes implementation fixes only, never classifier retuning.",
             "No R0 / Warning-First economics are computed by this comparator.",
         ],
