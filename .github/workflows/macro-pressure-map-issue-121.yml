@@ -1,0 +1,79 @@
+name: Macro Pressure Map Issue 121 Long-History Rematch
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_121_long_history_rematch.py"
+      - "indicators/macro-pressure-map/research/test_issue_121_long_history_rematch.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-121-*"
+      - ".github/workflows/macro-pressure-map-issue-121.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  rematch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install frozen-compatible research environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy==2.4.6" "pandas==3.0.5" "lxml==6.1.3" "openpyxl==3.1.5" "pytest==9.1.1"
+
+      - name: Validate Issue 121 preregistration and evaluator
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_121_long_history_rematch.py
+          python -m py_compile issue_121_long_history_rematch.py
+
+      - name: Run Issue 121 ultra-long-history rematch
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-121
+          python issue_121_long_history_rematch.py --output-dir generated/issue-121
+
+      - name: Validate result contract
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("generated/issue-121/issue-121-result.json")
+          r=json.loads(p.read_text())
+          assert r["issue"] == 121
+          assert r["phase"] == "phase1-ultra-long-history-rematch"
+          assert r["source_backbone"]["issue_91_hmra_freeze_validated"] is True
+          assert len(r["spreads"]) == 3
+          assert r["cells_per_spread"] == 9
+          assert len(r["results"]) == 27
+          assert r["commodity_status"] == "source_gate_pending_no_payoff"
+          assert r["production_authorized"] is False
+          allowed = {
+              "revived_long_history_candidate",
+              "long_history_structural_but_timing_unstable",
+              "long_history_era_dependent",
+              "remains_unconfirmed",
+              "inconclusive_long_history_sample",
+          }
+          assert set(x["classification"] for x in r["results"]).issubset(allowed)
+          print({
+              "classification_counts":r["classification_counts"],
+              "revived_candidates":r["revived_candidates"],
+          })
+          PY
+
+      - name: Upload Issue 121 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-121-long-history-rematch
+          path: indicators/macro-pressure-map/research/generated/issue-121
+          retention-days: 30
+          if-no-files-found: error
