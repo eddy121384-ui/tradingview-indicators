@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "issue": 117,
+  "phase": "long-history-gold-cash-payoff",
+  "formal_verdict": "long_history_no_material_gold_cash_relationship",
+  "production_authorized": false,
+  "payoff_evidence": {
+    "workflow_run": 36533861401,
+    "head_sha": "b9d34d1d90023ddebba9fc6b70f451eab9b7bb5a",
+    "artifact_id": 11017768178,
+    "artifact_digest": "sha256:072bcb984538e08999b9b22ea35ec1048946284eaba552afa6f3f9ea6de3ffa7"
+  },
+  "source_freeze": {
+    "common_first": "1975-01-01",
+    "common_last": "2026-08-01",
+    "common_months": 619,
+    "common_span_years": 51.582168011663484,
+    "state_semantic_sha256": "28de6da00f86148033a46ee6be80eaf3b2676a7b04d5439bdc9c972df88c0a20"
+  },
+  "primary": {
+    "opportunity_span_years": 48.24739727715148,
+    "n": 79,
+    "mean": 0.0013018829806222159,
+    "median": -0.025279684904965127,
+    "std": 0.11886896186510566,
+    "positive_fraction": 0.3924050632911392,
+    "ci_low": -0.023091973707365574,
+    "ci_high": 0.0285170080349645
+  },
+  "gates": {
+    "1_span_ge_45_years": true,
+    "2_primary_n_ge_30": true,
+    "3_full_ci_positive": false,
+    "4_at_least_3_evaluable_eras": true,
+    "5_at_least_3_evaluable_eras_positive": false,
+    "6_no_evaluable_era_below_minus_5pct": true,
+    "7_strongest_episode_leaveout_positive": false,
+    "8_top_positive_episode_share_le_35pct": true,
+    "9_all_leave_one_substate_out_positive": true
+  },
+  "eras": {
+    "1975_1989": {
+      "n": 28,
+      "mean": -0.011040005041111392,
+      "ci_low": -0.07024374006890763,
+      "ci_high": 0.06052679133860926
+    },
+    "1990_2006": {
+      "n": 24,
+      "mean": -0.003558986718523468,
+      "ci_low": -0.028122751703888737,
+      "ci_high": 0.024479867670824357
+    },
+    "2007_2019": {
+      "n": 20,
+      "mean": 0.01830613049915833,
+      "ci_low": -0.013236244142604936,
+      "ci_high": 0.05060557932731166
+    },
+    "2020_latest": {
+      "n": 7,
+      "mean": 0.01875170969738154,
+      "ci_low": -0.02834881349033699,
+      "ci_high": 0.06741781238461933
+    }
+  },
+  "strongest_episode": {
+    "start": "2019-05-01",
+    "end": "2021-02-01",
+    "months": 22,
+    "top_positive_share": 0.2573683727176978
+  },
+  "episode_leaveout": {
+    "n": 71,
+    "mean": -0.0028957086418875985,
+    "ci_low": -0.029197083695839714,
+    "ci_high": 0.02766682107734663
+  },
+  "leave_one_substate_out": {
+    "Slowdown / Disinflation": {
+      "n": 45,
+      "mean": 0.0007779802370365068
+    },
+    "Growth Slowdown / Stable Inflation": {
+      "n": 75,
+      "mean": 0.0002887118023547434
+    },
+    "Stagflation Pressure": {
+      "n": 48,
+      "mean": 0.004768165604205743
+    }
+  },
+  "bridge": {
+    "role": "diagnostic_only_no_verdict_authority",
+    "workflow_run": 36534506730,
+    "head_sha": "44947e1c95dae9c4d9b13b54933f0bb9b111fbcc",
+    "artifact_id": 11016898959,
+    "artifact_digest": "sha256:6fecd5c5e51d0a1f008a4fb767259570e758770e457d373e411f257e97d4487d",
+    "window_months": 230,
+    "agreement_rate": 0.5695652173913044,
+    "precision": 0.4084507042253521,
+    "recall": 0.3372093023255814,
+    "jaccard": 0.2265625,
+    "nonoverlap_3m": {
+      "hmra_n": 27,
+      "hmra_mean": 0.017546608966770877,
+      "exact_v66_n": 38,
+      "exact_v66_mean": 0.04853216994802676,
+      "intersection_n": 14,
+      "intersection_mean": 0.017456479880667564
+    }
+  },
+  "interpretation": "No material structural Gold-Cash relationship under the preregistered IP+CPI monthly HMRA analogue. Low modern overlap means this does not invalidate the narrower exact V6.6 modern association."
+}
