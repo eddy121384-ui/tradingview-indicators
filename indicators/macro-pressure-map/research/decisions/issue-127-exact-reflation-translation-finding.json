@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "issue": 127,
+  "verdict": "exact_v66_reflation_translation_candidate",
+  "production_authorized": false,
+  "evidence_run": 36549340343,
+  "evidence_head": "64eed67320622a67996b9bf5213bd03e9dec31de",
+  "artifact": {
+    "id": 11023178601,
+    "digest": "sha256:0a1f56ff4594d1edb0c2817fed841f4f4a30553516791238949ede97b2829312"
+  },
+  "sample": {
+    "monthly_completed": 234,
+    "first_origin": "2007-02-01",
+    "last_origin": "2026-07-01",
+    "active_months": 47,
+    "episode_count": 20,
+    "evaluable_segments": [
+      "pre_2020",
+      "covid_inflation_2020_2022",
+      "post_2023"
+    ],
+    "positive_segments": [
+      "pre_2020",
+      "covid_inflation_2020_2022"
+    ]
+  },
+  "c1_average_weights": {
+    "SPY": 0.4100427350427352,
+    "TLT": 0.38995726495726496,
+    "GLD": 0.1,
+    "SHV": 0.1
+  },
+  "full": {
+    "action": {
+      "cagr": 0.07457141238721987,
+      "sharpe": 0.69831514774196,
+      "max_drawdown": -0.21122206760593087,
+      "terminal_wealth": 4.065257028601406
+    },
+    "c0": {
+      "cagr": 0.07323342379724562,
+      "sharpe": 0.6850006668220415,
+      "max_drawdown": -0.21122206760593076,
+      "terminal_wealth": 3.9676805164388647
+    },
+    "c1": {
+      "cagr": 0.0740636664587313,
+      "sharpe": 0.6910626218432362,
+      "max_drawdown": -0.20982376404921876,
+      "terminal_wealth": 4.027963223839435
+    },
+    "action_minus_c0": {
+      "cagr": 0.0013379885899742483,
+      "sharpe": 0.013314480919918492,
+      "max_drawdown": -1.1102230246251565e-16
+    },
+    "action_minus_c1": {
+      "cagr": 0.0005077459284885677,
+      "sharpe": 0.007252525898723827
+    }
+  },
+  "segments": {
+    "pre_2020": {
+      "active_months": 34,
+      "cagr_advantage": 0.001153445195245295,
+      "sharpe_advantage": 0.009605994006007035
+    },
+    "covid_inflation_2020_2022": {
+      "active_months": 8,
+      "cagr_advantage": 0.0037658329416203618,
+      "sharpe_advantage": 0.03202246116513237
+    },
+    "post_2023": {
+      "active_months": 5,
+      "cagr_advantage": -0.00020795677977258897,
+      "sharpe_advantage": -0.0020865577922789535
+    }
+  },
+  "episode": {
+    "start_origin": "2020-12-01",
+    "end_origin": "2021-07-01",
+    "months": 8,
+    "gross_contribution": 0.011093697216481242,
+    "top_positive_share": 0.23451550393914983,
+    "leaveout_cagr_advantage": 0.0007232129201715232
+  },
+  "gate": {
+    "1_action_cagr_gt_c0": true,
+    "2_action_sharpe_gt_c0": true,
+    "3_maxdd_difference_ge_minus_1pp": true,
+    "4_active_months_ge_12": true,
+    "5_active_episodes_ge_5": true,
+    "6_evaluable_segments_ge_2": true,
+    "7_at_least_2_evaluable_segments_positive": true,
+    "8_no_evaluable_segment_below_minus_25bp": true,
+    "9_strongest_episode_leaveout_positive": true,
+    "10_top_positive_episode_share_le_50pct": true,
+    "11_beats_c1_cagr_and_sharpe": true
+  },
+  "gate_pass_count": 11,
+  "source_hashes": {
+    "prices": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+    "shv": "7dbfe3cff58be172098aa09b9c86fd70a23672834f5829e4b650c94cf72d6833",
+    "transitions": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af"
+  },
+  "output_hashes": {
+    "monthly_policy_csv_sha256": "4775bc50c4cc24085f41d1240241c09bde588e6ee7dfda3cf7d1a35d858452e0",
+    "active_episodes_csv_sha256": "2e683d4dcd570f3faa864709421487e42f046340db0768cc43e4bb2260598aca"
+  }
+}
