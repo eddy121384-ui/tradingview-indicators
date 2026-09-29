@@ -1,0 +1,70 @@
+name: Macro Pressure Map Issue 117 Source Freeze
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_117_source_freeze.py"
+      - "indicators/macro-pressure-map/research/test_issue_117_source_freeze.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-117-*"
+      - ".github/workflows/macro-pressure-map-issue-117-source.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Validate Issue 117 preregistration and source freezer
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_117_source_freeze.py
+          python -m py_compile issue_117_source_freeze.py
+
+      - name: Freeze Issue 117 sources before payoff analysis
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-117-source
+          python issue_117_source_freeze.py --output-dir generated/issue-117-source
+
+      - name: Validate source-freeze manifest
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("generated/issue-117-source/issue-117-source-freeze-manifest.json")
+          m=json.loads(p.read_text())
+          assert m["issue"] == 117
+          assert m["conditioned_gold_cash_payoff_computed"] is False
+          assert all(m["gate"].values())
+          assert m["common_source_coverage"]["span_years"] >= 45
+          print({
+            "coverage":m["common_source_coverage"],
+            "hmra":m["monthly_hmra"],
+            "hashes":m["source_hashes"],
+          })
+          PY
+
+      - name: Upload Issue 117 source freeze
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-117-source-freeze
+          path: indicators/macro-pressure-map/research/generated/issue-117-source
+          retention-days: 7
+          if-no-files-found: error
