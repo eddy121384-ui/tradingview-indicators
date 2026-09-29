@@ -205,6 +205,8 @@ def test_download_retry_checkpoint_and_resume(tmp_path):
 
     assert manifest["failures"] == {}
     assert len(manifest["completed"]) == 2
+    assert manifest["normalization"]["contract_version"] == 2
+    assert manifest["normalization"]["ohlc_range_repairs_total"] == 0
     assert client.calls == 2
 
     client2 = FakeClient()
