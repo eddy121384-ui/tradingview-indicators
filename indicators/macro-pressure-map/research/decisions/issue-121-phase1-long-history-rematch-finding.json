@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "issue": 121,
+  "phase": "phase1-ultra-long-history-rematch",
+  "evidence_run": 36538836177,
+  "evidence_head": "ed20136b86f74c495cfe079619b8b42992347cdf",
+  "artifact": {
+    "id": 11018909323,
+    "digest": "sha256:80a688e7b8cefc295411015498695af8c9cea299301273a7610b6ba09f0def24"
+  },
+  "source_backbone": {
+    "damodaran_raw_sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+    "jst_raw_sha256": "c1bb91fe56ea50d4f27af5c0fc897d481e89ae38ce41eaecab62134c9354981d",
+    "structural_rows": 98,
+    "causal_rows": 96
+  },
+  "classification_counts": {
+    "revived_long_history_candidate": 1,
+    "long_history_era_dependent": 1,
+    "long_history_structural_but_timing_unstable": 3,
+    "remains_unconfirmed": 5,
+    "inconclusive_long_history_sample": 17
+  },
+  "revived_candidate": {
+    "spread": "equity_minus_treasury",
+    "core_regime": "Reflation / Inflation Rising",
+    "direction": "equity > treasury",
+    "structural_n": 22,
+    "structural_mean": 0.1172,
+    "structural_ci_low": 0.03095852272727274,
+    "structural_ci_high": 0.20160511363636363,
+    "causal_n": 22,
+    "causal_mean": 0.1381363636363636,
+    "causal_ci_low": 0.06124045454545455,
+    "causal_ci_high": 0.2097107954545454,
+    "eligible_eras": 4,
+    "same_sign_eras": 4,
+    "leaveout_any_sign_flip": false,
+    "strongest_era_share": 0.3177360974004607
+  },
+  "near_miss": {
+    "spread": "equity_minus_treasury",
+    "core_regime": "Disinflationary Drift",
+    "classification": "long_history_era_dependent",
+    "causal_n": 9,
+    "causal_mean": 0.09200000000000001,
+    "causal_ci_low": 0.017911111111111128,
+    "causal_ci_high": 0.17204638888888887,
+    "strongest_era_share": 0.6336300692395009
+  },
+  "structural_timing_unstable": [
+    {
+      "spread": "equity_minus_treasury",
+      "core_regime": "Goldilocks / Disinflationary Expansion",
+      "structural_mean": 0.15308000000000002,
+      "causal_mean": 0.02441052631578946
+    },
+    {
+      "spread": "treasury_minus_cash",
+      "core_regime": "Disinflationary Drift",
+      "structural_mean": 0.06334000000000001,
+      "causal_mean": 0.00197777777777779
+    },
+    {
+      "spread": "gold_minus_cash",
+      "core_regime": "Reflation / Inflation Rising",
+      "structural_mean": 0.10837500000000004,
+      "causal_mean": 0.05502500000000001
+    }
+  ],
+  "commodity_status": "blocked_pending_reproducible_total_return_transport",
+  "output_table_sha256_diagnostic": "eaf88b158c204e35cd61eb290e63b991e7df2445ed49beb0fd41cb477eb917bf",
+  "phase2_eligible": [
+    "Reflation / Inflation Rising -> Equity > Treasury"
+  ],
+  "production_authorized": false
+}
