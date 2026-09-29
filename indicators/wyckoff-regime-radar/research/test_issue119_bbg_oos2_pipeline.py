@@ -286,3 +286,30 @@ def test_downloader_modules_do_not_import_classifier_or_policy():
             any(token in module for token in forbidden)
             for module in modules
         )
+
+
+def test_snapshot_audit_accepts_complete_manifest(tmp_path):
+    from audit_issue119_bbg_oos2_snapshot import audit_snapshot
+
+    universe = tiny_universe()
+    universe_path = tmp_path / "issue119_bbg_oos2_universe_manifest.csv"
+    universe.to_csv(universe_path, index=False)
+
+    client = FakeClient()
+    manifest = download_universe(
+        client,
+        universe,
+        tmp_path,
+        batch_size=2,
+        max_attempts=3,
+        sleep=lambda _: None,
+    )
+
+    manifest_path = tmp_path / "issue119_bbg_oos2_raw_manifest.json"
+    report = audit_snapshot(universe_path, manifest_path, tmp_path / "raw")
+
+    # Small synthetic fixture should satisfy all invariants except the formal 300-row count.
+    assert report["completed"] == 2
+    assert report["failures"] == 0
+    assert report["universe_sha256_match"]
+    assert report["checksum_failures"] == []
