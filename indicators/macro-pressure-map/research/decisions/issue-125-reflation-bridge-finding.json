@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "issue": 125,
+  "verdict": "bridge_semantically_related_but_not_reflation_specific",
+  "production_authorized": false,
+  "evidence_run": 36541742309,
+  "evidence_head": "0f363ab25f0c4a8b07d5072489d384480288f0ab",
+  "artifact": {
+    "id": 11020309628,
+    "digest": "sha256:516d12fed511af44c30f76bb8e46f57742198a112b61d3300afe634361fca29b"
+  },
+  "years": 19,
+  "hmra_reflation_years": 6,
+  "primary": {
+    "r3": {
+      "reflation_mean": 0.3611111111111111,
+      "other_mean": 0.10897435897435898,
+      "mean_lift": 0.25213675213675213,
+      "ci_low": 0.14423076923076925,
+      "ci_high": 0.3504273504273504
+    },
+    "growth_high": {
+      "reflation_mean": 0.4583333333333333,
+      "other_mean": 0.2820512820512821,
+      "mean_lift": 0.1762820512820512,
+      "ci_low": -0.0021367521367521305,
+      "ci_high": 0.3418803418803418
+    },
+    "inflation_high": {
+      "reflation_mean": 0.5694444444444445,
+      "other_mean": 0.33974358974358976,
+      "mean_lift": 0.22970085470085477,
+      "ci_low": 0.08974358974358976,
+      "ci_high": 0.3760683760683761
+    }
+  },
+  "r3_specificity": {
+    "largest_lift": 0.25213675213675213,
+    "r3_is_largest_positive": true
+  },
+  "leaveout_lifts": {
+    "2009": 0.25769230769230766,
+    "2011": 0.25769230769230766,
+    "2016": 0.27435897435897433,
+    "2017": 0.241025641025641,
+    "2018": 0.25769230769230766,
+    "2021": 0.22435897435897434
+  },
+  "binary": {
+    "tp": 26,
+    "fp": 46,
+    "fn": 17,
+    "tn": 139,
+    "accuracy": 0.7236842105263158,
+    "precision": 0.3611111111111111,
+    "recall": 0.6046511627906976,
+    "jaccard": 0.29213483146067415
+  },
+  "timing": {
+    "t1_r3_lift": 0.08333333333333334,
+    "t2_r3_lift": -0.03914141414141417
+  },
+  "gate": {
+    "1_at_least_15_common_years": true,
+    "2_at_least_3_hmra_reflation_years": true,
+    "3_r3_lift_positive": true,
+    "4_r3_ci_positive": true,
+    "5_growth_high_lift_positive": true,
+    "6_growth_high_ci_positive": false,
+    "7_inflation_high_lift_positive": true,
+    "8_inflation_high_ci_positive": true,
+    "9_r3_largest_positive_regime_lift": true,
+    "10_all_reflation_year_leaveouts_positive": true
+  },
+  "gate_pass_count": 9,
+  "transition_sha256": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af",
+  "output_hashes": {
+    "annual_bridge_csv_sha256": "3bc31f40765115655eb601d09f110dede20f2edf97a6ee005695ee9eeca8dfa1",
+    "monthly_exact_csv_sha256": "9d1df7e79663d4d27f24392de09434cd9c51b09e1a84ef712a3da9cc3cbb25d8"
+  }
+}
