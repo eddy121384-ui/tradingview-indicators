@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "issue": 123,
+  "phase": "reflation-equity-treasury-policy-rematch",
+  "evidence_run": 36540190110,
+  "evidence_head": "a80e48b4d73cbed5d9a08d2d7de61270dd74a652",
+  "artifact": {
+    "id": 11020320951,
+    "digest": "sha256:4eea197a46e76700ed5ba863e75d56a4127f93d965554055af714d1684cb6893"
+  },
+  "verdict": "long_history_reflation_policy_candidate",
+  "production_authorized": false,
+  "sample": {
+    "rows": 96,
+    "signal_year_first": 1928,
+    "signal_year_last": 2023,
+    "return_year_first": 1930,
+    "return_year_last": 2025,
+    "active_years": 22,
+    "episode_count": 15
+  },
+  "c1_average_weights": {
+    "equity": 0.5114583333333332,
+    "treasury": 0.4885416666666667
+  },
+  "full": {
+    "action": {
+      "cagr": 0.07915897922747006,
+      "sharpe": 0.4632696036510803,
+      "max_drawdown": -0.31102719999999995,
+      "terminal_wealth": 1500.379603830139,
+      "annualized_tactical_turnover": 0.015625000000000003,
+      "cumulative_tactical_cost": 0.0007500000000000002
+    },
+    "c0": {
+      "cagr": 0.07777812133670392,
+      "sharpe": 0.45680316201384225,
+      "max_drawdown": -0.31102719999999995,
+      "terminal_wealth": 1326.8409709944015
+    },
+    "c1": {
+      "cagr": 0.07839136742127395,
+      "sharpe": 0.45673131769423186,
+      "max_drawdown": -0.31871523878191654,
+      "terminal_wealth": 1401.311399364827
+    },
+    "action_minus_c0": {
+      "cagr": 0.0013808578907661406,
+      "sharpe": 0.0064664416372380296,
+      "max_drawdown": 0
+    },
+    "action_minus_c1": {
+      "cagr": 0.0007676118061961112,
+      "sharpe": 0.006538285956848411
+    }
+  },
+  "broad_era_cagr_advantage": {
+    "1928_1945": 0.00193423826386252,
+    "1946_1979": 0.0012844444807096345,
+    "1980_1999": 0.0006181017157245172,
+    "2000_2023": 0.0016909384107886005
+  },
+  "episode": {
+    "start_return_year": 1935,
+    "end_return_year": 1938,
+    "active_years": 4,
+    "gross_contribution": 0.02877000000000001,
+    "positive_share": 0.18103448275862075,
+    "leaveout_cagr_advantage": 0.001198142538497482,
+    "leaveout_sharpe_advantage": 0.00880500339200918
+  },
+  "fine_leaveout_cagr_advantage": {
+    "Depression_WWII": 0.0010045877014945859,
+    "GFC_QE_low_inflation": 0.001139746265821806,
+    "Great_Inflation_pre_Volcker": 0.0012120017070598177,
+    "Inflation_surge": 0.0012734438187687047,
+    "Post_Volcker_disinflation": 0.0012579738129896434,
+    "Postwar_Bretton_Woods": 0.0010929370789594106,
+    "Pre_GFC_2000s": 0.0013037320322126789
+  },
+  "gate": {
+    "1_action_cagr_gt_c0": true,
+    "2_action_sharpe_gt_c0": true,
+    "3_maxdd_difference_ge_minus_1pp": true,
+    "4_at_least_3_broad_eras_evaluable": true,
+    "5_at_least_3_broad_eras_positive_cagr_adv": true,
+    "6_no_broad_era_cagr_disadvantage_below_minus_25bp": true,
+    "7_strongest_episode_leaveout_positive_cagr_adv": true,
+    "8_strongest_positive_episode_share_le_50pct": true,
+    "9_action_beats_c1_cagr_and_sharpe": true,
+    "10_all_fine_era_leaveouts_positive_cagr_adv": true
+  },
+  "gate_pass_count": 10,
+  "source_backbone": {
+    "damodaran_raw_sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+    "jst_raw_sha256": "c1bb91fe56ea50d4f27af5c0fc897d481e89ae38ce41eaecab62134c9354981d"
+  },
+  "output_hashes": {
+    "annual_policy_csv_sha256": "7404341961ea36c5b0f8f83d2576500e43b60f72d76e2e4a0389699a79385c34",
+    "active_episodes_csv_sha256": "324c5d0ecc34f93139869aa724f08fff2a3d12224862263f019ecacffc5ddb65"
+  }
+}
