@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "issue": 115,
+  "phase": "posthoc-gold-defensive-sleeve-robustness",
+  "workflow_run": 36517227786,
+  "head_sha": "1d86c71fcc62f08d5e514298dd3b6cab63d613d8",
+  "artifact": {
+    "id": 11010964377,
+    "name": "issue-115-gold-defensive-sleeve",
+    "digest": "sha256:179bf5f9a0673a3383257a5c70db0510c655b4bc87b6b04ff1371d9876d153eb"
+  },
+  "posthoc_selected": true,
+  "verdict": "gold_defensive_sleeve_economically_positive_but_posthoc_not_robust",
+  "production_authorized": false,
+  "gate_pass_count": 7,
+  "production_gate": {
+    "1_full_cagr_adv_ge_25bp": true,
+    "2_full_sharpe_adv_ge_005": false,
+    "3_maxdd_not_worse_by_gt_15pp": true,
+    "4_all_3_segments_positive_cagr_adv": true,
+    "5_min_segment_cagr_adv_ge_0": true,
+    "6_strongest_episode_leaveout_positive": true,
+    "7_beats_c1_on_cagr_and_sharpe": true,
+    "8_all_leave_one_state_out_positive": true
+  },
+  "sample": {
+    "monthly_completed": 234,
+    "first_origin": "2007-02-01",
+    "last_origin": "2026-07-01",
+    "active_months": 87,
+    "episode_count": 29
+  },
+  "full": {
+    "gold_only": {
+      "cagr": 0.07695404663537975,
+      "sharpe": 0.7172706628175457,
+      "max_drawdown": -0.21363939673584809,
+      "annualized_tactical_turnover": 0.1487179487179487,
+      "terminal_wealth": 4.244679099367364
+    },
+    "c0": {
+      "cagr": 0.07323342379724562,
+      "sharpe": 0.6850006668220415,
+      "max_drawdown": -0.21122206760593076,
+      "terminal_wealth": 3.9676805164388647
+    },
+    "c1": {
+      "cagr": 0.07488293752561948,
+      "sharpe": 0.6931964059094458,
+      "max_drawdown": -0.2125988865885211,
+      "terminal_wealth": 4.088300370448796
+    },
+    "c2_issue113": {
+      "cagr": 0.07753833015355194,
+      "sharpe": 0.7214544985342941,
+      "max_drawdown": -0.2136596106922649,
+      "annualized_tactical_turnover": 0.2153846153846154,
+      "terminal_wealth": 4.289811334635637
+    },
+    "cagr_advantage_vs_c0": 0.0037206228381341244,
+    "sharpe_advantage_vs_c0": 0.032269995995504175,
+    "maxdd_difference_vs_c0": -0.0024173291299173227,
+    "gold_minus_c2_cagr": -0.0005842835181721906,
+    "gold_minus_c2_sharpe": -0.0041838357167484075
+  },
+  "segments": {
+    "pre_2020": {
+      "cagr_advantage": 0.003915617676055305,
+      "sharpe_advantage": 0.033941561762969585
+    },
+    "covid_inflation_2020_2022": {
+      "cagr_advantage": 0.0009660908852842098,
+      "sharpe_advantage": 0.008182946817288345
+    },
+    "post_2023": {
+      "cagr_advantage": 0.005525206565232699,
+      "sharpe_advantage": 0.05001380319775772
+    }
+  },
+  "episode_robustness": {
+    "strongest_start": "2007-08-01",
+    "strongest_end": "2008-02-01",
+    "strongest_months": 7,
+    "top_positive_share": 0.2098831132467789,
+    "leaveout_cagr_advantage": 0.0027034598496329387
+  },
+  "leave_one_state_out": {
+    "remove_regime_7": {
+      "cagr_advantage": 0.0018498286723369617,
+      "sharpe_advantage": 0.019364270391774574
+    },
+    "remove_regime_8": {
+      "cagr_advantage": 0.003439042205223286,
+      "sharpe_advantage": 0.028750361012692682
+    },
+    "remove_regime_9": {
+      "cagr_advantage": 0.002102180491597716,
+      "sharpe_advantage": 0.016120366619228554
+    }
+  },
+  "state_contribution": {
+    "7": {
+      "active_months": 51,
+      "gross_contribution_sum": 0.03616644543519319,
+      "annualized_mean_over_full_sample": 0.0018546895094970865
+    },
+    "8": {
+      "active_months": 15,
+      "gross_contribution_sum": 0.005150735400080715,
+      "annualized_mean_over_full_sample": 0.00026414027692721613
+    },
+    "9": {
+      "active_months": 21,
+      "gross_contribution_sum": 0.029797887816320118,
+      "annualized_mean_over_full_sample": 0.0015280968110933395
+    }
+  },
+  "c1_average_weights": {
+    "SPY": 0.4,
+    "TLT": 0.4,
+    "GLD": 0.11858974358974358,
+    "SHV": 0.08141025641025641
+  },
+  "output_hashes": {
+    "monthly_portfolio": "8faf8b73e12ba6feb5bcce5a75a630ea42e766e155a1bdfbaf6e9f87d9ab091d",
+    "active_episodes": "c01421ca98f82d16ab3b5eb221a295dd1bbfc3386487eb2ea0aed60f85ab1e01"
+  }
+}

@@ -1,0 +1,102 @@
+name: Macro Pressure Map Issue 115 Gold Defensive Sleeve
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_115_gold_defensive_sleeve.py"
+      - "indicators/macro-pressure-map/research/test_issue_115_gold_defensive_sleeve.py"
+      - "indicators/macro-pressure-map/research/issue_115_completion_validation.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-115-*"
+      - ".github/workflows/macro-pressure-map-issue-115.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  gold-sleeve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Validate Issue 115 preregistration and evaluator
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_115_gold_defensive_sleeve.py
+          python -m py_compile issue_115_gold_defensive_sleeve.py
+
+      - name: Run preregistered Issue 115 Gold sleeve gate
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-115
+          python issue_115_gold_defensive_sleeve.py --output-dir generated/issue-115
+
+      - name: Validate Issue 115 result schema
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("generated/issue-115")
+          result = json.loads((root / "issue-115-result.json").read_text())
+
+          assert result["issue"] == 115
+          assert result["posthoc_selected"] is True
+          assert result["active_states"] == [7, 8, 9]
+          assert result["primary_cost_bps"] == 5.0
+          assert result["gold_target"] == {
+              "SPY": 0.4,
+              "TLT": 0.4,
+              "GLD": 0.15,
+              "SHV": 0.05,
+          }
+          assert len(result["production_gate"]) == 8
+          assert set(result["leave_one_state_out"]) == {
+              "remove_regime_7",
+              "remove_regime_8",
+              "remove_regime_9",
+          }
+          assert result["verdict"] in {
+              "gold_defensive_sleeve_robust_candidate",
+              "gold_defensive_sleeve_economically_positive_but_posthoc_not_robust",
+              "gold_defensive_sleeve_no_material_value",
+              "gold_defensive_sleeve_inconclusive",
+          }
+          assert result["production_authorized"] is False
+          assert (root / "issue-115-gold-monthly-portfolio.csv").is_file()
+          assert (root / "issue-115-gold-active-episodes.csv").is_file()
+
+          print({
+              "verdict": result["verdict"],
+              "gate": result["production_gate"],
+              "full": result["full"],
+              "segments": result["segment_cagr_advantage_vs_c0"],
+              "leave_one_state_out": result["leave_one_state_out"],
+          })
+          PY
+
+      - name: Validate durable Issue 115 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_115_completion_validation.py --result generated/issue-115/issue-115-result.json
+
+      - name: Upload Issue 115 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-115-gold-defensive-sleeve
+          path: indicators/macro-pressure-map/research/generated/issue-115
+          retention-days: 7
+          if-no-files-found: error
