@@ -26,6 +26,15 @@ PROBABILITY_COLUMNS = (
     "prob_markdown",
     "prob_redist",
 )
+STRUCTURAL_READINESS_COLUMNS = (
+    "speed_rank",
+    "accel_rank",
+    "dist_rank",
+    "maturity_up",
+    "maturity_dn",
+    "range_score",
+    "sym_atr",
+)
 REQUIRED_OUTPUT_COLUMNS = {
     "formal_id",
     "candidate_display_id",
@@ -114,14 +123,19 @@ def smoke(
                     f"classifier row count changed {len(frame)} -> {len(result)}"
                 )
 
+            readiness = result[list(STRUCTURAL_READINESS_COLUMNS)].apply(
+                pd.to_numeric, errors="coerce"
+            )
+            structurally_ready = np.isfinite(
+                readiness.to_numpy()
+            ).all(axis=1)
+
             probabilities = result[list(PROBABILITY_COLUMNS)].apply(
                 pd.to_numeric, errors="coerce"
             )
-            finite_probs = np.isfinite(probabilities.to_numpy()).all(axis=1)
-            finite_sym_atr = np.isfinite(
-                pd.to_numeric(result["sym_atr"], errors="coerce").to_numpy()
-            )
-            post_warmup = finite_probs & finite_sym_atr
+            finite_probability_rows = np.isfinite(
+                probabilities.to_numpy()
+            ).all(axis=1)
 
             formal = pd.to_numeric(
                 result["formal_id"], errors="coerce"
@@ -134,21 +148,24 @@ def smoke(
             ticker = str(frame["ticker"].iloc[0])
             figi = str(frame["stable_security_id"].iloc[0])
             rows = int(len(frame))
-            post_rows = int(post_warmup.sum())
+            structural_rows = int(structurally_ready.sum())
+            finite_prob_rows = int(finite_probability_rows.sum())
             total_rows += rows
-            total_post_warmup_rows += post_rows
+            total_post_warmup_rows += structural_rows
             summaries.append(
                 {
                     "figi": figi,
                     "ticker": ticker,
                     "rows": rows,
-                    "post_warmup_rows": post_rows,
+                    "structurally_ready_rows": structural_rows,
+                    "finite_probability_rows": finite_prob_rows,
                     "classifier_completed": True,
                 }
             )
             print(
                 f"[issue119-smoke] {index}/{len(files)} {ticker} "
-                f"rows={rows} post_warmup={post_rows}",
+                f"rows={rows} structurally_ready={structural_rows} "
+                f"finite_probs={finite_prob_rows}",
                 flush=True,
             )
         except Exception as exc:
@@ -174,11 +191,17 @@ def smoke(
         "completed_securities": len(summaries),
         "failures": failures,
         "total_rows": total_rows,
-        "total_post_warmup_rows": total_post_warmup_rows,
-        "min_post_warmup_rows": (
-            min(int(x["post_warmup_rows"]) for x in summaries)
+        "total_structurally_ready_rows": total_post_warmup_rows,
+        "min_structurally_ready_rows": (
+            min(int(x["structurally_ready_rows"]) for x in summaries)
             if summaries
             else None
+        ),
+        "securities_with_zero_structurally_ready_rows": int(
+            sum(int(x["structurally_ready_rows"]) == 0 for x in summaries)
+        ),
+        "securities_with_zero_finite_probability_rows": int(
+            sum(int(x["finite_probability_rows"]) == 0 for x in summaries)
         ),
         "securities": summaries,
         "economics": {
@@ -206,8 +229,18 @@ def smoke(
         "completed_securities": report["completed_securities"],
         "failures": len(report["failures"]),
         "total_rows": report["total_rows"],
-        "total_post_warmup_rows": report["total_post_warmup_rows"],
-        "min_post_warmup_rows": report["min_post_warmup_rows"],
+        "total_structurally_ready_rows": report[
+            "total_structurally_ready_rows"
+        ],
+        "min_structurally_ready_rows": report[
+            "min_structurally_ready_rows"
+        ],
+        "securities_with_zero_structurally_ready_rows": report[
+            "securities_with_zero_structurally_ready_rows"
+        ],
+        "securities_with_zero_finite_probability_rows": report[
+            "securities_with_zero_finite_probability_rows"
+        ],
         "policy_economics_computed": False,
     }
     print(json.dumps(compact, indent=2))
