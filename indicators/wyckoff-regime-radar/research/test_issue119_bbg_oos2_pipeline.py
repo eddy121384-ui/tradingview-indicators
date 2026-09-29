@@ -181,11 +181,15 @@ def tiny_universe() -> pd.DataFrame:
                 "security": "AAA US Equity",
                 "figi": "BBGAAA",
                 "ticker": "AAA",
+                "sleeve": "large",
+                "sector": "Industrials",
             },
             {
                 "security": "BBB US Equity",
                 "figi": "BBGBBB",
                 "ticker": "BBB",
+                "sleeve": "small",
+                "sector": "Health Care",
             },
         ]
     )
