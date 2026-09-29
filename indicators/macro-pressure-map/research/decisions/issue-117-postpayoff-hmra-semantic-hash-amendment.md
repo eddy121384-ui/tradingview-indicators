@@ -1,4 +1,4 @@
-# Issue #117 post-payoff reproducibility amendment — HMRA semantic hash
+# Issue #117 post-payoff reproducibility amendment — HMRA state-semantic hash
 
 Date: 2026-09-29
 
@@ -6,84 +6,79 @@ Status: **TRANSPORT / REPRODUCIBILITY ONLY — NO MODEL OR PAYOFF CHANGE**
 
 ## Trigger
 
-After the preregistered Issue #117 payoff had already run, the modern-overlap bridge re-ran the frozen source builder and hit the durable byte-hash guard for the generated monthly HMRA CSV.
+After the preregistered Issue #117 payoff had already run, later GitHub runners occasionally produced a different raw-byte CSV hash for the derived monthly HMRA table even though all frozen upstream source hashes were unchanged.
 
-All five upstream frozen source hashes were unchanged:
+The same class of floating serialization / last-digit calculation drift had already appeared in Issue #91.
 
-- Fed Industrial Production raw payload
-- BLS CPI canonical observations
-- pinned World Bank Gold mirror payload
-- pinned Gold mirror README
-- Kenneth French factors ZIP
+## Verified invariants
 
-A direct comparison of the original source-freeze artifact and a subsequent source-freeze rerun showed:
+Across retained source-freeze artifacts:
 
-- identical 1291 × 13 HMRA shape;
-- identical date sequence;
-- identical growth state;
-- identical inflation state;
-- identical regime;
-- identical defensive-state flag;
-- no material numeric difference;
-- the subsequent rerun also reproduced the original byte hash.
+- shape remained 1291 × 13;
+- date sequence was identical;
+- growth_state was identical for every month;
+- inflation_state was identical for every month;
+- regime was identical for every month;
+- defensive_gold_state was identical for every month;
+- Gold and Cash derived CSV byte hashes remained exact;
+- all five upstream source payload hashes remained exact.
 
-The failed bridge run therefore reflects intermittent floating CSV serialization drift rather than a source, formula, state, or payoff change.
+The runner-level drift was confined to irrelevant floating numeric tails in the derived HMRA calculation/serialization and did not alter the state sequence used to select payoff observations.
 
-Issue #91 encountered the same class of reproducibility problem and already established the precedent of a semantic CSV hash for derived floating evidence.
+## Durable gate
 
-## Amendment
+For upstream inputs, Gold, and Cash, keep byte-exact SHA-256 gates.
 
-Keep byte-exact hashes as the durable gate for:
+For the **derived monthly HMRA table**, bind the exact ordered state semantics:
 
-- all upstream source payloads;
-- Gold monthly CSV;
-- Cash RF monthly CSV.
+- date
+- growth_state
+- inflation_state
+- regime
+- defensive_gold_state
 
-For the **derived monthly HMRA CSV only**, add a semantic hash:
+These fields are serialized as deterministic JSON records in original row order with sorted object keys and compact separators.
 
-1. parse CSV fields as text;
-2. preserve row order and column names;
-3. preserve exact strings for:
-   - date
-   - growth_state
-   - inflation_state
-   - regime
-4. normalize defensive_gold_state to boolean;
-5. normalize empty numeric fields to null;
-6. quantize all other numeric fields to 10 decimal places using ROUND_HALF_EVEN;
-7. serialize records as deterministic JSON with sorted object keys and compact separators;
-8. SHA-256 the UTF-8 JSON bytes.
+Frozen state-semantic SHA-256:
 
-Frozen semantic HMRA SHA-256:
+`28de6da00f86148033a46ee6be80eaf3b2676a7b04d5439bdc9c972df88c0a20`
 
-`953a21566736e36dca6716b3788cbc374aed8842c860f8114a81f62beea16c2c`
+The earlier raw CSV byte hash remains recorded as a diagnostic:
 
-This semantic hash matched both the original pre-payoff source artifact and the post-payoff rerun compared during diagnosis.
+`6b200a949c4a52f128639baa2c7ce2b924ce3e2818f9bc1eeb5922bd5ce0986c`
+
+## Why this is the correct research gate
+
+Issue #117 payoff selection depends on the HMRA **state assignment**, not on the last floating digits of displayed scores.
+
+The state-semantic gate therefore fails closed if any month changes:
+
+- Growth bucket;
+- Inflation bucket;
+- Regime;
+- pooled defensive-state membership;
+- date alignment.
+
+At the same time it does not falsely fail because two runners serialize numerically equivalent scores differently.
 
 ## What does not change
 
 This amendment does **not** change:
 
-- source identities;
-- source values;
-- 12M growth/inflation transformation;
-- 12M acceleration;
-- 60M prior normalization;
-- 70/30 score weights;
+- any upstream observation;
+- 12M transformations;
+- 60M normalization;
+- 70/30 weights;
 - ±10 thresholds;
 - t-2 lag;
-- state assignments;
-- defensive-state mapping;
-- Gold or Cash outcomes;
+- any state assignment;
+- Gold/Cash outcome timing;
 - 3M primary horizon;
-- non-overlap selector;
-- era boundaries;
+- non-overlap selection;
+- eras;
 - episode rules;
-- any success gate;
-- the already observed Issue #117 payoff result.
+- leave-one-substate rules;
+- any verdict gate;
+- the payoff result already observed before this amendment.
 
-The original HMRA raw CSV byte hash remains recorded as a diagnostic:
-
-`6b200a949c4a52f128639baa2c7ce2b924ce3e2818f9bc1eeb5922bd5ce0986c`
-
-but semantic equality is the durable reproducibility gate for this derived floating CSV.
+No outcome-driven model change is authorized by this amendment.
