@@ -309,6 +309,27 @@ def download_universe(
         },
         "universe_rows": int(len(universe)),
         "universe_sha256": file_sha256(universe_path),
+        "normalization": {
+            "contract_version": 2,
+            "ohlc_range_rule": (
+                "If Bloomberg high does not bound open/close, replace high "
+                "with max(open, high, close); if low does not bound "
+                "open/close, replace low with min(open, low, close). "
+                "Every repair is retained in per-security diagnostics."
+            ),
+            "ohlc_range_repairs_total": int(
+                sum(
+                    int(diag.get("ohlc_range_repairs", 0))
+                    for diag in completed.values()
+                )
+            ),
+            "securities_with_ohlc_range_repairs": int(
+                sum(
+                    int(diag.get("ohlc_range_repairs", 0)) > 0
+                    for diag in completed.values()
+                )
+            ),
+        },
         "completed": completed,
         "failures": failures,
         "downloader_git_head": _git_head(),
