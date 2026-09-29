@@ -48,5 +48,9 @@
     "gold_starts_by_1975": true,
     "cash_starts_by_1975": true,
     "hmra_valid_by_1975": true
-  }
+  },
+  "generated_semantic_hashes": {
+    "monthly_hmra": "953a21566736e36dca6716b3788cbc374aed8842c860f8114a81f62beea16c2c"
+  },
+  "reproducibility_amendment": "decisions/issue-117-postpayoff-hmra-semantic-hash-amendment.md"
 }
