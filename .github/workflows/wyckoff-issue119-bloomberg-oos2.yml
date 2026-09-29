@@ -10,6 +10,7 @@ on:
       - 'indicators/wyckoff-regime-radar/research/issue119_bbg_client.py'
       - 'indicators/wyckoff-regime-radar/research/build_issue119_bbg_oos2_universe.py'
       - 'indicators/wyckoff-regime-radar/research/download_issue119_bbg_oos2_ohlcv.py'
+      - 'indicators/wyckoff-regime-radar/research/audit_issue119_bbg_oos2_snapshot.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue119_bbg_oos2_pipeline.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-119-bloomberg-oos2-pipeline-implementation.md'
   pull_request:
@@ -42,6 +43,7 @@ jobs:
           python -m py_compile indicators/wyckoff-regime-radar/research/issue119_bbg_client.py
           python -m py_compile indicators/wyckoff-regime-radar/research/build_issue119_bbg_oos2_universe.py
           python -m py_compile indicators/wyckoff-regime-radar/research/download_issue119_bbg_oos2_ohlcv.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/audit_issue119_bbg_oos2_snapshot.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue119_bbg_oos2_pipeline.py
 
       - name: Pipeline contract tests
