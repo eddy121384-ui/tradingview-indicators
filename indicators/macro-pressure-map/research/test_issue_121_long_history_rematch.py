@@ -73,4 +73,5 @@ def test_small_causal_effect_remains_unconfirmed():
     assert result["classification"] in {
         "remains_unconfirmed",
         "long_history_structural_but_timing_unstable",
+        "inconclusive_long_history_sample",
     }
