@@ -279,3 +279,35 @@ The modules deliberately do not import the frozen classifier or any policy-econo
 > Run the universe builder on the Bloomberg workstation and freeze the returned 300-stock manifest before any OOS2 policy economics are inspected.
 
 Refs #119, #78, #80.
+
+
+---
+
+## 10. Runtime amendment — Bloomberg OHLC range normalization
+
+The first live 300-security download completed 265 securities and left 35 incomplete.
+
+All 35 incomplete securities failed for the same engineering reason: one or more historical daily bars had `PX_HIGH` below that day's open/close or `PX_LOW` above that day's open/close. No policy economics were inspected.
+
+Before any OOS2 outcome run, normalization contract v2 was frozen:
+
+- if high does not bound open/close, use `max(open, high, close)`;
+- if low does not bound open/close, use `min(open, low, close)`;
+- open and close are never altered;
+- every repair date and before/after value is written into per-security diagnostics;
+- nonpositive OHLC remains a hard failure;
+- negative volume remains a hard failure.
+
+This is a deterministic data-normalization repair, not a classifier or policy change.
+
+The already-completed 265 securities passed the stricter v1 check, so they require no rewrite. On resume, only the 35 incomplete securities are requested again.
+
+The frozen 300-security universe is unchanged.
+
+Universe SHA-256:
+
+`e6f07371c9306f2598115cb886cc1cd5d4970d9fdc5e87dd1882bbac304c5712`
+
+Policy economics remain locked until the 300-security raw snapshot is complete and its final data-quality manifest is reviewed.
+
+Refs #119, #78, #80.
