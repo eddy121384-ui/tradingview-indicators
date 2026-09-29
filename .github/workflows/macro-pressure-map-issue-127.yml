@@ -1,0 +1,83 @@
+name: Macro Pressure Map Issue 127 Exact Reflation Translation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_127_exact_reflation_translation.py"
+      - "indicators/macro-pressure-map/research/test_issue_127_exact_reflation_translation.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-127-*"
+      - "indicators/macro-pressure-map/research/data/issue-64-*"
+      - "indicators/macro-pressure-map/research/data/issue-109-shv-gsg-adjusted-prices.csv"
+      - ".github/workflows/macro-pressure-map-issue-127.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-reflation-translation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Validate Issue 127 evaluator
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_127_exact_reflation_translation.py
+          python -m py_compile issue_127_exact_reflation_translation.py
+
+      - name: Run Issue 127 exact Reflation gate
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-127
+          python issue_127_exact_reflation_translation.py --output-dir generated/issue-127
+
+      - name: Validate result contract
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("generated/issue-127/issue-127-result.json").read_text())
+          assert r["issue"] == 127
+          assert r["phase"] == "exact-v66-reflation-translation"
+          assert r["policy"]["base_weights"] == {"SPY":0.4,"TLT":0.4,"GLD":0.1,"SHV":0.1}
+          assert r["policy"]["regime_3_weights"] == {"SPY":0.45,"TLT":0.35,"GLD":0.1,"SHV":0.1}
+          assert r["policy"]["primary_cost_bps"] == 5.0
+          assert len(r["gate"]) == 11
+          assert r["verdict"] in {
+              "exact_v66_reflation_translation_candidate",
+              "modern_direction_positive_but_implementation_not_robust",
+              "modern_exact_signal_contradicts_long_history_candidate",
+              "inconclusive_modern_translation_sample",
+          }
+          assert r["production_authorized"] is False
+          print({
+              "verdict":r["verdict"],
+              "gate":r["gate"],
+              "sample":r["sample"],
+              "full":r["full"],
+              "segments":r["segments"],
+              "episode":r["episode_robustness"],
+          })
+          PY
+
+      - name: Upload Issue 127 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-127-exact-reflation-translation
+          path: indicators/macro-pressure-map/research/generated/issue-127
+          retention-days: 30
+          if-no-files-found: error
