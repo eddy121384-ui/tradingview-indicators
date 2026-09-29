@@ -13,7 +13,6 @@ import math
 import re
 import urllib.request
 import zipfile
-from decimal import Decimal, ROUND_HALF_EVEN
 from pathlib import Path
 
 import numpy as np
@@ -44,37 +43,34 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def semantic_hmra_sha256(path: Path, decimals: int = 10) -> str:
-    """Stable semantic hash for derived floating HMRA CSV.
+def semantic_hmra_sha256(path: Path) -> str:
+    """Stable state-semantic hash for the derived HMRA CSV.
 
-    Exact categorical state identity is preserved; numeric fields are
-    Decimal-quantized only to neutralize non-semantic float serialization drift.
+    Upstream source payloads remain byte-exact. This derived gate binds the
+    categorical state sequence that actually determines payoff selection,
+    avoiding irrelevant platform-level floating-tail serialization drift.
     """
     frame = pd.read_csv(path, dtype=str, keep_default_na=False)
-    categorical = {"date", "growth_state", "inflation_state", "regime", "defensive_gold_state"}
-    quantum = Decimal("1").scaleb(-decimals)
+    columns = [
+        "date",
+        "growth_state",
+        "inflation_state",
+        "regime",
+        "defensive_gold_state",
+    ]
     records = []
-    for _, row in frame.iterrows():
-        record = {}
-        for col in frame.columns:
-            value = str(row[col]).strip()
-            if value == "" or value.lower() == "nan":
-                record[col] = None
-            elif col == "defensive_gold_state":
-                record[col] = value.lower() in {"true", "1"}
-            elif col in categorical:
-                record[col] = value
-            else:
-                record[col] = format(
-                    Decimal(value).quantize(quantum, rounding=ROUND_HALF_EVEN),
-                    f".{decimals}f",
-                )
-        records.append(record)
+    for _, row in frame[columns].iterrows():
+        records.append({
+            "date": str(row["date"]).strip(),
+            "growth_state": str(row["growth_state"]).strip() or None,
+            "inflation_state": str(row["inflation_state"]).strip() or None,
+            "regime": str(row["regime"]).strip() or None,
+            "defensive_gold_state": str(row["defensive_gold_state"]).strip().lower() in {"true", "1"},
+        })
     payload = json.dumps(
         records, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     ).encode("utf-8")
     return sha256_bytes(payload)
-
 
 def fetch_bytes(url: str, *, data: bytes | None = None, headers: dict | None = None) -> tuple[bytes, str]:
     h = {"User-Agent": USER_AGENT}
