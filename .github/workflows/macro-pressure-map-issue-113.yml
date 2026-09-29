@@ -1,0 +1,91 @@
+name: Macro Pressure Map Issue 113 Action Layer Sizing
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_113_action_layer_sizing.py"
+      - "indicators/macro-pressure-map/research/test_issue_113_action_layer_sizing.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-113-*"
+      - ".github/workflows/macro-pressure-map-issue-113.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  sizing-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.16"
+
+      - name: Install locked research environment
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pip install --upgrade "pip==26.2.1"
+          python -m pip install --no-deps -r requirements-issue-64-lock.txt
+          python -m pip check
+
+      - name: Validate Issue 113 preregistration and evaluator
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python -m pytest -q test_issue_113_action_layer_sizing.py
+          python -m py_compile issue_113_action_layer_sizing.py
+
+      - name: Run preregistered Issue 113 sizing gate
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-113
+          python issue_113_action_layer_sizing.py --output-dir generated/issue-113
+
+      - name: Validate Issue 113 result schema
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("generated/issue-113")
+          result = json.loads((root / "issue-113-result.json").read_text())
+
+          assert result["issue"] == 113
+          assert result["primary_cost_bps"] == 5.0
+          assert result["base_weights"] == {
+              "SPY": 0.4,
+              "TLT": 0.4,
+              "GLD": 0.1,
+              "SHV": 0.1,
+          }
+          assert len(result["production_gate"]) == 7
+          assert result["verdict"] in {
+              "production_action_layer_candidate",
+              "economically_positive_but_not_robust_enough",
+              "no_material_production_value",
+              "inconclusive_insufficient_sample",
+          }
+          assert (root / "issue-113-monthly-portfolio.csv").is_file()
+          assert (root / "issue-113-active-episodes.csv").is_file()
+          print({
+              "verdict": result["verdict"],
+              "gate": result["production_gate"],
+              "full": result["full"],
+              "segments": result["segment_cagr_advantage"],
+          })
+          PY
+
+      - name: Validate durable Issue 113 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_113_completion_validation.py --result generated/issue-113/issue-113-result.json
+
+      - name: Upload Issue 113 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-113-action-layer-sizing
+          path: indicators/macro-pressure-map/research/generated/issue-113
+          retention-days: 7
+          if-no-files-found: error

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "issue": 113,
+  "phase": "production-action-layer-sizing-gate",
+  "workflow_run": 36515349227,
+  "head_sha": "a2d66a1f2dd1a87e47d8dcef4814637f818488ae",
+  "artifact": {
+    "id": 11010144242,
+    "name": "issue-113-action-layer-sizing",
+    "digest": "sha256:9d21e45a4d3d88c78f263f04c9f34fe91213c769ee259a50ecaa24d08908d197"
+  },
+  "verdict": "economically_positive_but_not_robust_enough",
+  "production_authorized": false,
+  "gate_pass_count": 6,
+  "production_gate": {
+    "1_full_cagr_adv_ge_25bp": true,
+    "2_full_sharpe_adv_ge_005": false,
+    "3_maxdd_not_worse_by_gt_15pp": true,
+    "4_at_least_2_of_3_segments_positive": true,
+    "5_no_segment_below_minus_50bp": true,
+    "6_strongest_episode_leaveout_positive": true,
+    "7_beats_c1_on_cagr_and_sharpe": true
+  },
+  "sample": {
+    "monthly_completed": 234,
+    "first_origin": "2007-02-01",
+    "last_origin": "2026-07-01",
+    "active_months": 87,
+    "episode_count": 39
+  },
+  "full": {
+    "action": {
+      "cagr": 0.07753833015355194,
+      "sharpe": 0.7214544985342941,
+      "max_drawdown": -0.2136596106922649,
+      "terminal_wealth": 4.289811334635637
+    },
+    "c0": {
+      "cagr": 0.07323342379724562,
+      "sharpe": 0.6850006668220415,
+      "max_drawdown": -0.21122206760593076,
+      "terminal_wealth": 3.9676805164388647
+    },
+    "c1": {
+      "cagr": 0.0751491720025419,
+      "sharpe": 0.6951886703171669,
+      "max_drawdown": -0.21215274741765422,
+      "terminal_wealth": 4.108091739874562
+    },
+    "cagr_advantage": 0.004304906356306315,
+    "sharpe_advantage": 0.03645383171225258,
+    "maxdd_difference": -0.0024375430863341485
+  },
+  "segments": {
+    "pre_2020": {
+      "cagr_advantage": 0.004081045470396338,
+      "sharpe_advantage": 0.03144848992060589
+    },
+    "covid_inflation_2020_2022": {
+      "cagr_advantage": 0.0028846862495017778,
+      "sharpe_advantage": 0.02423236137291003
+    },
+    "post_2023": {
+      "cagr_advantage": 0.006433155906761856,
+      "sharpe_advantage": 0.057418458440397946
+    }
+  },
+  "episode_robustness": {
+    "strongest_start": "2007-08-01",
+    "strongest_end": "2008-02-01",
+    "strongest_months": 7,
+    "top_positive_share": 0.17734335130904189,
+    "leaveout_cagr_advantage": 0.003287191522931776
+  },
+  "c1_average_weights": {
+    "SPY": 0.4032051282051282,
+    "TLT": 0.39679487179487183,
+    "GLD": 0.11858974358974358,
+    "SHV": 0.08141025641025641
+  },
+  "sleeve_attribution": {
+    "equity_duration_sum": 0.011819121020245018,
+    "gold_cash_sum": 0.07111506865159403
+  },
+  "source_hashes": {
+    "issue64_spy_tlt_gld": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+    "issue109_shv_gsg": "7dbfe3cff58be172098aa09b9c86fd70a23672834f5829e4b650c94cf72d6833",
+    "issue64_transitions": "80446bbcb91be8b18eb0b95e62466edf892e4c04087696a04532f0fe214698af"
+  },
+  "output_hashes": {
+    "monthly_portfolio": "a94e77a5d77695927d48c367b1607fffe97ef08f87ea75ee7a9c445b89f23660",
+    "active_episodes": "e81ac25f3b54448cc1b5f62058f123f8aea6b011aed048cd5566fa64a283df70"
+  }
+}
