@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from asset_allocation_phase_a import ASSETS
+ASSETS = ("SPY", "TLT", "GLD")
 
 HERE = Path(__file__).resolve().parent
 DATA_DIR = HERE / "data"
