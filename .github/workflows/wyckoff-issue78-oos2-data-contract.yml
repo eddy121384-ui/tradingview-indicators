@@ -8,6 +8,8 @@ on:
       - '.github/workflows/wyckoff-issue78-oos2-data-contract.yml'
       - 'indicators/wyckoff-regime-radar/research/issue78_oos2_crsp_contract.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue78_oos2_crsp_contract.py'
+      - 'indicators/wyckoff-regime-radar/research/issue78_oos2_wrds_export.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue78_oos2_wrds_export.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-cross-sectional-oos2-data-source-addendum.md'
 
 jobs:
@@ -24,8 +26,12 @@ jobs:
         run: |
           python -m py_compile indicators/wyckoff-regime-radar/research/issue78_oos2_crsp_contract.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_oos2_crsp_contract.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/issue78_oos2_wrds_export.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_oos2_wrds_export.py
       - name: Contract tests
         working-directory: indicators/wyckoff-regime-radar/research
-        run: python -m pytest -q test_issue78_oos2_crsp_contract.py
+        run: |
+          python -m pytest -q test_issue78_oos2_crsp_contract.py
+          python -m pytest -q test_issue78_oos2_wrds_export.py
       - name: Diff check
         run: git diff --check
