@@ -6,6 +6,7 @@ on:
     paths:
       - "indicators/macro-pressure-map/research/issue_123_reflation_policy_rematch.py"
       - "indicators/macro-pressure-map/research/test_issue_123_reflation_policy_rematch.py"
+      - "indicators/macro-pressure-map/research/issue_123_completion_validation.py"
       - "indicators/macro-pressure-map/research/decisions/issue-123-*"
       - ".github/workflows/macro-pressure-map-issue-123.yml"
 
@@ -70,6 +71,11 @@ jobs:
               "episode":r["episode_robustness"],
           })
           PY
+
+      - name: Validate durable Issue 123 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_123_completion_validation.py --result generated/issue-123/issue-123-result.json
 
       - name: Upload Issue 123 evidence
         uses: actions/upload-artifact@v4
