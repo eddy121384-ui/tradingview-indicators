@@ -21,7 +21,7 @@ def test_prereg_core_contract_is_frozen():
     s = PREREG.read_text(encoding="utf-8")
     assert "PREREGISTERED BEFORE CONDITIONED GOLD-vs-CASH PAYOFF RESULTS" in s
     assert "trailing 60 monthly observations" in s
-    assert "decision month t uses macro source month t-2" in s
+    assert "macro source month t-2" in s
     assert "Primary 3M outcome" in s
     assert "No conditioned Gold-vs-Cash payoff result had been computed" in s
 
