@@ -50,7 +50,8 @@
     "hmra_valid_by_1975": true
   },
   "generated_semantic_hashes": {
-    "monthly_hmra": "953a21566736e36dca6716b3788cbc374aed8842c860f8114a81f62beea16c2c"
+    "monthly_hmra": "28de6da00f86148033a46ee6be80eaf3b2676a7b04d5439bdc9c972df88c0a20"
   },
-  "reproducibility_amendment": "decisions/issue-117-postpayoff-hmra-semantic-hash-amendment.md"
+  "reproducibility_amendment": "decisions/issue-117-postpayoff-hmra-semantic-hash-amendment.md",
+  "semantic_hash_contract": "Exact ordered hash of date, growth_state, inflation_state, regime, and defensive_gold_state; upstream source payloads remain byte-exact."
 }
