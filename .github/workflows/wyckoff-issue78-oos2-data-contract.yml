@@ -1,0 +1,31 @@
+name: Wyckoff Issue 78 OOS2 data contract
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-oos2-data-contract.yml'
+      - 'indicators/wyckoff-regime-radar/research/issue78_oos2_crsp_contract.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue78_oos2_crsp_contract.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-cross-sectional-oos2-data-source-addendum.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install --quiet numpy pandas pytest
+      - name: Syntax
+        run: |
+          python -m py_compile indicators/wyckoff-regime-radar/research/issue78_oos2_crsp_contract.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_oos2_crsp_contract.py
+      - name: Contract tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m pytest -q test_issue78_oos2_crsp_contract.py
+      - name: Diff check
+        run: git diff --check
