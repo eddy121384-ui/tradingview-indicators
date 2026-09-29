@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - "indicators/macro-pressure-map/research/issue_127_exact_reflation_translation.py"
+      - "indicators/macro-pressure-map/research/issue_64_outcome_snapshot.py"
       - "indicators/macro-pressure-map/research/test_issue_127_exact_reflation_translation.py"
       - "indicators/macro-pressure-map/research/decisions/issue-127-*"
       - "indicators/macro-pressure-map/research/data/issue-64-*"
