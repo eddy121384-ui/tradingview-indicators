@@ -251,24 +251,70 @@ def normalize_ohlcv(frame: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, object
 
     finite_ohlc = out[["open", "high", "low", "close"]].notna().all(axis=1)
     positive = (out[["open", "high", "low", "close"]] > 0).all(axis=1)
-    high_ok = out["high"] >= out[["open", "low", "close"]].max(axis=1)
-    low_ok = out["low"] <= out[["open", "high", "close"]].min(axis=1)
     volume_ok = out["volume"].isna() | out["volume"].ge(0)
 
-    bad_ohlc = finite_ohlc & (~positive | ~high_ok | ~low_ok)
-    if bad_ohlc.any():
-        bad_dates = [str(x.date()) for x in out.loc[bad_ohlc, "date"].head(5)]
-        raise ValueError(f"history contains impossible OHLC on {bad_dates}")
+    nonpositive = finite_ohlc & ~positive
+    if nonpositive.any():
+        bad_dates = [
+            str(x.date())
+            for x in out.loc[nonpositive, "date"].head(5)
+        ]
+        raise ValueError(
+            f"history contains nonpositive OHLC on {bad_dates}"
+        )
     if (~volume_ok).any():
         raise ValueError("history contains negative volume")
 
+    high_ok = out["high"] >= out[["open", "close"]].max(axis=1)
+    low_ok = out["low"] <= out[["open", "close"]].min(axis=1)
+    range_bad = finite_ohlc & positive & (~high_ok | ~low_ok)
+
+    repairs: list[dict[str, object]] = []
+    if range_bad.any():
+        before = out.loc[
+            range_bad,
+            ["date", "open", "high", "low", "close"],
+        ].copy()
+
+        repaired_high = out.loc[
+            range_bad, ["open", "high", "close"]
+        ].max(axis=1)
+        repaired_low = out.loc[
+            range_bad, ["open", "low", "close"]
+        ].min(axis=1)
+
+        out.loc[range_bad, "high"] = repaired_high
+        out.loc[range_bad, "low"] = repaired_low
+
+        after = out.loc[
+            range_bad,
+            ["date", "open", "high", "low", "close"],
+        ]
+        for idx in before.index:
+            repairs.append(
+                {
+                    "date": str(before.at[idx, "date"].date()),
+                    "open": float(before.at[idx, "open"]),
+                    "high_before": float(before.at[idx, "high"]),
+                    "high_after": float(after.at[idx, "high"]),
+                    "low_before": float(before.at[idx, "low"]),
+                    "low_after": float(after.at[idx, "low"]),
+                    "close": float(before.at[idx, "close"]),
+                }
+            )
+
+    high_ok = out["high"] >= out[["open", "close"]].max(axis=1)
+    low_ok = out["low"] <= out[["open", "close"]].min(axis=1)
     usable = finite_ohlc & positive & high_ok & low_ok
     if usable.sum() == 0:
         raise ValueError("history contains zero usable OHLC rows")
 
     diagnostics = {
+        "normalization_contract_version": 2,
         "rows": int(len(out)),
         "usable_ohlc_rows": int(usable.sum()),
+        "ohlc_range_repairs": int(range_bad.sum()),
+        "ohlc_range_repair_records": repairs,
         "min_date": str(out["date"].min().date()) if len(out) else None,
         "max_date": str(out["date"].max().date()) if len(out) else None,
         "missing": {
