@@ -129,7 +129,7 @@ def test_universe_artifacts_hash_and_counts(tmp_path):
     ) == 64
 
 
-def test_normalize_ohlcv_rejects_duplicate_dates_and_impossible_high():
+def test_normalize_ohlcv_rejects_duplicate_dates_and_repairs_impossible_high():
     frame = history_fixture()
 
     bad = pd.concat(
@@ -141,8 +141,14 @@ def test_normalize_ohlcv_rejects_duplicate_dates_and_impossible_high():
 
     bad2 = frame.copy()
     bad2.loc[0, "PX_HIGH"] = 1.0
-    with pytest.raises(ValueError, match="impossible"):
-        normalize_ohlcv(bad2)
+    normalized, diagnostics = normalize_ohlcv(bad2)
+    assert diagnostics["normalization_contract_version"] == 2
+    assert diagnostics["ohlc_range_repairs"] == 1
+    assert normalized.loc[0, "high"] == max(
+        normalized.loc[0, "open"],
+        normalized.loc[0, "close"],
+        1.0,
+    )
 
 
 class FakeClient:
