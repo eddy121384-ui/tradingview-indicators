@@ -6,6 +6,7 @@ on:
     paths:
       - "indicators/macro-pressure-map/research/issue_115_gold_defensive_sleeve.py"
       - "indicators/macro-pressure-map/research/test_issue_115_gold_defensive_sleeve.py"
+      - "indicators/macro-pressure-map/research/issue_115_completion_validation.py"
       - "indicators/macro-pressure-map/research/decisions/issue-115-*"
       - ".github/workflows/macro-pressure-map-issue-115.yml"
 
@@ -86,6 +87,11 @@ jobs:
               "leave_one_state_out": result["leave_one_state_out"],
           })
           PY
+
+      - name: Validate durable Issue 115 finding
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python issue_115_completion_validation.py --result generated/issue-115/issue-115-result.json
 
       - name: Upload Issue 115 evidence
         uses: actions/upload-artifact@v4
