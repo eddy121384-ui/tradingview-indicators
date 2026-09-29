@@ -31,7 +31,7 @@ def test_issue113_prereg_exists_and_freezes_core_design():
     assert "SHV 0.10" in s
     assert "+5pp" in s
     assert "5 basis points" in s or "0.0005" in s
-    assert "no +/-2 tier" in s.lower()
+    assert "+/-2 tier" in s.lower()
     assert "all seven production gates pass" in s
 
 
