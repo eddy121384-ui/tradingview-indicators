@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "issue": 117,
+  "phase": "source-freeze-before-payoff",
+  "workflow_run": 36533549669,
+  "head_sha": "2fc8f763030e3a7db0f452219c83a13beddae97e",
+  "artifact": {
+    "id": 11017282310,
+    "name": "issue-117-source-freeze",
+    "digest": "sha256:d9a79af55f3d98c8706c12085a8c7498d022c5ea63dba0fa400db6f53665932e"
+  },
+  "conditioned_gold_cash_payoff_computed": false,
+  "source_hashes": {
+    "fed_ip_raw": "637cb682c1ffc0de6a9dd9e51f3dc5ee8320741d2235cfba9e04bc473756167d",
+    "bls_cpi_canonical": "7f28cf5a77c58b7c467bdd2efd0b472fea6004d6f57ec4976f6e42600f83d646",
+    "gold_mirror_raw": "6821c07f866d91cddc8beacd942d9548912216f816183565e47cef2c7add0b47",
+    "gold_mirror_readme": "d80537faefe91099725db5ccf38e261e8f9e08165df75b5d3a4139bdc562d4e2",
+    "fama_french_zip": "593f4fbef03181bc0b22ff6292f217689dd1fb79355049ca905d95b262040a66"
+  },
+  "generated_hashes": {
+    "monthly_hmra": "6b200a949c4a52f128639baa2c7ce2b924ce3e2818f9bc1eeb5922bd5ce0986c",
+    "gold_monthly": "00fac14e8245b25b75d4173b8227990e20ddb817152d86b4a915ac7e155b4b43",
+    "cash_rf_monthly": "8866bcd5883f7a2d4ea6d1527ad23d9af8aade90f271e7881b4074c8489a6d77"
+  },
+  "coverage": {
+    "first": "1975-01-01",
+    "last": "2026-08-01",
+    "months": 619,
+    "span_years": 51.582168011663484
+  },
+  "monthly_hmra": {
+    "valid_state_months": 619,
+    "defensive_months": 216,
+    "regime_counts": {
+      "Benign Expansion / Stable Inflation": 40,
+      "Disinflationary Drift": 71,
+      "Goldilocks / Disinflationary Expansion": 129,
+      "Growth Slowdown / Stable Inflation": 27,
+      "Inflation Pressure without Growth Confirmation": 39,
+      "Neutral / Range-bound Macro": 20,
+      "Reflation / Inflation Rising": 104,
+      "Slowdown / Disinflation": 98,
+      "Stagflation Pressure": 91
+    }
+  },
+  "gate": {
+    "span_ge_45_years": true,
+    "gold_starts_by_1975": true,
+    "cash_starts_by_1975": true,
+    "hmra_valid_by_1975": true
+  }
+}
