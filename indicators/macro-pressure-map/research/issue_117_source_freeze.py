@@ -13,6 +13,7 @@ import math
 import re
 import urllib.request
 import zipfile
+from decimal import Decimal, ROUND_HALF_EVEN
 from pathlib import Path
 
 import numpy as np
@@ -41,6 +42,38 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def semantic_hmra_sha256(path: Path, decimals: int = 10) -> str:
+    """Stable semantic hash for derived floating HMRA CSV.
+
+    Exact categorical state identity is preserved; numeric fields are
+    Decimal-quantized only to neutralize non-semantic float serialization drift.
+    """
+    frame = pd.read_csv(path, dtype=str, keep_default_na=False)
+    categorical = {"date", "growth_state", "inflation_state", "regime", "defensive_gold_state"}
+    quantum = Decimal("1").scaleb(-decimals)
+    records = []
+    for _, row in frame.iterrows():
+        record = {}
+        for col in frame.columns:
+            value = str(row[col]).strip()
+            if value == "" or value.lower() == "nan":
+                record[col] = None
+            elif col == "defensive_gold_state":
+                record[col] = value.lower() in {"true", "1"}
+            elif col in categorical:
+                record[col] = value
+            else:
+                record[col] = format(
+                    Decimal(value).quantize(quantum, rounding=ROUND_HALF_EVEN),
+                    f".{decimals}f",
+                )
+        records.append(record)
+    payload = json.dumps(
+        records, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return sha256_bytes(payload)
 
 
 def fetch_bytes(url: str, *, data: bytes | None = None, headers: dict | None = None) -> tuple[bytes, str]:
@@ -234,6 +267,9 @@ def run(out_dir: Path) -> dict:
         "gold": write_csv(gold, out_dir/"issue-117-gold-monthly.csv"),
         "cash": write_csv(rf, out_dir/"issue-117-cash-rf-monthly.csv"),
     }
+    files["macro"]["semantic_sha256"] = semantic_hmra_sha256(
+        out_dir/"issue-117-monthly-hmra.csv"
+    )
 
     common = (
         hmra.loc[hmra["date"] >= pd.Timestamp("1975-01-01"), ["date"]]
