@@ -733,7 +733,7 @@ if showDashboard and barstate.islast and showSymbolsGroup
 
 if showDashboard and barstate.islast and not showSymbolsGroup
     table.cell(dash, 0, 0, lblTitle, text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
-    table.cell(dash, 1, 0, "V6.6", text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
+    table.cell(dash, 1, 0, "V6.7", text_color=dashboardTextColor, bgcolor=dashboardHeaderBg, text_size=dashTextSize)
 
     table.cell(dash, 0, 1, "GPI", text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
     table.cell(dash, 1, 1, f_fmt(GPI), text_color=dashboardTextColor, bgcolor=f_gpiBg(GPI), text_size=dashTextSize)
