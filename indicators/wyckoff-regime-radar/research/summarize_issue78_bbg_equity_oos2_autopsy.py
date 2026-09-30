@@ -221,35 +221,35 @@ def format_markdown(diagnostic: dict, tables: dict[str, pd.DataFrame]) -> str:
         "",
         "## Direction",
         "",
-        tables["direction"].to_markdown(index=False),
+        `\n` + tables["direction"].to_string(index=False) + `\n`,
         "",
         "## Temporal blocks",
         "",
-        tables["temporal"].to_markdown(index=False),
+        `\n` + tables["temporal"].to_string(index=False) + `\n`,
         "",
         "## Sector",
         "",
-        tables["sector"].to_markdown(index=False),
+        `\n` + tables["sector"].to_string(index=False) + `\n`,
         "",
         "## Size sleeve",
         "",
-        tables["sleeve"].to_markdown(index=False),
+        `\n` + tables["sleeve"].to_string(index=False) + `\n`,
         "",
         "## MFE slices",
         "",
-        tables["mfe"].to_markdown(index=False),
+        `\n` + tables["mfe"].to_string(index=False) + `\n`,
         "",
         "## R0 path decomposition",
         "",
-        tables["path"].to_markdown(index=False),
+        `\n` + tables["path"].to_string(index=False) + `\n`,
         "",
         "## R0 path x direction",
         "",
-        tables["path_direction"].to_markdown(index=False),
+        `\n` + tables["path_direction"].to_string(index=False) + `\n`,
         "",
         "## WarningFirst defensive summary",
         "",
-        pd.DataFrame([diagnostic["warning_first"]]).to_markdown(index=False),
+        `\n` + pd.DataFrame([diagnostic["warning_first"]]).to_string(index=False) + `\n`,
         "",
     ]
     return "\n".join(lines)
@@ -279,14 +279,7 @@ def main() -> None:
     for name, frame in tables.items():
         frame.to_csv(args.output / f"{name}.csv", index=False)
 
-    # tabulate is a pandas optional dependency; fail clearly if absent.
-    try:
-        markdown = format_markdown(diagnostic, tables)
-    except ImportError as exc:
-        raise SystemExit(
-            "Install tabulate to emit markdown: "
-            "uv pip install --python .venv119\\Scripts\\python.exe tabulate"
-        ) from exc
+    markdown = format_markdown(diagnostic, tables)
 
     (args.output / "autopsy.md").write_text(
         markdown + "\n", encoding="utf-8"
