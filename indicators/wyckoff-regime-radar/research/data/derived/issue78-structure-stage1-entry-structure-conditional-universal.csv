@@ -1,0 +1,3 @@
+checkpoint,eligible_markets,eligible_cells,future_extension_delta_eq_market,future_extension_positive_markets,future_net_positive_delta_eq_market,future_net_positive_positive_markets,remaining20_delta_eq_market,remaining20_positive_markets,remaining_life_delta_eq_market,remaining_life_positive_markets
+5,9,45,0.04624908700601157,8,0.05154943866148931,7,0.14794082909924824,8,7.654353447801962,7
+10,9,44,0.02621739779640236,6,0.05059347081899043,7,0.09556389136663579,9,5.078600972669737,8

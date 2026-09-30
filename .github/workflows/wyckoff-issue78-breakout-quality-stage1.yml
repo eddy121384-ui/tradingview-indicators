@@ -1,0 +1,35 @@
+name: Wyckoff Issue 78 breakout quality stage 1
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-breakout-quality-stage1.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_breakout_quality_stage1.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-breakout-quality-stage1-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-breakout-quality-stage1-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-breakout-quality-stage1-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install analysis dependencies
+        run: python -m pip install --quiet numpy pandas scipy
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_breakout_quality_stage1.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue78_breakout_quality_stage1.py
+          grep -F 'EXPECTED_EVENTS = 68118' "$FILE"
+          grep -F 'EXPECTED_EPISODES = 1624' "$FILE"
+          grep -F 'LOOKBACK = 5' "$FILE"
+          grep -F 'overshoot_atr' "$FILE"
+          grep -F 'worst_acceptance_margin3' "$FILE"
+          grep -F 'followthrough3_atr' "$FILE"
+          git diff --check

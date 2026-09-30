@@ -1,0 +1,33 @@
+name: Wyckoff Issue 78 progressive proof ladder
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-progressive-proof-ladder.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_progressive_proof_ladder.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-progressive-proof-ladder-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-progressive-proof-ladder-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-progressive-proof-ladder-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_progressive_proof_ladder.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue78_progressive_proof_ladder.py
+          grep -F 'POLICIES=("full","proof_0_5","proof_1_0","proof_2_0","ladder")' "$FILE"
+          grep -F 'if peak>=2.0:return 1.0' "$FILE"
+          grep -F 'if peak>=1.0:return 0.75' "$FILE"
+          grep -F 'if peak>=0.5:return 0.50' "$FILE"
+          grep -F 'EXPECTED_EVENTS=68118' "$FILE"
+          grep -F 'EXPECTED_EPISODES=1624' "$FILE"
+          git diff --check

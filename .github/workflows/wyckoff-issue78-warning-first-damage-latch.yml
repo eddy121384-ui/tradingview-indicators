@@ -1,0 +1,32 @@
+name: Wyckoff Issue 78 warning-first damage latch
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-warning-first-damage-latch.yml'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_warning_first_damage_latch.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-warning-first-damage-latch-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-warning-first-damage-latch-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-warning-first-*.csv'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check analyzer
+        run: python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_warning_first_damage_latch.py
+      - name: Static contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/analyze_issue78_warning_first_damage_latch.py
+          grep -F 'ADD_POLICIES = ("simple_1atr", "progressive")' "$FILE"
+          grep -F 'MANAGEMENT = ("none", "gentle_latch", "balanced_latch", "warning_first")' "$FILE"
+          grep -F 'target_steps = 2 if giveback >= 4.0 else (1 if giveback >= 2.0 else 0)' "$FILE"
+          grep -F 'EXPECTED_EVENTS = 68118' "$FILE"
+          grep -F 'EXPECTED_EPISODES = 1624' "$FILE"
+          git diff --check

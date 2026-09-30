@@ -1,0 +1,78 @@
+name: Wyckoff Issue 78 heterogeneous OOS1
+
+on:
+  push:
+    branches:
+      - research/issue-78-trend-capture-frontier
+    paths:
+      - '.github/workflows/wyckoff-issue78-heterogeneous-oos1.yml'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue78_heterogeneous_oos1_logger_pine.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_heterogeneous_oos1.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue78_heterogeneous_oos1.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-heterogeneous-oos1-preregistration.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-heterogeneous-oos1-finding.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-heterogeneous-oos1-ndx-feed-amendment.md'
+      - 'indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-heterogeneous-oos1-forward-logger.pine'
+      - 'indicators/wyckoff-regime-radar/research/data/derived/issue78-heterogeneous-oos1-*.csv'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install --quiet numpy pandas scipy pytest
+
+      - name: Syntax checks
+        run: |
+          python -m py_compile indicators/wyckoff-regime-radar/research/generate_issue78_heterogeneous_oos1_logger_pine.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_heterogeneous_oos1.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_heterogeneous_oos1.py
+
+      - name: Generate frozen OOS logger
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_issue78_heterogeneous_oos1_logger_pine.py
+
+      - name: OOS contract tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m pytest -q test_issue78_heterogeneous_oos1.py
+
+      - name: Static logger contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-heterogeneous-oos1-forward-logger.pine
+          grep -F 'ISSUE76|schema=1|cohort=HET_OOS1' "$FILE"
+          grep -F 'syminfo.tickerid == "TVC:SPX"' "$FILE"
+          grep -F 'syminfo.tickerid == "NASDAQ_DLY:NDX"' "$FILE"
+          grep -F 'syminfo.tickerid == "OANDA:XAUUSD"' "$FILE"
+          grep -F 'syminfo.tickerid == "OANDA:XAGUSD"' "$FILE"
+          grep -F 'syminfo.tickerid == "BITSTAMP:BTCUSD"' "$FILE"
+          grep -F 'syminfo.tickerid == "BITSTAMP:ETHUSD"' "$FILE"
+          grep -F 'issue76D1 = timeframe.isdaily and timeframe.multiplier == 1' "$FILE"
+          grep -F 'issue76EventFormal = formalId[20]' "$FILE"
+          grep -F 'issue76EventScale = symATR[20]' "$FILE"
+          ! grep -F 'strategy.entry' "$FILE"
+          ! grep -F 'strategy.close' "$FILE"
+          git diff --check
+
+      - name: Commit generated OOS logger when changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue78-heterogeneous-oos1-forward-logger.pine
+          if git diff --cached --quiet; then
+            echo 'Generated OOS logger already current.'
+          else
+            git commit -m 'research: generate Issue #78 heterogeneous OOS1 logger [skip ci]'
+            git push
+          fi

@@ -1,0 +1,7 @@
+a,b,markets,spearman_eq_market
+followthrough3_atr,outside_close_fraction3,9,0.7197160157966269
+overshoot_atr,followthrough3_atr,9,0.028403601968520282
+overshoot_atr,outside_close_fraction3,9,0.32297632923189196
+overshoot_atr,worst_acceptance_margin3,9,0.3869855693883152
+worst_acceptance_margin3,followthrough3_atr,9,0.7711148065912147
+worst_acceptance_margin3,outside_close_fraction3,9,0.8793399929772933
