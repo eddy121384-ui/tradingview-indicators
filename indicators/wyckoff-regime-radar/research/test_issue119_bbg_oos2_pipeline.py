@@ -5,7 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from build_issue119_bbg_oos2_universe import write_universe_artifacts
 from download_issue119_bbg_oos2_ohlcv import download_universe
@@ -136,8 +135,12 @@ def test_normalize_ohlcv_rejects_duplicate_dates_and_repairs_impossible_high():
         [frame, frame.iloc[[-1]]],
         ignore_index=True,
     )
-    with pytest.raises(ValueError, match="duplicate"):
+    try:
         normalize_ohlcv(bad)
+    except ValueError as exc:
+        assert "duplicate" in str(exc)
+    else:
+        raise AssertionError("expected duplicate-date failure")
 
     bad2 = frame.copy()
     bad2.loc[0, "PX_HIGH"] = 1.0
@@ -240,10 +243,7 @@ class EmptyClient:
 
 
 def test_incomplete_snapshot_fails_closed(tmp_path):
-    with pytest.raises(
-        RuntimeError,
-        match="snapshot incomplete",
-    ):
+    try:
         download_universe(
             EmptyClient(),
             tiny_universe(),
@@ -252,6 +252,10 @@ def test_incomplete_snapshot_fails_closed(tmp_path):
             max_attempts=2,
             sleep=lambda _: None,
         )
+    except RuntimeError as exc:
+        assert "snapshot incomplete" in str(exc)
+    else:
+        raise AssertionError("expected incomplete-snapshot failure")
 
 
 def test_downloader_modules_do_not_import_classifier_or_policy():
