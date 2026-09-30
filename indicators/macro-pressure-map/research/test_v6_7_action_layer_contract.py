@@ -29,11 +29,12 @@ def _shadow_block(v67: str) -> str:
 
 
 def _strip_v67_delta(v67: str) -> str:
-    """Remove the only authorized V6.7 production delta and restore V6.6 header."""
+    """Remove the authorized V6.7 deltas and restore frozen V6.6 text."""
     block_start = v67.index("\n" + START)
     block_end = v67.index(END + "\n", block_start) + len(END + "\n")
     normalized = v67[:block_start] + v67[block_end:]
-    return normalized.replace(NEW_HEADER, OLD_HEADER, 1)
+    normalized = normalized.replace(NEW_HEADER, OLD_HEADER, 1)
+    return normalized.replace('table.cell(dash, 1, 0, "V6.7"', 'table.cell(dash, 1, 0, "V6.6"', 1)
 
 
 def _expected_tilt(growth: float, inflation: float, cfg: V66Config) -> tuple[int, int, int, int]:
@@ -41,7 +42,7 @@ def _expected_tilt(growth: float, inflation: float, cfg: V66Config) -> tuple[int
     return (1, -1, 0, 0) if active else (0, 0, 0, 0)
 
 
-def test_v67_is_v66_plus_only_header_and_shadow_block() -> None:
+def test_v67_is_v66_plus_only_header_dashboard_version_and_shadow_block() -> None:
     v66 = _source(V66_PATH)
     v67 = _source(V67_PATH)
     assert _strip_v67_delta(v67) == v66
