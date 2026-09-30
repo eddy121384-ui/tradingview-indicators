@@ -1,6 +1,6 @@
 # Issue #133 Preregistration — Macro Pressure Map State × Trajectory
 
-Status: **FROZEN BEFORE RESULT ANALYSIS**
+Status: **FROZEN BEFORE RESULT ANALYSIS — amended pre-outcome to require ultra-long-history validation**
 
 Issue: #133  
 Branch: `research/issue-133-state-trajectory`
@@ -190,6 +190,115 @@ The completed static-state research remains separate:
 - #129 / PR #130: Regime-3 +5pp Equity / -5pp Duration shadow implementation.
 
 Issue #133 does not alter or supersede those results.
+
+
+## Long-history structural validation — frozen before any Issue #133 outcomes
+
+The exact V6.6 implementation cannot be extended honestly to 1928 because many of its market inputs did not exist. Therefore Issue #133 has **two separate evidence layers** and they must never be spliced into one series.
+
+### Layer A — exact modern V6.6
+
+- exact V6.6 raw GPI/IPI;
+- monthly observations;
+- approximately 2007–2026, subject to exact exported coverage;
+- primary trajectory = 3-month raw GPI change > 0 and 3-month raw IPI change > 0;
+- primary payoff = next-month SPY - TLT.
+
+This is the implementation-faithful layer.
+
+### Layer B — ultra-long-history HMRA analogue
+
+Reuse the already-frozen Issue #91 HMRA-v0.1 macro model and long-history asset backbone.
+
+Target state history:
+
+- 1928–2025 HMRA state years where frozen HMRA scores are available;
+- strict-causal asset return years use the existing HMRA timing rule `state_t -> return_t+2`, so eligible payoff years begin around 1930 and end at the latest frozen return year.
+
+HMRA is **not exact V6.6** and must never be labeled as such.
+
+#### Frozen long-history recovery analogue
+
+Long-history analogue of Regime 7:
+
+`HMRA Slowdown / Disinflation`
+
+Define:
+
+`HMRA_R7_RECOVERING`
+
+when all are true:
+
+- HMRA core regime at year t = Slowdown / Disinflation;
+- `growth_score_t - growth_score_(t-1) > 0`;
+- `inflation_score_t - inflation_score_(t-1) > 0`.
+
+Control:
+
+`HMRA_R7_NONRECOVERING`
+
+= all other eligible HMRA Slowdown / Disinflation years with sufficient prior score history.
+
+No magnitude threshold is allowed. Sign only.
+
+The annual delta is the long-history analogue of the modern 3-month trajectory; it is not claimed to be frequency-identical.
+
+#### Frozen long-history payoff
+
+Primary long-history spread:
+
+`S&P 500 total return - 10Y U.S. Treasury total return`
+
+using the already-frozen Issue #91 / #121 long-history underlying-asset sources, not ETF wrappers.
+
+Primary causal timing:
+
+`HMRA state/trajectory_t -> full-calendar-year asset return_(t+2)`.
+
+Same-year `t -> t` may be reported only as descriptive structural association.
+
+#### Long-history gate
+
+Classify the long-history leg as `long_history_trajectory_candidate` only if all are true:
+
+1. at least 8 causal HMRA_R7_RECOVERING observations;
+2. mean causal Equity-Treasury spread in HMRA_R7_RECOVERING > 0;
+3. incremental mean versus HMRA_R7_NONRECOVERING > 0;
+4. bootstrap 95% CI for the incremental mean excludes 0 on the positive side;
+5. at least 2 historical broad eras contain evaluable HMRA_R7_RECOVERING observations;
+6. at least 2 evaluable broad eras have positive incremental spread;
+7. no evaluable broad era has an incremental mean below -5 percentage points;
+8. leave-one-broad-era-out incremental spread never flips negative;
+9. strongest broad era contributes <=50% of total positive contribution proxy.
+
+If n < 8 or era support is unavailable:
+
+`inconclusive_long_history_trajectory_sample`
+
+If direction is positive but robustness fails:
+
+`long_history_trajectory_era_dependent`
+
+Otherwise:
+
+`long_history_trajectory_not_confirmed`
+
+Do not weaken these gates after seeing results.
+
+### Cross-history interpretation
+
+Report the modern exact result and long-history HMRA result separately.
+
+Allowed synthesis language:
+
+- `cross_history_trajectory_supported` — modern exact candidate + long-history candidate both pass and direction agrees;
+- `modern_only_trajectory_support` — exact modern passes, long-history does not;
+- `long_history_only_trajectory_support` — long-history passes, modern exact does not;
+- `trajectory_evidence_inconclusive` — sample insufficiency prevents a meaningful cross-history conclusion;
+- `trajectory_not_robust_across_history` — sufficient samples exist but the two layers do not support a robust common direction.
+
+No combined p-value. No claim that HMRA equals exact V6.6.
+
 
 ## Required deliverables
 
