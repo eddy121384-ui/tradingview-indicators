@@ -89,10 +89,11 @@ The Action Layer is a research-derived tactical model state, not an instruction 
 
 `src/macro-pressure-map-v6.7.pine` is intentionally constructed as V6.6 plus only:
 
-1. a V6.7 indicator header; and
-2. the Issue #129 shadow Action Layer block.
+1. a V6.7 indicator header;
+2. a V6.7 dashboard version label; and
+3. the Issue #129 shadow Action Layer block.
 
-The automated contract test removes those two allowed deltas and requires the resulting file to match V6.6 exactly.
+The automated contract test removes those three allowed deltas and requires the resulting file to match V6.6 exactly.
 
 ## Explicitly out of scope
 
