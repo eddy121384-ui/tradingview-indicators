@@ -8,6 +8,7 @@ on:
       - '.github/workflows/wyckoff-issue78-bbg-equity-oos2.yml'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue78_bbg_equity_oos2.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue78_bbg_equity_oos2.py'
+      - 'indicators/wyckoff-regime-radar/research/summarize_issue78_bbg_equity_oos2_autopsy.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-bloomberg-300-stock-diagnostic-amendment.md'
   pull_request:
     paths:
@@ -34,6 +35,7 @@ jobs:
         run: |
           python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_bbg_equity_oos2.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_bbg_equity_oos2.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/summarize_issue78_bbg_equity_oos2_autopsy.py
 
       - name: Frozen analyzer tests
         working-directory: indicators/wyckoff-regime-radar/research
