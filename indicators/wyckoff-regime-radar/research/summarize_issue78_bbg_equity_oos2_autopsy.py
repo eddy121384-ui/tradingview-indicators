@@ -212,6 +212,19 @@ def summarize_tables(root: Path) -> tuple[dict, dict[str, pd.DataFrame]]:
 
 
 def format_markdown(diagnostic: dict, tables: dict[str, pd.DataFrame]) -> str:
+    sections = [
+        ("Direction", tables["direction"]),
+        ("Temporal blocks", tables["temporal"]),
+        ("Sector", tables["sector"]),
+        ("Size sleeve", tables["sleeve"]),
+        ("MFE slices", tables["mfe"]),
+        ("R0 path decomposition", tables["path"]),
+        ("R0 path x direction", tables["path_direction"]),
+        (
+            "WarningFirst defensive summary",
+            pd.DataFrame([diagnostic["warning_first"]]),
+        ),
+    ]
     lines = [
         "# Issue #78 Bloomberg 300-Stock OOS2 — Descriptive Autopsy",
         "",
@@ -219,39 +232,18 @@ def format_markdown(diagnostic: dict, tables: dict[str, pd.DataFrame]) -> str:
         "",
         f"Frozen classification: **{diagnostic['frozen_label']}**",
         "",
-        "## Direction",
-        "",
-        `\n` + tables["direction"].to_string(index=False) + `\n`,
-        "",
-        "## Temporal blocks",
-        "",
-        `\n` + tables["temporal"].to_string(index=False) + `\n`,
-        "",
-        "## Sector",
-        "",
-        `\n` + tables["sector"].to_string(index=False) + `\n`,
-        "",
-        "## Size sleeve",
-        "",
-        `\n` + tables["sleeve"].to_string(index=False) + `\n`,
-        "",
-        "## MFE slices",
-        "",
-        `\n` + tables["mfe"].to_string(index=False) + `\n`,
-        "",
-        "## R0 path decomposition",
-        "",
-        `\n` + tables["path"].to_string(index=False) + `\n`,
-        "",
-        "## R0 path x direction",
-        "",
-        `\n` + tables["path_direction"].to_string(index=False) + `\n`,
-        "",
-        "## WarningFirst defensive summary",
-        "",
-        `\n` + pd.DataFrame([diagnostic["warning_first"]]).to_string(index=False) + `\n`,
-        "",
     ]
+    for title, frame in sections:
+        lines.extend(
+            [
+                f"## {title}",
+                "",
+                "```text",
+                frame.to_string(index=False),
+                "```",
+                "",
+            ]
+        )
     return "\n".join(lines)
 
 
