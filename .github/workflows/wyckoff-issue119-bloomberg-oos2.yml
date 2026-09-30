@@ -1,0 +1,56 @@
+name: Wyckoff Issue 119 Bloomberg OOS2 pipeline
+
+on:
+  push:
+    branches:
+      - feat/issue-119-bloomberg-oos2-pipeline
+    paths:
+      - '.github/workflows/wyckoff-issue119-bloomberg-oos2.yml'
+      - 'indicators/wyckoff-regime-radar/research/issue119_bbg_common.py'
+      - 'indicators/wyckoff-regime-radar/research/issue119_bbg_client.py'
+      - 'indicators/wyckoff-regime-radar/research/build_issue119_bbg_oos2_universe.py'
+      - 'indicators/wyckoff-regime-radar/research/download_issue119_bbg_oos2_ohlcv.py'
+      - 'indicators/wyckoff-regime-radar/research/audit_issue119_bbg_oos2_snapshot.py'
+      - 'indicators/wyckoff-regime-radar/research/smoke_issue119_frozen_classifier.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue119_bbg_oos2_pipeline.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-119-bloomberg-oos2-pipeline-implementation.md'
+  pull_request:
+    paths:
+      - '.github/workflows/wyckoff-issue119-bloomberg-oos2.yml'
+      - 'indicators/wyckoff-regime-radar/research/issue119_bbg_common.py'
+      - 'indicators/wyckoff-regime-radar/research/issue119_bbg_client.py'
+      - 'indicators/wyckoff-regime-radar/research/build_issue119_bbg_oos2_universe.py'
+      - 'indicators/wyckoff-regime-radar/research/download_issue119_bbg_oos2_ohlcv.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue119_bbg_oos2_pipeline.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-119-bloomberg-oos2-pipeline-implementation.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install --quiet numpy pandas pytest
+
+      - name: Syntax checks
+        run: |
+          python -m py_compile indicators/wyckoff-regime-radar/research/issue119_bbg_common.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/issue119_bbg_client.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/build_issue119_bbg_oos2_universe.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/download_issue119_bbg_oos2_ohlcv.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/audit_issue119_bbg_oos2_snapshot.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/smoke_issue119_frozen_classifier.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue119_bbg_oos2_pipeline.py
+
+      - name: Pipeline contract tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m pytest -q test_issue119_bbg_oos2_pipeline.py
+
+      - name: Diff check
+        run: git diff --check
