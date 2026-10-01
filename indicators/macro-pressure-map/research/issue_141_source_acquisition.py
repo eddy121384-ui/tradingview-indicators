@@ -39,9 +39,22 @@ def sha256(b: bytes) -> str:
 
 
 def fetch(url: str) -> bytes:
-    r = requests.get(url, headers={"User-Agent": UA}, timeout=90)
-    r.raise_for_status()
-    return r.content
+    print(f"FETCH {url}", flush=True)
+    last = None
+    for attempt in range(1, 4):
+        try:
+            r = requests.get(
+                url,
+                headers={"User-Agent": UA},
+                timeout=(15, 45),
+            )
+            r.raise_for_status()
+            print(f"OK {len(r.content)} bytes", flush=True)
+            return r.content
+        except Exception as exc:
+            last = exc
+            print(f"attempt {attempt} failed: {exc}", flush=True)
+    raise RuntimeError(f"source fetch failed after retries: {url}: {last}")
 
 
 def first_member_text(raw_zip: bytes) -> str:
