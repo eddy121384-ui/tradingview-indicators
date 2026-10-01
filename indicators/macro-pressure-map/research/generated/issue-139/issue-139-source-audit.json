@@ -1,0 +1,35 @@
+{
+  "issue": 139,
+  "outcome_data_inspected": false,
+  "v66_defaults": {
+    "useMacroData": false,
+    "useT5YIE": false,
+    "useIndustrialMetalsInIPI": false,
+    "marketTf": "D",
+    "zLenDaily": 252,
+    "fastLen": 20,
+    "midLen": 63
+  },
+  "authoritative_history_facts": [
+    {"series":"SPY","fact":"fund inception 1993-01-22","source":"State Street SPY page"},
+    {"series":"IWM","fact":"fund inception 2000-05-22; benchmark Russell 2000","source":"iShares IWM page"},
+    {"series":"Russell 2000","fact":"historical data back to 1978-12-31","source":"FTSE Russell product highlights"},
+    {"series":"RSP","fact":"fund inception 2003-04-24; benchmark S&P 500 Equal Weight Index","source":"Invesco RSP page"},
+    {"series":"XLY/XLP/XLI/XLU","fact":"fund/index family launch 1998-12-16","source":"State Street / S&P DJI"},
+    {"series":"T10YIE","fact":"daily date range begins 2003-01-02","source":"FRED T10YIE"},
+    {"series":"DBC","fact":"fund inception 2006-02-03","source":"Invesco DBC page"},
+    {"series":"DBIQ diversified commodity index","fact":"historical inception 1988-12-02","source":"Deutsche Bank DBIQ"},
+    {"series":"WTI futures","fact":"trading began 1983","source":"CME Group"},
+    {"series":"RBOB gasoline futures","fact":"introduced 2005-10-03","source":"CME Group"},
+    {"series":"EXPINF10YR","fact":"monthly date range begins 1982-01","source":"FRED / Cleveland Fed"},
+    {"series":"Fama-French industry portfolios","fact":"daily/monthly history back to 1926","source":"Kenneth French Data Library"}
+  ],
+  "feasibility": {
+    "exact_full_composition": "approximately 2007+ after daily-score warmup",
+    "exact_partial_composition": "earlier but rejected for independent validation because composition drifts",
+    "near_exact": "early-2000s feasible but short",
+    "structural_monthly_analogue": "conservative target approximately 1989+",
+    "recommended_untouched_history": "1989-2006"
+  },
+  "production_authorized": false
+}
