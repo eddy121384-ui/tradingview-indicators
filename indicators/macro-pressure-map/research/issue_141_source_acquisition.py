@@ -162,6 +162,54 @@ def locate_cleveland_xlsx() -> tuple[str, bytes]:
     return sorted(set(candidates))[0], landing
 
 
+def parse_wb_month_key(s: pd.Series) -> pd.Series:
+    raw = s.astype(str).str.strip()
+    yyyymm = raw.str.extract(r"^(\\d{4})M(\\d{2})$")
+    dates = pd.to_datetime(
+        yyyymm[0] + "-" + yyyymm[1] + "-01",
+        errors="coerce",
+    )
+    return dates + pd.offsets.MonthEnd(0)
+
+
+def selected_world_bank_panel(wb_prices: pd.DataFrame) -> pd.DataFrame:
+    date_col = wb_prices.columns[0]
+    selected = [
+        "Crude oil, WTI",
+        "Natural gas, US",
+        "Copper",
+        "Gold",
+        "Aluminum",
+        "Wheat, US HRW",
+        "Maize",
+        "Coffee, Arabica",
+        "Sugar, world",
+    ]
+    missing = [x for x in selected if x not in wb_prices.columns]
+    if missing:
+        raise RuntimeError(f"World Bank selected source columns missing: {missing}")
+    out = wb_prices[[date_col] + selected].copy()
+    out = out.rename(columns={date_col: "date"})
+    out["date"] = parse_wb_month_key(out["date"])
+    out = out.loc[out["date"].notna()].copy()
+    for col in selected:
+        out[col] = pd.to_numeric(out[col], errors="coerce")
+    return out.sort_values("date").reset_index(drop=True)
+
+
+def selected_cleveland_panel(raw: bytes) -> pd.DataFrame:
+    df = pd.read_excel(io.BytesIO(raw), sheet_name="Expected Inflation")
+    date_col = "Model Output Date"
+    ten_col = " 10 year Expected Inflation"
+    if date_col not in df.columns or ten_col not in df.columns:
+        raise RuntimeError(f"Cleveland selected columns missing: {df.columns.tolist()}")
+    out = df[[date_col, ten_col]].copy()
+    out = out.rename(columns={date_col: "date", ten_col: "expected_inflation_10y"})
+    out["date"] = pd.to_datetime(out["date"], errors="coerce") + pd.offsets.MonthEnd(0)
+    out["expected_inflation_10y"] = pd.to_numeric(out["expected_inflation_10y"], errors="coerce")
+    return out.loc[out["date"].notna()].sort_values("date").reset_index(drop=True)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--output-dir", type=Path, required=True)
@@ -182,6 +230,9 @@ def main() -> None:
     cleveland_url, cleveland_landing = locate_cleveland_xlsx()
     raw_cleveland = fetch(cleveland_url)
     cleveland_excel = pd.ExcelFile(io.BytesIO(raw_cleveland))
+
+    wb_selected = selected_world_bank_panel(wb_prices)
+    cleveland_selected = selected_cleveland_panel(raw_cleveland)
 
     # World Bank / Cleveland schema only: do not choose final proxy columns in Phase A.
     price_cols = wb_prices.columns.tolist()
@@ -208,11 +259,28 @@ def main() -> None:
         outdir / "french-factors-monthly.csv", index=False
     )
     ind12.to_csv(outdir / "french-12-industry-monthly.csv", index=False)
+    wb_selected.to_csv(outdir / "world-bank-selected-monthly.csv", index=False)
+    cleveland_selected.to_csv(outdir / "cleveland-expected-inflation-monthly.csv", index=False)
+
+    selected_coverage = {
+        "world_bank": coverage_from_frame(
+            wb_selected,
+            "date",
+            [x for x in wb_selected.columns if x != "date"],
+        ),
+        "cleveland": coverage_from_frame(
+            cleveland_selected,
+            "date",
+            ["expected_inflation_10y"],
+        ),
+    }
+
     schema = {
         "issue": 141,
         "phase": "A-source-acquisition",
         "outcome_data_loaded": False,
         "exact_v66_signal_loaded": False,
+        "selected_source_coverage": selected_coverage,
         "sources": {
             "french_factors": {
                 "url": FRENCH_FACTORS,
@@ -261,6 +329,7 @@ def main() -> None:
         "french": ff_cov,
         "cleveland_url": cleveland_url,
         "cleveland_sheets": cleveland_excel.sheet_names,
+        "selected_source_coverage": selected_coverage,
         "world_bank_url": wb_url,
         "world_bank_price_matches": price_matches,
         "world_bank_index_candidates": index_matches["commodity_candidates"],
