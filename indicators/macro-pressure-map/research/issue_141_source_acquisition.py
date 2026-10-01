@@ -28,9 +28,9 @@ FRENCH_FACTORS = FRENCH_BASE + "F-F_Research_Data_Factors_CSV.zip"
 FRENCH_12IND = FRENCH_BASE + "12_Industry_Portfolios_CSV.zip"
 WB_LANDING = "https://www.worldbank.org/en/research/commodity-markets"
 FRED_SERIES = {
-    "EXPINF10YR": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=EXPINF10YR",
-    "MCOILWTICO": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=MCOILWTICO",
-    "MGASNYH": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=MGASNYH",
+    "EXPINF10YR": "https://fred.stlouisfed.org/data/EXPINF10YR",
+    "MCOILWTICO": "https://fred.stlouisfed.org/data/MCOILWTICO",
+    "MGASNYH": "https://fred.stlouisfed.org/data/MGASNYH",
 }
 
 
@@ -140,15 +140,22 @@ def coverage_from_frame(df: pd.DataFrame, date_col: str, value_cols: list[str]) 
 
 
 def read_fred(raw: bytes, series: str) -> pd.DataFrame:
-    df = pd.read_csv(io.BytesIO(raw))
-    if "observation_date" not in df.columns:
-        raise RuntimeError(f"{series}: missing observation_date")
-    value_cols = [c for c in df.columns if c != "observation_date"]
-    if len(value_cols) != 1:
-        raise RuntimeError(f"{series}: expected one value column, got {value_cols}")
-    df = df.rename(columns={value_cols[0]: series, "observation_date": "date"})
+    # FRED /data/{series} is a compact server-rendered table and avoids the
+    # occasionally slow fredgraph CSV renderer.
+    soup = BeautifulSoup(raw, "html.parser")
+    rows = []
+    for tr in soup.find_all("tr"):
+        cells = [x.get_text(" ", strip=True) for x in tr.find_all(["td", "th"])]
+        if len(cells) < 2:
+            continue
+        if re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", cells[0]):
+            rows.append((cells[0], cells[1]))
+    if not rows:
+        # Fail closed rather than silently parsing a changed page.
+        raise RuntimeError(f"{series}: no DATE/VALUE rows found on FRED data page")
+    df = pd.DataFrame(rows, columns=["date", series])
     df["date"] = pd.to_datetime(df["date"], errors="raise")
-    df[series] = pd.to_numeric(df[series], errors="coerce")
+    df[series] = pd.to_numeric(df[series].replace(".", pd.NA), errors="coerce")
     return df
 
 
