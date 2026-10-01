@@ -241,3 +241,43 @@ Do not modify V6.6 or V6.7 production behavior.
 Do not alter Issue #133 / PR #134 findings.
 
 No positive finding here automatically authorizes an Action Layer rule.
+
+
+## Pre-outcome implementation clarifications
+
+These clarifications are frozen before the Issue #136 evaluator is implemented or executed.
+
+### Eligibility history
+
+Exact-modern months are eligible only when the complete lag history needed to evaluate the two turn-event windows exists inside the 2007+ exact-modern inference window.
+
+Pre-2007 rows are not used to initialize the primary turning labels.
+
+Long-history years are eligible only when the complete annual lag history needed for the two-observation completion rule exists.
+
+### Episode definition
+
+A Regime-7 episode is a sequence of monthly observations that are both:
+
+- exact Regime 7; and
+- consecutive calendar months.
+
+The HMRA episode definition is the annual analogue using consecutive state years.
+
+### Delayed implementation robustness
+
+For an observation dated t, the one-month delayed modern payoff begins at t+1 and measures the same frozen three-month SPY-TLT total-return spread from t+1 through t+4.
+
+The delayed robustness comparison applies the same delay to both signal and eligible control observations.
+
+### Long-history bootstrap
+
+The long-history incremental CI also uses a deterministic Regime-7-episode cluster bootstrap, resampling whole HMRA R7 episodes with replacement.
+
+This is frozen before outcomes to avoid treating adjacent years from one macro episode as independent observations.
+
+### Leave-one-trigger-episode-out
+
+For both modern and HMRA layers, leaving out a trigger episode removes the **entire** corresponding R7 episode from both signal and control observations.
+
+Any leaveout that makes either side of the comparison unevaluable fails closed for the robustness gate.
