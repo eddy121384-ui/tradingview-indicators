@@ -62,7 +62,7 @@ jobs:
             "R7-episode cluster bootstrap",
             "at least 8 first-trigger R7 episodes",
             "state_t -> return_(t+2)",
-            "Long-history Gate 8 robustness test remains leave-one-**broad-historical-era**-out",
+            "long-history Gate 8 robustness test remains leave-one-**broad-historical-era**-out",
           ]
           missing=[x for x in required if x not in s]
           assert not missing, missing
