@@ -197,7 +197,7 @@ def run_modern(modern_root: Path, out: Path) -> dict:
     evaluable_segments = seg.loc[seg["n_a"].ge(1) & seg["n_b"].ge(1)].copy()
     positive_segments = int(evaluable_segments["mean_diff"].gt(0).sum()) if len(evaluable_segments) else 0
     delayed = r7.copy()
-    delayed["delayed_recovering"] = delayed["r7_recovering"].shift(1).fillna(False)
+    delayed["delayed_recovering"] = delayed["r7_recovering"].shift(1).fillna(False).astype(bool)
     delayed_a = delayed.loc[delayed["delayed_recovering"]]
     delayed_b = delayed.loc[~delayed["delayed_recovering"]]
     delayed_inc = bootstrap_diff(delayed_a["fwd_spy_tlt_1m"], delayed_b["fwd_spy_tlt_1m"], "modern-delay")
