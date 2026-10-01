@@ -388,7 +388,8 @@ def run_modern(issue133_root: Path, modern_root: Path, outdir: Path) -> dict:
     x.to_csv(outdir / "issue-136-modern-monthly-evidence.csv", index=False, float_format="%.12g")
     analysis.to_csv(outdir / "issue-136-modern-primary-analysis.csv", index=False, float_format="%.12g")
     temporal.to_csv(outdir / "issue-136-modern-temporal.csv", index=False, float_format="%.12g")
-    loeo.to_csv(outdir / "issue-136-modern-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")\n    modern_trigger_descriptive(x).to_csv(outdir / "issue-136-modern-trigger-descriptive.csv", index=False, float_format="%.12g")
+    loeo.to_csv(outdir / "issue-136-modern-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")
+    modern_trigger_descriptive(x).to_csv(outdir / "issue-136-modern-trigger-descriptive.csv", index=False, float_format="%.12g")
 
     return {
         "source": {
@@ -586,7 +587,8 @@ def run_long(long_root: Path, outdir: Path) -> dict:
     analysis.to_csv(outdir / "issue-136-long-history-primary-analysis.csv", index=False, float_format="%.12g")
     eras.to_csv(outdir / "issue-136-long-history-era.csv", index=False, float_format="%.12g")
     loeo_era.to_csv(outdir / "issue-136-long-history-leave-one-era-out.csv", index=False, float_format="%.12g")
-    loeo_episode.to_csv(outdir / "issue-136-long-history-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")\n    long_trigger_descriptive(labels, analysis).to_csv(outdir / "issue-136-long-history-trigger-descriptive.csv", index=False, float_format="%.12g")
+    loeo_episode.to_csv(outdir / "issue-136-long-history-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")
+    long_trigger_descriptive(labels, analysis).to_csv(outdir / "issue-136-long-history-trigger-descriptive.csv", index=False, float_format="%.12g")
 
     return {
         "source": {
