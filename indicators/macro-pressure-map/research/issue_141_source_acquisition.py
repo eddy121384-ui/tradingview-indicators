@@ -27,11 +27,7 @@ FRENCH_BASE = "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
 FRENCH_FACTORS = FRENCH_BASE + "F-F_Research_Data_Factors_CSV.zip"
 FRENCH_12IND = FRENCH_BASE + "12_Industry_Portfolios_CSV.zip"
 WB_LANDING = "https://www.worldbank.org/en/research/commodity-markets"
-FRED_SERIES = {
-    "EXPINF10YR": "https://fred.stlouisfed.org/data/EXPINF10YR",
-    "MCOILWTICO": "https://fred.stlouisfed.org/data/MCOILWTICO",
-    "MGASNYH": "https://fred.stlouisfed.org/data/MGASNYH",
-}
+CLEVELAND_LANDING = "https://www.clevelandfed.org/our-research/indicators-and-data/inflation-expectations"
 
 
 def sha256(b: bytes) -> str:
@@ -139,26 +135,6 @@ def coverage_from_frame(df: pd.DataFrame, date_col: str, value_cols: list[str]) 
     return out
 
 
-def read_fred(raw: bytes, series: str) -> pd.DataFrame:
-    # FRED /data/{series} is a compact server-rendered table and avoids the
-    # occasionally slow fredgraph CSV renderer.
-    soup = BeautifulSoup(raw, "html.parser")
-    rows = []
-    for tr in soup.find_all("tr"):
-        cells = [x.get_text(" ", strip=True) for x in tr.find_all(["td", "th"])]
-        if len(cells) < 2:
-            continue
-        if re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", cells[0]):
-            rows.append((cells[0], cells[1]))
-    if not rows:
-        # Fail closed rather than silently parsing a changed page.
-        raise RuntimeError(f"{series}: no DATE/VALUE rows found on FRED data page")
-    df = pd.DataFrame(rows, columns=["date", series])
-    df["date"] = pd.to_datetime(df["date"], errors="raise")
-    df[series] = pd.to_numeric(df[series].replace(".", pd.NA), errors="coerce")
-    return df
-
-
 def locate_world_bank_monthly_url() -> tuple[str, bytes]:
     landing = fetch(WB_LANDING)
     soup = BeautifulSoup(landing, "html.parser")
@@ -170,6 +146,19 @@ def locate_world_bank_monthly_url() -> tuple[str, bytes]:
     if not candidates:
         raise RuntimeError("World Bank monthly Pink Sheet link not found")
     # Deterministic: choose lexicographically smallest unique href if page has duplicates.
+    return sorted(set(candidates))[0], landing
+
+
+def locate_cleveland_xlsx() -> tuple[str, bytes]:
+    landing = fetch(CLEVELAND_LANDING)
+    soup = BeautifulSoup(landing, "html.parser")
+    candidates = []
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if "inflation-expectations.xlsx" in href.lower():
+            candidates.append(urljoin(CLEVELAND_LANDING, href))
+    if not candidates:
+        raise RuntimeError("Cleveland Fed inflation-expectations XLSX link not found")
     return sorted(set(candidates))[0], landing
 
 
@@ -190,14 +179,11 @@ def main() -> None:
     wb_prices = wb_sheet(raw_wb, "Monthly Prices")
     wb_indices = wb_sheet(raw_wb, "Monthly Indices")
 
-    fred_raw: dict[str, bytes] = {}
-    fred_frames: dict[str, pd.DataFrame] = {}
-    for series, url in FRED_SERIES.items():
-        b = fetch(url)
-        fred_raw[series] = b
-        fred_frames[series] = read_fred(b, series)
+    cleveland_url, cleveland_landing = locate_cleveland_xlsx()
+    raw_cleveland = fetch(cleveland_url)
+    cleveland_excel = pd.ExcelFile(io.BytesIO(raw_cleveland))
 
-    # World Bank schema only: do not choose the broad commodity index in Phase A.
+    # World Bank / Cleveland schema only: do not choose final proxy columns in Phase A.
     price_cols = wb_prices.columns.tolist()
     index_cols = wb_indices.columns.tolist()
     price_matches = {
@@ -217,19 +203,11 @@ def main() -> None:
             ind12, "date", ["NoDur", "Durbl", "Manuf", "Utils", "Shops"]
         ),
     }
-    fred_cov = {
-        k: coverage_from_frame(v, "date", [k])[k]
-        for k, v in fred_frames.items()
-    }
-
     # Preserve small source-native extracts sufficient for schema/audit; no exact signal loaded.
     factors[["date", "Mkt-RF", "SMB", "RF"]].to_csv(
         outdir / "french-factors-monthly.csv", index=False
     )
     ind12.to_csv(outdir / "french-12-industry-monthly.csv", index=False)
-    for k, df in fred_frames.items():
-        df.to_csv(outdir / f"fred-{k}.csv", index=False)
-
     schema = {
         "issue": 141,
         "phase": "A-source-acquisition",
@@ -260,13 +238,18 @@ def main() -> None:
                 "price_matches": price_matches,
                 "index_matches": index_matches,
             },
-            "fred": {
-                k: {
-                    "url": FRED_SERIES[k],
-                    "sha256": sha256(fred_raw[k]),
-                    "coverage": fred_cov[k],
-                }
-                for k in FRED_SERIES
+            "cleveland_inflation_expectations": {
+                "landing_url": CLEVELAND_LANDING,
+                "landing_sha256": sha256(cleveland_landing),
+                "xlsx_url": cleveland_url,
+                "xlsx_sha256": sha256(raw_cleveland),
+                "sheet_names": cleveland_excel.sheet_names,
+                "sheet_columns": {
+                    sheet: [str(x) for x in pd.read_excel(
+                        io.BytesIO(raw_cleveland), sheet_name=sheet, nrows=8
+                    ).columns]
+                    for sheet in cleveland_excel.sheet_names
+                },
             },
         },
     }
@@ -276,7 +259,8 @@ def main() -> None:
 
     print(json.dumps({
         "french": ff_cov,
-        "fred": fred_cov,
+        "cleveland_url": cleveland_url,
+        "cleveland_sheets": cleveland_excel.sheet_names,
         "world_bank_url": wb_url,
         "world_bank_price_matches": price_matches,
         "world_bank_index_candidates": index_matches["commodity_candidates"],
