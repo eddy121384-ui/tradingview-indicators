@@ -280,6 +280,36 @@ def add_modern_outcomes(x: pd.DataFrame, prices: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def modern_trigger_descriptive(x: pd.DataFrame) -> pd.DataFrame:
+    rows = []
+    for idx in x.index[x["is_signal"]]:
+        row = x.loc[idx]
+        future = x.loc[x.index > idx]
+        exit_rows = future.loc[~future["is_r7"]]
+        exit_date = None
+        exit_regime = None
+        months_to_exit = None
+        if len(exit_rows):
+            e = exit_rows.iloc[0]
+            exit_date = e["date"].date().isoformat()
+            exit_regime = int(e["regime"])
+            months_to_exit = int(e["date"].to_period("M").ordinal - row["date"].to_period("M").ordinal)
+        rows.append({
+            "signal_date": row["date"].date().isoformat(),
+            "episode_id": int(row["episode_id"]),
+            "turn_order": row["turn_order"],
+            "turn_lag_months": int(row["turn_lag"]),
+            "spread_fwd_1m": row["spread_fwd_1m"],
+            "spread_fwd_3m": row["spread_fwd_3m"],
+            "spread_fwd_6m": row["spread_fwd_6m"],
+            "spread_delay1_fwd_3m": row["spread_delay1_fwd_3m"],
+            "first_non_r7_date": exit_date,
+            "first_non_r7_regime": exit_regime,
+            "months_to_r7_exit": months_to_exit,
+        })
+    return pd.DataFrame(rows)
+
+
 def modern_leave_one_episode_out(analysis: pd.DataFrame) -> pd.DataFrame:
     rows = []
     trigger_eps = sorted(analysis.loc[analysis["is_signal"], "episode_id"].astype(int).unique())
@@ -358,7 +388,7 @@ def run_modern(issue133_root: Path, modern_root: Path, outdir: Path) -> dict:
     x.to_csv(outdir / "issue-136-modern-monthly-evidence.csv", index=False, float_format="%.12g")
     analysis.to_csv(outdir / "issue-136-modern-primary-analysis.csv", index=False, float_format="%.12g")
     temporal.to_csv(outdir / "issue-136-modern-temporal.csv", index=False, float_format="%.12g")
-    loeo.to_csv(outdir / "issue-136-modern-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")
+    loeo.to_csv(outdir / "issue-136-modern-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")\n    modern_trigger_descriptive(x).to_csv(outdir / "issue-136-modern-trigger-descriptive.csv", index=False, float_format="%.12g")
 
     return {
         "source": {
@@ -426,6 +456,36 @@ def build_long_labels(structural: pd.DataFrame) -> pd.DataFrame:
         x.loc[idx, "turn_lag"] = abs(go - io_)
         x.loc[idx, "turn_order"] = "same_year" if go == io_ else ("Growth_first" if go > io_ else "Inflation_first")
     return x
+
+
+def long_trigger_descriptive(labels: pd.DataFrame, causal_analysis: pd.DataFrame) -> pd.DataFrame:
+    payoff = causal_analysis.loc[causal_analysis["is_signal"], [
+        "state_year", "return_year", "equity", "treasury", "spread"
+    ]].copy()
+    rows = []
+    for idx in labels.index[labels["is_signal"]]:
+        row = labels.loc[idx]
+        future = labels.loc[labels.index > idx]
+        exit_rows = future.loc[~future["is_r7"]]
+        exit_year = None
+        exit_regime = None
+        years_to_exit = None
+        if len(exit_rows):
+            e = exit_rows.iloc[0]
+            exit_year = int(e["state_year"])
+            exit_regime = str(e["core_regime"])
+            years_to_exit = int(e["state_year"] - row["state_year"])
+        rows.append({
+            "state_year": int(row["state_year"]),
+            "episode_id": int(row["episode_id"]),
+            "turn_order": row["turn_order"],
+            "turn_lag_years": int(row["turn_lag"]),
+            "first_non_r7_year": exit_year,
+            "first_non_r7_regime": exit_regime,
+            "years_to_r7_exit": years_to_exit,
+        })
+    desc = pd.DataFrame(rows)
+    return desc.merge(payoff, on="state_year", how="left", validate="one_to_one")
 
 
 def long_leave_one_era_out(analysis: pd.DataFrame) -> pd.DataFrame:
@@ -526,7 +586,7 @@ def run_long(long_root: Path, outdir: Path) -> dict:
     analysis.to_csv(outdir / "issue-136-long-history-primary-analysis.csv", index=False, float_format="%.12g")
     eras.to_csv(outdir / "issue-136-long-history-era.csv", index=False, float_format="%.12g")
     loeo_era.to_csv(outdir / "issue-136-long-history-leave-one-era-out.csv", index=False, float_format="%.12g")
-    loeo_episode.to_csv(outdir / "issue-136-long-history-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")
+    loeo_episode.to_csv(outdir / "issue-136-long-history-leave-one-trigger-episode-out.csv", index=False, float_format="%.12g")\n    long_trigger_descriptive(labels, analysis).to_csv(outdir / "issue-136-long-history-trigger-descriptive.csv", index=False, float_format="%.12g")
 
     return {
         "source": {
