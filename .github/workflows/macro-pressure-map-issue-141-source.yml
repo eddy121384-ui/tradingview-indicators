@@ -1,0 +1,46 @@
+name: Macro Pressure Map Issue 141 Source Acquisition
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_141_source_acquisition.py"
+      - ".github/workflows/macro-pressure-map-issue-141-source.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-acquisition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install source-audit dependencies
+        run: python -m pip install pandas requests beautifulsoup4 openpyxl
+      - name: Static validation
+        run: python -m py_compile indicators/macro-pressure-map/research/issue_141_source_acquisition.py
+      - name: Acquire source schema only
+        run: |
+          rm -rf indicators/macro-pressure-map/research/generated/issue-141-source
+          python indicators/macro-pressure-map/research/issue_141_source_acquisition.py \
+            --output-dir indicators/macro-pressure-map/research/generated/issue-141-source
+      - name: Firewall assertion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("indicators/macro-pressure-map/research/generated/issue-141-source/issue-141-source-schema.json")
+          r=json.loads(p.read_text())
+          assert r["outcome_data_loaded"] is False
+          assert r["exact_v66_signal_loaded"] is False
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-141-source-acquisition
+          path: indicators/macro-pressure-map/research/generated/issue-141-source
+          retention-days: 30
+          if-no-files-found: error
