@@ -164,7 +164,7 @@ def locate_cleveland_xlsx() -> tuple[str, bytes]:
 
 def parse_wb_month_key(s: pd.Series) -> pd.Series:
     raw = s.astype(str).str.strip()
-    yyyymm = raw.str.extract(r"^(\\d{4})M(\\d{2})$")
+    yyyymm = raw.str.extract(r"^(\d{4})M(\d{2})$")
     dates = pd.to_datetime(
         yyyymm[0] + "-" + yyyymm[1] + "-01",
         errors="coerce",
