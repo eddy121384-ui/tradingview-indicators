@@ -1,0 +1,131 @@
+name: Macro Pressure Map Issue 136 R7 Async Turn
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue-136-r7-async-turn-prereg.md"
+      - "indicators/macro-pressure-map/research/issue_136_r7_async_turn.py"
+      - "indicators/macro-pressure-map/research/test_issue_136_r7_async_turn.py"
+      - ".github/workflows/macro-pressure-map-issue-136.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  async-turn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Issue 136 branch
+        uses: actions/checkout@v4
+        with:
+          path: current
+
+      - name: Checkout frozen Issue 133 signal snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: 752755d423c1a13415d8ad3647c3def74adaa2d8
+          path: issue133
+
+      - name: Checkout frozen modern price backbone
+        uses: actions/checkout@v4
+        with:
+          ref: 4d48f58582a7cf5322adad0beda72dbe15545fed
+          path: modern
+
+      - name: Checkout frozen long-history backbone
+        uses: actions/checkout@v4
+        with:
+          ref: 3d479f1255337587582627d95b7d5e3a2940599c
+          path: long
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pandas pytest openpyxl lxml html5lib beautifulsoup4
+
+      - name: Validate preregistration ordering
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/issue-136-r7-async-turn-prereg.md")
+          s=p.read_text(encoding="utf-8")
+          required=[
+            "FROZEN BEFORE ISSUE #136 OUTCOME ANALYSIS",
+            "next **3 completed monthly** total-return spread",
+            "R7-episode cluster bootstrap",
+            "at least 8 first-trigger R7 episodes",
+            "state_t -> return_(t+2)",
+            "Long-history Gate 8 robustness test remains leave-one-**broad-historical-era**-out",
+          ]
+          missing=[x for x in required if x not in s]
+          assert not missing, missing
+          PY
+
+      - name: Static and unit tests
+        run: |
+          python -m py_compile current/indicators/macro-pressure-map/research/issue_136_r7_async_turn.py
+          cd current/indicators/macro-pressure-map/research
+          pytest -q test_issue_136_r7_async_turn.py
+
+      - name: Run Issue 136 frozen evaluator
+        run: |
+          rm -rf current/indicators/macro-pressure-map/research/generated/issue-136
+          python current/indicators/macro-pressure-map/research/issue_136_r7_async_turn.py \
+            --issue133-root issue133/indicators/macro-pressure-map/research \
+            --modern-root modern/indicators/macro-pressure-map/research \
+            --long-root long/indicators/macro-pressure-map/research \
+            --output-dir current/indicators/macro-pressure-map/research/generated/issue-136
+
+      - name: Validate result contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/generated/issue-136/issue-136-result.json")
+          r=json.loads(p.read_text())
+          assert r["issue"] == 136
+          assert r["production_authorized"] is False
+          assert r["modern_exact"]["verdict"] in {
+            "async_turn_candidate",
+            "async_turn_suggestive_not_robust",
+            "async_turn_not_confirmed",
+            "inconclusive_async_turn_sample",
+          }
+          assert r["long_history_hmra"]["verdict"] in {
+            "long_history_async_turn_candidate",
+            "long_history_async_turn_era_dependent",
+            "long_history_async_turn_not_confirmed",
+            "inconclusive_long_history_async_turn_sample",
+          }
+          assert r["cross_history_synthesis"] in {
+            "cross_history_async_turn_supported",
+            "modern_only_async_turn_support",
+            "long_history_only_async_turn_support",
+            "async_turn_evidence_inconclusive",
+            "async_turn_not_robust_across_history",
+          }
+          print({
+            "modern": r["modern_exact"]["verdict"],
+            "modern_sample": r["modern_exact"]["sample"],
+            "modern_primary": r["modern_exact"]["primary_incremental"],
+            "long": r["long_history_hmra"]["verdict"],
+            "long_sample": r["long_history_hmra"]["sample"],
+            "long_primary": r["long_history_hmra"]["primary_incremental"],
+            "synthesis": r["cross_history_synthesis"],
+          })
+          PY
+
+      - name: Upload Issue 136 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-136-r7-async-turn
+          path: current/indicators/macro-pressure-map/research/generated/issue-136
+          retention-days: 30
+          if-no-files-found: error
