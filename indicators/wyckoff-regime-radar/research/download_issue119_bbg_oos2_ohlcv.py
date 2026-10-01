@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -398,7 +399,14 @@ def main() -> None:
     )
     args = ap.parse_args()
 
-    universe = pd.read_csv(args.universe)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    snapshot_universe = (
+        args.output_dir / "issue119_bbg_oos2_universe_manifest.csv"
+    )
+    if args.universe.resolve() != snapshot_universe.resolve():
+        shutil.copyfile(args.universe, snapshot_universe)
+
+    universe = pd.read_csv(snapshot_universe)
     with BloombergDesktopClient() as client:
         manifest = download_universe(
             client,
