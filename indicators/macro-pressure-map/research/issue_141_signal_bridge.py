@@ -597,9 +597,12 @@ def run(issue133_root: Path, outdir: Path) -> dict:
     exact, exact_manifest = load_exact(issue133_root)
     analogue = build_analogue(factors, industries, wb, cleveland)
 
-    bridge, merged, analogue_turn = evaluate_bridge(exact, analogue)
-    historical = analogue_turn.loc[
-        analogue_turn["period"].between(HIST_START, HIST_END),
+    bridge, merged, _ = evaluate_bridge(exact, analogue)
+    full_analogue_turn = add_turning(
+        analogue, "gpi_a", "ipi_a", "regime_a", "analogue"
+    )
+    historical = full_analogue_turn.loc[
+        full_analogue_turn["period"].between(HIST_START, HIST_END),
         [
             "date", "period", "gpi_a", "ipi_a", "regime_a",
             "analogue_episode_id", "analogue_trigger", "analogue_eligible",
