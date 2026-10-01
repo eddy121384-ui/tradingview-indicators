@@ -325,7 +325,12 @@ def run_long(long_root: Path, out: Path) -> dict:
 
     positive_eval_eras = int(eval_eras["mean_diff"].gt(0).sum()) if len(eval_eras) else 0
     no_bad_era = bool(len(eval_eras) and eval_eras["mean_diff"].dropna().ge(-0.05).all())
-    loeo_positive = bool(len(loeo_df) and loeo_df["mean_diff"].dropna().gt(0).all())
+    # Fail closed if omitting any broad era makes the incremental comparison unevaluable.
+    loeo_positive = bool(
+        len(loeo_df)
+        and loeo_df["mean_diff"].notna().all()
+        and loeo_df["mean_diff"].gt(0).all()
+    )
 
     gates = {
         "1_causal_recovering_n_ge_8": len(rec) >= 8,
