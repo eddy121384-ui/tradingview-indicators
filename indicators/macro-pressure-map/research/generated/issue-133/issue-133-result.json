@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "issue": 133,
+  "phase": "state-x-trajectory-early-recovery",
+  "modern_exact": {
+    "source": {
+      "signal_manifest": {
+        "schema_version": 1,
+        "issue": 133,
+        "source": "user-supplied TradingView Pine Logs CSV from MPM V6.6 TRAJ EXPORT",
+        "source_sha256": "cd7dc00c06cae9c2b24243986b0b20a753afdd73af273122f06a12ab23edbd5e",
+        "normalized_csv_sha256": "1d03923503e7fe82a69b033897484c48aa646279ecf70164d090ed62a5a70719",
+        "deterministic_gzip_sha256": "6087d7eceff168147b4db2e8688ce308dc12aa6b4187ff0c18f1d5e51e4beda2",
+        "rows": 388,
+        "first_date": "1994-05-31",
+        "last_date": "2026-08-31",
+        "primary_exact_window_start": "2007-01-01",
+        "note": "Full snapshot is retained for audit; primary exact-modern inference remains the preregistered modern V6.6 window and does not treat pre-2007 partial-component history as equivalent exact evidence."
+      },
+      "price_snapshot_last_date": "2026-08-24",
+      "price_snapshot_meta": {
+        "provider": "frozen repository snapshot derived from Yahoo Finance",
+        "source_mode": "committed_frozen_snapshot",
+        "snapshot_path": "base64-sharded repository snapshot",
+        "snapshot_paths": [
+          "data/issue-64-outcome-prices-01.b64",
+          "data/issue-64-outcome-prices-02.b64",
+          "data/issue-64-outcome-prices-03.b64",
+          "data/issue-64-outcome-prices-04.b64",
+          "data/issue-64-outcome-prices-05.b64",
+          "data/issue-64-outcome-prices-06.b64",
+          "data/issue-64-outcome-prices-07.b64",
+          "data/issue-64-outcome-prices-08.b64",
+          "data/issue-64-outcome-prices-09.b64",
+          "data/issue-64-outcome-prices-10.b64"
+        ],
+        "snapshot_manifest_path": "data/issue-64-outcome-prices-manifest.json",
+        "snapshot_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+        "snapshot_csv_sha256": "3a7f590c146f9eda5920b6968fe86c9c3cc1887db35597f2d639a1c76b6e5a57",
+        "snapshot_archive_sha256": "d9d5f9e5ac171850c7c34739e45c60f41b195044bda81e25531c0dfa2bb22240",
+        "snapshot_shards": [
+          {"path": "data/issue-64-outcome-prices-01.b64", "chars": 15288, "sha256": "03b6c427ab2e5868940b3d5633485e03770e2fd6b3beab315f55ed66fe071e26"},
+          {"path": "data/issue-64-outcome-prices-02.b64", "chars": 15288, "sha256": "14de5cfdb412b87888480f3349ec155c44741604d8b3ec3aa178cf71a2c03b03"},
+          {"path": "data/issue-64-outcome-prices-03.b64", "chars": 15288, "sha256": "0b2df28053d8a24f641066512d77e98c6cd4443221498f2be944095d5f00a43f"},
+          {"path": "data/issue-64-outcome-prices-04.b64", "chars": 15288, "sha256": "1d7822502878b75fd50abb050de0c19cd7a682fe6c2cb874794f3f6b1b6a8f3c"},
+          {"path": "data/issue-64-outcome-prices-05.b64", "chars": 15288, "sha256": "3fcdd9c3631b1fdc5bc8b52484e4cec352359028b3cc0c9d9b09484c7d4e168a"},
+          {"path": "data/issue-64-outcome-prices-06.b64", "chars": 15288, "sha256": "38d6849592c3078ef043c22750efb6ee22ecf46303e0e33cda00b696f0ec68d8"},
+          {"path": "data/issue-64-outcome-prices-07.b64", "chars": 15288, "sha256": "82215e6745f4a9f37e28156f62af4b175cd3adcd8ebd70cad9d6d5021db5e91d"},
+          {"path": "data/issue-64-outcome-prices-08.b64", "chars": 15288, "sha256": "a0b19ade98f403afb691cdb930aa565eae079483144a9b39b544f4d8757fdc7e"},
+          {"path": "data/issue-64-outcome-prices-09.b64", "chars": 15288, "sha256": "fe6fb6723ef58113f367329056e3095a764ff88f2e0a167c9901893fd7a11c0c"},
+          {"path": "data/issue-64-outcome-prices-10.b64", "chars": 15272, "sha256": "ad25550eddc7925126b86bf49cd8dcbf0beab82cdc3cba611d11ed3a347b4b06"}
+        ],
+        "snapshot_rows": 4941,
+        "snapshot_first_date": "2007-01-03",
+        "snapshot_last_date": "2026-08-24",
+        "price_semantics": "Yahoo Finance yfinance auto_adjust=True adjusted Close; strict common finite SPY/TLT/GLD calendar",
+        "calendar_semantics": "strict intersection of finite SPY, TLT and GLD observation dates; no outcome forward-fill",
+        "symbols": ["SPY", "TLT", "GLD"],
+        "rows": 4941,
+        "first_date": "2007-01-03",
+        "last_date": "2026-08-24"
+      }
+    },
+    "sample": {
+      "eligible_months": 231,
+      "r7_months": 51,
+      "r7_recovering_months": 4,
+      "r7_recovering_episodes": 4,
+      "recovering_dates": ["2009-02-27", "2011-12-30", "2015-12-31", "2020-05-29"]
+    },
+    "recovering": {"n": 4, "mean": 0.00034005049439264634, "median": 0.0286024588735293, "positive_fraction": 0.75},
+    "nonrecovering": {"n": 47, "mean": 0.0021645614908682668, "median": 0.012554405220975617, "positive_fraction": 0.5957446808510638},
+    "incremental": {"n_a": 4, "n_b": 47, "mean_diff": -0.0018245109964756204, "ci_low": -0.07420722704814631, "ci_high": 0.05337215490665289},
+    "strongest_positive_episode_share": 0.4647634174226997,
+    "delayed_incremental": {"n_a": 4, "n_b": 47, "mean_diff": 0.04425461656969555, "ci_low": -0.008143074080561263, "ci_high": 0.0875019073008513},
+    "gates": {
+      "1_n_ge_12": false,
+      "2_episodes_ge_4": true,
+      "3_recovering_mean_positive": true,
+      "4_incremental_mean_positive": false,
+      "5_incremental_ci_low_gt_0": false,
+      "6_at_least_2_segments_evaluable": true,
+      "7_segment_sign_requirement": false,
+      "8_all_evaluable_episode_leaveouts_positive": false,
+      "9_strongest_positive_episode_share_le_50pct": true,
+      "10_delayed_signal_positive": true
+    },
+    "verdict": "inconclusive_sample"
+  },
+  "long_history_hmra": {
+    "source": {
+      "issue91_hmra_freeze_validated": true,
+      "causal_return_last_year": 2025,
+      "damodaran_sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647"
+    },
+    "sample": {"r7_causal_years": 15, "r7_recovering_years": 1, "r7_recovering_state_years": [1931], "evaluable_eras": 1},
+    "recovering": {"n": 1, "mean": 0.4811999999999999, "median": 0.4811999999999999, "positive_fraction": 1.0},
+    "nonrecovering": {"n": 14, "mean": 0.0633714285714286, "median": 0.0532, "positive_fraction": 0.5714285714285714},
+    "incremental": {"n_a": 1, "n_b": 14, "mean_diff": 0.4178285714285713, "ci_low": 0.318434107142857, "ci_high": 0.5186689285714283},
+    "strongest_positive_era_share": 1.0,
+    "gates": {
+      "1_causal_recovering_n_ge_8": false,
+      "2_recovering_mean_positive": true,
+      "3_incremental_mean_positive": true,
+      "4_incremental_ci_low_gt_0": true,
+      "5_at_least_2_evaluable_eras": false,
+      "6_at_least_2_evaluable_eras_positive": false,
+      "7_no_evaluable_era_below_minus_5pp": true,
+      "8_leave_one_era_out_never_negative": false,
+      "9_strongest_positive_era_share_le_50pct": false
+    },
+    "verdict": "inconclusive_long_history_trajectory_sample"
+  },
+  "cross_history_synthesis": "trajectory_evidence_inconclusive",
+  "production_authorized": false
+}
