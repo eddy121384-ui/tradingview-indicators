@@ -8,6 +8,9 @@ on:
       - '.github/workflows/wyckoff-issue78-equity-proof-policy-oos3.yml'
       - 'indicators/wyckoff-regime-radar/research/build_issue78_equity_policy_oos3_universe.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue78_equity_policy_oos3_universe.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue78_equity_proof_policy_oos3.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue78_equity_proof_policy_oos3.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-equity-proof-policy-oos3-snapshot-freeze.md'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-78-equity-proof-policy-oos3-preregistration.md'
   pull_request:
     paths:
@@ -33,10 +36,16 @@ jobs:
         run: |
           python -m py_compile indicators/wyckoff-regime-radar/research/build_issue78_equity_policy_oos3_universe.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_equity_policy_oos3_universe.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue78_equity_proof_policy_oos3.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue78_equity_proof_policy_oos3.py
 
       - name: OOS3 universe tests
         working-directory: indicators/wyckoff-regime-radar/research
         run: python -m pytest -q test_issue78_equity_policy_oos3_universe.py
+
+      - name: OOS3 proof-policy tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m pytest -q test_issue78_equity_proof_policy_oos3.py
 
       - name: Diff check
         run: git diff --check
