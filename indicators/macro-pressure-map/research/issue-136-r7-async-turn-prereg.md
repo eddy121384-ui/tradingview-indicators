@@ -281,3 +281,12 @@ This is frozen before outcomes to avoid treating adjacent years from one macro e
 For both modern and HMRA layers, leaving out a trigger episode removes the **entire** corresponding R7 episode from both signal and control observations.
 
 Any leaveout that makes either side of the comparison unevaluable fails closed for the robustness gate.
+
+
+### Leaveout scope clarification
+
+The modern Gate 7 robustness test is leave-one-**trigger-R7-episode**-out.
+
+The long-history Gate 8 robustness test remains leave-one-**broad-historical-era**-out exactly as preregistered above.
+
+A long-history leave-one-trigger-episode-out table may also be emitted as an additional fail-closed diagnostic, but it does not replace or relax the broad-era gate.
