@@ -63,13 +63,14 @@ def proof_earned_exposures(steps, mode):
                 current = 1.0
         elif mode == "progressive":
             if cum >= 2.0:
-                current = 1.0
+                earned = 1.0
             elif cum >= 1.0:
-                current = 0.75
+                earned = 0.75
             elif cum >= 0.5:
-                current = 0.50
+                earned = 0.50
             else:
-                current = 0.25
+                earned = 0.25
+            current = max(current, earned)
         else:
             raise ValueError(mode)
 
