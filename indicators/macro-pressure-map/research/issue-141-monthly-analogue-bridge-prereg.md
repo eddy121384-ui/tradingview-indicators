@@ -355,3 +355,73 @@ Research only.
 
 Do not modify V6.6 or V6.7.
 Do not modify Issue #136's frozen result.
+
+## Pre-outcome metric implementation clarifications
+
+These rules are frozen before the first analogue-vs-exact bridge metric is computed.
+
+### Common eligible month
+
+A bridge month is common-eligible only when all are available for that calendar month:
+
+- exact GPI;
+- exact IPI;
+- exact regime id;
+- analogue GPI_A;
+- analogue IPI_A;
+- analogue regime id.
+
+Calendar alignment is by calendar month, not exact day-of-month timestamp.
+
+### Pearson correlation
+
+A level correlation is evaluable only with at least 12 paired common-eligible months.
+
+If fewer than 12 paired months are available, the metric is unevaluable and its gate fails closed.
+
+### Slope-sign agreement
+
+For each axis, slope sign is computed as the exact mathematical sign of the one-month difference:
+
+- negative -> -1;
+- exactly zero -> 0;
+- positive -> +1.
+
+Rows lacking either current or immediately prior aligned observation for either exact or analogue axis are excluded from that axis's slope-sign denominator.
+
+A slope-sign metric is evaluable only with at least 12 paired signs; otherwise its gate fails closed.
+
+### R7 precision / recall
+
+- precision denominator = number of analogue R7 common-eligible months;
+- recall denominator = number of exact R7 common-eligible months.
+
+A zero denominator makes the metric unevaluable and the corresponding gate fails closed.
+
+### Trigger precision / recall / F1
+
+If the holdout has exact triggers but zero analogue triggers:
+
+- trigger precision = 0;
+- trigger recall = 0;
+- trigger F1 = 0.
+
+If both sides have zero triggers, trigger metrics are unevaluable; however the preregistered exact-trigger sample gate will already fail.
+
+### Evaluable holdout subsegment
+
+A holdout subsegment is evaluable for Gate 12 only if it contains at least 12 common-eligible months.
+
+Every evaluable subsegment must have exact regime-id agreement >= 0.45.
+
+If no holdout subsegment is evaluable, Gate 12 fails closed.
+
+### Historical signal validity flag
+
+The evaluator may always emit 1984-01 through 2006-12 structural-analogue signals for audit.
+
+The output must contain:
+
+`validated_for_outcome_testing = (bridge_verdict == "signal_bridge_passed")`.
+
+No downstream study may join historical asset outcomes unless that flag is true.
