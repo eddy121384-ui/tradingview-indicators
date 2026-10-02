@@ -242,17 +242,28 @@ def load_mgasnyh_gretl() -> tuple[pd.DataFrame, dict]:
             f"mgasnyh mirror coverage drift: last={target['last']} n={target['n']}"
         )
 
-    expected_min_bytes = total_obs * 4
-    if len(raw_dat) < expected_min_bytes:
+    # This repository mirror stores fedstl.dat as one textual observation
+    # per line, in the same by-variable order described by fedstl.idx.
+    dat_lines = raw_dat.decode("utf-8", errors="strict").splitlines()
+    if len(dat_lines) < total_obs:
         raise RuntimeError(
-            f"gretl FRED binary too short: bytes={len(raw_dat)} expected>={expected_min_bytes}"
+            f"gretl FRED data too short: lines={len(dat_lines)} expected>={total_obs}"
         )
-    vals = np.frombuffer(
-        raw_dat,
-        dtype="<f4",
-        count=int(target["n"]),
-        offset=int(target["offset_obs"]) * 4,
-    ).astype(float)
+    start = int(target["offset_obs"])
+    stop = start + int(target["n"])
+    target_lines = dat_lines[start:stop]
+    vals_list = []
+    for pos, value_s in enumerate(target_lines):
+        s = value_s.strip()
+        if s in {"", "NA", "nan", "."}:
+            raise RuntimeError(f"gretl MGASNYH missing value at target offset {pos}")
+        try:
+            vals_list.append(float(s))
+        except ValueError as exc:
+            raise RuntimeError(
+                f"gretl MGASNYH unparseable value at target offset {pos}: {s!r}"
+            ) from exc
+    vals = np.asarray(vals_list, dtype=float)
 
     # Fail closed against the official FRED identity anchors:
     # 1986-06=0.420, 1986-07=0.340, 1986-08=0.426.
@@ -282,7 +293,7 @@ def load_mgasnyh_gretl() -> tuple[pd.DataFrame, dict]:
         "dat_url": GRETL_DAT_URL,
         "idx_sha256": sha256_bytes(raw_idx),
         "dat_sha256": sha256_bytes(raw_dat),
-        "binary_format": "gretl native database; little-endian float32 packed by variable",
+        "mirror_storage_format": "newline-delimited numeric observations, packed by variable per fedstl.idx",
         "offset_observations": int(target["offset_obs"]),
         "finite_rows": int(len(df)),
         "first_period": str(df["period"].min()),
