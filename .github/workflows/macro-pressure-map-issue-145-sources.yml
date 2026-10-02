@@ -23,9 +23,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: |
-          python -m pip install numpy pandas requests beautifulsoup4 openpyxl playwright
-          python -m playwright install chromium --with-deps
+        run: python -m pip install numpy pandas requests beautifulsoup4 openpyxl
 
       - name: Static validation
         run: python -m py_compile indicators/macro-pressure-map/research/issue_145_ipi_v2_source_acquisition.py
@@ -47,8 +45,8 @@ jobs:
           assert r["outcome_data_loaded"] is False
           assert r["dbiq"]["ticker"] == "DBLCDBCE"
           assert r["dbiq"]["historical_inception"] == "1988-12-02"
-          assert r["dbiq"]["monthly_return_rows"] >= 440
-          assert r["v2_panel"]["first_complete_period"] <= "1989-01"
+          assert r["dbiq"]["monthly_level_rows_through_2026_08"] >= 450
+          assert r["v2_panel"]["first_complete_period"] == "1988-12"
           assert r["v2_panel"]["last_complete_period"] >= "2026-08"
           PY
 
