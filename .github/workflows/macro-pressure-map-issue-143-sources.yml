@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: python -m pip install numpy pandas scipy requests beautifulsoup4 openpyxl yfinance
+        run: python -m pip install numpy pandas scipy scikit-learn requests beautifulsoup4 openpyxl yfinance
       - name: Static validation
         run: python -m py_compile indicators/macro-pressure-map/research/issue_143_ipi_source_acquisition.py
       - name: Acquire signal inputs only
