@@ -184,6 +184,22 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]
         if "Historical Price and Volatility" not in body_text:
             raise RuntimeError("DBIQ page missing Historical Price and Volatility section")
 
+        # The public page itself loads these unauthenticated REST resources.
+        # Inspect them directly instead of invoking the T&C-gated Export action.
+        api_diagnostics = {}
+        for name in ("graphData", "returnData", "monthlyReturns"):
+            url = f"https://index.db.com/dbiq-web/rest/webdata/95400/{name}"
+            resp = context.request.get(url, timeout=60_000)
+            txt = resp.text()
+            api_diagnostics[name] = {
+                "status": resp.status,
+                "content_type": resp.headers.get("content-type"),
+                "bytes": len(txt.encode("utf-8")),
+                "head": txt[:12000],
+            }
+        print("DBIQ_API_DIAGNOSTICS=" + json.dumps(api_diagnostics, ensure_ascii=False), flush=True)
+        raise RuntimeError("DBIQ API shape diagnostic complete")
+
         all_time = page.get_by_text("All Time", exact=True)
         if all_time.count() == 0:
             raise RuntimeError("DBIQ page missing All Time control")
