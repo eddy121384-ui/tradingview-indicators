@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "issue": 143,
+  "validated_run": 36954642736,
+  "validated_head": "9f318f790fe9869ae655d76292557eb8421c6ed0",
+  "artifact_digest": "sha256:f71ea9a312bae1f7b8d07ca3fac49b187828ae3e94844aa13c50342f3e41a960",
+  "verdict": "ipi_attribution_valid",
+  "primary_cause": "commodity_proxy_primary",
+  "holdout": {
+    "D0": {
+      "ipi_correlation": 0.9939738804371306,
+      "ipi_slope_agreement": 0.8869565217391304,
+      "ipi_state_agreement": 0.9655172413793104,
+      "regime_agreement": 0.9655172413793104,
+      "r7_precision": 0.9615384615384616,
+      "r7_recall": 0.9615384615384616,
+      "trigger_f1": 0.8571428571428571
+    },
+    "M0": {
+      "ipi_correlation": 0.9864389531638564,
+      "ipi_slope_agreement": 0.9130434782608695,
+      "ipi_state_agreement": 0.9568965517241379,
+      "regime_agreement": 0.9568965517241379,
+      "r7_precision": 0.9259259259259259,
+      "r7_recall": 0.9615384615384616,
+      "trigger_f1": 0.8571428571428571
+    },
+    "M-BE": {
+      "ipi_correlation": 0.9200720458617583,
+      "ipi_slope_agreement": 0.8434782608695652,
+      "ipi_state_agreement": 0.7931034482758621,
+      "regime_agreement": 0.7931034482758621,
+      "r7_precision": 0.9166666666666666,
+      "r7_recall": 0.8461538461538461,
+      "trigger_f1": 0.7142857142857143
+    },
+    "M-COM": {
+      "ipi_correlation": 0.8936580913752352,
+      "ipi_slope_agreement": 0.8521739130434782,
+      "ipi_state_agreement": 0.7241379310344828,
+      "regime_agreement": 0.7241379310344828,
+      "r7_precision": 0.8076923076923077,
+      "r7_recall": 0.8076923076923077,
+      "trigger_f1": 0.7692307692307692
+    },
+    "M-OIL": {
+      "ipi_correlation": 0.9879170016064156,
+      "ipi_slope_agreement": 0.9130434782608695,
+      "ipi_state_agreement": 0.9568965517241379,
+      "regime_agreement": 0.9568965517241379,
+      "r7_precision": 0.9615384615384616,
+      "r7_recall": 0.9615384615384616,
+      "trigger_f1": 0.923076923076923
+    },
+    "M-GAS": {
+      "ipi_correlation": 0.9714599667067976,
+      "ipi_slope_agreement": 0.8956521739130435,
+      "ipi_state_agreement": 0.8879310344827587,
+      "regime_agreement": 0.8879310344827587,
+      "r7_precision": 0.9130434782608695,
+      "r7_recall": 0.8076923076923077,
+      "trigger_f1": 0.8333333333333334
+    },
+    "M-ALL": {
+      "ipi_correlation": 0.6829508192237506,
+      "ipi_slope_agreement": 0.6956521739130435,
+      "ipi_state_agreement": 0.6206896551724138,
+      "regime_agreement": 0.6206896551724138,
+      "r7_precision": 0.75,
+      "r7_recall": 0.6923076923076923,
+      "trigger_f1": 0.5714285714285715
+    }
+  },
+  "holdout_damage_scores": {
+    "frequency": 0.008626977456593545,
+    "breakeven": 0.10443133558442451,
+    "commodity": 0.13987993262531181,
+    "oil_provider": 0.0,
+    "gasoline_proxy": 0.0515484929440539,
+    "total_full_proxy": 0.2748806017517658
+  },
+  "development_damage_scores": {
+    "frequency": 0.023305418524567183,
+    "breakeven": 0.13917271320835264,
+    "commodity": 0.04771436771083897,
+    "oil_provider": 0.004926108374384246,
+    "gasoline_proxy": 0.017370745209894362,
+    "total_full_proxy": 0.2472297432497501
+  },
+  "outcome_data_loaded": false,
+  "historical_outcome_testing_authorized": false,
+  "production_authorized": false
+}
