@@ -181,8 +181,15 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]
         all_time = page.get_by_text("All Time", exact=True)
         if all_time.count() == 0:
             raise RuntimeError("DBIQ page missing All Time control")
-        all_time.last.click(timeout=30_000)
-        page.wait_for_timeout(2_000)
+        # DBIQ currently renders "All Time" as the default chart range. In
+        # headless Chromium its label can be covered by the chart canvas, so
+        # treat an unclickable label as already-selected rather than changing
+        # the frozen source definition.
+        try:
+            all_time.last.click(timeout=5_000, force=True)
+            page.wait_for_timeout(2_000)
+        except Exception:
+            pass
 
         export_buttons = page.get_by_role("button", name="Export", exact=True)
         if export_buttons.count() == 0:
@@ -193,7 +200,7 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]
 
         try:
             with page.expect_download(timeout=60_000) as download_info:
-                export_buttons.last.click(timeout=30_000)
+                export_buttons.last.click(timeout=10_000, force=True)
             download = download_info.value
         except Exception as exc:
             raise RuntimeError(
