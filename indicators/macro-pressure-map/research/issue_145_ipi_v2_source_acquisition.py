@@ -30,8 +30,16 @@ DBIQ_META_URL = DBIQ_BASE
 DBIQ_GRAPH_URL = DBIQ_BASE + "/graphData"
 DBIQ_MONTHLY_URL = DBIQ_BASE + "/monthlyReturns"
 DBIQ_RETURN_URL = DBIQ_BASE + "/returnData"
-MGASNYH_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=MGASNYH"
-SOURCE_END = pd.Period("2026-08", "M")
+GRETL_COMMIT = "65dc8bdfb56feb64a19c36d38f696e7797591eb6"
+GRETL_IDX_URL = (
+    "https://raw.githubusercontent.com/gretl-project/gretl/"
+    + GRETL_COMMIT + "/share/bcih/fedstl.idx"
+)
+GRETL_DAT_URL = (
+    "https://raw.githubusercontent.com/gretl-project/gretl/"
+    + GRETL_COMMIT + "/share/bcih/fedstl.dat"
+)
+SOURCE_END = pd.Period("2026-03", "M")
 
 EXPECTED_I141_SHA = {
     "world_bank_monthly": "9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225",
@@ -182,19 +190,110 @@ def load_dbiq() -> tuple[pd.DataFrame, dict, dict[str, bytes]]:
     }
 
 
-def parse_fredgraph_csv(raw: bytes, series: str) -> pd.DataFrame:
-    df = pd.read_csv(pd.io.common.BytesIO(raw))
-    date_col = "observation_date" if "observation_date" in df.columns else "DATE"
-    if date_col not in df.columns or series not in df.columns:
-        raise RuntimeError(f"{series} fredgraph columns changed: {df.columns.tolist()}")
-    out = pd.DataFrame({
-        "date": pd.to_datetime(df[date_col], errors="raise"),
-        series: pd.to_numeric(df[series].replace(".", np.nan), errors="coerce"),
+def load_mgasnyh_gretl() -> tuple[pd.DataFrame, dict]:
+    raw_idx = fetch_bytes(GRETL_IDX_URL)
+    raw_dat = fetch_bytes(GRETL_DAT_URL)
+    idx_text = raw_idx.decode("utf-8", errors="strict")
+    lines = idx_text.splitlines()
+
+    offset_obs = 0
+    total_obs = 0
+    target = None
+    i = 0
+    while i < len(lines):
+        line1 = lines[i].strip()
+        i += 1
+        if not line1 or line1.startswith("#"):
+            continue
+        if i >= len(lines):
+            raise RuntimeError("gretl FRED index ended mid-entry")
+        line2 = lines[i].strip()
+        i += 1
+        m = re.fullmatch(
+            r"([A-Z])\s+(\S+)\s+-\s+(\S+)\s+n\s*=\s*(\d+)",
+            line2,
+        )
+        if m is None:
+            raise RuntimeError(f"unparseable gretl FRED index metadata: {line2!r}")
+        freq, first, last, n_s = m.groups()
+        n = int(n_s)
+        name = line1.split()[0].lower()
+        if name == "mgasnyh":
+            target = {
+                "name": name,
+                "description": line1[len(line1.split()[0]):].strip(),
+                "frequency": freq,
+                "first": first,
+                "last": last,
+                "n": n,
+                "offset_obs": offset_obs,
+            }
+        offset_obs += n
+        total_obs += n
+
+    if target is None:
+        raise RuntimeError("gretl FRED mirror no longer contains mgasnyh")
+    if target["frequency"] != "M":
+        raise RuntimeError(f"mgasnyh frequency drift: {target['frequency']}")
+    if target["first"] != "1986.06":
+        raise RuntimeError(f"mgasnyh first-period drift: {target['first']}")
+    if target["last"] != "2026.03" or target["n"] != 478:
+        raise RuntimeError(
+            f"mgasnyh mirror coverage drift: last={target['last']} n={target['n']}"
+        )
+
+    expected_min_bytes = total_obs * 4
+    if len(raw_dat) < expected_min_bytes:
+        raise RuntimeError(
+            f"gretl FRED binary too short: bytes={len(raw_dat)} expected>={expected_min_bytes}"
+        )
+    vals = np.frombuffer(
+        raw_dat,
+        dtype="<f4",
+        count=int(target["n"]),
+        offset=int(target["offset_obs"]) * 4,
+    ).astype(float)
+
+    # Fail closed against the official FRED identity anchors:
+    # 1986-06=0.420, 1986-07=0.340, 1986-08=0.426.
+    anchors = np.array([0.420, 0.340, 0.426], dtype=float)
+    if not np.allclose(vals[:3], anchors, rtol=0.0, atol=5e-7):
+        raise RuntimeError(
+            f"gretl MGASNYH binary identity check failed: first3={vals[:3].tolist()}"
+        )
+    if not np.isfinite(vals).all() or (vals <= 0).any() or (vals > 20).any():
+        raise RuntimeError("gretl MGASNYH contains implausible or missing values")
+
+    periods = pd.period_range("1986-06", "2026-03", freq="M")
+    if len(periods) != len(vals):
+        raise RuntimeError("gretl MGASNYH period/value length mismatch")
+    df = pd.DataFrame({
+        "period": periods,
+        "gasoline": vals,
     })
-    out["period"] = out["date"].dt.to_period("M")
-    if out["period"].duplicated().any():
-        raise RuntimeError(f"{series} fredgraph returned duplicate monthly periods")
-    return out.sort_values("period").reset_index(drop=True)
+    df["date"] = df["period"].dt.to_timestamp("M")
+    meta = {
+        "series_id": "MGASNYH",
+        "series_name": "Conventional Gasoline Prices: New York Harbor, Regular",
+        "source_provider": "U.S. Energy Information Administration via FRED",
+        "mirror_provider": "gretl-project/gretl FRED database",
+        "mirror_commit": GRETL_COMMIT,
+        "idx_url": GRETL_IDX_URL,
+        "dat_url": GRETL_DAT_URL,
+        "idx_sha256": sha256_bytes(raw_idx),
+        "dat_sha256": sha256_bytes(raw_dat),
+        "binary_format": "gretl native database; little-endian float32 packed by variable",
+        "offset_observations": int(target["offset_obs"]),
+        "finite_rows": int(len(df)),
+        "first_period": str(df["period"].min()),
+        "last_period": str(df["period"].max()),
+        "official_fred_identity_anchors": {
+            "1986-06": 0.420,
+            "1986-07": 0.340,
+            "1986-08": 0.426,
+        },
+    }
+    return df, meta
 
 def load_structural_sources() -> tuple[pd.DataFrame, dict]:
     wb_url, wb_landing = i141.locate_world_bank_monthly_url()
@@ -243,8 +342,7 @@ def main() -> None:
 
     dbiq, dbiq_meta, dbiq_raw = load_dbiq()
 
-    raw_gas = fetch_bytes(MGASNYH_CSV_URL)
-    gas = parse_fredgraph_csv(raw_gas, "MGASNYH").rename(columns={"MGASNYH": "gasoline"})
+    gas, gas_meta = load_mgasnyh_gretl()
     gas = gas.loc[gas["period"] <= SOURCE_END].copy()
     finite_gas = gas.loc[gas["gasoline"].notna()]
     if finite_gas["period"].min() != pd.Period("1986-06", "M"):
@@ -282,13 +380,7 @@ def main() -> None:
         "exact_v66_signal_loaded": False,
         "outcome_data_loaded": False,
         "dbiq": dbiq_meta,
-        "mgasnyh": {
-            "url": MGASNYH_CSV_URL,
-            "raw_sha256": sha256_bytes(raw_gas),
-            "finite_rows": int(len(finite_gas)),
-            "first_period": str(finite_gas["period"].min()),
-            "last_period": str(finite_gas["period"].max()),
-        },
+        "mgasnyh": gas_meta,
         "structural_sources": structural_meta,
         "v2_panel": {
             "csv_sha256": sha256_file(panel_path),
