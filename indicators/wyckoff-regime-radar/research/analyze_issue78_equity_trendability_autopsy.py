@@ -7,6 +7,7 @@ No policy thresholds are tuned or selected here.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -26,6 +27,9 @@ from smoke_issue119_frozen_classifier import (
 
 EXPECTED_UNIVERSE_SHA = (
     "9d4a14d163ed308238737647b94e722c62fd023b641e1015e6d97679f9ba3b44"
+)
+EXPECTED_FIGI_SET_SHA = (
+    "017e9360402afa002dc0970088649e7c411c4f02333dec550f2432be3c0dd701"
 )
 
 ER_HORIZONS = (63, 126, 252)
@@ -102,6 +106,12 @@ def rolling_er(src, length):
     displacement = (s - s.shift(length)).abs()
     out = displacement / path.replace(0.0, np.nan)
     return out.to_numpy(float)
+
+
+def figi_set_sha(universe: pd.DataFrame) -> str:
+    figis = sorted(universe["figi"].astype(str).tolist())
+    payload = "\n".join(figis) + "\n"
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def bucket_score(x):
@@ -445,14 +455,27 @@ def main():
     )
     if not audit["pass"]:
         raise SystemExit("OOS3 snapshot audit failed")
-    if audit["universe_sha256_actual"] != EXPECTED_UNIVERSE_SHA:
-        raise AssertionError("OOS3 universe SHA drift")
+    universe = pd.read_csv(args.universe)
+    if len(universe) != 300 or universe["figi"].nunique() != 300:
+        raise AssertionError("OOS3 universe membership drift")
+    cohort_sha = figi_set_sha(universe)
+    if cohort_sha != EXPECTED_FIGI_SET_SHA:
+        raise AssertionError(
+            f"OOS3 FIGI-set drift: {cohort_sha}"
+        )
+
+    # The original frozen manifest byte SHA is preferred when available.
+    # A recovery manifest reconstructed from the already-completed OOS3
+    # coverage.csv is accepted only when the exact 300-FIGI set matches the
+    # pre-recorded cohort identity above.
+    original_manifest_bytes = (
+        audit["universe_sha256_actual"] == EXPECTED_UNIVERSE_SHA
+    )
 
     classifier, blob = load_classifier(args.classifier)
     if blob != FROZEN_CLASSIFIER_BLOB:
         raise AssertionError("frozen classifier blob drift")
 
-    universe = pd.read_csv(args.universe)
     frames, episodes, coverage, metadata = base.build_research_set(
         universe, args.raw_dir, classifier
     )
@@ -509,6 +532,8 @@ def main():
             "role": "post-outcome mechanism diagnostic; not policy OOS",
             "classifier_blob": blob,
             "universe_sha256": audit["universe_sha256_actual"],
+            "original_frozen_universe_bytes": original_manifest_bytes,
+            "figi_set_sha256": cohort_sha,
             "stocks_in_universe": int(len(universe)),
             "completed_eligible_episodes": int(len(episodes)),
             "context_eligible_episodes": context_eps,
