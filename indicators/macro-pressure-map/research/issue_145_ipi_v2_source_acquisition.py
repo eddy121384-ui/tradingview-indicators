@@ -5,15 +5,14 @@ Hard firewall:
 - no exact V6.6 signal is loaded;
 - no asset-return outcome is loaded.
 
-Primary source families:
-- Deutsche Bank DBIQ official rendered index page for DBLCDBCE monthly returns;
+Frozen source families:
+- Deutsche Bank DBIQ public REST data for DBLCDBCE;
 - FRED/EIA MGASNYH monthly gasoline;
 - frozen Issue #141 Cleveland expected inflation and World Bank WTI.
 """
 from __future__ import annotations
 
 import argparse
-import io
 import hashlib
 import json
 import re
@@ -23,21 +22,20 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import requests
-from playwright.sync_api import sync_playwright
 
 import issue_141_source_acquisition as i141
 
-DBIQ_URL = "https://index.db.com/dbiq-web/indices/95400"
+DBIQ_BASE = "https://index.db.com/dbiq-web/rest/webdata/95400"
+DBIQ_META_URL = DBIQ_BASE
+DBIQ_GRAPH_URL = DBIQ_BASE + "/graphData"
+DBIQ_MONTHLY_URL = DBIQ_BASE + "/monthlyReturns"
+DBIQ_RETURN_URL = DBIQ_BASE + "/returnData"
 MGASNYH_TEXT_URL = "https://fred.stlouisfed.org/data/MGASNYH.txt"
+SOURCE_END = pd.Period("2026-08", "M")
 
 EXPECTED_I141_SHA = {
     "world_bank_monthly": "9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225",
     "cleveland_inflation_expectations": "20701ccf394d280fe1db38fa9def5628f2385dd0aef148ff989e33ff15caba95",
-}
-
-MONTHS = {
-    "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
-    "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12,
 }
 
 
@@ -67,315 +65,122 @@ def fetch_bytes(url: str, attempts: int = 4) -> bytes:
     raise RuntimeError(f"failed to fetch {url}: {last}")
 
 
-def parse_pct(text: str) -> float | None:
-    s = text.strip().replace("%", "").replace(",", "")
-    if not s or s in {"-", "—", "–", "N/A", "n/a"}:
-        return None
-    try:
-        return float(s)
-    except ValueError:
-        return None
+def load_dbiq() -> tuple[pd.DataFrame, dict, dict[str, bytes]]:
+    raw_meta = fetch_bytes(DBIQ_META_URL)
+    raw_graph = fetch_bytes(DBIQ_GRAPH_URL)
+    raw_monthly = fetch_bytes(DBIQ_MONTHLY_URL)
+    raw_return = fetch_bytes(DBIQ_RETURN_URL)
 
+    # Metadata response shape can evolve; fail closed on identity strings.
+    meta_text = raw_meta.decode("utf-8", errors="replace")
+    if "DBIQ Optimum Yield Diversified Commodity Index Excess Return" not in meta_text:
+        raise RuntimeError("DBIQ metadata identity mismatch")
+    if "DBLCDBCE" not in meta_text:
+        raise RuntimeError("DBIQ metadata ticker mismatch")
+    if "1988" not in meta_text:
+        raise RuntimeError("DBIQ metadata no longer exposes 1988 historical inception")
 
-def _parse_dbiq_export(raw: bytes, filename: str) -> tuple[pd.DataFrame, dict]:
-    attempts: list[tuple[str, pd.DataFrame]] = []
-    lower = filename.lower()
-    if lower.endswith((".xlsx", ".xls")) or raw[:2] == b"PK":
-        try:
-            attempts.append(("excel", pd.read_excel(io.BytesIO(raw))))
-        except Exception:
-            pass
-    for sep in (",", ";", "\t"):
-        try:
-            frame = pd.read_csv(io.BytesIO(raw), sep=sep)
-            if len(frame.columns) >= 2:
-                attempts.append((f"csv:{sep!r}", frame))
-        except Exception:
-            pass
+    graph = json.loads(raw_graph)
+    if not isinstance(graph, list) or not graph:
+        raise RuntimeError("DBIQ graphData is not a non-empty list")
+    daily = pd.DataFrame(graph)
+    if not {"priceDate", "level"}.issubset(daily.columns):
+        raise RuntimeError(f"DBIQ graphData columns changed: {daily.columns.tolist()}")
+    daily["date"] = pd.to_datetime(daily["priceDate"], errors="raise")
+    daily["level"] = pd.to_numeric(daily["level"], errors="coerce")
+    daily = daily[["date", "level"]].dropna().sort_values("date")
+    daily = daily.loc[daily["level"] > 0].drop_duplicates("date", keep="last").reset_index(drop=True)
 
-    diagnostics = []
-    for parser_name, frame in attempts:
-        diagnostics.append({"parser": parser_name, "columns": [str(x) for x in frame.columns], "rows": len(frame)})
-        if frame.empty:
-            continue
+    if daily.empty:
+        raise RuntimeError("DBIQ graphData has no usable levels")
+    if daily.iloc[0]["date"].date().isoformat() != "1988-12-02":
+        raise RuntimeError(f"DBIQ first date drift: {daily.iloc[0]['date']}")
+    if abs(float(daily.iloc[0]["level"]) - 100.0) > 1e-12:
+        raise RuntimeError(f"DBIQ first level drift: {daily.iloc[0]['level']}")
+    if daily["date"].max() < pd.Timestamp("2026-08-31"):
+        raise RuntimeError(f"DBIQ graphData ends too early: {daily['date'].max()}")
 
-        date_candidates = []
-        for col in frame.columns:
-            parsed = pd.to_datetime(frame[col], errors="coerce")
-            score = float(parsed.notna().mean())
-            if score >= 0.80:
-                date_candidates.append((score, col, parsed))
-        if not date_candidates:
-            continue
-        _, date_col, parsed_dates = max(date_candidates, key=lambda x: x[0])
-
-        level_candidates = []
-        for col in frame.columns:
-            if col == date_col:
-                continue
-            vals = pd.to_numeric(frame[col], errors="coerce")
-            finite = vals.notna()
-            if float(finite.mean()) < 0.80:
-                continue
-            name = str(col).lower()
-            # Prefer explicit level / ticker columns; penalize volatility / return.
-            name_score = 0
-            if "level" in name or "dblcdbce" in name or "price" in name:
-                name_score += 3
-            if "vol" in name or "return" in name or "%" in name:
-                name_score -= 3
-            level_candidates.append((name_score, int(finite.sum()), col, vals))
-        if not level_candidates:
-            continue
-        level_candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
-        score, _, level_col, levels = level_candidates[0]
-        if score < 0:
-            continue
-
-        out = pd.DataFrame({"date": parsed_dates, "level": levels}).dropna()
-        out = out.loc[out["level"] > 0].sort_values("date").drop_duplicates("date", keep="last")
-        if len(out) < 3000:
-            continue
-        if out["date"].min() > pd.Timestamp("1989-01-31"):
-            continue
-        if out["date"].max() < pd.Timestamp("2026-08-01"):
-            continue
-        return out.reset_index(drop=True), {
-            "parser": parser_name,
-            "date_column": str(date_col),
-            "level_column": str(level_col),
-            "raw_rows": int(len(frame)),
-            "finite_level_rows": int(len(out)),
-        }
-
-    raise RuntimeError(f"could not identify DBIQ export date/level columns: {diagnostics}")
-
-
-def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            viewport={"width": 1600, "height": 1200},
-            accept_downloads=True,
-        )
-        page = context.new_page()
-        load_urls: list[str] = []
-        def _observe_load_response(resp):
-            u = resp.url
-            if "index.db.com" in u and u not in load_urls:
-                load_urls.append(u)
-        page.on("response", _observe_load_response)
-        page.goto(DBIQ_URL, wait_until="domcontentloaded", timeout=120_000)
-        try:
-            page.wait_for_load_state("networkidle", timeout=120_000)
-        except Exception:
-            pass
-        page.wait_for_timeout(5_000)
-
-        body_text = page.locator("body").inner_text(timeout=30_000)
-        title = page.title()
-
-        if "DBIQ Optimum Yield Diversified Commodity Index Excess Return" not in body_text:
-            raise RuntimeError("DBIQ page did not render expected index name")
-        if "Historical Inception Date" not in body_text or "02 December 1988" not in body_text:
-            raise RuntimeError("DBIQ page did not render frozen historical inception metadata")
-        if "DBLCDBCE" not in body_text:
-            raise RuntimeError("DBIQ page did not render expected Bloomberg ticker")
-        if "Historical Price and Volatility" not in body_text:
-            raise RuntimeError("DBIQ page missing Historical Price and Volatility section")
-
-        # The public page itself loads these unauthenticated REST resources.
-        # Inspect them directly instead of invoking the T&C-gated Export action.
-        api_diagnostics = {}
-        for name in ("graphData", "returnData", "monthlyReturns"):
-            url = f"https://index.db.com/dbiq-web/rest/webdata/95400/{name}"
-            resp = context.request.get(url, timeout=60_000)
-            txt = resp.text()
-            api_diagnostics[name] = {
-                "status": resp.status,
-                "content_type": resp.headers.get("content-type"),
-                "bytes": len(txt.encode("utf-8")),
-                "head": txt[:12000],
-            }
-        print("DBIQ_API_DIAGNOSTICS=" + json.dumps(api_diagnostics, ensure_ascii=False), flush=True)
-        raise RuntimeError("DBIQ API shape diagnostic complete")
-
-        all_time = page.get_by_text("All Time", exact=True)
-        if all_time.count() == 0:
-            raise RuntimeError("DBIQ page missing All Time control")
-        # DBIQ currently renders "All Time" as the default chart range. In
-        # headless Chromium its label can be covered by the chart canvas, so
-        # treat an unclickable label as already-selected rather than changing
-        # the frozen source definition.
-        try:
-            print("DBIQ_ALL_TIME_HTML=" + all_time.last.evaluate("(e) => e.parentElement.outerHTML"), flush=True)
-        except Exception:
-            pass
-        try:
-            all_time.last.click(timeout=5_000, force=True)
-            page.wait_for_timeout(2_000)
-        except Exception:
-            pass
-        print(
-            "DBIQ_LOAD_URLS=" + json.dumps(
-                [u for u in load_urls if any(k in u.lower() for k in ("rest", "index", "price", "histor", "chart", "level", "vol"))],
-                ensure_ascii=False,
-            ),
-            flush=True,
-        )
-
-        export_buttons = page.get_by_role("button", name="Export", exact=True)
-        if export_buttons.count() == 0:
-            export_buttons = page.get_by_text("Export", exact=True)
-        if export_buttons.count() == 0:
-            raise RuntimeError("DBIQ page missing Export control")
-
-        observed_urls: list[str] = []
-        def _observe_response(resp):
-            u = resp.url
-            low = u.lower()
-            if any(k in low for k in ("export", "histor", "index", "price", "chart", "data")):
-                if u not in observed_urls:
-                    observed_urls.append(u)
-        page.on("response", _observe_response)
-
-        diagnostics = []
-        download = None
-        for idx in range(export_buttons.count()):
-            el = export_buttons.nth(idx)
-            try:
-                outer = el.evaluate("(e) => e.outerHTML")
-            except Exception:
-                outer = "<outerHTML unavailable>"
-            diagnostics.append({"index": idx, "outerHTML": outer})
-            try:
-                with page.expect_download(timeout=12_000) as download_info:
-                    el.click(timeout=10_000, force=True)
-                download = download_info.value
-                diagnostics[-1]["download"] = True
-                break
-            except Exception as exc:
-                diagnostics[-1]["download"] = False
-                diagnostics[-1]["error"] = str(exc)
-                page.wait_for_timeout(1_000)
-                links = page.locator("a")
-                candidates = []
-                for li in range(links.count()):
-                    try:
-                        href = links.nth(li).get_attribute("href")
-                        txt = links.nth(li).inner_text().strip()
-                    except Exception:
-                        continue
-                    h = (href or "").lower()
-                    t = txt.lower()
-                    if any(k in h for k in (".csv", ".xlsx", ".xls", "export", "download")) or any(
-                        k in t for k in ("csv", "xlsx", "xls", "download")
-                    ):
-                        candidates.append({"text": txt, "href": href})
-                diagnostics[-1]["candidate_links"] = candidates[:20]
-                # Capture any React/Bootstrap export dialog or controls revealed
-                # by the first click. This is source-plumbing diagnostics only.
-                try:
-                    dialogs = page.locator('[role="dialog"], .modal, .modal-dialog')
-                    visible_dialogs = []
-                    for di in range(dialogs.count()):
-                        d = dialogs.nth(di)
-                        if d.is_visible():
-                            visible_dialogs.append({
-                                "text": d.inner_text()[:4000],
-                                "html": d.evaluate("(e) => e.outerHTML")[:8000],
-                            })
-                    diagnostics[-1]["visible_dialogs"] = visible_dialogs
-                except Exception as dexc:
-                    diagnostics[-1]["dialog_error"] = str(dexc)
-                try:
-                    visible_controls = []
-                    controls = page.locator("button,input,select,a")
-                    for ci in range(controls.count()):
-                        ctl = controls.nth(ci)
-                        if not ctl.is_visible():
-                            continue
-                        try:
-                            visible_controls.append({
-                                "tag": ctl.evaluate("(e) => e.tagName"),
-                                "text": ctl.inner_text().strip()[:200],
-                                "type": ctl.get_attribute("type"),
-                                "name": ctl.get_attribute("name"),
-                                "value": ctl.get_attribute("value"),
-                                "href": ctl.get_attribute("href"),
-                            })
-                        except Exception:
-                            continue
-                    diagnostics[-1]["visible_controls"] = visible_controls[-80:]
-                except Exception as cexc:
-                    diagnostics[-1]["controls_error"] = str(cexc)
-                try:
-                    diagnostics[-1]["body_tail"] = page.locator("body").inner_text()[-6000:]
-                except Exception:
-                    pass
-                try:
-                    page.keyboard.press("Escape")
-                except Exception:
-                    pass
-
-        print("DBIQ_EXPORT_DIAGNOSTICS=" + json.dumps(diagnostics, ensure_ascii=False), flush=True)
-        print("DBIQ_OBSERVED_URLS=" + json.dumps(observed_urls[-80:], ensure_ascii=False), flush=True)
-
-        if download is None:
-            raise RuntimeError(
-                "DBIQ Export controls did not produce browser download; see diagnostics above"
-            )
-
-        suggested = download.suggested_filename or "dbiq-export"
-        temp_path = download.path()
-        if temp_path is None:
-            raise RuntimeError("DBIQ export download has no local path")
-        export_raw = Path(temp_path).read_bytes()
-        context.close()
-        browser.close()
-
-    daily, parse_meta = _parse_dbiq_export(export_raw, suggested)
     daily["period"] = daily["date"].dt.to_period("M")
-    month_end = daily.groupby("period", as_index=False, sort=True).tail(1).copy()
-    month_end = month_end.sort_values("period").reset_index(drop=True)
-    month_end["return_pct"] = month_end["level"].pct_change() * 100.0
-    month_end["dbiq_wealth"] = 100.0 * month_end["level"] / float(month_end["level"].iloc[0])
-    month_end["date"] = month_end["period"].dt.to_timestamp("M")
+    monthly = daily.groupby("period", as_index=False, sort=True).tail(1).copy()
+    monthly = monthly.sort_values("period").reset_index(drop=True)
+    monthly = monthly.loc[monthly["period"] <= SOURCE_END].copy()
+    monthly["dbiq_return_pct"] = monthly["level"].pct_change() * 100.0
+    monthly = monthly.rename(columns={"level": "dbiq_level"})
+    monthly["date"] = monthly["period"].dt.to_timestamp("M")
 
-    finite_returns = month_end["return_pct"].notna()
-    if int(finite_returns.sum()) < 440:
-        raise RuntimeError(f"DBIQ all-time export unexpectedly short: {int(finite_returns.sum())} monthly returns")
-    if month_end["period"].min() > pd.Period("1988-12", "M"):
-        raise RuntimeError(f"DBIQ export starts too late: {month_end['period'].min()}")
-    if month_end["period"].max() < pd.Period("2026-08", "M"):
-        raise RuntimeError(f"DBIQ export ends too early: {month_end['period'].max()}")
+    if monthly["period"].min() != pd.Period("1988-12", "M"):
+        raise RuntimeError(f"DBIQ monthly first period drift: {monthly['period'].min()}")
+    if monthly["period"].max() != SOURCE_END:
+        raise RuntimeError(f"DBIQ monthly last period drift: {monthly['period'].max()}")
 
-    canonical_rows = [
-        {"period": str(p), "level": float(v)}
-        for p, v in zip(month_end["period"], month_end["level"])
-    ]
-    meta = {
-        "url": DBIQ_URL,
-        "page_title": title,
+    # Cross-check official monthlyReturns against month-end returns computed
+    # from the official graphData levels. monthlyReturns is rounded to 2 dp.
+    mr = json.loads(raw_monthly)
+    current_year = int(mr.get("currentYear"))
+    matrix = mr.get("monthlyReturns")
+    if not isinstance(matrix, list) or not matrix:
+        raise RuntimeError("DBIQ monthlyReturns payload changed")
+    start_year = current_year - len(matrix) + 1
+
+    api_rows = []
+    for yi, row in enumerate(matrix):
+        if not isinstance(row, list):
+            continue
+        year = start_year + yi
+        for mi, value in enumerate(row[:12], start=1):
+            if value is None:
+                continue
+            api_rows.append({
+                "period": pd.Period(year=year, month=mi, freq="M"),
+                "api_return_pct": float(value),
+            })
+    api = pd.DataFrame(api_rows)
+    chk = monthly[["period", "dbiq_return_pct"]].merge(api, on="period", how="inner")
+    chk = chk.loc[
+        chk["dbiq_return_pct"].notna()
+        & chk["api_return_pct"].notna()
+        & chk["period"].le(SOURCE_END)
+    ].copy()
+    if len(chk) < 430:
+        raise RuntimeError(f"DBIQ monthly return cross-check too short: {len(chk)}")
+    chk["abs_diff"] = (chk["dbiq_return_pct"] - chk["api_return_pct"]).abs()
+    max_diff = float(chk["abs_diff"].max())
+    if max_diff > 0.011:
+        bad = chk.nlargest(5, "abs_diff").to_dict("records")
+        raise RuntimeError(f"DBIQ graph/monthly-return mismatch max={max_diff}: {bad}")
+
+    return monthly.reset_index(drop=True), {
+        "index_id": 95400,
         "index_name": "DBIQ Optimum Yield Diversified Commodity Index Excess Return",
         "ticker": "DBLCDBCE",
-        "historical_inception": "1988-12-02",
         "benchmark_family": "Commodity Futures",
-        "source_mode": "official_all_time_export",
-        "export_suggested_filename": suggested,
-        "export_raw_sha256": sha256_bytes(export_raw),
-        "export_parse": parse_meta,
-        "daily_rows": int(len(daily)),
-        "monthly_level_rows": int(len(month_end)),
-        "monthly_return_rows": int(finite_returns.sum()),
-        "first_period": str(month_end["period"].min()),
-        "last_period": str(month_end["period"].max()),
-        "canonical_monthly_levels_sha256": sha256_bytes(
-            json.dumps(canonical_rows, separators=(",", ":"), ensure_ascii=False).encode()
-        ),
-        "rendered_body_sha256": sha256_bytes(body_text.encode("utf-8")),
+        "historical_inception": "1988-12-02",
+        "source_mode": "public_official_rest_graphData",
+        "meta_url": DBIQ_META_URL,
+        "graph_url": DBIQ_GRAPH_URL,
+        "monthly_returns_url": DBIQ_MONTHLY_URL,
+        "return_data_url": DBIQ_RETURN_URL,
+        "raw_sha256": {
+            "metadata": sha256_bytes(raw_meta),
+            "graphData": sha256_bytes(raw_graph),
+            "monthlyReturns": sha256_bytes(raw_monthly),
+            "returnData": sha256_bytes(raw_return),
+        },
+        "daily_level_rows": int(len(daily)),
+        "daily_first_date": daily["date"].min().date().isoformat(),
+        "daily_last_date": daily["date"].max().date().isoformat(),
+        "monthly_level_rows_through_2026_08": int(len(monthly)),
+        "monthly_first_period": str(monthly["period"].min()),
+        "monthly_last_period": str(monthly["period"].max()),
+        "monthly_return_crosscheck_rows": int(len(chk)),
+        "monthly_return_crosscheck_max_abs_diff_pp": max_diff,
+    }, {
+        "metadata": raw_meta,
+        "graphData": raw_graph,
+        "monthlyReturns": raw_monthly,
+        "returnData": raw_return,
     }
-    return month_end, meta, body_text, export_raw, suggested
+
 
 def parse_fred_text(raw: bytes, series: str) -> pd.DataFrame:
     text = raw.decode("utf-8", errors="replace")
@@ -386,13 +191,7 @@ def parse_fred_text(raw: bytes, series: str) -> pd.DataFrame:
         if not m:
             continue
         date_s, value_s = m.groups()
-        if value_s == ".":
-            value = np.nan
-        else:
-            try:
-                value = float(value_s)
-            except ValueError:
-                continue
+        value = np.nan if value_s == "." else pd.to_numeric(value_s, errors="coerce")
         rows.append((date_s, value))
     if not rows:
         raise RuntimeError(f"{series} static text contained no observations")
@@ -431,7 +230,7 @@ def load_structural_sources() -> tuple[pd.DataFrame, dict]:
         validate="one_to_one",
     ).sort_values("period").reset_index(drop=True)
 
-    meta = {
+    return panel, {
         "world_bank_url": wb_url,
         "world_bank_monthly_sha256": observed["world_bank_monthly"],
         "world_bank_landing_sha256": sha256_bytes(wb_landing),
@@ -439,7 +238,6 @@ def load_structural_sources() -> tuple[pd.DataFrame, dict]:
         "cleveland_xlsx_sha256": observed["cleveland_inflation_expectations"],
         "cleveland_landing_sha256": sha256_bytes(cl_landing),
     }
-    return panel, meta
 
 
 def main() -> None:
@@ -449,44 +247,39 @@ def main() -> None:
     out = args.output_dir
     out.mkdir(parents=True, exist_ok=True)
 
-    dbiq, dbiq_meta, dbiq_body, dbiq_export_raw, dbiq_export_name = extract_dbiq_monthly_returns()
+    dbiq, dbiq_meta, dbiq_raw = load_dbiq()
 
     raw_gas = fetch_bytes(MGASNYH_TEXT_URL)
     gas = parse_fred_text(raw_gas, "gasoline")
-    if gas["period"].min() > pd.Period("1986-06", "M"):
-        raise RuntimeError(f"MGASNYH starts too late: {gas['period'].min()}")
-    if gas["period"].max() < pd.Period("2026-08", "M"):
-        raise RuntimeError(f"MGASNYH ends too early: {gas['period'].max()}")
+    gas = gas.loc[gas["period"] <= SOURCE_END].copy()
+    finite_gas = gas.loc[gas["gasoline"].notna()]
+    if finite_gas["period"].min() != pd.Period("1986-06", "M"):
+        raise RuntimeError(f"MGASNYH first finite period drift: {finite_gas['period'].min()}")
+    if finite_gas["period"].max() != SOURCE_END:
+        raise RuntimeError(f"MGASNYH last finite period drift: {finite_gas['period'].max()}")
 
     structural, structural_meta = load_structural_sources()
 
-    panel = dbiq[["period", "dbiq_wealth", "return_pct"]].rename(
-        columns={"return_pct": "dbiq_return_pct"}
-    )
-    panel = panel.merge(
-        gas[["period", "gasoline"]],
-        on="period", how="left", validate="one_to_one"
-    )
-    panel = panel.merge(
-        structural,
-        on="period", how="left", validate="one_to_one"
-    ).sort_values("period").reset_index(drop=True)
+    panel = dbiq[["period", "dbiq_level", "dbiq_return_pct"]].copy()
+    panel = panel.merge(gas[["period", "gasoline"]], on="period", how="left", validate="one_to_one")
+    panel = panel.merge(structural, on="period", how="left", validate="one_to_one")
+    panel = panel.sort_values("period").reset_index(drop=True)
     panel["date"] = panel["period"].dt.to_timestamp("M")
 
+    source_cols = ["dbiq_level", "gasoline", "Crude oil, WTI", "expected_inflation_10y"]
+    complete = panel[source_cols].notna().all(axis=1)
+    complete_periods = panel.loc[complete, "period"]
+
     panel_path = out / "issue-145-v2-source-panel.csv"
-    dbiq_path = out / "issue-145-dbiq-monthly-returns.csv"
+    dbiq_path = out / "issue-145-dbiq-monthly-levels.csv"
     gas_path = out / "issue-145-mgasnyh.csv"
+
     panel.drop(columns=["period"]).to_csv(panel_path, index=False, date_format="%Y-%m-%d", float_format="%.12g")
     dbiq.drop(columns=["period"]).to_csv(dbiq_path, index=False, date_format="%Y-%m-%d", float_format="%.12g")
     gas.drop(columns=["period"]).to_csv(gas_path, index=False, date_format="%Y-%m-%d", float_format="%.12g")
-    (out / "issue-145-dbiq-rendered-body.txt").write_text(dbiq_body, encoding="utf-8")
-    export_suffix = Path(dbiq_export_name).suffix or ".bin"
-    (out / f"issue-145-dbiq-official-export{export_suffix}").write_bytes(dbiq_export_raw)
 
-    complete = panel[
-        ["dbiq_wealth", "gasoline", "Crude oil, WTI", "expected_inflation_10y"]
-    ].notna().all(axis=1)
-    complete_periods = panel.loc[complete, "period"]
+    for name, raw in dbiq_raw.items():
+        (out / f"issue-145-dbiq-{name}.json").write_bytes(raw)
 
     manifest = {
         "schema_version": 1,
@@ -498,9 +291,9 @@ def main() -> None:
         "mgasnyh": {
             "url": MGASNYH_TEXT_URL,
             "raw_sha256": sha256_bytes(raw_gas),
-            "rows": int(gas["gasoline"].notna().sum()),
-            "first_period": str(gas.loc[gas["gasoline"].notna(), "period"].min()),
-            "last_period": str(gas.loc[gas["gasoline"].notna(), "period"].max()),
+            "finite_rows": int(len(finite_gas)),
+            "first_period": str(finite_gas["period"].min()),
+            "last_period": str(finite_gas["period"].max()),
         },
         "structural_sources": structural_meta,
         "v2_panel": {
