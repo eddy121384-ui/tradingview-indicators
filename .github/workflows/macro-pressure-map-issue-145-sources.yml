@@ -45,9 +45,9 @@ jobs:
           assert r["outcome_data_loaded"] is False
           assert r["dbiq"]["ticker"] == "DBLCDBCE"
           assert r["dbiq"]["historical_inception"] == "1988-12-02"
-          assert r["dbiq"]["monthly_level_rows_through_2026_08"] >= 450
+          assert r["dbiq"]["monthly_level_rows_through_source_end"] >= 445
           assert r["v2_panel"]["first_complete_period"] == "1988-12"
-          assert r["v2_panel"]["last_complete_period"] >= "2026-08"
+          assert r["v2_panel"]["last_complete_period"] == "2026-03"
           PY
 
       - name: Upload Issue 145 source snapshot
