@@ -1,0 +1,140 @@
+name: Macro Pressure Map Issue 143 IPI Attribution
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue-143-ipi-attribution-prereg.md"
+      - "indicators/macro-pressure-map/research/issue_143_ipi_source_acquisition.py"
+      - "indicators/macro-pressure-map/research/issue_143_ipi_attribution.py"
+      - "indicators/macro-pressure-map/research/test_issue_143_ipi_attribution.py"
+      - ".github/workflows/macro-pressure-map-issue-143-attribution.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  ipi-attribution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Issue 143 branch
+        uses: actions/checkout@v4
+        with:
+          path: current
+
+      - name: Checkout frozen exact V6.6 monthly snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: 752755d423c1a13415d8ad3647c3def74adaa2d8
+          path: issue133
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install numpy pandas scipy scikit-learn requests beautifulsoup4 openpyxl yfinance pytest
+
+      - name: Validate preregistration ordering
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/issue-143-ipi-attribution-prereg.md")
+          s=p.read_text(encoding="utf-8")
+          required=[
+              "FROZEN BEFORE ANY ISSUE #143 EXACT-IPI ATTRIBUTION METRIC",
+              "2ecb4d6693031020cc550bc7ed4de071282dc8ed503ddb131f170ecdaaaa2eba",
+              "D0 — public exact-input daily replica",
+              "M0 — exact-input monthly-score baseline",
+              "M-BE — expected-inflation swap only",
+              "M-COM — broad-commodity swap only",
+              "M-OIL — oil-provider swap only",
+              "M-GAS — gasoline semantic swap only",
+              "M-ALL — full Issue #141 IPI source family",
+              "trigger F1 within +/-1 month >=0.60",
+          ]
+          missing=[x for x in required if x not in s]
+          assert not missing, missing
+          PY
+
+      - name: Static and unit tests
+        run: |
+          python -m py_compile current/indicators/macro-pressure-map/research/issue_143_ipi_source_acquisition.py
+          python -m py_compile current/indicators/macro-pressure-map/research/issue_143_ipi_attribution.py
+          cd current/indicators/macro-pressure-map/research
+          pytest -q test_issue_143_ipi_attribution.py
+
+      - name: Rebuild frozen signal-input snapshot
+        run: |
+          rm -rf current/indicators/macro-pressure-map/research/generated/issue-143-source
+          python current/indicators/macro-pressure-map/research/issue_143_ipi_source_acquisition.py \
+            --output-dir current/indicators/macro-pressure-map/research/generated/issue-143-source
+
+      - name: Validate source snapshot hashes
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path("current/indicators/macro-pressure-map/research/generated/issue-143-source")
+          d=root/"issue-143-public-exact-ipi-daily.csv"
+          s=root/"issue-143-structural-monthly.csv"
+          assert hashlib.sha256(d.read_bytes()).hexdigest() == "2ecb4d6693031020cc550bc7ed4de071282dc8ed503ddb131f170ecdaaaa2eba"
+          assert hashlib.sha256(s.read_bytes()).hexdigest() == "d5d2a60e6a343fad7ba0a7a126ce3f7911715c8792ca186a0f3bc65602ac9ead"
+          m=json.loads((root/"issue-143-source-manifest.json").read_text())
+          assert m["exact_v66_signal_loaded"] is False
+          assert m["outcome_data_loaded"] is False
+          assert m["t10yie_mirror_bridge"]["overlap_max_abs_diff"] == 0.0
+          PY
+
+      - name: Run frozen IPI attribution
+        run: |
+          rm -rf current/indicators/macro-pressure-map/research/generated/issue-143
+          python current/indicators/macro-pressure-map/research/issue_143_ipi_attribution.py \
+            --source-dir current/indicators/macro-pressure-map/research/generated/issue-143-source \
+            --issue133-root issue133/indicators/macro-pressure-map/research \
+            --output-dir current/indicators/macro-pressure-map/research/generated/issue-143
+
+      - name: Validate result firewall
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/generated/issue-143/issue-143-result.json")
+          r=json.loads(p.read_text())
+          assert r["issue"] == 143
+          assert r["outcome_data_loaded"] is False
+          assert r["historical_outcome_testing_authorized"] is False
+          assert r["production_authorized"] is False
+          assert r["verdict"] in {"ipi_attribution_valid","ipi_attribution_anchor_failed"}
+          print({
+              "verdict": r["verdict"],
+              "primary_cause": r["primary_cause"],
+              "anchor_gates": r["anchor_gates"],
+              "holdout": {
+                  k: {
+                      "corr": v["ipi_correlation"],
+                      "slope": v["ipi_slope_agreement"],
+                      "state": v["ipi_state_agreement"],
+                      "regime": v["regime_agreement"],
+                      "r7_precision": v["r7_precision"],
+                      "r7_recall": v["r7_recall"],
+                      "trigger_f1": v["trigger_f1"],
+                      "triggers": [v["exact_trigger_n"],v["variant_trigger_n"],v["matched_trigger_n"]],
+                  }
+                  for k,v in r["holdout"].items()
+              },
+              "damage_scores": {k:v["score"] for k,v in r["damage"].items()},
+              "interaction": r["interaction_residual"],
+          })
+          PY
+
+      - name: Upload Issue 143 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-143-ipi-attribution
+          path: |
+            current/indicators/macro-pressure-map/research/generated/issue-143
+            current/indicators/macro-pressure-map/research/generated/issue-143-source/issue-143-source-manifest.json
+          retention-days: 3
+          if-no-files-found: error
