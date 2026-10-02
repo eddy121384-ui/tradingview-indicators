@@ -47,3 +47,6 @@ def test_frozen_horizons_and_rank_length():
     assert m.EXPECTED_UNIVERSE_SHA == (
         "9d4a14d163ed308238737647b94e722c62fd023b641e1015e6d97679f9ba3b44"
     )
+    assert m.EXPECTED_FIGI_SET_SHA == (
+        "017e9360402afa002dc0970088649e7c411c4f02333dec550f2432be3c0dd701"
+    )
