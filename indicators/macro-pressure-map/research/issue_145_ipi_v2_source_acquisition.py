@@ -240,6 +240,46 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]
                     ):
                         candidates.append({"text": txt, "href": href})
                 diagnostics[-1]["candidate_links"] = candidates[:20]
+                # Capture any React/Bootstrap export dialog or controls revealed
+                # by the first click. This is source-plumbing diagnostics only.
+                try:
+                    dialogs = page.locator('[role="dialog"], .modal, .modal-dialog')
+                    visible_dialogs = []
+                    for di in range(dialogs.count()):
+                        d = dialogs.nth(di)
+                        if d.is_visible():
+                            visible_dialogs.append({
+                                "text": d.inner_text()[:4000],
+                                "html": d.evaluate("(e) => e.outerHTML")[:8000],
+                            })
+                    diagnostics[-1]["visible_dialogs"] = visible_dialogs
+                except Exception as dexc:
+                    diagnostics[-1]["dialog_error"] = str(dexc)
+                try:
+                    visible_controls = []
+                    controls = page.locator("button,input,select,a")
+                    for ci in range(controls.count()):
+                        ctl = controls.nth(ci)
+                        if not ctl.is_visible():
+                            continue
+                        try:
+                            visible_controls.append({
+                                "tag": ctl.evaluate("(e) => e.tagName"),
+                                "text": ctl.inner_text().strip()[:200],
+                                "type": ctl.get_attribute("type"),
+                                "name": ctl.get_attribute("name"),
+                                "value": ctl.get_attribute("value"),
+                                "href": ctl.get_attribute("href"),
+                            })
+                        except Exception:
+                            continue
+                    diagnostics[-1]["visible_controls"] = visible_controls[-80:]
+                except Exception as cexc:
+                    diagnostics[-1]["controls_error"] = str(cexc)
+                try:
+                    diagnostics[-1]["body_tail"] = page.locator("body").inner_text()[-6000:]
+                except Exception:
+                    pass
                 try:
                     page.keyboard.press("Escape")
                 except Exception:
