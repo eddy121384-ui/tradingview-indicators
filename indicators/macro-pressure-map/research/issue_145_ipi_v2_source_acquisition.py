@@ -30,7 +30,7 @@ DBIQ_META_URL = DBIQ_BASE
 DBIQ_GRAPH_URL = DBIQ_BASE + "/graphData"
 DBIQ_MONTHLY_URL = DBIQ_BASE + "/monthlyReturns"
 DBIQ_RETURN_URL = DBIQ_BASE + "/returnData"
-MGASNYH_TEXT_URL = "https://fred.stlouisfed.org/data/MGASNYH.txt"
+MGASNYH_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=MGASNYH"
 SOURCE_END = pd.Period("2026-08", "M")
 
 EXPECTED_I141_SHA = {
@@ -182,25 +182,19 @@ def load_dbiq() -> tuple[pd.DataFrame, dict, dict[str, bytes]]:
     }
 
 
-def parse_fred_text(raw: bytes, series: str) -> pd.DataFrame:
-    text = raw.decode("utf-8", errors="replace")
-    rows = []
-    for line in text.splitlines():
-        line = line.strip()
-        m = re.match(r"^(\d{4}-\d{2}-\d{2})\s+([^\s]+)$", line)
-        if not m:
-            continue
-        date_s, value_s = m.groups()
-        value = np.nan if value_s == "." else pd.to_numeric(value_s, errors="coerce")
-        rows.append((date_s, value))
-    if not rows:
-        raise RuntimeError(f"{series} static text contained no observations")
-    df = pd.DataFrame(rows, columns=["date", series])
-    df["date"] = pd.to_datetime(df["date"], errors="raise")
-    df["period"] = df["date"].dt.to_period("M")
-    df = df.sort_values("date").drop_duplicates("period", keep="last")
-    return df.reset_index(drop=True)
-
+def parse_fredgraph_csv(raw: bytes, series: str) -> pd.DataFrame:
+    df = pd.read_csv(pd.io.common.BytesIO(raw))
+    date_col = "observation_date" if "observation_date" in df.columns else "DATE"
+    if date_col not in df.columns or series not in df.columns:
+        raise RuntimeError(f"{series} fredgraph columns changed: {df.columns.tolist()}")
+    out = pd.DataFrame({
+        "date": pd.to_datetime(df[date_col], errors="raise"),
+        series: pd.to_numeric(df[series].replace(".", np.nan), errors="coerce"),
+    })
+    out["period"] = out["date"].dt.to_period("M")
+    if out["period"].duplicated().any():
+        raise RuntimeError(f"{series} fredgraph returned duplicate monthly periods")
+    return out.sort_values("period").reset_index(drop=True)
 
 def load_structural_sources() -> tuple[pd.DataFrame, dict]:
     wb_url, wb_landing = i141.locate_world_bank_monthly_url()
@@ -249,8 +243,8 @@ def main() -> None:
 
     dbiq, dbiq_meta, dbiq_raw = load_dbiq()
 
-    raw_gas = fetch_bytes(MGASNYH_TEXT_URL)
-    gas = parse_fred_text(raw_gas, "gasoline")
+    raw_gas = fetch_bytes(MGASNYH_CSV_URL)
+    gas = parse_fredgraph_csv(raw_gas, "MGASNYH").rename(columns={"MGASNYH": "gasoline"})
     gas = gas.loc[gas["period"] <= SOURCE_END].copy()
     finite_gas = gas.loc[gas["gasoline"].notna()]
     if finite_gas["period"].min() != pd.Period("1986-06", "M"):
@@ -289,7 +283,7 @@ def main() -> None:
         "outcome_data_loaded": False,
         "dbiq": dbiq_meta,
         "mgasnyh": {
-            "url": MGASNYH_TEXT_URL,
+            "url": MGASNYH_CSV_URL,
             "raw_sha256": sha256_bytes(raw_gas),
             "finite_rows": int(len(finite_gas)),
             "first_period": str(finite_gas["period"].min()),
