@@ -47,7 +47,7 @@ jobs:
           assert r["outcome_data_loaded"] is False
           assert r["dbiq"]["ticker"] == "DBLCDBCE"
           assert r["dbiq"]["historical_inception"] == "1988-12-02"
-          assert r["dbiq"]["monthly_rows"] >= 440
+          assert r["dbiq"]["monthly_return_rows"] >= 440
           assert r["v2_panel"]["first_complete_period"] <= "1989-01"
           assert r["v2_panel"]["last_complete_period"] >= "2026-08"
           PY
