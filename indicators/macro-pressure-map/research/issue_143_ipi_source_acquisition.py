@@ -27,6 +27,16 @@ UA = "Mozilla/5.0 Issue-143-MPM-research/1.0"
 START = "2006-01-01"
 END = "2026-09-01"
 
+T10_OLD_URL = (
+    "https://raw.githubusercontent.com/luizamfsantos/CPI-BER-Time-Series-Analysis/"
+    "675d17f2e8e5a3ab8ea38e04a75638c41262e250/data/raw/T10YIE.csv"
+)
+T10_NEW_URL = (
+    "https://raw.githubusercontent.com/HermanDp45/AlphaTransfer/"
+    "bb715c67233881f7697d16f23e6e87a6db4ae021/"
+    "research_v3/external_data/normalized/treasury_t10yie.csv"
+)
+
 EXPECTED_I141_SHA = {
     "world_bank_monthly": "9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225",
     "cleveland_inflation_expectations": "20701ccf394d280fe1db38fa9def5628f2385dd0aef148ff989e33ff15caba95",
@@ -77,34 +87,63 @@ def yahoo_close(symbol: str) -> pd.Series:
     return s.astype(float)
 
 
-def read_fred_static_text(series: str) -> tuple[pd.Series, bytes]:
-    url = f"https://fred.stlouisfed.org/data/{series}.txt"
-    raw = fetch(url)
-    text = raw.decode("utf-8", errors="replace")
-    rows = []
-    started = False
-    for line in text.splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        parts = line.split()
-        if len(parts) >= 2 and len(parts[0]) == 10 and parts[0][4] == "-" and parts[0][7] == "-":
-            started = True
-            rows.append((parts[0], parts[1]))
-        elif started:
-            # Ignore footer if one appears.
-            continue
-    if not rows:
-        raise RuntimeError(f"FRED static text for {series} had no date/value rows")
-    df = pd.DataFrame(rows, columns=["date", "value"])
-    idx = pd.to_datetime(df["date"], errors="raise")
-    vals = pd.to_numeric(df["value"].replace(".", np.nan), errors="coerce")
-    s = pd.Series(vals.to_numpy(float), index=idx, name=series)
-    s = s.loc[(s.index >= pd.Timestamp(START)) & (s.index < pd.Timestamp(END))]
-    if s.dropna().empty:
-        raise RuntimeError(f"FRED {series} empty in requested window")
-    return s, raw
+def read_t10yie_mirrors() -> tuple[pd.Series, dict]:
+    raw_old = fetch(T10_OLD_URL)
+    raw_new = fetch(T10_NEW_URL)
 
+    old = pd.read_csv(io.BytesIO(raw_old))
+    if not {"DATE", "T10YIE"}.issubset(old.columns):
+        raise RuntimeError(f"old T10YIE mirror columns changed: {old.columns.tolist()}")
+    old["date"] = pd.to_datetime(old["DATE"], errors="raise")
+    old["value"] = pd.to_numeric(old["T10YIE"], errors="coerce")
+    old = old[["date", "value"]].sort_values("date")
+
+    new = pd.read_csv(io.BytesIO(raw_new))
+    if not {"source_date", "treasury_t10yie"}.issubset(new.columns):
+        raise RuntimeError(f"new T10YIE mirror columns changed: {new.columns.tolist()}")
+    new["date"] = pd.to_datetime(new["source_date"], errors="raise")
+    new["value"] = pd.to_numeric(new["treasury_t10yie"], errors="coerce")
+    new = new[["date", "value"]].sort_values("date")
+
+    overlap = old.merge(new, on="date", suffixes=("_old", "_new"))
+    overlap = overlap.loc[overlap["value_old"].notna() & overlap["value_new"].notna()]
+    if len(overlap) < 100:
+        raise RuntimeError(f"insufficient T10YIE mirror overlap: {len(overlap)}")
+    max_abs_diff = float((overlap["value_old"] - overlap["value_new"]).abs().max())
+    if max_abs_diff > 1e-12:
+        raise RuntimeError(f"T10YIE mirror overlap mismatch: max_abs_diff={max_abs_diff}")
+
+    # Prefer the newer mirror from its first observation onward.
+    cutoff = new["date"].min()
+    stitched = pd.concat([
+        old.loc[old["date"] < cutoff],
+        new,
+    ], ignore_index=True).drop_duplicates("date", keep="last").sort_values("date")
+
+    stitched = stitched.loc[
+        (stitched["date"] >= pd.Timestamp(START))
+        & (stitched["date"] < pd.Timestamp(END))
+    ].copy()
+    s = pd.Series(
+        stitched["value"].to_numpy(float),
+        index=pd.DatetimeIndex(stitched["date"]),
+        name="T10YIE",
+    )
+    meta = {
+        "old_url": T10_OLD_URL,
+        "old_raw_sha256": sha256_bytes(raw_old),
+        "old_first": old["date"].min().date().isoformat(),
+        "old_last": old["date"].max().date().isoformat(),
+        "new_url": T10_NEW_URL,
+        "new_raw_sha256": sha256_bytes(raw_new),
+        "new_first": new["date"].min().date().isoformat(),
+        "new_last": new["date"].max().date().isoformat(),
+        "overlap_rows": int(len(overlap)),
+        "overlap_max_abs_diff": max_abs_diff,
+        "splice_cutoff": cutoff.date().isoformat(),
+        "provenance": "Two commit-pinned public GitHub mirrors of FRED T10YIE; overlap must match exactly.",
+    }
+    return s, meta
 
 def align_to_spy(spy: pd.Series, series: dict[str, pd.Series]) -> pd.DataFrame:
     calendar = pd.DatetimeIndex(spy.dropna().index).sort_values().unique()
@@ -185,7 +224,7 @@ def main() -> None:
     dbc = yahoo_close("DBC")
     oil = yahoo_close("CL=F")
     gasoline = yahoo_close("RB=F")
-    t10yie, t10_raw = read_fred_static_text("T10YIE")
+    t10yie, t10_meta = read_t10yie_mirrors()
 
     daily = align_to_spy(
         spy,
@@ -230,10 +269,7 @@ def main() -> None:
             "first": monthly_structural["date"].min().date().isoformat(),
             "last": monthly_structural["date"].max().date().isoformat(),
         },
-        "fred_t10yie_static_text": {
-            "url": "https://fred.stlouisfed.org/data/T10YIE.txt",
-            "raw_sha256": sha256_bytes(t10_raw),
-        },
+        "t10yie_mirror_bridge": t10_meta,
         "issue141_sources": structural_meta,
         "yahoo_symbols": {
             "anchor": "SPY",
