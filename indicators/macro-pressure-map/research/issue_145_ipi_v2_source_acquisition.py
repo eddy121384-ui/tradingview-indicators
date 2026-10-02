@@ -159,6 +159,12 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]
             accept_downloads=True,
         )
         page = context.new_page()
+        load_urls: list[str] = []
+        def _observe_load_response(resp):
+            u = resp.url
+            if "index.db.com" in u and u not in load_urls:
+                load_urls.append(u)
+        page.on("response", _observe_load_response)
         page.goto(DBIQ_URL, wait_until="domcontentloaded", timeout=120_000)
         try:
             page.wait_for_load_state("networkidle", timeout=120_000)
@@ -186,10 +192,21 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]
         # treat an unclickable label as already-selected rather than changing
         # the frozen source definition.
         try:
+            print("DBIQ_ALL_TIME_HTML=" + all_time.last.evaluate("(e) => e.parentElement.outerHTML"), flush=True)
+        except Exception:
+            pass
+        try:
             all_time.last.click(timeout=5_000, force=True)
             page.wait_for_timeout(2_000)
         except Exception:
             pass
+        print(
+            "DBIQ_LOAD_URLS=" + json.dumps(
+                [u for u in load_urls if any(k in u.lower() for k in ("rest", "index", "price", "histor", "chart", "level", "vol"))],
+                ensure_ascii=False,
+            ),
+            flush=True,
+        )
 
         export_buttons = page.get_by_role("button", name="Export", exact=True)
         if export_buttons.count() == 0:
