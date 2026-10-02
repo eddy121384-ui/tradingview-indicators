@@ -177,7 +177,7 @@ def load_dbiq() -> tuple[pd.DataFrame, dict, dict[str, bytes]]:
         "daily_level_rows": int(len(daily)),
         "daily_first_date": daily["date"].min().date().isoformat(),
         "daily_last_date": daily["date"].max().date().isoformat(),
-        "monthly_level_rows_through_2026_08": int(len(monthly)),
+        "monthly_level_rows_through_source_end": int(len(monthly)),
         "monthly_first_period": str(monthly["period"].min()),
         "monthly_last_period": str(monthly["period"].max()),
         "monthly_return_crosscheck_rows": int(len(chk)),
