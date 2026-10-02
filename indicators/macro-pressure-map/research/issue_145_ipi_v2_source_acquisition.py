@@ -13,6 +13,7 @@ Primary source families:
 from __future__ import annotations
 
 import argparse
+import io
 import hashlib
 import json
 import re
@@ -76,92 +77,156 @@ def parse_pct(text: str) -> float | None:
         return None
 
 
-def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str]:
+def _parse_dbiq_export(raw: bytes, filename: str) -> tuple[pd.DataFrame, dict]:
+    attempts: list[tuple[str, pd.DataFrame]] = []
+    lower = filename.lower()
+    if lower.endswith((".xlsx", ".xls")) or raw[:2] == b"PK":
+        try:
+            attempts.append(("excel", pd.read_excel(io.BytesIO(raw))))
+        except Exception:
+            pass
+    for sep in (",", ";", "\t"):
+        try:
+            frame = pd.read_csv(io.BytesIO(raw), sep=sep)
+            if len(frame.columns) >= 2:
+                attempts.append((f"csv:{sep!r}", frame))
+        except Exception:
+            pass
+
+    diagnostics = []
+    for parser_name, frame in attempts:
+        diagnostics.append({"parser": parser_name, "columns": [str(x) for x in frame.columns], "rows": len(frame)})
+        if frame.empty:
+            continue
+
+        date_candidates = []
+        for col in frame.columns:
+            parsed = pd.to_datetime(frame[col], errors="coerce")
+            score = float(parsed.notna().mean())
+            if score >= 0.80:
+                date_candidates.append((score, col, parsed))
+        if not date_candidates:
+            continue
+        _, date_col, parsed_dates = max(date_candidates, key=lambda x: x[0])
+
+        level_candidates = []
+        for col in frame.columns:
+            if col == date_col:
+                continue
+            vals = pd.to_numeric(frame[col], errors="coerce")
+            finite = vals.notna()
+            if float(finite.mean()) < 0.80:
+                continue
+            name = str(col).lower()
+            # Prefer explicit level / ticker columns; penalize volatility / return.
+            name_score = 0
+            if "level" in name or "dblcdbce" in name or "price" in name:
+                name_score += 3
+            if "vol" in name or "return" in name or "%" in name:
+                name_score -= 3
+            level_candidates.append((name_score, int(finite.sum()), col, vals))
+        if not level_candidates:
+            continue
+        level_candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+        score, _, level_col, levels = level_candidates[0]
+        if score < 0:
+            continue
+
+        out = pd.DataFrame({"date": parsed_dates, "level": levels}).dropna()
+        out = out.loc[out["level"] > 0].sort_values("date").drop_duplicates("date", keep="last")
+        if len(out) < 3000:
+            continue
+        if out["date"].min() > pd.Timestamp("1989-01-31"):
+            continue
+        if out["date"].max() < pd.Timestamp("2026-08-01"):
+            continue
+        return out.reset_index(drop=True), {
+            "parser": parser_name,
+            "date_column": str(date_col),
+            "level_column": str(level_col),
+            "raw_rows": int(len(frame)),
+            "finite_level_rows": int(len(out)),
+        }
+
+    raise RuntimeError(f"could not identify DBIQ export date/level columns: {diagnostics}")
+
+
+def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]:
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 1600, "height": 1200})
+        context = browser.new_context(
+            viewport={"width": 1600, "height": 1200},
+            accept_downloads=True,
+        )
+        page = context.new_page()
         page.goto(DBIQ_URL, wait_until="domcontentloaded", timeout=120_000)
         try:
             page.wait_for_load_state("networkidle", timeout=120_000)
         except Exception:
-            # Some analytics connections can remain active; DOM content is the real gate.
             pass
         page.wait_for_timeout(5_000)
 
         body_text = page.locator("body").inner_text(timeout=30_000)
         title = page.title()
-        tables = page.locator("table")
-        candidates: list[list[list[str]]] = []
-        for i in range(tables.count()):
-            rows = tables.nth(i).locator("tr")
-            matrix: list[list[str]] = []
-            for j in range(rows.count()):
-                cells = rows.nth(j).locator("th,td")
-                vals = [cells.nth(k).inner_text().strip() for k in range(cells.count())]
-                if vals:
-                    matrix.append(vals)
-            flat = " ".join(" ".join(r) for r in matrix)
-            if "Jan" in flat and "Dec" in flat and any(str(y) in flat for y in (2024, 2025, 2026)):
-                candidates.append(matrix)
 
+        if "DBIQ Optimum Yield Diversified Commodity Index Excess Return" not in body_text:
+            raise RuntimeError("DBIQ page did not render expected index name")
+        if "Historical Inception Date" not in body_text or "02 December 1988" not in body_text:
+            raise RuntimeError("DBIQ page did not render frozen historical inception metadata")
+        if "DBLCDBCE" not in body_text:
+            raise RuntimeError("DBIQ page did not render expected Bloomberg ticker")
+        if "Historical Price and Volatility" not in body_text:
+            raise RuntimeError("DBIQ page missing Historical Price and Volatility section")
+
+        all_time = page.get_by_text("All Time", exact=True)
+        if all_time.count() == 0:
+            raise RuntimeError("DBIQ page missing All Time control")
+        all_time.last.click(timeout=30_000)
+        page.wait_for_timeout(2_000)
+
+        export_buttons = page.get_by_role("button", name="Export", exact=True)
+        if export_buttons.count() == 0:
+            # Some DBIQ builds expose Export as a non-button clickable element.
+            export_buttons = page.get_by_text("Export", exact=True)
+        if export_buttons.count() == 0:
+            raise RuntimeError("DBIQ page missing Export control")
+
+        try:
+            with page.expect_download(timeout=60_000) as download_info:
+                export_buttons.last.click(timeout=30_000)
+            download = download_info.value
+        except Exception as exc:
+            raise RuntimeError(
+                f"DBIQ All-Time Export did not produce a download; controls={export_buttons.count()}: {exc}"
+            ) from exc
+
+        suggested = download.suggested_filename or "dbiq-export"
+        temp_path = download.path()
+        if temp_path is None:
+            raise RuntimeError("DBIQ export download has no local path")
+        export_raw = Path(temp_path).read_bytes()
+        context.close()
         browser.close()
 
-    if "DBIQ Optimum Yield Diversified Commodity Index Excess Return" not in body_text:
-        raise RuntimeError("DBIQ page did not render expected index name")
-    if "Historical Inception Date" not in body_text or "02 December 1988" not in body_text:
-        raise RuntimeError("DBIQ page did not render frozen historical inception metadata")
-    if "DBLCDBCE" not in body_text:
-        raise RuntimeError("DBIQ page did not render expected Bloomberg ticker")
-    if not candidates:
-        raise RuntimeError("DBIQ rendered page contained no monthly-return table")
+    daily, parse_meta = _parse_dbiq_export(export_raw, suggested)
+    daily["period"] = daily["date"].dt.to_period("M")
+    month_end = daily.groupby("period", as_index=False, sort=True).tail(1).copy()
+    month_end = month_end.sort_values("period").reset_index(drop=True)
+    month_end["return_pct"] = month_end["level"].pct_change() * 100.0
+    month_end["dbiq_wealth"] = 100.0 * month_end["level"] / float(month_end["level"].iloc[0])
+    month_end["date"] = month_end["period"].dt.to_timestamp("M")
 
-    # Choose the candidate with the most year rows.
-    matrix = max(candidates, key=lambda m: sum(bool(r and re.fullmatch(r"\d{4}", r[0])) for r in m))
-    header_idx = None
-    for idx, row in enumerate(matrix):
-        if row and row[0] == "Year" and all(m in row for m in MONTHS):
-            header_idx = idx
-            break
-    if header_idx is None:
-        raise RuntimeError("DBIQ monthly-return table missing Year/Jan..Dec header")
-
-    header = matrix[header_idx]
-    month_pos = {m: header.index(m) for m in MONTHS}
-    records: list[dict] = []
-    for row in matrix[header_idx + 1:]:
-        if not row or not re.fullmatch(r"\d{4}", row[0]):
-            continue
-        year = int(row[0])
-        for mon, month_num in MONTHS.items():
-            pos = month_pos[mon]
-            value = parse_pct(row[pos]) if pos < len(row) else None
-            if value is None:
-                continue
-            records.append({
-                "period": pd.Period(year=year, month=month_num, freq="M"),
-                "return_pct": value,
-            })
-
-    if not records:
-        raise RuntimeError("DBIQ monthly-return extraction produced zero rows")
-    df = pd.DataFrame(records).drop_duplicates("period", keep=False).sort_values("period")
-    if len(df) < 440:
-        raise RuntimeError(f"DBIQ monthly history unexpectedly short: {len(df)} rows")
-    if df["period"].min() > pd.Period("1989-01", "M"):
-        raise RuntimeError(f"DBIQ history starts too late: {df['period'].min()}")
-    if df["period"].max() < pd.Period("2026-08", "M"):
-        raise RuntimeError(f"DBIQ history ends too early: {df['period'].max()}")
-
-    # Reconstruct a strictly positive scale-free wealth index.
-    mult = 1.0 + df["return_pct"].astype(float) / 100.0
-    if (mult <= 0).any():
-        raise RuntimeError("DBIQ monthly return <= -100%")
-    df["dbiq_wealth"] = 100.0 * mult.cumprod()
-    df["date"] = df["period"].dt.to_timestamp("M")
+    finite_returns = month_end["return_pct"].notna()
+    if int(finite_returns.sum()) < 440:
+        raise RuntimeError(f"DBIQ all-time export unexpectedly short: {int(finite_returns.sum())} monthly returns")
+    if month_end["period"].min() > pd.Period("1988-12", "M"):
+        raise RuntimeError(f"DBIQ export starts too late: {month_end['period'].min()}")
+    if month_end["period"].max() < pd.Period("2026-08", "M"):
+        raise RuntimeError(f"DBIQ export ends too early: {month_end['period'].max()}")
 
     canonical_rows = [
-        {"period": str(p), "return_pct": float(r)}
-        for p, r in zip(df["period"], df["return_pct"])
+        {"period": str(p), "level": float(v)}
+        for p, v in zip(month_end["period"], month_end["level"])
     ]
     meta = {
         "url": DBIQ_URL,
@@ -170,16 +235,21 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str]:
         "ticker": "DBLCDBCE",
         "historical_inception": "1988-12-02",
         "benchmark_family": "Commodity Futures",
-        "monthly_rows": int(len(df)),
-        "first_period": str(df["period"].min()),
-        "last_period": str(df["period"].max()),
-        "canonical_monthly_rows_sha256": sha256_bytes(
+        "source_mode": "official_all_time_export",
+        "export_suggested_filename": suggested,
+        "export_raw_sha256": sha256_bytes(export_raw),
+        "export_parse": parse_meta,
+        "daily_rows": int(len(daily)),
+        "monthly_level_rows": int(len(month_end)),
+        "monthly_return_rows": int(finite_returns.sum()),
+        "first_period": str(month_end["period"].min()),
+        "last_period": str(month_end["period"].max()),
+        "canonical_monthly_levels_sha256": sha256_bytes(
             json.dumps(canonical_rows, separators=(",", ":"), ensure_ascii=False).encode()
         ),
         "rendered_body_sha256": sha256_bytes(body_text.encode("utf-8")),
     }
-    return df.reset_index(drop=True), meta, body_text
-
+    return month_end, meta, body_text, export_raw, suggested
 
 def parse_fred_text(raw: bytes, series: str) -> pd.DataFrame:
     text = raw.decode("utf-8", errors="replace")
@@ -253,7 +323,7 @@ def main() -> None:
     out = args.output_dir
     out.mkdir(parents=True, exist_ok=True)
 
-    dbiq, dbiq_meta, dbiq_body = extract_dbiq_monthly_returns()
+    dbiq, dbiq_meta, dbiq_body, dbiq_export_raw, dbiq_export_name = extract_dbiq_monthly_returns()
 
     raw_gas = fetch_bytes(MGASNYH_TEXT_URL)
     gas = parse_fred_text(raw_gas, "gasoline")
@@ -284,6 +354,8 @@ def main() -> None:
     dbiq.drop(columns=["period"]).to_csv(dbiq_path, index=False, date_format="%Y-%m-%d", float_format="%.12g")
     gas.drop(columns=["period"]).to_csv(gas_path, index=False, date_format="%Y-%m-%d", float_format="%.12g")
     (out / "issue-145-dbiq-rendered-body.txt").write_text(dbiq_body, encoding="utf-8")
+    export_suffix = Path(dbiq_export_name).suffix or ".bin"
+    (out / f"issue-145-dbiq-official-export{export_suffix}").write_bytes(dbiq_export_raw)
 
     complete = panel[
         ["dbiq_wealth", "gasoline", "Crude oil, WTI", "expected_inflation_10y"]
