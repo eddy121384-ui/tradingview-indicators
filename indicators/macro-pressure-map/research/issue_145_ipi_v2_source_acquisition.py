@@ -193,19 +193,65 @@ def extract_dbiq_monthly_returns() -> tuple[pd.DataFrame, dict, str, bytes, str]
 
         export_buttons = page.get_by_role("button", name="Export", exact=True)
         if export_buttons.count() == 0:
-            # Some DBIQ builds expose Export as a non-button clickable element.
             export_buttons = page.get_by_text("Export", exact=True)
         if export_buttons.count() == 0:
             raise RuntimeError("DBIQ page missing Export control")
 
-        try:
-            with page.expect_download(timeout=60_000) as download_info:
-                export_buttons.last.click(timeout=10_000, force=True)
-            download = download_info.value
-        except Exception as exc:
+        observed_urls: list[str] = []
+        def _observe_response(resp):
+            u = resp.url
+            low = u.lower()
+            if any(k in low for k in ("export", "histor", "index", "price", "chart", "data")):
+                if u not in observed_urls:
+                    observed_urls.append(u)
+        page.on("response", _observe_response)
+
+        diagnostics = []
+        download = None
+        for idx in range(export_buttons.count()):
+            el = export_buttons.nth(idx)
+            try:
+                outer = el.evaluate("(e) => e.outerHTML")
+            except Exception:
+                outer = "<outerHTML unavailable>"
+            diagnostics.append({"index": idx, "outerHTML": outer})
+            try:
+                with page.expect_download(timeout=12_000) as download_info:
+                    el.click(timeout=10_000, force=True)
+                download = download_info.value
+                diagnostics[-1]["download"] = True
+                break
+            except Exception as exc:
+                diagnostics[-1]["download"] = False
+                diagnostics[-1]["error"] = str(exc)
+                page.wait_for_timeout(1_000)
+                links = page.locator("a")
+                candidates = []
+                for li in range(links.count()):
+                    try:
+                        href = links.nth(li).get_attribute("href")
+                        txt = links.nth(li).inner_text().strip()
+                    except Exception:
+                        continue
+                    h = (href or "").lower()
+                    t = txt.lower()
+                    if any(k in h for k in (".csv", ".xlsx", ".xls", "export", "download")) or any(
+                        k in t for k in ("csv", "xlsx", "xls", "download")
+                    ):
+                        candidates.append({"text": txt, "href": href})
+                diagnostics[-1]["candidate_links"] = candidates[:20]
+                try:
+                    page.keyboard.press("Escape")
+                except Exception:
+                    pass
+
+        print("DBIQ_EXPORT_DIAGNOSTICS=" + json.dumps(diagnostics, ensure_ascii=False), flush=True)
+        print("DBIQ_OBSERVED_URLS=" + json.dumps(observed_urls[-80:], ensure_ascii=False), flush=True)
+
+        if download is None:
             raise RuntimeError(
-                f"DBIQ All-Time Export did not produce a download; controls={export_buttons.count()}: {exc}"
-            ) from exc
+                "DBIQ Export controls did not produce browser download; see diagnostics above"
+            )
 
         suggested = download.suggested_filename or "dbiq-export"
         temp_path = download.path()
