@@ -147,6 +147,18 @@ Also report the top-two winner pair frequencies and top-gap distribution.
 
 No threshold changes are allowed from this diagnostic.
 
+## Aggregation / adequacy
+
+Primary summaries are one-stock-one-vote.
+
+For any stock × diagnostic cell × horizon:
+
+- require at least **5 eligible bars** before that stock contributes a cell-level estimate;
+- report the number of contributing stocks and bars;
+- treat aggregate cells with fewer than **30 contributing stocks** as underpowered / descriptive only.
+
+The 5-bar / 30-stock adequacy rules are frozen before results.
+
 ---
 
 ## Diagnostic B — raw-score redundancy / separability
