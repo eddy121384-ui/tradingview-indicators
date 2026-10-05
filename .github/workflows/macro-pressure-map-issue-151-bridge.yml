@@ -47,7 +47,7 @@ jobs:
               "FROZEN BEFORE ANY ISSUE #151 ANALOGUE-vs-EXACT BRIDGE METRIC",
               "bfd9a8e76d882007a80584a439289f456bf06999223d2f1f30f85bb02f4e65e5",
               "1993-01",
-              "use the latest SPF 10Y CPI",
+              "do not interpolate between surveys",
               "trigger F1 within +/-1 month >=0.60",
               "There is no suggestive rescue verdict.",
           ]
