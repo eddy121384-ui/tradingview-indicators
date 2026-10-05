@@ -72,6 +72,7 @@ def main() -> None:
     print(json.dumps({
         "sheets": xls.sheet_names,
         "candidates": candidates,
+        "column_inventory": inventory,
     }, indent=2, ensure_ascii=False), flush=True)
 
     if len(expected_candidates) != 1 or len(risk_candidates) != 1:
