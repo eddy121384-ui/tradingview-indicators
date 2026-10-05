@@ -1,0 +1,129 @@
+name: Macro Pressure Map Issue 149 Inflation Comp Bridge v3
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue-149-inflation-comp-v3-prereg.md"
+      - "indicators/macro-pressure-map/research/issue_149_inflation_comp_source.py"
+      - "indicators/macro-pressure-map/research/issue_149_inflation_comp_v3.py"
+      - "indicators/macro-pressure-map/research/test_issue_149_inflation_comp_v3.py"
+      - ".github/workflows/macro-pressure-map-issue-149-bridge.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  v3-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Issue 149 branch
+        uses: actions/checkout@v4
+        with:
+          path: current
+
+      - name: Checkout frozen exact V6.6 monthly snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: 752755d423c1a13415d8ad3647c3def74adaa2d8
+          path: issue133
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install numpy pandas requests beautifulsoup4 openpyxl pytest
+
+      - name: Validate preregistration freeze
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/issue-149-inflation-comp-v3-prereg.md")
+          s=p.read_text(encoding="utf-8")
+          required=[
+              "FROZEN BEFORE ANY ISSUE #149 ANALOGUE-vs-EXACT BRIDGE METRIC",
+              "a07dbdb377a2ae1dedc7a176d43b20b14d951caddde776aef18dfcf810256a10",
+              "EXPECTED_INFLATION_10Y_t + INFLATION_RISK_PREMIUM_10Y_t",
+              "1990-02",
+              "trigger F1 within +/-1 month >=0.60",
+              "There is no suggestive rescue verdict.",
+          ]
+          missing=[x for x in required if x not in s]
+          assert not missing, missing
+          PY
+
+      - name: Static and unit tests
+        run: |
+          python -m py_compile current/indicators/macro-pressure-map/research/issue_149_inflation_comp_source.py
+          python -m py_compile current/indicators/macro-pressure-map/research/issue_149_inflation_comp_v3.py
+          cd current/indicators/macro-pressure-map/research
+          pytest -q test_issue_149_inflation_comp_v3.py
+
+      - name: Rebuild frozen Cleveland compensation source
+        run: |
+          rm -rf current/indicators/macro-pressure-map/research/generated/issue-149-source
+          python current/indicators/macro-pressure-map/research/issue_149_inflation_comp_source.py \
+            --output-dir current/indicators/macro-pressure-map/research/generated/issue-149-source
+
+      - name: Verify compensation source freeze
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path("current/indicators/macro-pressure-map/research/generated/issue-149-source")
+          p=root/"issue-149-cleveland-comp10.csv"
+          assert hashlib.sha256(p.read_bytes()).hexdigest() == "a07dbdb377a2ae1dedc7a176d43b20b14d951caddde776aef18dfcf810256a10"
+          m=json.loads((root/"issue-149-source-manifest.json").read_text())
+          assert m["source"]["workbook_sha256"] == "20701ccf394d280fe1db38fa9def5628f2385dd0aef148ff989e33ff15caba95"
+          assert m["exact_v66_signal_loaded"] is False
+          assert m["outcome_data_loaded"] is False
+          PY
+
+      - name: Run frozen v3 bridge
+        run: |
+          rm -rf current/indicators/macro-pressure-map/research/generated/issue-149
+          python current/indicators/macro-pressure-map/research/issue_149_inflation_comp_v3.py \
+            --v2-data-dir current/indicators/macro-pressure-map/research/data \
+            --comp-source-dir current/indicators/macro-pressure-map/research/generated/issue-149-source \
+            --issue133-root issue133/indicators/macro-pressure-map/research \
+            --output-dir current/indicators/macro-pressure-map/research/generated/issue-149
+
+      - name: Validate result contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/generated/issue-149/issue-149-result.json")
+          r=json.loads(p.read_text())
+          assert r["issue"] == 149
+          assert r["outcome_data_loaded"] is False
+          assert r["production_authorized"] is False
+          assert r["verdict"] in {
+              "signal_bridge_v3_passed",
+              "signal_bridge_v3_failed",
+              "signal_bridge_v3_inconclusive_sample",
+          }
+          assert r["validated_for_outcome_testing"] == (
+              r["verdict"] == "signal_bridge_v3_passed"
+          )
+          print({
+              "verdict": r["verdict"],
+              "validated": r["validated_for_outcome_testing"],
+              "holdout": r["holdout"],
+              "subsegments": r["holdout_subsegments"],
+              "gates": r["gates"],
+              "historical": r["historical_window"],
+              "vs_issue145": r["comparison_to_issue145"],
+          })
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-149-inflation-comp-v3
+          path: |
+            current/indicators/macro-pressure-map/research/generated/issue-149
+            current/indicators/macro-pressure-map/research/generated/issue-149-source/issue-149-source-manifest.json
+          retention-days: 3
+          if-no-files-found: error

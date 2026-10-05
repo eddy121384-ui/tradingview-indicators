@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "issue": 149,
+  "validated_run": 37259207817,
+  "validated_head": "604492027036fff319fd73620fd15ac686decbd6",
+  "artifact_digest": "sha256:7f0feb4b9a1748af0bec1438141d9ec67c240780b196be8baa6368819a8f6096",
+  "verdict": "signal_bridge_v3_failed",
+  "validated_for_outcome_testing": false,
+  "holdout": {
+    "start": "2017-01",
+    "end": "2026-03",
+    "common_eligible_months": 111,
+    "gpi_correlation": 0.8984362318828831,
+    "ipi_correlation": 0.8903461444498794,
+    "gpi_slope_sign_agreement": 0.8636363636363636,
+    "ipi_slope_sign_agreement": 0.7909090909090909,
+    "regime_agreement": 0.5585585585585585,
+    "r7_precision": 0.7894736842105263,
+    "r7_recall": 0.5769230769230769,
+    "exact_triggers": 6,
+    "analogue_triggers": 8,
+    "matched_triggers": 3,
+    "trigger_f1": 0.42857142857142855,
+    "trigger_count_ratio": 1.3333333333333333
+  },
+  "gates_passed": 9,
+  "gates_total": 12,
+  "failed_gates": [
+    "regime_agreement_ge_0_60",
+    "r7_recall_ge_0_60",
+    "trigger_f1_ge_0_60"
+  ],
+  "comparison_to_issue145": {
+    "ipi_correlation_delta": -0.009507813831989287,
+    "ipi_slope_sign_agreement_delta": -0.027272727272727337,
+    "regime_agreement_delta": -0.009009009009009028,
+    "r7_precision_delta": -0.010526315789473717,
+    "r7_recall_delta": -0.03846153846153855,
+    "trigger_f1_delta": -0.07142857142857145
+  },
+  "historical_diagnostic": {
+    "start": "1990-02",
+    "end": "2006-12",
+    "rows": 203,
+    "all_rows_eligible": true,
+    "r7_months": 19,
+    "async_turn_triggers": 5,
+    "trigger_months": [
+      "1991-11",
+      "1998-01",
+      "1998-07",
+      "2000-07",
+      "2001-10"
+    ],
+    "validated_for_outcome_testing": false
+  },
+  "outcome_data_loaded": false,
+  "production_authorized": false
+}
