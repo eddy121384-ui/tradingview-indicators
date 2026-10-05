@@ -1,0 +1,89 @@
+{
+  "integrity": {
+    "issue": 78,
+    "study": "Factorized Classifier Discovery A0",
+    "role": "post-outcome architecture discovery; not fresh OOS validation",
+    "classifier_blob": "1eec08e791403453853b589373bb2270c508c3bb",
+    "figi_set_sha256": "017e9360402afa002dc0970088649e7c411c4f02333dec550f2432be3c0dd701",
+    "stocks": 300,
+    "raw_files": 300,
+    "raw_failures": 0,
+    "horizons": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "min_cell_bars": 5,
+    "min_aggregate_stocks": 30
+  },
+  "a0_formulas": {
+    "direction": "mean(2*speed_rank-100, ma_bull_spread-ma_bear_spread)",
+    "range_factor": "range_score",
+    "sd": "mean(downside_exhaustion,support_holding)-mean(upside_exhaustion,resistance_holding)",
+    "emerging": "breakout_score if direction>=0 else explicit_breakdown_score",
+    "established": "mean(range_cont_direction, ma_direction_spread)",
+    "deteriorating": "supply if direction>=0 else demand"
+  },
+  "direction_10bar": [
+    {
+      "test": "direction",
+      "state": "down_extreme",
+      "horizon": 10,
+      "stocks": 281,
+      "bars": 171314,
+      "adequate": 1,
+      "equal_stock_mean": -0.14482855801978686,
+      "median_stock_median": -0.3449247773002451,
+      "equal_stock_positive_fraction": 0.43150541767398937,
+      "equal_stock_mean_abs": 1.8435354182853583
+    },
+    {
+      "test": "direction",
+      "state": "up_extreme",
+      "horizon": 10,
+      "stocks": 281,
+      "bars": 171374,
+      "adequate": 1,
+      "equal_stock_mean": -0.07955058574286547,
+      "median_stock_median": 0.11660356093545893,
+      "equal_stock_positive_fraction": 0.5092200087491148,
+      "equal_stock_mean_abs": 1.7525466855976077
+    }
+  ],
+  "paired_tests_10bar": [
+    {
+      "test": "lifecycle_down",
+      "horizon": 10,
+      "stocks": 210,
+      "adequate": 1,
+      "equal_stock_mean_delta": -0.042869843191908126,
+      "median_stock_delta": -0.07238783410193417,
+      "positive_stock_fraction": 0.45714285714285713
+    },
+    {
+      "test": "lifecycle_up",
+      "horizon": 10,
+      "stocks": 134,
+      "adequate": 1,
+      "equal_stock_mean_delta": -0.17953528757310547,
+      "median_stock_delta": -0.2846202276135894,
+      "positive_stock_fraction": 0.3880597014925373
+    },
+    {
+      "test": "range_abs_move",
+      "horizon": 10,
+      "stocks": 281,
+      "adequate": 1,
+      "equal_stock_mean_delta": -0.32744516450325034,
+      "median_stock_delta": -0.2959790435327869,
+      "positive_stock_fraction": 0.099644128113879
+    }
+  ],
+  "notes": [
+    "OOS3 is deliberately reused for discovery under the 2026-10-05 amendment.",
+    "No result from this run is fresh OOS evidence.",
+    "Old six-stage raw/effective/probability/formal labels are not factor inputs.",
+    "Within-stock quintiles are retrospective discovery bins, not live thresholds."
+  ]
+}
