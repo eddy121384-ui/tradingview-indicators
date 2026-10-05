@@ -1,0 +1,123 @@
+name: Macro Pressure Map Issue 151 SPF10 Bridge
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue-151-spf10-bridge-prereg.md"
+      - "indicators/macro-pressure-map/research/issue_151_spf10_bridge.py"
+      - "indicators/macro-pressure-map/research/test_issue_151_spf10_bridge.py"
+      - "indicators/macro-pressure-map/research/data/issue-151-spf10-causal-monthly.csv.gz.b64"
+      - "indicators/macro-pressure-map/research/data/issue-151-spf10-source-freeze.json"
+      - ".github/workflows/macro-pressure-map-issue-151-bridge.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  spf-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Issue 151 branch
+        uses: actions/checkout@v4
+        with:
+          path: current
+
+      - name: Checkout frozen exact V6.6 monthly snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: 752755d423c1a13415d8ad3647c3def74adaa2d8
+          path: issue133
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install numpy pandas requests beautifulsoup4 openpyxl pytest
+
+      - name: Validate preregistration freeze
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/issue-151-spf10-bridge-prereg.md")
+          s=p.read_text(encoding="utf-8")
+          required=[
+              "FROZEN BEFORE ANY ISSUE #151 ANALOGUE-vs-EXACT BRIDGE METRIC",
+              "bfd9a8e76d882007a80584a439289f456bf06999223d2f1f30f85bb02f4e65e5",
+              "1993-01",
+              "do not interpolate between surveys",
+              "trigger F1 within +/-1 month >=0.60",
+              "There is no suggestive rescue verdict.",
+          ]
+          missing=[x for x in required if x not in s]
+          assert not missing, missing
+          PY
+
+      - name: Static and unit tests
+        run: |
+          python -m py_compile current/indicators/macro-pressure-map/research/issue_151_spf10_bridge.py
+          cd current/indicators/macro-pressure-map/research
+          pytest -q test_issue_151_spf10_bridge.py
+
+      - name: Verify repository-frozen SPF source
+        run: |
+          python - <<'PY'
+          import base64, gzip, hashlib, json
+          from pathlib import Path
+          root=Path("current/indicators/macro-pressure-map/research/data")
+          m=json.loads((root/"issue-151-spf10-source-freeze.json").read_text())
+          b64=(root/"issue-151-spf10-causal-monthly.csv.gz.b64").read_text().strip()
+          gz=base64.b64decode(b64, validate=True)
+          assert hashlib.sha256(gz).hexdigest() == "8d21fb8a3b346d160a63d8b67ac1fe454b27a20605388033f886cf3406681c3c"
+          raw=gzip.decompress(gz)
+          assert hashlib.sha256(raw).hexdigest() == "bfd9a8e76d882007a80584a439289f456bf06999223d2f1f30f85bb02f4e65e5"
+          assert m["exact_v66_signal_loaded"] is False
+          assert m["outcome_data_loaded"] is False
+          PY
+
+      - name: Run frozen SPF bridge
+        run: |
+          rm -rf current/indicators/macro-pressure-map/research/generated/issue-151
+          python current/indicators/macro-pressure-map/research/issue_151_spf10_bridge.py \
+            --data-dir current/indicators/macro-pressure-map/research/data \
+            --issue133-root issue133/indicators/macro-pressure-map/research \
+            --output-dir current/indicators/macro-pressure-map/research/generated/issue-151
+
+      - name: Validate result contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/generated/issue-151/issue-151-result.json")
+          r=json.loads(p.read_text())
+          assert r["issue"] == 151
+          assert r["outcome_data_loaded"] is False
+          assert r["production_authorized"] is False
+          assert r["verdict"] in {
+              "signal_bridge_spf_passed",
+              "signal_bridge_spf_failed",
+              "signal_bridge_spf_inconclusive_sample",
+          }
+          assert r["validated_for_outcome_testing"] == (
+              r["verdict"] == "signal_bridge_spf_passed"
+          )
+          print({
+              "verdict": r["verdict"],
+              "validated": r["validated_for_outcome_testing"],
+              "spf": r["spf_descriptives"],
+              "holdout": r["holdout"],
+              "subsegments": r["holdout_subsegments"],
+              "gates": r["gates"],
+              "historical": r["historical_window"],
+              "vs_issue145": r["comparison_to_issue145"],
+          })
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-151-spf10-bridge
+          path: current/indicators/macro-pressure-map/research/generated/issue-151
+          retention-days: 3
+          if-no-files-found: error

@@ -1,0 +1,49 @@
+name: Macro Pressure Map Issue 151 SPF10 Sources
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_151_spf10_source.py"
+      - ".github/workflows/macro-pressure-map-issue-151-sources.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: python -m pip install pandas requests openpyxl
+      - name: Static validation
+        run: python -m py_compile indicators/macro-pressure-map/research/issue_151_spf10_source.py
+      - name: Freeze SPF10 source only
+        run: |
+          rm -rf indicators/macro-pressure-map/research/generated/issue-151-source
+          python indicators/macro-pressure-map/research/issue_151_spf10_source.py \
+            --output-dir indicators/macro-pressure-map/research/generated/issue-151-source
+      - name: Firewall and causality assertions
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("indicators/macro-pressure-map/research/generated/issue-151-source/issue-151-source-manifest.json")
+          r=json.loads(p.read_text())
+          assert r["exact_v66_signal_loaded"] is False
+          assert r["outcome_data_loaded"] is False
+          assert r["causal_monthly"]["first_month"] <= "1991-12"
+          assert r["causal_monthly"]["last_month"] >= "2026-03"
+          assert r["causal_monthly"]["rows"] >= 400
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-151-spf10-source
+          path: indicators/macro-pressure-map/research/generated/issue-151-source
+          retention-days: 3
+          if-no-files-found: error
