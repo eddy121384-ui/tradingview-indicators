@@ -5,10 +5,10 @@ on:
   pull_request:
     paths:
       - "indicators/macro-pressure-map/research/issue-145-ipi-v2-bridge-prereg.md"
-      - "indicators/macro-pressure-map/research/issue_145_ipi_v2_source_acquisition.py"
       - "indicators/macro-pressure-map/research/issue_145_ipi_v2_bridge.py"
       - "indicators/macro-pressure-map/research/test_issue_145_ipi_v2_bridge.py"
-      - ".github/workflows/macro-pressure-map-issue-145-sources.yml"
+      - "indicators/macro-pressure-map/research/data/issue-145-v2-source-freeze.json"
+      - "indicators/macro-pressure-map/research/data/issue-145-v2-source-panel.part*.b64"
       - ".github/workflows/macro-pressure-map-issue-145-bridge.yml"
 
 permissions:
@@ -58,38 +58,31 @@ jobs:
 
       - name: Static and unit tests
         run: |
-          python -m py_compile current/indicators/macro-pressure-map/research/issue_145_ipi_v2_source_acquisition.py
           python -m py_compile current/indicators/macro-pressure-map/research/issue_145_ipi_v2_bridge.py
           cd current/indicators/macro-pressure-map/research
           pytest -q test_issue_145_ipi_v2_bridge.py
 
-      - name: Rebuild frozen v2 source snapshot
-        run: |
-          rm -rf current/indicators/macro-pressure-map/research/generated/issue-145-source
-          python current/indicators/macro-pressure-map/research/issue_145_ipi_v2_source_acquisition.py \
-            --output-dir current/indicators/macro-pressure-map/research/generated/issue-145-source
-
-      - name: Verify normalized v2 source freeze
+      - name: Verify repository-frozen v2 source snapshot
         run: |
           python - <<'PY'
-          import hashlib, json
+          import base64, gzip, hashlib, json
           from pathlib import Path
-          root=Path("current/indicators/macro-pressure-map/research/generated/issue-145-source")
-          panel=root/"issue-145-v2-source-panel.csv"
-          sha=hashlib.sha256(panel.read_bytes()).hexdigest()
-          assert sha == "848a7ba847b3637b3b8b4715df7b555598c6a7a3bcced76d85aed1e42b29ecaa", sha
-          m=json.loads((root/"issue-145-source-manifest.json").read_text())
+          root=Path("current/indicators/macro-pressure-map/research/data")
+          m=json.loads((root/"issue-145-v2-source-freeze.json").read_text())
+          b64="".join((root/p).read_text().strip() for p in m["parts"])
+          gz=base64.b64decode(b64, validate=True)
+          assert hashlib.sha256(gz).hexdigest() == "cf1fee26e606a26cf9166b8871826945b58b2b2fd0e5b3f590533b07faec5c08"
+          raw=gzip.decompress(gz)
+          assert hashlib.sha256(raw).hexdigest() == "848a7ba847b3637b3b8b4715df7b555598c6a7a3bcced76d85aed1e42b29ecaa"
           assert m["exact_v66_signal_loaded"] is False
           assert m["outcome_data_loaded"] is False
-          assert m["v2_panel"]["first_complete_period"] == "1988-12"
-          assert m["v2_panel"]["last_complete_period"] == "2026-03"
           PY
 
       - name: Run frozen IPI Bridge v2
         run: |
           rm -rf current/indicators/macro-pressure-map/research/generated/issue-145
           python current/indicators/macro-pressure-map/research/issue_145_ipi_v2_bridge.py \
-            --source-dir current/indicators/macro-pressure-map/research/generated/issue-145-source \
+            --source-data-dir current/indicators/macro-pressure-map/research/data \
             --issue133-root issue133/indicators/macro-pressure-map/research \
             --output-dir current/indicators/macro-pressure-map/research/generated/issue-145
 
@@ -114,6 +107,7 @@ jobs:
           print({
               "verdict": r["verdict"],
               "validated": r["validated_for_outcome_testing"],
+              "gpi_replay_integrity": r["gpi_replay_integrity"],
               "holdout": r["holdout"],
               "subsegments": r["holdout_subsegments"],
               "gates": r["gates"],
@@ -126,8 +120,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: issue-145-ipi-v2-bridge
-          path: |
-            current/indicators/macro-pressure-map/research/generated/issue-145
-            current/indicators/macro-pressure-map/research/generated/issue-145-source/issue-145-source-manifest.json
+          path: current/indicators/macro-pressure-map/research/generated/issue-145
           retention-days: 3
           if-no-files-found: error
