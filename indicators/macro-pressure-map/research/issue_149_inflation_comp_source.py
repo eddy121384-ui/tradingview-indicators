@@ -60,36 +60,32 @@ def main() -> None:
                         "normalized_column": norm,
                     })
 
-    expected_candidates = [
-        x for x in candidates
-        if "expected inflation" in x["normalized_column"].lower()
-    ]
-    risk_candidates = [
-        x for x in candidates
-        if "inflation risk premium" in x["normalized_column"].lower()
-    ]
+    target_sheet = "Ten-year Expected Chart"
+    if target_sheet not in xls.sheet_names:
+        raise RuntimeError(f"Missing Cleveland sheet: {target_sheet}")
 
-    print(json.dumps({
-        "sheets": xls.sheet_names,
-        "candidates": candidates,
-        "column_inventory": inventory,
-    }, indent=2, ensure_ascii=False), flush=True)
-
-    if len(expected_candidates) != 1 or len(risk_candidates) != 1:
+    target_df = pd.read_excel(io.BytesIO(raw), sheet_name=target_sheet)
+    norm_map = {normalize_col(c): c for c in target_df.columns}
+    expected_name = "10 year Expected Inflation"
+    risk_name = "Inflation Risk Premium"
+    if expected_name not in norm_map or risk_name not in norm_map:
         raise RuntimeError(
-            "Expected exactly one 10Y expected-inflation column and one "
-            f"10Y inflation-risk-premium column; got {expected_candidates=} "
-            f"{risk_candidates=}"
+            f"Missing frozen Cleveland columns on {target_sheet}: "
+            f"{expected_name=}, {risk_name=}, available={list(norm_map)}"
         )
 
-    e = expected_candidates[0]
-    r = risk_candidates[0]
-    if e["sheet"] != r["sheet"]:
-        raise RuntimeError(
-            f"Expected and risk-premium columns are on different sheets: {e} vs {r}"
-        )
+    e = {
+        "sheet": target_sheet,
+        "original_column": str(norm_map[expected_name]),
+        "normalized_column": expected_name,
+    }
+    r = {
+        "sheet": target_sheet,
+        "original_column": str(norm_map[risk_name]),
+        "normalized_column": risk_name,
+    }
 
-    df = pd.read_excel(io.BytesIO(raw), sheet_name=e["sheet"])
+    df = target_df.copy()
     date_candidates = [
         c for c in df.columns
         if normalize_col(c).lower() in {"model output date", "date"}
