@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "issue": 145,
+  "source_run": 36959024098,
+  "source_head": "9d65ae01b6b72eab6734c9420111b4e18e45b0c0",
+  "artifact_digest": "sha256:8cd46ba84f11195ee52da3343613429c42af30cbcbda43c937a2cc85c4ae539c",
+  "normalized_csv_sha256": "848a7ba847b3637b3b8b4715df7b555598c6a7a3bcced76d85aed1e42b29ecaa",
+  "deterministic_gzip_sha256": "cf1fee26e606a26cf9166b8871826945b58b2b2fd0e5b3f590533b07faec5c08",
+  "parts": [
+    "issue-145-v2-source-panel.part1.b64",
+    "issue-145-v2-source-panel.part2.b64",
+    "issue-145-v2-source-panel.part3.b64",
+    "issue-145-v2-source-panel.part4.b64",
+    "issue-145-v2-source-panel.part5.b64"
+  ],
+  "rows": 448,
+  "first_period": "1988-12",
+  "last_period": "2026-03",
+  "exact_v66_signal_loaded": false,
+  "outcome_data_loaded": false,
+  "source_identity": {
+    "dbiq_ticker": "DBLCDBCE",
+    "dbiq_index_id": 95400,
+    "dbiq_historical_inception": "1988-12-02",
+    "mgasnyh_first_period": "1986-06",
+    "mgasnyh_last_period": "2026-03",
+    "world_bank_monthly_sha256": "9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225",
+    "cleveland_xlsx_sha256": "20701ccf394d280fe1db38fa9def5628f2385dd0aef148ff989e33ff15caba95"
+  }
+}
