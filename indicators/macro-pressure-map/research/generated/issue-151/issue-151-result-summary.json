@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "issue": 151,
+  "validated_run": 37265373383,
+  "validated_head": "1d831e31cc1d363d429c2892fddeab36acc08239",
+  "artifact_digest": "sha256:c37ad39441623e9e01017998ac3abeb39afbb04ff1d3453c0c8fc69c6baf72a2",
+  "verdict": "signal_bridge_spf_failed",
+  "validated_for_outcome_testing": false,
+  "spf_source": {
+    "first_survey": "1991:Q4",
+    "causal_first_month": "1991-11",
+    "monthly_rows": 418,
+    "unchanged_level_fraction_after_first": 0.7961630695443646
+  },
+  "holdout": {
+    "start": "2017-01",
+    "end": "2026-03",
+    "common_eligible_months": 108,
+    "gpi_correlation": 0.896020313383835,
+    "ipi_correlation": 0.8085651218277475,
+    "gpi_slope_sign_agreement": 0.8584905660377359,
+    "ipi_slope_sign_agreement": 0.8018867924528302,
+    "regime_agreement": 0.5648148148148148,
+    "r7_precision": 0.8666666666666667,
+    "r7_recall": 0.5652173913043478,
+    "exact_triggers": 5,
+    "analogue_triggers": 4,
+    "matched_triggers": 2,
+    "trigger_f1": 0.4444444444444445,
+    "trigger_count_ratio": 0.8
+  },
+  "gates_passed": 9,
+  "gates_total": 12,
+  "failed_gates": [
+    "regime_agreement_ge_0_60",
+    "r7_recall_ge_0_60",
+    "trigger_f1_ge_0_60"
+  ],
+  "historical_diagnostic": {
+    "start": "1993-01",
+    "end": "2006-12",
+    "calendar_rows": 168,
+    "all_rows_eligible": false,
+    "ineligible_rows": 48,
+    "r7_months": 11,
+    "async_turn_triggers": 3,
+    "trigger_months": [
+      "1995-02",
+      "1998-01",
+      "1998-06"
+    ],
+    "validated_for_outcome_testing": false
+  },
+  "comparison_to_issue145": {
+    "ipi_correlation_delta": -0.09128883645412111,
+    "ipi_slope_sign_agreement_delta": -0.016295025728988,
+    "regime_agreement_delta": -0.002752752752752774,
+    "r7_precision_delta": 0.06666666666666665,
+    "r7_recall_delta": -0.050167224080267636,
+    "trigger_f1_delta": -0.055555555555555525
+  },
+  "outcome_data_loaded": false,
+  "production_authorized": false
+}
