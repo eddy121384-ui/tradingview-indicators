@@ -141,25 +141,49 @@ def parse_date_token(s: str) -> pd.Timestamp:
 def parse_release_dates(raw: bytes) -> tuple[pd.DataFrame, dict]:
     text = raw.decode("utf-8", errors="replace")
     rows = []
+    current_year: int | None = None
+
     for line in text.splitlines():
-        sm = SURVEY_RE.search(line)
-        if not sm:
+        stripped = line.strip()
+        if not stripped:
             continue
-        year = int(sm.group(1))
-        quarter = int(sm.group(2))
-        date_tokens = DATE_RE.findall(line)
+
+        # The official TXT prints the year on the first row of a block and
+        # omits it on subsequent Q2/Q3/Q4 rows. Carry the most recent year
+        # forward within the block.
+        ym = re.search(r"\b(19\d{2}|20\d{2})\b", stripped)
+        if ym:
+            current_year = int(ym.group(1))
+
+        qm = re.search(r"\bQ(?:UARTER)?\s*([1-4])\b", stripped, re.I)
+        if not qm:
+            # Some versions use a bare quarter number after the year.
+            sm = SURVEY_RE.search(stripped)
+            if sm:
+                current_year = int(sm.group(1))
+                quarter = int(sm.group(2))
+            else:
+                continue
+        else:
+            quarter = int(qm.group(1))
+
+        if current_year is None:
+            continue
+
+        date_tokens = DATE_RE.findall(stripped)
         if not date_tokens:
             continue
-        # Official file contains deadline/publication timing. The last date on
-        # the survey line is the public release date.
+
         dates = [parse_date_token(x) for x in date_tokens]
         rows.append({
-            "year": year,
+            "year": current_year,
             "quarter": quarter,
-            "survey": f"{year}:Q{quarter}",
+            "survey": f"{current_year}:Q{quarter}",
+            # The official file lists deadline/publication timing; use the
+            # final date token as the public release date.
             "release_date": dates[-1],
             "date_tokens": "|".join(date_tokens),
-            "source_line": line.strip(),
+            "source_line": stripped,
         })
 
     df = pd.DataFrame(rows)
@@ -172,11 +196,12 @@ def parse_release_dates(raw: bytes) -> tuple[pd.DataFrame, dict]:
         "survey", keep="last"
     ).reset_index(drop=True)
 
-    # Historical release-date coverage should begin by 1990:Q3.
-    if not (df["survey"] == "1990:Q3").any():
+    required = {"1990:Q3", "1990:Q4", "1991:Q1", "1991:Q2", "1991:Q3", "1991:Q4"}
+    missing = sorted(required - set(df["survey"]))
+    if missing:
         raise RuntimeError(
-            "official release-date file did not yield 1990:Q3; "
-            f"first={df['survey'].head(10).tolist()}"
+            f"official release-date parser missing anchor surveys {missing}; "
+            f"first={df[['survey','source_line']].head(20).to_dict('records')}"
         )
     if (df["release_date"].dt.year < df["year"]).any():
         raise RuntimeError("release-date year precedes survey year")
@@ -190,7 +215,6 @@ def parse_release_dates(raw: bytes) -> tuple[pd.DataFrame, dict]:
         "text_head": text.splitlines()[:25],
     }
     return df, meta
-
 
 def build_causal_monthly(
     surveys: pd.DataFrame, releases: pd.DataFrame
