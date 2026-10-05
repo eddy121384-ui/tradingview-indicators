@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "issue": 151,
+  "source_run": 37264957977,
+  "source_head": "d006572bd02ce447af4c0e2dd812310062198330",
+  "artifact_digest": "sha256:5a2f681c340f0de0a6bc8eaa56143b2d3731f2b017cf0e1bb178abd8abceb9b6",
+  "inflation_workbook_sha256": "2bef852b0b4c4365ce9d38796c408ecb2648f024b2cc1d40a8c1426afe62e2e5",
+  "release_dates_sha256": "c5f4c4dc349068ba9dc1f421c68474be26d0fe613fff83f70aa41eed96696ee3",
+  "normalized_csv_sha256": "bfd9a8e76d882007a80584a439289f456bf06999223d2f1f30f85bb02f4e65e5",
+  "deterministic_gzip_sha256": "8d21fb8a3b346d160a63d8b67ac1fe454b27a20605388033f886cf3406681c3c",
+  "sheet": "INFLATION",
+  "target_column": "INFCPI10YR",
+  "first_survey": "1991:Q4",
+  "last_survey": "2026:Q3",
+  "first_month": "1991-11",
+  "last_month": "2026-08",
+  "rows": 418,
+  "monthly_rule": "At each completed calendar month end, use the latest SPF 10Y CPI median forecast whose official public release_date is <= month_end; carry forward until the next release; no interpolation.",
+  "exact_v66_signal_loaded": false,
+  "outcome_data_loaded": false
+}
