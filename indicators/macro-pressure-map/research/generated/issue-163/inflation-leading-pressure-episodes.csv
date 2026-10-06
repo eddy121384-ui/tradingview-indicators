@@ -1,0 +1,10 @@
+episode,window,ref_kind,ref_extremum,ref_turn,ref_src,dh_turn,dh_dir,lead_mo,pass
+late-1960s acceleration,1966-01-01->1970-12-01,peak,1969-12-01,1967-02-01,deflator,1966-03-01,-1,11,PASS
+1973-75 inflation shock,1973-01-01->1975-12-01,peak,1974-12-01,1975-01-01,cpi,1973-10-01,1,15,PASS
+1978-80 second inflation shock,1978-01-01->1980-12-01,peak,1980-03-01,1980-04-01,cpi,1979-07-01,1,9,PASS
+1981-86 disinflation,1980-04-01->1986-12-01,trough,1986-12-01,1985-10-01,cpi,1984-08-01,1,14,PASS
+1990 oil shock,1990-01-01->1991-12-01,peak,1990-10-01,1990-03-01,cpi,1988-12-01,1,15,PASS
+2008 commodity spike/crash,2007-01-01->2009-12-01,peak,2008-07-01,2008-08-01,cpi,2007-09-01,1,11,PASS
+2008 commodity spike/crash,2007-01-01->2009-12-01,trough,2009-07-01,2009-08-01,cpi,2008-05-01,1,15,PASS
+2021-22 inflation surge,2020-04-01->2022-12-01,peak,2022-06-01,2022-07-01,cpi,2021-05-01,-1,14,PASS
+2023-26 disinflation/normalization,2022-07-01->2026-08-01,trough,2025-04-01,2025-05-01,cpi,2024-02-01,1,15,PASS
