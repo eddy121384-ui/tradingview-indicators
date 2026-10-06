@@ -1,0 +1,100 @@
+{
+ "issue": 166,
+ "equity": {
+  "selected": "Fama-French US market monthly total return (Mkt-RF + RF), 202608 CRSP vintage",
+  "providers": [
+   "Kenneth R. French Data Library",
+   "CRSP (underlying)"
+  ],
+  "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_CSV.zip",
+  "file_sha256": "d7d7fe37b150b5b15c9c069b3ba101dfe1af568c6d7b5db6e73cd0a6c0c9e5e5",
+  "coverage": {
+   "first": "1960-01-01",
+   "last": "2026-08-01",
+   "n": 800,
+   "n_196603_202608": 726
+  },
+  "dividends": "included directly (CRSP holding-period returns with distributions)",
+  "gaps": [],
+  "revision_caveats": [
+   "CRSP revises history; Dec-2012 market-return redefinition",
+   "CIZ flat-file format from Jan-2025 vintage",
+   "TBill source Ibbotson-to-202405 then ICE BofA (affects RF leg only)"
+  ],
+  "validation": {
+   "years": 66,
+   "first": 1960,
+   "last": 2025,
+   "pearson": 0.9902331764578691,
+   "spearman": 0.9848450057405281,
+   "mae_pp": 1.9980675657958211
+  },
+  "overlap_spxtr": {
+   "n": 463,
+   "pearson": 0.988743851364481,
+   "spearman": 0.9855991176914204,
+   "mae_pp": 0.4474122319567498,
+   "cum_ratio": 1.0127495609512194
+  },
+  "overlap_spy": {
+   "n": 403,
+   "pearson": 0.9873639102667461,
+   "spearman": 0.9823870433683454,
+   "mae_pp": 0.47937829115375274
+  },
+  "gates": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ "treasury": {
+  "selected": "frozen synthetic 10Y constant-maturity total return from FRED DGS10 month-end yields",
+  "yield_source": "FRED:DGS10 via TradingView 1W bars, month-end last-bar sampling (1962-01 to 2026-09, 777 months, no holes)",
+  "construction": "10Y par bond at month-end yield; semiannual coupons; hold 1 month; reprice remaining 9y11m cash flows at next month-end 10Y yield (single-yield, fractional-period discounting); dirty-price total return; roll monthly. Day count: 1/12-year steps. Limits: single-yield curve approximation; par-coupon simplification; month-end timing; weekly-sampled month ends; FRED vintage revisions.",
+  "coverage": {
+   "first": "1962-02-01",
+   "last": "2026-09-01",
+   "n": 776,
+   "n_196603_202608": 726
+  },
+  "month_skips": 0,
+  "validation": {
+   "years": 63,
+   "first": 1963,
+   "last": 2025,
+   "pearson": 0.9838507383477538,
+   "spearman": 0.9841589861751152,
+   "mae_pp": 1.249462319603031
+  },
+  "overlap_tlt": {
+   "n": 290,
+   "pearson": 0.8564330886152351,
+   "spearman": 0.8634319974404613,
+   "sign_agree": 0.8344827586206897,
+   "note": "TLT ~15-18y duration vs synthetic 10Y ~8y; correlation/sanity only"
+  },
+  "damodaran": {
+   "url": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html",
+   "sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+   "bytes": 656121
+  },
+  "gates": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ "verdict": "deep_history_outcome_backbone_feasible_with_limitations",
+ "macro_outcome_join_performed": false,
+ "production_authorized": false,
+ "note": "source feasibility + return-series validation only; no macro-conditioned analysis"
+}
