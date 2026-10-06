@@ -1,0 +1,387 @@
+{
+ "issue": 161,
+ "parent_frozen": "cc331bf11591ab49c6f5a5023cfee39b2cf09fde",
+ "dh_csv_sha256": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc",
+ "dh_full_first": "1966-03-01",
+ "dh_full_last": "2026-08-01",
+ "benchmarks": {
+  "USREC": {
+   "ticker": "FRED:USREC",
+   "desc": "NBER recession dummy (FRED monthly)",
+   "first": "1966-01",
+   "last": "2026-09",
+   "fnv": "9c3b013e",
+   "recessions": [
+    "1969-12->1970-11",
+    "1973-11->1975-03",
+    "1980-01->1980-07",
+    "1981-07->1982-11",
+    "1990-07->1991-03",
+    "2001-03->2001-11",
+    "2007-12->2009-06",
+    "2020-02->2020-04"
+   ]
+  },
+  "GDPQQ": {
+   "ticker": "ECONOMICS:USGDPQQ",
+   "desc": "Real GDP QoQ annualized",
+   "first": "1960-03-01",
+   "last": "2026-06-01",
+   "n": 266,
+   "fnv": "30c502d5"
+  },
+  "GDPYY": {
+   "ticker": "ECONOMICS:USGDPYY",
+   "desc": "Real GDP YoY",
+   "first": "1960-03-01",
+   "last": "2026-06-01",
+   "n": 266,
+   "fnv": "077f2d82"
+  },
+  "GDPD": {
+   "ticker": "ECONOMICS:USGDPD",
+   "desc": "GDP deflator level (YoY derived causally)",
+   "first": "1960-03-01",
+   "last": "2026-06-01",
+   "n": 266,
+   "fnv": "ecfb4a8e"
+  },
+  "CFNAI": {
+   "ticker": "ECONOMICS:USCFNAI",
+   "desc": "Chicago Fed National Activity Index",
+   "first": "1967-03-01",
+   "last": "2026-08-01",
+   "n": 714,
+   "fnv": "a1473415",
+   "caveat": "partial conceptual overlap with DH inputs"
+  },
+  "MIE1Y": {
+   "ticker": "ECONOMICS:USMIE1Y",
+   "desc": "Michigan 1Y expectations",
+   "first": "1978-01-01",
+   "last": "2026-09-01",
+   "n": 585,
+   "fnv": "4fb3d108"
+  },
+  "MIE5Y": {
+   "ticker": "ECONOMICS:USMIE5Y",
+   "desc": "Michigan 5Y expectations (monthly only from 1990-04)",
+   "first": "1979-02-01",
+   "last": "2026-09-01",
+   "n": 480,
+   "fnv": "6f2021b5"
+  },
+  "CPI": {
+   "ticker": "ECONOMICS:USIRYY",
+   "desc": "CPI YoY (REUSED #160 fetch; timing chronology only, input-circular)",
+   "sha256_compact": "9936e0d6202cfbf4a25909ce3e683b1c508d496f9f08f686729d0d03885e289a"
+  },
+  "CL": {
+   "ticker": "NYMEX:CL1!",
+   "desc": "WTI futures (secondary market confirmation only)",
+   "first": "1983-02",
+   "last": "2026-09",
+   "fnv": "69325da7"
+  }
+ },
+ "growth": {
+  "separation": {
+   "rec_n": 85,
+   "exp_n": 638,
+   "rec_mean": -39.883377834944184,
+   "rec_med": -37.839826505731054,
+   "exp_mean": 3.862185376716758,
+   "exp_med": 3.735111565451794,
+   "cohen_d": -2.8826802914957423,
+   "rec_neg_share": 1,
+   "exp_pos_share": 0.5940438871473355
+  },
+  "quarterly": {
+   "qq_n": 239,
+   "qq_sign_agree": 0.550561797752809,
+   "qq_ag": 98,
+   "qq_pairs": 178,
+   "pearson_dmean_qq": 0.27454339623593765,
+   "pearson_mean_yoy": 0.6101165388764924,
+   "qy_n": 239
+  },
+  "cfna": {
+   "n": 711,
+   "pearson": 0.5117445891374515,
+   "spearman": 0.6037134545208569,
+   "dir": 0.5816901408450704
+  },
+  "recession_episodes": [
+   {
+    "peak": "1969-12-01",
+    "trough": "1970-11-01",
+    "g_pm1": -19.612020777674637,
+    "g_p": -22.997443877907244,
+    "g_t": -41.23884332212011,
+    "g_tp1": -5.33488510366425,
+    "slope_t": -4.901889947931203,
+    "min_date": "1970-11-01",
+    "min_val": -41.23884332212011,
+    "first_upturn": "1970-10-01",
+    "upturn_lag": -1,
+    "g_tp3": 7.076779332033778
+   },
+   {
+    "peak": "1973-11-01",
+    "trough": "1975-03-01",
+    "g_pm1": -7.280294132135879,
+    "g_p": -16.9127857400466,
+    "g_t": -51.93069333710563,
+    "g_tp1": -23.529666697432578,
+    "slope_t": -5.57082932965065,
+    "min_date": "1974-11-01",
+    "min_val": -65.1133225831306,
+    "first_upturn": "1975-04-01",
+    "upturn_lag": 1,
+    "g_tp3": -13.170485770101658
+   },
+   {
+    "peak": "1980-01-01",
+    "trough": "1980-07-01",
+    "g_pm1": -29.486928911157026,
+    "g_p": -17.49792670545413,
+    "g_t": -34.516905765944394,
+    "g_tp1": -13.157395718989164,
+    "slope_t": 15.060621695222359,
+    "min_date": "1980-05-01",
+    "min_val": -64.80454696003379,
+    "first_upturn": "1980-06-01",
+    "upturn_lag": -1,
+    "g_tp3": -0.26412550306099974
+   },
+   {
+    "peak": "1981-07-01",
+    "trough": "1982-11-01",
+    "g_pm1": -8.202668203619478,
+    "g_p": 0.9367254544581968,
+    "g_t": -10.745841391363678,
+    "g_tp1": 1.6328593910312452,
+    "slope_t": 3.2437914436459767,
+    "min_date": "1981-11-01",
+    "min_val": -50.97356865820875,
+    "first_upturn": "1982-09-01",
+    "upturn_lag": -2,
+    "g_tp3": 10.641528666687156
+   },
+   {
+    "peak": "1990-07-01",
+    "trough": "1991-03-01",
+    "g_pm1": 0.3554358622803299,
+    "g_p": -16.354284543166898,
+    "g_t": -43.807985270499564,
+    "g_tp1": -26.16050384701136,
+    "slope_t": 6.38628115977864,
+    "min_date": "1991-01-01",
+    "min_val": -56.78985216432759,
+    "first_upturn": "1991-02-01",
+    "upturn_lag": -1,
+    "g_tp3": -7.856716805406071
+   },
+   {
+    "peak": "2001-03-01",
+    "trough": "2001-11-01",
+    "g_pm1": -37.12789125976543,
+    "g_p": -29.567200708489082,
+    "g_t": -36.365060583838336,
+    "g_tp1": -27.862505275056968,
+    "slope_t": 26.563138670411185,
+    "min_date": "2001-10-01",
+    "min_val": -62.92819925424952,
+    "first_upturn": "2001-11-01",
+    "upturn_lag": 0,
+    "g_tp3": 1.7248909333912052
+   },
+   {
+    "peak": "2007-12-01",
+    "trough": "2009-06-01",
+    "g_pm1": -9.482969857944529,
+    "g_p": -43.36369825714372,
+    "g_t": -47.07126091792171,
+    "g_tp1": -13.683335793775521,
+    "slope_t": -1.7850833638942802,
+    "min_date": "2008-12-01",
+    "min_val": -71.09688385318532,
+    "first_upturn": "2009-07-01",
+    "upturn_lag": 1,
+    "g_tp3": 5.558467266715871
+   },
+   {
+    "peak": "2020-02-01",
+    "trough": "2020-04-01",
+    "g_pm1": 12.81065789894816,
+    "g_p": -1.9584055936734877,
+    "g_t": -55.46311254088029,
+    "g_tp1": -41.96642375370733,
+    "slope_t": 9.32962807657647,
+    "min_date": "2020-03-01",
+    "min_val": -64.79274061745676,
+    "first_upturn": "2020-04-01",
+    "upturn_lag": 0,
+    "g_tp3": 21.508028570411604
+   }
+  ]
+ },
+ "inflation": {
+  "deflator": {
+   "n": 239,
+   "pearson": 0.2796243724129734,
+   "spearman": 0.2850093175345452,
+   "qoq_accel_dir": 0.6286919831223629,
+   "qoq_accel_n": 237,
+   "qoq_level_dir": 0.5252100840336135,
+   "qoq_level_n": 238
+  },
+  "michigan": {
+   "m1y": {
+    "n": 581,
+    "pearson": 0.28291169431651436,
+    "spearman": 0.2696491051202141,
+    "dir": 0.47758620689655173
+   },
+   "m5y_monthly": {
+    "n": 434,
+    "pearson": -0.1250540086194502,
+    "spearman": -0.1616531379835351,
+    "dir": 0.4064665127020785
+   }
+  },
+  "episodes": [
+   {
+    "episode": "late-1960s acceleration",
+    "window": "1966-01-01->1970-12-01",
+    "dh_peak": "1966-02-01",
+    "dh_peak_val": 61.11,
+    "cpi_peak": "1969-12-01",
+    "cpi_peak_val": 6.2,
+    "defl_peak": "1970-Q2",
+    "defl_peak_val": 5.61,
+    "lag_vs_cpi_mo": -46,
+    "lag_vs_defl_mo": -51
+   },
+   {
+    "episode": "1973-75 inflation shock",
+    "window": "1973-01-01->1975-12-01",
+    "dh_peak": "1974-01-01",
+    "dh_peak_val": 66.6,
+    "cpi_peak": "1974-12-01",
+    "cpi_peak_val": 12.3,
+    "defl_peak": "1975-Q1",
+    "defl_peak_val": 10.93,
+    "lag_vs_cpi_mo": -11,
+    "lag_vs_defl_mo": -13
+   },
+   {
+    "episode": "1978-80 second inflation shock",
+    "window": "1978-01-01->1980-12-01",
+    "dh_peak": "1980-02-01",
+    "dh_peak_val": 56.07,
+    "cpi_peak": "1980-03-01",
+    "cpi_peak_val": 14.8,
+    "defl_peak": "1980-Q4",
+    "defl_peak_val": 9.65,
+    "lag_vs_cpi_mo": -1,
+    "lag_vs_defl_mo": -9
+   },
+   {
+    "episode": "1981-86 disinflation",
+    "window": "1980-04-01->1986-12-01",
+    "dh_trough": "1982-04-01",
+    "dh_trough_val": -61.28,
+    "cpi_trough": "1986-12-01",
+    "cpi_trough_val": 1.1,
+    "defl_trough": "1986-Q4",
+    "defl_trough_val": 1.84,
+    "lag_vs_cpi_mo": -56,
+    "lag_vs_defl_mo": -55
+   },
+   {
+    "episode": "1990 oil shock",
+    "window": "1990-01-01->1991-12-01",
+    "dh_peak": "1990-09-01",
+    "dh_peak_val": 45.44,
+    "cpi_peak": "1990-10-01",
+    "cpi_peak_val": 6.3,
+    "defl_peak": "1990-Q4",
+    "defl_peak_val": 3.85,
+    "lag_vs_cpi_mo": -1,
+    "lag_vs_defl_mo": -2
+   },
+   {
+    "episode": "2008 commodity spike/crash",
+    "window": "2007-01-01->2009-12-01",
+    "dh_peak": "2007-11-01",
+    "dh_peak_val": 45.16,
+    "cpi_peak": "2008-07-01",
+    "cpi_peak_val": 5.6,
+    "defl_peak": "2007-Q1",
+    "defl_peak_val": 2.91,
+    "lag_vs_cpi_mo": -7,
+    "lag_vs_defl_mo": -8,
+    "dh_trough": "2008-12-01",
+    "dh_trough_val": -84.21,
+    "cpi_trough": "2009-07-01",
+    "cpi_trough_val": -2.1,
+    "defl_trough": "2009-Q3",
+    "defl_trough_val": 0.12
+   },
+   {
+    "episode": "2021-22 inflation surge",
+    "window": "2020-04-01->2022-12-01",
+    "dh_peak": "2021-04-01",
+    "dh_peak_val": 92.58,
+    "cpi_peak": "2022-06-01",
+    "cpi_peak_val": 9.1,
+    "defl_peak": "2022-Q2",
+    "defl_peak_val": 7.65,
+    "lag_vs_cpi_mo": -14,
+    "lag_vs_defl_mo": -13
+   },
+   {
+    "episode": "2023-26 disinflation/normalization",
+    "window": "2022-07-01->2026-08-01",
+    "dh_trough": "2023-06-01",
+    "dh_trough_val": -29.32,
+    "cpi_trough": "2025-04-01",
+    "cpi_trough_val": 2.3,
+    "defl_trough": "2024-Q3",
+    "defl_trough_val": 2.25,
+    "lag_vs_cpi_mo": -22,
+    "lag_vs_defl_mo": -14
+   }
+  ],
+  "oil_spans": [
+   {
+    "span": "1990-07-01->1990-09-01",
+    "oil_sign": 1,
+    "dh_sign": 1
+   },
+   {
+    "span": "2008-06-01->2008-11-01",
+    "oil_sign": -1,
+    "dh_sign": -1
+   },
+   {
+    "span": "2020-03-01->2022-06-01",
+    "oil_sign": 1,
+    "dh_sign": 1
+   },
+   {
+    "span": "2022-06-01->2023-11-01",
+    "oil_sign": -1,
+    "dh_sign": -1
+   }
+  ]
+ },
+ "outcome_data_loaded": false,
+ "production_authorized": false,
+ "sample_note": "macro-benchmark construct validity; NOT asset-outcome testing; NOT a V6.6 comparison",
+ "verdict": "deep_history_v01_construct_valid_with_limitations",
+ "verdict_scope": "macro construct validity only; authorizes no asset-outcome testing",
+ "finding": "indicators/macro-pressure-map/research/decisions/issue-161-construct-validity-finding.md",
+ "episodes": "indicators/macro-pressure-map/research/generated/issue-161/construct-validity-episodes.csv"
+}
