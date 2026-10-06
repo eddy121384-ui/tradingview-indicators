@@ -1,0 +1,934 @@
+{
+ "issue": 164,
+ "parent_frozen": "124c3d443d2bab6ecc028e62963f2639ded1da88",
+ "dh_csv_sha256": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc",
+ "composite_turns_n": 182,
+ "cpi_turns_n": 105,
+ "unmatched_composite_n": 82,
+ "components": {
+  "i1": {
+   "turns_n": 179,
+   "median_dwell_mo": 3.5,
+   "mean_dwell_mo": 3.97,
+   "composite_share_within1": 0.7692,
+   "unique_n": 19,
+   "unique_share": 0.1061,
+   "unmatched82_hit": 56,
+   "unmatched82_share": 0.6829
+  },
+  "i2": {
+   "turns_n": 171,
+   "median_dwell_mo": 3,
+   "mean_dwell_mo": 4.3,
+   "composite_share_within1": 0.6868,
+   "unique_n": 21,
+   "unique_share": 0.1228,
+   "unmatched82_hit": 58,
+   "unmatched82_share": 0.7073
+  },
+  "i3": {
+   "turns_n": 174,
+   "median_dwell_mo": 4,
+   "mean_dwell_mo": 4.21,
+   "composite_share_within1": 0.7363,
+   "unique_n": 21,
+   "unique_share": 0.1207,
+   "unmatched82_hit": 55,
+   "unmatched82_share": 0.6707
+  },
+  "i4": {
+   "turns_n": 176,
+   "median_dwell_mo": 4,
+   "mean_dwell_mo": 4.17,
+   "composite_share_within1": 0.6978,
+   "unique_n": 30,
+   "unique_share": 0.1705,
+   "unmatched82_hit": 61,
+   "unmatched82_share": 0.7439
+  },
+  "i5": {
+   "turns_n": 181,
+   "median_dwell_mo": 4,
+   "mean_dwell_mo": 4.04,
+   "composite_share_within1": 0.7527,
+   "unique_n": 22,
+   "unique_share": 0.1215,
+   "unmatched82_hit": 57,
+   "unmatched82_share": 0.6951
+  }
+ },
+ "swings": {
+  "i1": {
+   "mean_abs_d1": 14.761,
+   "mean_abs_d3": 22.933,
+   "n": 732
+  },
+  "i2": {
+   "mean_abs_d1": 14.192,
+   "mean_abs_d3": 19.649,
+   "n": 737
+  },
+  "i3": {
+   "mean_abs_d1": 15.031,
+   "mean_abs_d3": 22.62,
+   "n": 737
+  },
+  "i4": {
+   "mean_abs_d1": 14.795,
+   "mean_abs_d3": 21.214,
+   "n": 737
+  },
+  "i5": {
+   "mean_abs_d1": 15.617,
+   "mean_abs_d3": 25.136,
+   "n": 732
+  }
+ },
+ "groups": {
+  "persistent": {
+   "turns_n": 347,
+   "median_dwell": 2,
+   "mean_abs_d1": 14.494,
+   "mean_abs_d3": 20.431
+  },
+  "broad": {
+   "turns_n": 353,
+   "median_dwell": 2,
+   "mean_abs_d1": 14.896,
+   "mean_abs_d3": 22.776
+  },
+  "shock": {
+   "turns_n": 181,
+   "median_dwell": 4,
+   "mean_abs_d1": 15.617,
+   "mean_abs_d3": 25.136
+  }
+ },
+ "episodes": [
+  {
+   "episode": "late-1960s acceleration",
+   "window": "1966-01-01->1970-12-01",
+   "kind": "peak",
+   "composite_extremum": "1966-02-01",
+   "composite_val": 61.11,
+   "components": {
+    "i1": {
+     "score": 88.76,
+     "d1": 38.45,
+     "d3": 71.52,
+     "level_pts": 17.75,
+     "level_share": 0.2905,
+     "earliest_turn": null,
+     "earliest_dir": null,
+     "lead_mo": null,
+     "timing": "none",
+     "chg1_share": 0.2725,
+     "chg3_share": 0.5817
+    },
+    "i2": {
+     "score": 47.13,
+     "d1": 49.98,
+     "d3": 44.15,
+     "level_pts": 9.43,
+     "level_share": 0.1543,
+     "earliest_turn": "1965-07-01",
+     "earliest_dir": 1,
+     "lead_mo": 7,
+     "timing": "leading",
+     "chg1_share": 0.3542,
+     "chg3_share": 0.3591
+    },
+    "i3": {
+     "score": 79.27,
+     "d1": 11.85,
+     "d3": 10.21,
+     "level_pts": 15.85,
+     "level_share": 0.2594,
+     "earliest_turn": "1965-08-01",
+     "earliest_dir": 1,
+     "lead_mo": 6,
+     "timing": "leading",
+     "chg1_share": 0.084,
+     "chg3_share": 0.083
+    },
+    "i4": {
+     "score": 49.46,
+     "d1": 9.54,
+     "d3": 9.58,
+     "level_pts": 9.89,
+     "level_share": 0.1619,
+     "earliest_turn": "1965-09-01",
+     "earliest_dir": 1,
+     "lead_mo": 5,
+     "timing": "leading",
+     "chg1_share": 0.0676,
+     "chg3_share": 0.0779
+    },
+    "i5": {
+     "score": 40.91,
+     "d1": 31.3,
+     "d3": -12.51,
+     "level_pts": 8.18,
+     "level_share": 0.1339,
+     "earliest_turn": "1965-12-01",
+     "earliest_dir": -1,
+     "lead_mo": 2,
+     "timing": "leading",
+     "chg1_share": 0.2218,
+     "chg3_share": -0.1017
+    }
+   },
+   "comp_d1": 28.22,
+   "comp_d3": 24.59
+  },
+  {
+   "episode": "1973-75 inflation shock",
+   "window": "1973-01-01->1975-12-01",
+   "kind": "peak",
+   "composite_extremum": "1974-01-01",
+   "composite_val": 66.6,
+   "components": {
+    "i1": {
+     "score": 80.08,
+     "d1": 6.12,
+     "d3": 6,
+     "level_pts": 16.02,
+     "level_share": 0.2405,
+     "earliest_turn": "1973-01-01",
+     "earliest_dir": 1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": 0.2099,
+     "chg3_share": 0.1538
+    },
+    "i2": {
+     "score": 72.59,
+     "d1": 13.73,
+     "d3": 20.42,
+     "level_pts": 14.52,
+     "level_share": 0.218,
+     "earliest_turn": "1972-12-01",
+     "earliest_dir": -1,
+     "lead_mo": 13,
+     "timing": "leading",
+     "chg1_share": 0.471,
+     "chg3_share": 0.5236
+    },
+    "i3": {
+     "score": 83.85,
+     "d1": 16.53,
+     "d3": 3.67,
+     "level_pts": 16.77,
+     "level_share": 0.2518,
+     "earliest_turn": "1973-01-01",
+     "earliest_dir": 1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": 0.5671,
+     "chg3_share": 0.0941
+    },
+    "i4": {
+     "score": 0.26,
+     "d1": -7.77,
+     "d3": -5.29,
+     "level_pts": 0.05,
+     "level_share": 0.0008,
+     "earliest_turn": "1972-11-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": -0.2666,
+     "chg3_share": -0.1356
+    },
+    "i5": {
+     "score": 96.22,
+     "d1": 0.54,
+     "d3": 14.2,
+     "level_pts": 19.24,
+     "level_share": 0.2889,
+     "earliest_turn": "1973-01-01",
+     "earliest_dir": 1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": 0.0185,
+     "chg3_share": 0.3641
+    }
+   },
+   "comp_d1": 5.83,
+   "comp_d3": 7.8
+  },
+  {
+   "episode": "1978-80 second inflation shock",
+   "window": "1978-01-01->1980-12-01",
+   "kind": "peak",
+   "composite_extremum": "1980-02-01",
+   "composite_val": 56.07,
+   "components": {
+    "i1": {
+     "score": 69.01,
+     "d1": -4.34,
+     "d3": 5.17,
+     "level_pts": 13.8,
+     "level_share": 0.2461,
+     "earliest_turn": "1978-12-01",
+     "earliest_dir": 1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": -0.1653,
+     "chg3_share": 0.0801
+    },
+    "i2": {
+     "score": 80.22,
+     "d1": 25.21,
+     "d3": 52.82,
+     "level_pts": 16.04,
+     "level_share": 0.2861,
+     "earliest_turn": "1978-11-01",
+     "earliest_dir": -1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": 0.9604,
+     "chg3_share": 0.8183
+    },
+    "i3": {
+     "score": 52.65,
+     "d1": -2.14,
+     "d3": 1.76,
+     "level_pts": 10.53,
+     "level_share": 0.1878,
+     "earliest_turn": "1979-04-01",
+     "earliest_dir": -1,
+     "lead_mo": 10,
+     "timing": "leading",
+     "chg1_share": -0.0815,
+     "chg3_share": 0.0273
+    },
+    "i4": {
+     "score": -7.37,
+     "d1": 3.39,
+     "d3": -7.13,
+     "level_pts": -1.47,
+     "level_share": -0.0263,
+     "earliest_turn": "1979-02-01",
+     "earliest_dir": -1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": 0.1291,
+     "chg3_share": -0.1105
+    },
+    "i5": {
+     "score": 85.85,
+     "d1": 4.14,
+     "d3": 11.92,
+     "level_pts": 17.17,
+     "level_share": 0.3062,
+     "earliest_turn": "1978-12-01",
+     "earliest_dir": 1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": 0.1577,
+     "chg3_share": 0.1847
+    }
+   },
+   "comp_d1": 5.25,
+   "comp_d3": 12.91
+  },
+  {
+   "episode": "1981-86 disinflation",
+   "window": "1980-04-01->1986-12-01",
+   "kind": "trough",
+   "composite_extremum": "1982-04-01",
+   "composite_val": -61.28,
+   "components": {
+    "i1": {
+     "score": -50.66,
+     "d1": 6.36,
+     "d3": -12.25,
+     "level_pts": -10.13,
+     "level_share": 0.1653,
+     "earliest_turn": "1981-04-01",
+     "earliest_dir": 1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": -1.5704,
+     "chg3_share": 0.1619
+    },
+    "i2": {
+     "score": -47.75,
+     "d1": -9.75,
+     "d3": -12.76,
+     "level_pts": -9.55,
+     "level_share": 0.1558,
+     "earliest_turn": "1981-02-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": 2.4074,
+     "chg3_share": 0.1687
+    },
+    "i3": {
+     "score": -74.42,
+     "d1": -0.22,
+     "d3": -23.81,
+     "level_pts": -14.88,
+     "level_share": 0.2429,
+     "earliest_turn": "1981-06-01",
+     "earliest_dir": -1,
+     "lead_mo": 10,
+     "timing": "leading",
+     "chg1_share": 0.0543,
+     "chg3_share": 0.3147
+    },
+    "i4": {
+     "score": -74.22,
+     "d1": 0.31,
+     "d3": -1.58,
+     "level_pts": -14.84,
+     "level_share": 0.2422,
+     "earliest_turn": "1981-02-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": -0.0765,
+     "chg3_share": 0.0209
+    },
+    "i5": {
+     "score": -59.36,
+     "d1": -0.73,
+     "d3": -25.25,
+     "level_pts": -11.87,
+     "level_share": 0.1937,
+     "earliest_turn": "1981-06-01",
+     "earliest_dir": 1,
+     "lead_mo": 10,
+     "timing": "leading",
+     "chg1_share": 0.1802,
+     "chg3_share": 0.3338
+    }
+   },
+   "comp_d1": -0.81,
+   "comp_d3": -15.13
+  },
+  {
+   "episode": "1990 oil shock",
+   "window": "1990-01-01->1991-12-01",
+   "kind": "peak",
+   "composite_extremum": "1990-09-01",
+   "composite_val": 45.44,
+   "components": {
+    "i1": {
+     "score": 65.13,
+     "d1": 4.18,
+     "d3": 41.26,
+     "level_pts": 13.03,
+     "level_share": 0.2867,
+     "earliest_turn": "1989-06-01",
+     "earliest_dir": -1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": 0.4332,
+     "chg3_share": 0.2674
+    },
+    "i2": {
+     "score": 36.64,
+     "d1": -19.55,
+     "d3": 8.12,
+     "level_pts": 7.33,
+     "level_share": 0.1613,
+     "earliest_turn": "1989-06-01",
+     "earliest_dir": -1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": -2.0259,
+     "chg3_share": 0.0526
+    },
+    "i3": {
+     "score": 53.16,
+     "d1": -0.76,
+     "d3": 55.45,
+     "level_pts": 10.63,
+     "level_share": 0.2339,
+     "earliest_turn": "1989-06-01",
+     "earliest_dir": -1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": -0.0788,
+     "chg3_share": 0.3594
+    },
+    "i4": {
+     "score": 7.38,
+     "d1": 8.25,
+     "d3": -17.22,
+     "level_pts": 1.48,
+     "level_share": 0.0325,
+     "earliest_turn": "1989-06-01",
+     "earliest_dir": 1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": 0.8549,
+     "chg3_share": -0.1116
+    },
+    "i5": {
+     "score": 64.9,
+     "d1": 17.54,
+     "d3": 66.66,
+     "level_pts": 12.98,
+     "level_share": 0.2856,
+     "earliest_turn": "1989-09-01",
+     "earliest_dir": 1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": 1.8176,
+     "chg3_share": 0.432
+    }
+   },
+   "comp_d1": 1.93,
+   "comp_d3": 30.86
+  },
+  {
+   "episode": "2008 commodity spike",
+   "window": "2007-01-01->2009-12-01",
+   "kind": "peak",
+   "composite_extremum": "2007-11-01",
+   "composite_val": 45.16,
+   "components": {
+    "i1": {
+     "score": 69.2,
+     "d1": 24.36,
+     "d3": 106.42,
+     "level_pts": 13.84,
+     "level_share": 0.3065,
+     "earliest_turn": "2006-11-01",
+     "earliest_dir": 1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": 0.2781,
+     "chg3_share": 0.2883
+    },
+    "i2": {
+     "score": 43.28,
+     "d1": 24.68,
+     "d3": 62.74,
+     "level_pts": 8.66,
+     "level_share": 0.1917,
+     "earliest_turn": "2006-09-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": 0.2817,
+     "chg3_share": 0.17
+    },
+    "i3": {
+     "score": 72.85,
+     "d1": 10.49,
+     "d3": 107.4,
+     "level_pts": 14.57,
+     "level_share": 0.3226,
+     "earliest_turn": "2006-09-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": 0.1197,
+     "chg3_share": 0.2909
+    },
+    "i4": {
+     "score": -13.14,
+     "d1": 10.08,
+     "d3": -4.58,
+     "level_pts": -2.63,
+     "level_share": -0.0582,
+     "earliest_turn": "2006-08-01",
+     "earliest_dir": 1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": 0.1151,
+     "chg3_share": -0.0124
+    },
+    "i5": {
+     "score": 53.62,
+     "d1": 17.96,
+     "d3": 97.19,
+     "level_pts": 10.72,
+     "level_share": 0.2375,
+     "earliest_turn": "2006-10-01",
+     "earliest_dir": 1,
+     "lead_mo": 13,
+     "timing": "leading",
+     "chg1_share": 0.205,
+     "chg3_share": 0.2633
+    }
+   },
+   "comp_d1": 17.52,
+   "comp_d3": 73.83
+  },
+  {
+   "episode": "2008 crash trough",
+   "window": "2007-01-01->2009-12-01",
+   "kind": "trough",
+   "composite_extremum": "2008-12-01",
+   "composite_val": -84.21,
+   "components": {
+    "i1": {
+     "score": -83.3,
+     "d1": 2.32,
+     "d3": -118.07,
+     "level_pts": -16.66,
+     "level_share": 0.1978,
+     "earliest_turn": "2007-09-01",
+     "earliest_dir": 1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": null,
+     "chg3_share": 0.2821
+    },
+    "i2": {
+     "score": -89.6,
+     "d1": -3.45,
+     "d3": -52.32,
+     "level_pts": -17.92,
+     "level_share": 0.2128,
+     "earliest_turn": "2007-09-01",
+     "earliest_dir": 1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": null,
+     "chg3_share": 0.125
+    },
+    "i3": {
+     "score": -73.98,
+     "d1": 7.28,
+     "d3": -116.98,
+     "level_pts": -14.8,
+     "level_share": 0.1757,
+     "earliest_turn": "2007-09-01",
+     "earliest_dir": 1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": null,
+     "chg3_share": 0.2795
+    },
+    "i4": {
+     "score": -92.26,
+     "d1": -10.57,
+     "d3": -26.8,
+     "level_pts": -18.45,
+     "level_share": 0.2191,
+     "earliest_turn": "2007-12-01",
+     "earliest_dir": -1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": null,
+     "chg3_share": 0.064
+    },
+    "i5": {
+     "score": -81.93,
+     "d1": 4.42,
+     "d3": -104.37,
+     "level_pts": -16.39,
+     "level_share": 0.1946,
+     "earliest_turn": "2007-09-01",
+     "earliest_dir": 1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": null,
+     "chg3_share": 0.2494
+    }
+   },
+   "comp_d1": 0,
+   "comp_d3": -83.71
+  },
+  {
+   "episode": "2021-22 inflation surge",
+   "window": "2020-04-01->2022-12-01",
+   "kind": "peak",
+   "composite_extremum": "2021-04-01",
+   "composite_val": 92.58,
+   "components": {
+    "i1": {
+     "score": 91.91,
+     "d1": 25.76,
+     "d3": 102.46,
+     "level_pts": 18.38,
+     "level_share": 0.1985,
+     "earliest_turn": "2020-02-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": 0.2105,
+     "chg3_share": 0.2446
+    },
+    "i2": {
+     "score": 96.9,
+     "d1": 12.36,
+     "d3": 59.79,
+     "level_pts": 19.38,
+     "level_share": 0.2093,
+     "earliest_turn": "2020-03-01",
+     "earliest_dir": -1,
+     "lead_mo": 13,
+     "timing": "leading",
+     "chg1_share": 0.101,
+     "chg3_share": 0.1427
+    },
+    "i3": {
+     "score": 92.46,
+     "d1": 16.27,
+     "d3": 59.83,
+     "level_pts": 18.49,
+     "level_share": 0.1997,
+     "earliest_turn": "2020-02-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": 0.1329,
+     "chg3_share": 0.1428
+    },
+    "i4": {
+     "score": 96.64,
+     "d1": 54.72,
+     "d3": 118.2,
+     "level_pts": 19.33,
+     "level_share": 0.2088,
+     "earliest_turn": "2020-01-01",
+     "earliest_dir": 1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": 0.4471,
+     "chg3_share": 0.2822
+    },
+    "i5": {
+     "score": 85,
+     "d1": 13.31,
+     "d3": 78.61,
+     "level_pts": 17,
+     "level_share": 0.1836,
+     "earliest_turn": "2020-02-01",
+     "earliest_dir": -1,
+     "lead_mo": 14,
+     "timing": "leading",
+     "chg1_share": 0.1087,
+     "chg3_share": 0.1877
+    }
+   },
+   "comp_d1": 24.48,
+   "comp_d3": 83.78
+  },
+  {
+   "episode": "2023-26 normalization",
+   "window": "2022-07-01->2026-08-01",
+   "kind": "trough",
+   "composite_extremum": "2023-06-01",
+   "composite_val": -29.32,
+   "components": {
+    "i1": {
+     "score": -44.71,
+     "d1": -13.37,
+     "d3": -18.71,
+     "level_pts": -8.94,
+     "level_share": 0.305,
+     "earliest_turn": "2022-05-01",
+     "earliest_dir": 1,
+     "lead_mo": 13,
+     "timing": "leading",
+     "chg1_share": 0.4033,
+     "chg3_share": 0.5091
+    },
+    "i2": {
+     "score": -9.87,
+     "d1": -25.31,
+     "d3": -29.64,
+     "level_pts": -1.97,
+     "level_share": 0.0673,
+     "earliest_turn": "2022-08-01",
+     "earliest_dir": 1,
+     "lead_mo": 10,
+     "timing": "leading",
+     "chg1_share": 0.7635,
+     "chg3_share": 0.8065
+    },
+    "i3": {
+     "score": -46.92,
+     "d1": 3.85,
+     "d3": 5.63,
+     "level_pts": -9.38,
+     "level_share": 0.3201,
+     "earliest_turn": "2022-06-01",
+     "earliest_dir": -1,
+     "lead_mo": 12,
+     "timing": "leading",
+     "chg1_share": -0.1161,
+     "chg3_share": -0.1532
+    },
+    "i4": {
+     "score": 9.83,
+     "d1": 1.13,
+     "d3": 3.23,
+     "level_pts": 1.97,
+     "level_share": -0.067,
+     "earliest_turn": "2022-03-01",
+     "earliest_dir": -1,
+     "lead_mo": 15,
+     "timing": "leading",
+     "chg1_share": -0.0341,
+     "chg3_share": -0.0879
+    },
+    "i5": {
+     "score": -54.9,
+     "d1": 0.57,
+     "d3": 2.71,
+     "level_pts": -10.98,
+     "level_share": 0.3746,
+     "earliest_turn": "2022-05-01",
+     "earliest_dir": 1,
+     "lead_mo": 13,
+     "timing": "leading",
+     "chg1_share": -0.0172,
+     "chg3_share": -0.0737
+    }
+   },
+   "comp_d1": -6.63,
+   "comp_d3": -7.35
+  }
+ ],
+ "early_cases": [
+  "1973-75 inflation shock",
+  "2008 commodity spike",
+  "2008 crash trough",
+  "2021-22 inflation surge"
+ ],
+ "benchmarks": {
+  "i1": {
+   "defl_n": 243,
+   "defl_pearson": 0.2998,
+   "defl_spearman": 0.2942,
+   "defl_dir": 0.6074,
+   "h6": {
+    "n": 723,
+    "level_spearman": 0.0224,
+    "d1_spearman": 0.1105,
+    "d3_spearman": 0.1129
+   },
+   "h9": {
+    "n": 723,
+    "level_spearman": -0.0579,
+    "d1_spearman": 0.1356,
+    "d3_spearman": 0.2245
+   },
+   "vs_cpi": {
+    "cpi_turns": 105,
+    "matched": 102,
+    "hit_rate": 0.9714,
+    "median_lead": 0,
+    "mean_lead": 1.37
+   }
+  },
+  "i2": {
+   "defl_n": 245,
+   "defl_pearson": 0.3683,
+   "defl_spearman": 0.3563,
+   "defl_dir": 0.6025,
+   "h6": {
+    "n": 727,
+    "level_spearman": -0.005,
+    "d1_spearman": 0.1007,
+    "d3_spearman": 0.177
+   },
+   "h9": {
+    "n": 724,
+    "level_spearman": -0.0934,
+    "d1_spearman": 0.1049,
+    "d3_spearman": 0.1751
+   },
+   "vs_cpi": {
+    "cpi_turns": 105,
+    "matched": 96,
+    "hit_rate": 0.9143,
+    "median_lead": 1,
+    "mean_lead": 2.51
+   }
+  },
+  "i3": {
+   "defl_n": 245,
+   "defl_pearson": 0.1857,
+   "defl_spearman": 0.1873,
+   "defl_dir": 0.5656,
+   "h6": {
+    "n": 727,
+    "level_spearman": 0.1479,
+    "d1_spearman": 0.1162,
+    "d3_spearman": 0.1407
+   },
+   "h9": {
+    "n": 724,
+    "level_spearman": 0.0668,
+    "d1_spearman": 0.1235,
+    "d3_spearman": 0.1989
+   },
+   "vs_cpi": {
+    "cpi_turns": 105,
+    "matched": 101,
+    "hit_rate": 0.9619,
+    "median_lead": 1,
+    "mean_lead": 1.74
+   }
+  },
+  "i4": {
+   "defl_n": 245,
+   "defl_pearson": -0.0462,
+   "defl_spearman": -0.012,
+   "defl_dir": 0.5328,
+   "h6": {
+    "n": 727,
+    "level_spearman": 0.2539,
+    "d1_spearman": 0.0031,
+    "d3_spearman": 0.0576
+   },
+   "h9": {
+    "n": 724,
+    "level_spearman": 0.2403,
+    "d1_spearman": 0.0297,
+    "d3_spearman": 0.0584
+   },
+   "vs_cpi": {
+    "cpi_turns": 105,
+    "matched": 98,
+    "hit_rate": 0.9333,
+    "median_lead": 2,
+    "mean_lead": 2.6
+   }
+  },
+  "i5": {
+   "defl_n": 243,
+   "defl_pearson": 0.1908,
+   "defl_spearman": 0.1633,
+   "defl_dir": 0.5579,
+   "h6": {
+    "n": 723,
+    "level_spearman": 0.0397,
+    "d1_spearman": 0.0841,
+    "d3_spearman": 0.0611
+   },
+   "h9": {
+    "n": 723,
+    "level_spearman": -0.0287,
+    "d1_spearman": 0.1179,
+    "d3_spearman": 0.1727
+   },
+   "vs_cpi": {
+    "cpi_turns": 105,
+    "matched": 104,
+    "hit_rate": 0.9905,
+    "median_lead": 0,
+    "mean_lead": 1.48
+   }
+  }
+ },
+ "outcome_data_loaded": false,
+ "production_authorized": false,
+ "note": "arithmetic attribution only; no causality claimed; no model change",
+ "verdict": "inflation_component_attribution_mixed",
+ "verdict_scope": "descriptive attribution only; no small consistent culprit; authorizes no redesign or outcome testing",
+ "finding": "indicators/macro-pressure-map/research/decisions/issue-164-inflation-component-attribution-finding.md",
+ "episodes_table": "indicators/macro-pressure-map/research/generated/issue-164/inflation-episode-attribution.csv",
+ "diagnostics_table": "indicators/macro-pressure-map/research/generated/issue-164/inflation-component-diagnostics.csv"
+}
