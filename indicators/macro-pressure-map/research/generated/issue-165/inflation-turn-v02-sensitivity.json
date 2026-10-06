@@ -1,0 +1,33 @@
+{
+ "note": "descriptive only; not used for verdict or rule selection",
+ "SMA2": {
+  "turns_n": 149,
+  "reduction_vs_182": 0.1813,
+  "median_dwell": 4,
+  "mean_dwell": 4.94,
+  "cpi_hit_rate": 0.9143,
+  "cpi_median_lead": 2,
+  "consistent_share": 0.4479,
+  "false_n": 53
+ },
+ "SMA3": {
+  "turns_n": 134,
+  "reduction_vs_182": 0.2637,
+  "median_dwell": 4,
+  "mean_dwell": 5.39,
+  "cpi_hit_rate": 0.8667,
+  "cpi_median_lead": 2,
+  "consistent_share": 0.4615,
+  "false_n": 43
+ },
+ "SMA6": {
+  "turns_n": 83,
+  "reduction_vs_182": 0.544,
+  "median_dwell": 7,
+  "mean_dwell": 8.56,
+  "cpi_hit_rate": 0.6095,
+  "cpi_median_lead": 2.5,
+  "consistent_share": 0.4688,
+  "false_n": 19
+ }
+}
