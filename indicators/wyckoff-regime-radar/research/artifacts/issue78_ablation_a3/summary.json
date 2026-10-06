@@ -1,0 +1,39 @@
+{
+  "integrity": {
+    "issue": 78,
+    "study": "Supply-Demand Ablation A3",
+    "role": "post-outcome architecture discovery; not fresh OOS validation",
+    "classifier_blob": "1eec08e791403453853b589373bb2270c508c3bb",
+    "figi_set_sha256": "017e9360402afa002dc0970088649e7c411c4f02333dec550f2432be3c0dd701",
+    "stocks": 300,
+    "raw_files": 300,
+    "raw_failures": 0,
+    "horizons": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "blocks": [
+      "ALL",
+      "2000-2004",
+      "2005-2009",
+      "2010-2014",
+      "2015-2019",
+      "2020-2026"
+    ],
+    "min_cell_bars": 5,
+    "min_aggregate_stocks": 30
+  },
+  "a3_design": {
+    "core": "dir_structure side x extension magnitude (A1, reused)",
+    "controls": "a0_sd and holding_balance (overlays only)",
+    "no_new_factors": true
+  },
+  "notes": [
+    "OOS3 is deliberately reused for discovery under the 2026-10-05 amendment.",
+    "No result from this run is fresh OOS evidence.",
+    "Hard 80/20 cells reported first; 70/30 relaxed robustness predeclared.",
+    "Within-stock quintiles are retrospective discovery bins, not live thresholds."
+  ]
+}
