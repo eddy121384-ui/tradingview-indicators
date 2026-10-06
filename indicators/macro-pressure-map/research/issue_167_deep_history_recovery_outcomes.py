@@ -631,8 +631,35 @@ def main(argv=None):
             "positive_fraction_3m": d["positive_fraction"],
         })
 
+    # trajectory quadrants INSIDE each of the 9 states (issue: report quadrants per state)
+    state_quad_rows = []
+    for gl in ("low", "neutral", "high"):
+        for il in ("low", "neutral", "high"):
+            for q in ("d3G>0/d3I>0", "d3G>0/d3I<=0", "d3G<=0/d3I>0", "d3G<=0/d3I<=0"):
+                sel_m = [m for m in months
+                         if band(classified[m]["g"], DEEP_THRESHOLD, PRIMARY_THRESHOLD) == gl
+                         and band(classified[m]["i"], DEEP_THRESHOLD, PRIMARY_THRESHOLD) == il
+                         and classified[m]["trajectory_quadrant"] == q]
+                sp = [spreads_for(eq, tsy, m, [3])[3] for m in sel_m]
+                d = describe([s["spread"] for s in sp])
+                state_quad_rows.append({
+                    "growth_band": gl, "inflation_band": il,
+                    "trajectory_quadrant": q, "months": len(sel_m), "n_3m": d["n"],
+                    "mean_3m": d["mean"], "median_3m": d["median"],
+                    "positive_fraction_3m": d["positive_fraction"],
+                })
+
     primary_desc = describe([o["spread_3m"] for o in obs_primary if o["role"] == "signal"])
     control_desc = describe([o["spread_3m"] for o in obs_primary if o["role"] == "control"])
+    # explicit leg reporting (issue requires Equity_3M_TR, Treasury10Y_3M_TR and the spread)
+    for desc, role in ((primary_desc, "signal"), (control_desc, "control")):
+        sel = [o for o in obs_primary if o["role"] == role and o["spread_3m"] is not None]
+        desc["equity_leg_mean"] = mean([o["equity_3m"] for o in sel])
+        desc["equity_leg_median"] = (statistics.median([o["equity_3m"] for o in sel])
+                                     if sel else None)
+        desc["treasury_leg_mean"] = mean([o["treasury_3m"] for o in sel])
+        desc["treasury_leg_median"] = (statistics.median([o["treasury_3m"] for o in sel])
+                                       if sel else None)
 
     result = {
         "issue": ISSUE,
@@ -676,6 +703,7 @@ def main(argv=None):
         "high_inflation_slowdown_episodes": len(hi_eps),
         "descriptive_3x3_map": map_rows,
         "trajectory_quadrants": quad_rows,
+        "descriptive_trajectory_quadrants_within_state": state_quad_rows,
     }
 
     out = Path(args.out)
@@ -713,6 +741,10 @@ def main(argv=None):
     write_csv(out / "recovery-trajectory-quadrants.csv", quad_rows, [
         "trajectory_quadrant", "months", "n_3m", "mean_3m", "median_3m",
         "positive_fraction_3m",
+    ])
+    write_csv(out / "recovery-3x3-trajectory-quadrants.csv", state_quad_rows, [
+        "growth_band", "inflation_band", "trajectory_quadrant", "months", "n_3m",
+        "mean_3m", "median_3m", "positive_fraction_3m",
     ])
 
     print(json.dumps({

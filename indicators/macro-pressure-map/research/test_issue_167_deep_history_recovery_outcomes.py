@@ -9,7 +9,10 @@ Deterministic; no pandas/numpy. Run from indicators/macro-pressure-map/research/
 
 from __future__ import annotations
 
+import csv
+import json
 import unittest
+from pathlib import Path
 
 import issue_167_deep_history_recovery_outcomes as ev
 
@@ -295,6 +298,77 @@ class TestSecondaryCohort(unittest.TestCase):
         c = ev.classify(macro, list(macro))
         self.assertEqual(ev.primary_signals_controls(c, list(macro)),
                          ev.cohort_rows(c, list(macro), "primary"))
+
+
+class TestEmittedArtifacts(unittest.TestCase):
+    """Validation of the committed Issue #167 outputs (self-consistency invariants)."""
+
+    OUT = Path(__file__).resolve().parent / "generated" / "issue-167"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.res = json.loads((cls.OUT / "recovery-primary-result.json").read_text())
+        cls.rows = list(csv.DictReader((cls.OUT / "recovery-signal-control.csv").open(newline="")))
+
+    def test_required_flags(self):
+        self.assertTrue(self.res["outcome_data_loaded"])
+        self.assertFalse(self.res["production_authorized"])
+        self.assertTrue(self.res["revised_macro_history"])
+        self.assertFalse(self.res["real_time_vintage_claim"])
+
+    def test_nine_gates_present(self):
+        self.assertEqual(len(self.res["gates"]), 9)
+        self.assertTrue(all(isinstance(v, bool) for v in self.res["gates"].values()))
+
+    def test_leg_mean_identity(self):
+        """mean(Equity minus Treasury) must equal mean(Equity) - mean(Treasury)."""
+        for role in ("signal", "control"):
+            sel = [r for r in self.rows
+                   if r["role"] == role
+                   and r["spread_3m"] and r["equity_3m"] and r["treasury_3m"]]
+            exp = ev.mean([float(r["equity_3m"]) for r in sel]) - \
+                  ev.mean([float(r["treasury_3m"]) for r in sel])
+            got = self.res[f"{role}_3m"]["mean"]
+            self.assertAlmostEqual(got, exp, places=12)
+            self.assertAlmostEqual(self.res[f"{role}_3m"]["equity_leg_mean"],
+                                   ev.mean([float(r["equity_3m"]) for r in sel]), places=12)
+
+    def test_3x3_map_covers_all_macro_valid_months(self):
+        m = self.res["descriptive_3x3_map"]
+        self.assertEqual(len(m), 9)
+        self.assertEqual(sum(x["months"] for x in m),
+                         self.res["inputs"]["macro_valid_months_in_window"])
+
+    def test_state_quadrants_partition_each_state(self):
+        by_state = {}
+        for x in self.res["descriptive_trajectory_quadrants_within_state"]:
+            key = (x["growth_band"], x["inflation_band"])
+            by_state[key] = by_state.get(key, 0) + x["months"]
+        self.assertEqual(len(by_state), 9)
+        for cell in self.res["descriptive_3x3_map"]:
+            key = (cell["growth_band"], cell["inflation_band"])
+            # months with no valid t-3 fall outside all four quadrants
+            self.assertLessEqual(by_state[key], cell["months"])
+            self.assertLessEqual(cell["months"] - by_state[key], 3)
+
+    def test_timing_columns_present_and_shifted(self):
+        for r in self.rows:
+            self.assertEqual(ev.add_months(r["macro_state_month"], 1),
+                             r["signal_available_month"])
+
+    def test_verdict_is_one_of_the_frozen_three(self):
+        self.assertIn(self.res["verdict"], (
+            "deep_history_recovery_outcome_supported",
+            "deep_history_recovery_outcome_suggestive_not_robust",
+            "deep_history_recovery_outcome_not_supported",
+            "deep_history_recovery_outcome_inconclusive_sample",
+        ))
+
+    def test_bootstrap_is_episode_cluster_not_iid(self):
+        b = self.res["bootstrap"]
+        self.assertEqual(b["method"], "primary-state-episode cluster bootstrap")
+        self.assertEqual(b["valid_replications"], 10000)
+        self.assertEqual(b["seed"], 19660101)
 
 
 class TestFrozenInputs(unittest.TestCase):

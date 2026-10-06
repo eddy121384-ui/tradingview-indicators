@@ -25,6 +25,8 @@ excess return of US equity over ~10Y Treasury duration.
 - Control mean: **+2.11pp**
 - Incremental (signal − control): **+2.35pp**
 - Episode-cluster bootstrap 95% CI: **[-0.55pp, +5.53pp]** → **contains zero**
+- Legs (3M mean): signal Equity **+5.66pp** / signal Treasury **+1.21pp**; control Equity
+  **+3.49pp** / control Treasury **+1.38pp**
 
 Eight of nine frozen gates pass. Gate 4 (bootstrap CI lower bound > 0) fails, so the
 preregistered mapping yields `..._suggestive_not_robust`, **not** `..._supported`.
@@ -47,6 +49,12 @@ No discretionary rescue is applied.
   (`core.autocrlf=true`). The evaluator verifies the **git blob** hash, which matches the
   frozen value exactly; it aborts on mismatch.
 - No new market data was fetched. TradingView MCP was not used, required, or repaired.
+- **Asset backbones are the Issue #166 files only.** Equity is the Fama-French US market
+  monthly total return (`Mkt-RF + RF`, 202608 CRSP vintage) and Treasury is the frozen
+  synthetic coupon-inclusive ~10Y constant-maturity monthly total return. **SPY and TLT were
+  not used**; they appear in the Issue #166 source matrix only as modern QA references and are
+  deliberately not part of this backbone (`outcome-source-matrix.csv` marks them `QA ONLY`).
+  No substitute asset data was introduced.
 - Frozen model commit `cc331bf11591ab49c6f5a5023cfee39b2cf09fde` verified as an ancestor
   of the base HEAD.
 
@@ -63,9 +71,19 @@ complete 3M payoff (identical rule for both roles).
 | Statistic | Signal | Control |
 |---|---|---|
 | n (3M payoff) | 27 | 191 |
-| mean 3M spread | **+4.45pp** | **+2.11pp** |
+| mean 3M spread (Equity − Treasury) | **+4.45pp** | **+2.11pp** |
 | median 3M spread | +4.68pp | +1.79pp |
 | positive fraction | 66.7% | 60.7% |
+| mean **Equity_3M_TR** leg | **+5.66pp** | +3.49pp |
+| median Equity_3M_TR leg | +5.17pp | +3.57pp |
+| mean **Treasury10Y_3M_TR** leg | **+1.21pp** | +1.38pp |
+| median Treasury10Y_3M_TR leg | +0.35pp | +1.03pp |
+
+The signal premium is therefore concentrated in the **equity leg** (signal +5.66pp vs control
++3.49pp); the two Treasury legs are materially equal (+1.21pp vs +1.38pp). A duration
+underperformance story is not doing the work here — broad equity does more of it, and both
+legs are positive in both groups, so this is a relative-spread result, not a "bonds fall"
+result.
 
 Incremental mean (signal − control): **+2.35pp**.
 
@@ -158,6 +176,26 @@ Note for the record: in this exploratory cut the *combined* positive-trajectory 
 verdict, not a signal selection. **No new signal is selected from this table inside Issue
 #167.**
 
+### 7.1 Trajectory quadrants *within* each of the 9 states
+
+Requested reporting refinement (see §8.9): each state is broken down by the four trajectory
+quadrants in `recovery-3x3-trajectory-quadrants.csv` (9 states × 4 quadrants = 36 cells;
+months with no valid `t-3` fall outside all four quadrants, so a cell total can be up to 3
+months short of its state total). The largest state (Neutral growth / Low inflation, 116
+months) illustrates the pattern:
+
+| Quadrant (within Neutral/Low) | months | 3M spread mean | positive frac |
+|---|---|---|---|
+| `d3G>0 / d3I>0` | 21 | +1.80pp | 71.4% |
+| `d3G>0 / d3I<=0` | 31 | +3.28pp | 71.0% |
+| `d3G<=0 / d3I>0` | 24 | +3.89pp | 70.8% |
+| `d3G<=0 / d3I<=0` | 39 | +2.61pp | 66.7% |
+
+The preregistered `d3G>0 AND d3I>0` rule is **not** the highest-mean quadrant even inside the
+most favourable state. This is reported for completeness and is **not** a basis for changing
+the frozen trajectory rule, which was fixed before outcomes were seen. Any follow-up
+hypothesis on quadrant choice requires a separate preregistered issue.
+
 ## 8. Implementation decisions (prereg-consistent, non-tunable)
 
 These were fixed by the prereg's wording and are recorded here for auditability. None was
@@ -187,6 +225,16 @@ chosen after seeing outcomes, and none changes a threshold, horizon, universe or
    removes any dependency on a locally-installed scientific stack and makes the fixed-seed
    bootstrap bit-reproducible. Verified: identical result JSON across reruns
    (`sha256(12)=178677cb8caa`).
+9. **Reporting refinement (added after the verdict was frozen).** The issue's required-report
+   list asks for trajectory quadrants *inside each state* and for the Equity and Treasury legs
+   to be reported explicitly; §16 of the prereg required the quadrants but did not fix their
+   granularity. Both were therefore implemented as **additive reporting only**: a per-state
+   quadrant table and leg means/medians. No threshold, horizon, universe, subgroup,
+   signal/control rule, lag, payoff, asset pair, bootstrap, era or gate was touched, and the
+   frozen primary result was verified **bit-identical** before and after the change
+   (`verdict`, `gates`, `gate_detail`, `signal_3m`, `control_3m`, `incremental_mean_3m`,
+   `bootstrap`, `primary_observations`, `severity_subgroups`, episode counts and the
+   high-inflation table all unchanged; the only JSON delta is the new descriptive key).
 
 ## 9. Bugs caught before finalizing
 
@@ -224,7 +272,8 @@ than by the failing path being obvious:
 
 - `research/issue-167-deep-history-recovery-outcomes-prereg.md` (prereg commit `b88ff35…`)
 - `research/issue_167_deep_history_recovery_outcomes.py` (frozen evaluator)
-- `research/test_issue_167_deep_history_recovery_outcomes.py` (29 tests, all passing)
+- `research/test_issue_167_deep_history_recovery_outcomes.py` (37 tests, all passing:
+  29 unit/regression + 8 emitted-artifact validation)
 - `research/generated/issue-167/recovery-signal-control.csv` (220 observation rows: 27 signals, 193 controls)
 - `research/generated/issue-167/recovery-primary-episodes.csv` (70 episodes)
 - `research/generated/issue-167/recovery-primary-result.json`
@@ -232,6 +281,7 @@ than by the failing path being obvious:
 - `research/generated/issue-167/recovery-high-inflation-slowdown.csv`
 - `research/generated/issue-167/recovery-descriptive-3x3-map.csv`
 - `research/generated/issue-167/recovery-trajectory-quadrants.csv`
+- `research/generated/issue-167/recovery-3x3-trajectory-quadrants.csv` (9 states × 4 quadrants)
 
 ## 12. Explicit confirmations
 
