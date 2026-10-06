@@ -160,3 +160,45 @@ def test_a3_frame_is_a2_frame_on_real_data():
         ):
             assert col in f2.columns
         assert (f2["block"] != "").any()
+        # Determinism: the A3-consumed frame rebuilds exactly.
+        f2b = a2.add_within_stock_ranks(a2.build_sd_frame(raw, classifier))
+        for col in f2.columns:
+            left = f2[col].to_numpy()
+            right = f2b[col].to_numpy()
+            if pd.api.types.is_numeric_dtype(f2[col]):
+                np.testing.assert_array_equal(
+                    np.nan_to_num(left, nan=-999.0),
+                    np.nan_to_num(right, nan=-999.0),
+                )
+            else:
+                assert (left == right).all()
+        # Ready-mask integrity: every ready bar has finite reuse scores.
+        ready = f2["ready"].to_numpy(bool)
+        assert ready.any()
+        matrix = f2.loc[ready, list(a2.REDUNDANCY_VARS)].to_numpy(float)
+        assert np.isfinite(matrix).all()
+        # Exact definitional identities on real data (no redefinition).
+        np.testing.assert_allclose(
+            f2["extension"].to_numpy(float),
+            np.abs(f2["dir_velocity"].to_numpy(float)),
+            rtol=0,
+            atol=0,
+            equal_nan=True,
+        )
+        np.testing.assert_allclose(
+            f2["holding_balance"].to_numpy(float),
+            f2["sup_hold"].to_numpy(float) - f2["res_hold"].to_numpy(float),
+            rtol=0,
+            atol=0,
+            equal_nan=True,
+        )
+        for score in (
+            "dir_velocity",
+            "extension",
+            "dir_structure",
+            "holding_balance",
+            "a0_sd",
+        ):
+            ranks = f2.loc[ready, f"rank_{score}"].to_numpy(float)
+            assert np.isfinite(ranks).all()
+            assert ((ranks > 0.0) & (ranks <= 1.0)).all()
