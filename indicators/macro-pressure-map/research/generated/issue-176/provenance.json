@@ -1,0 +1,82 @@
+{
+  "fetched_at": "2026-10-07T07:24:01.630Z",
+  "sources": {
+    "FROZEN:macro_blob_sha256": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc",
+    "FROZEN:issue174_backbone_sha256": "891e536de49f4500ba2c8259b3c161365f1064763903781235ecd373bad5d5e8",
+    "Yahoo:^GSPC_daily_1966_2026": {
+      "windows": 61,
+      "raw_bytes_total": 1722054,
+      "chained_sha256": "700f60f326ec30acaa7be77dc30716ac16d4451c35666e43939d1773851f80ca",
+      "daily_points": 15291
+    },
+    "Shiller:datahub_s-and-p-500": {
+      "url": "https://datahub.io/core/s-and-p-500/_r/-/data/data.csv",
+      "bytes": 123851,
+      "sha256": "3a45dffabc414afc298c12159abc84c2875f88175ff3d4473ef7417e725ecac6",
+      "license": "ODC-PDDL-1.0",
+      "upstream": "http://www.econ.yale.edu/~shiller/data.htm",
+      "div_months_nonzero": 1830,
+      "note": "dividends zeroed by mirror from 2023-07; recon coverage ends 2023-06 (disclosed truncation)"
+    },
+    "Yahoo:^SP500TR_monthly": {
+      "bytes": 46321,
+      "sha256": "a15c9fd75907bfe961851f8d576f6917a79b4e7395692d37586470429f6440f1",
+      "firstTradeDate": "1988-01-04T14:30:00.000Z",
+      "n_points": 466
+    },
+    "Yahoo:^RUT_monthly": {
+      "bytes": 52743,
+      "sha256": "fc9470e6634c628f6d7e9bf54a47f2738453e077fefa135f68b4c1c700f6e028",
+      "firstTradeDate": "1987-09-10T13:30:00.000Z",
+      "n_points": 470
+    },
+    "Yahoo:^RUTTR_monthly": {
+      "bytes": 37158,
+      "sha256": "18f0c42a08289a8473eb4afb93a8739796dbd71653388cf5dbd9364f33aeb5fd",
+      "firstTradeDate": "1995-06-01T13:30:00.000Z",
+      "n_points": 377
+    },
+    "Yahoo:CL=F_monthly": {
+      "bytes": 29765,
+      "sha256": "a44d9f048aa322cadb2262abbca3bf7fc88b88fcdc0e49425c5658cbacc6a390",
+      "firstTradeDate": "2000-08-23T04:00:00.000Z",
+      "n_points": 269
+    },
+    "Yahoo:USO_monthly": {
+      "bytes": 27797,
+      "sha256": "91b56e03715bb1b216953065619ebccc217f3db586eadeab3b0d354c562c385a",
+      "firstTradeDate": "2006-04-10T13:30:00.000Z",
+      "n_points": 247
+    },
+    "Yahoo:CL=F_daily_2000_2026_monthends": {
+      "months": 315
+    },
+    "FRED:NASDAQCOM": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQCOM",
+      "bytes": 280997,
+      "sha256": "ac87f1556a74271451b0b43d170a1a0db072431233782cf1152fbf1913f094ed"
+    },
+    "FRED:NASDAQXCMP": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQXCMP",
+      "bytes": 114395,
+      "sha256": "4fe59ba0fc59dc2fb50be79c31133bd29bb66a26adc6092d4c583e0c1e5f7304"
+    },
+    "FRED:TB3MS": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=TB3MS",
+      "bytes": 17865,
+      "sha256": "631bc444a8c5370c3a2df12f484a67ae7b9a68c00fe8a33215895fb49c8cc08c"
+    },
+    "Damodaran:histretSP": {
+      "bytes": 656121,
+      "sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+      "note": "annual S&P TR cross-check; expected sha 127c772f… (vintage drift disclosed if differs)"
+    },
+    "French:Portfolios_Formed_on_ME": {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_ME_CSV.zip",
+      "bytes": 200765,
+      "sha256": "f6c4c440b4c6f26f1f01365e84ccae5338ae52e65057034d2ef3d3c0c1843020",
+      "members": [],
+      "verdict": "REJECTED substitute (different small-cap universe; documented, not used)"
+    }
+  }
+}
