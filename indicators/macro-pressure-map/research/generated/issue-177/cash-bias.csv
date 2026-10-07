@@ -1,0 +1,10 @@
+state,opportunity_score,cash_bias,cash_role
+G_Low/I_Low,9,low,residual
+G_Low/I_Neutral,7,neutral,residual
+G_Low/I_High,3,high,residual
+G_Neutral/I_Low,11,low,residual
+G_Neutral/I_Neutral,7,neutral,residual
+G_Neutral/I_High,3,high,residual
+G_High/I_Low,6,neutral,residual
+G_High/I_Neutral,8,neutral,residual
+G_High/I_High,5,neutral,residual

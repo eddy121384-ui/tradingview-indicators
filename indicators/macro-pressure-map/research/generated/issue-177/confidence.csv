@@ -1,0 +1,73 @@
+state,sleeve,exposure,confidence,eligibility,hardening_verdict,limitation,low_confidence,policy_sensitive
+G_Low/I_Low,sp500,Neutral,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_Low/I_Low,nasdaq,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,false
+G_Low/I_Low,russell,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_Low/I_Low,treasury2y,High,full,eligible_primary,,"synthetic 2Y CMT TR",false,false
+G_Low/I_Low,treasury10y,High,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,false
+G_Low/I_Low,longtreasury,High,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,false
+G_Low/I_Low,gold,Neutral,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,false
+G_Low/I_Low,oil,0,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",false,false
+G_Low/I_Neutral,sp500,Neutral,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_Low/I_Neutral,nasdaq,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,true
+G_Low/I_Neutral,russell,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_Low/I_Neutral,treasury2y,Neutral,full,eligible_primary,,"synthetic 2Y CMT TR",false,true
+G_Low/I_Neutral,treasury10y,Neutral,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,true
+G_Low/I_Neutral,longtreasury,Neutral,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,false
+G_Low/I_Neutral,gold,Low,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,true
+G_Low/I_Neutral,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",true,false
+G_Low/I_High,sp500,Low,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_Low/I_High,nasdaq,Low,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,false
+G_Low/I_High,russell,Low,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_Low/I_High,treasury2y,Neutral,full,eligible_primary,,"synthetic 2Y CMT TR",false,true
+G_Low/I_High,treasury10y,Low,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,true
+G_Low/I_High,longtreasury,Low,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,false
+G_Low/I_High,gold,Neutral,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,false
+G_Low/I_High,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",true,false
+G_Neutral/I_Low,sp500,High,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_Neutral/I_Low,nasdaq,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,false
+G_Neutral/I_Low,russell,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_Neutral/I_Low,treasury2y,High,full,eligible_primary,,"synthetic 2Y CMT TR",false,true
+G_Neutral/I_Low,treasury10y,Neutral,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,false
+G_Neutral/I_Low,longtreasury,High,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,true
+G_Neutral/I_Low,gold,Neutral,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,false
+G_Neutral/I_Low,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",false,false
+G_Neutral/I_Neutral,sp500,Neutral,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_Neutral/I_Neutral,nasdaq,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,false
+G_Neutral/I_Neutral,russell,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_Neutral/I_Neutral,treasury2y,Neutral,full,eligible_primary,,"synthetic 2Y CMT TR",false,false
+G_Neutral/I_Neutral,treasury10y,Neutral,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,false
+G_Neutral/I_Neutral,longtreasury,Neutral,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,false
+G_Neutral/I_Neutral,gold,Low,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,false
+G_Neutral/I_Neutral,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",false,false
+G_Neutral/I_High,sp500,Neutral,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_Neutral/I_High,nasdaq,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,false
+G_Neutral/I_High,russell,0,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_Neutral/I_High,treasury2y,Low,full,eligible_primary,,"synthetic 2Y CMT TR",false,false
+G_Neutral/I_High,treasury10y,Low,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,true
+G_Neutral/I_High,longtreasury,Low,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,true
+G_Neutral/I_High,gold,Neutral,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,false
+G_Neutral/I_High,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",false,false
+G_High/I_Low,sp500,Neutral,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_High/I_Low,nasdaq,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,true
+G_High/I_Low,russell,Low,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_High/I_Low,treasury2y,Neutral,full,eligible_primary,,"synthetic 2Y CMT TR",false,false
+G_High/I_Low,treasury10y,Neutral,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,true
+G_High/I_Low,longtreasury,High,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,false
+G_High/I_Low,gold,0,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,false
+G_High/I_Low,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",true,false
+G_High/I_Neutral,sp500,High,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_High/I_Neutral,nasdaq,High,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,false
+G_High/I_Neutral,russell,High,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_High/I_Neutral,treasury2y,Low,full,eligible_primary,,"synthetic 2Y CMT TR",false,false
+G_High/I_Neutral,treasury10y,Low,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,true
+G_High/I_Neutral,longtreasury,Low,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,false
+G_High/I_Neutral,gold,Neutral,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,false
+G_High/I_Neutral,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",false,false
+G_High/I_High,sp500,Neutral,limited,eligible_primary,hardened_with_limitation,"S&P TR reconstruction (^GSPC month-ends + Shiller dividends); ends 2023-06",false,false
+G_High/I_High,nasdaq,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~0.96%/yr wedge); official TR only 2003+",false,false
+G_High/I_High,russell,Neutral,limited,eligible_with_limitation,unresolved_keep_issue174_semantics,"price-only; dividends excluded (~1.34%/yr wedge); official TR only 1995+",false,false
+G_High/I_High,treasury2y,Low,full,eligible_primary,,"synthetic 2Y CMT TR",false,false
+G_High/I_High,treasury10y,Low,full,eligible_primary,,"frozen #166 synthetic 10Y TR",false,false
+G_High/I_High,longtreasury,Low,full,eligible_primary,,"synthetic 20Y CMT TR; 73-mo 1987-10..1993-10 gap",false,false
+G_High/I_High,gold,Neutral,full,eligible_primary,,"Pink Sheet monthly-avg price; pre-1971 fixed parity",false,true
+G_High/I_High,oil,Neutral,limited,eligible_with_limitation,hardened_with_limitation,"investable = CL=F excess + TB3MS collateral from 2000-09; spot kept separately",false,false

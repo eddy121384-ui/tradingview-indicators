@@ -1,0 +1,4 @@
+state,sleeve,exposure,evidence,mean_ex,ep_hit,p10_ex,worst_ep,p_material,ex_worst_mean_ex,severe_tail,flag_a,zero_rule_path,zero_rule_reason
+G_Low/I_Low,oil,0,historically_unfavorable,-0.02932247922415487,0.2,-0.19238658391022545,-0.3080858952715676,0.5294117647058824,-0.032692172226224885,true,false,B,B:evidence=historically_unfavorable;meanEx<0;epHit<=0.40;severe_tail[p10_ex<=-0.04|worst_ep<=-0.15|p_material_monthly>=0.10];exWorstMeanEx<0
+G_Neutral/I_High,russell,0,historically_unfavorable,-0.00563753180789397,0.4,-0.08669435164422533,-0.1917996192529946,0.41333333333333333,-0.0030266662219055837,true,true,A,A:frozen_zero_candidate[#174 evidence-classification.future_zero_weight_candidate]=true
+G_High/I_Low,gold,0,historically_unfavorable,-0.006454702909338473,0.4,-0.05130192172955656,-0.16629213483146077,0.3225806451612903,-0.0029826638917376906,true,true,A,A:frozen_zero_candidate[#174 evidence-classification.future_zero_weight_candidate]=true

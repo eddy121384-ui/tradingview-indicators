@@ -1,0 +1,514 @@
+{
+  "issue": 177,
+  "branch": "research/issue-177-state-allocation-policy",
+  "base_head": "5d596047e1da5531f43190bad761a79a8b3ac342",
+  "prereg_commit": "8fb864ef1a7925235153679f2a2e83220f4f6d18",
+  "verdict": "state_allocation_policy_candidate_complete_with_limitations",
+  "verdict_basis": {
+    "any_limited_confidence": true,
+    "any_low_confidence": true
+  },
+  "self_check_gate": {
+    "mismatches": 0,
+    "tables": {
+      "issue-174/month-weighted": {
+        "compared": 648,
+        "mismatches": 0
+      },
+      "issue-174/episode-weighted": {
+        "compared": 243,
+        "mismatches": 0
+      },
+      "issue-174/era-stability": {
+        "compared": 162,
+        "mismatches": 0
+      },
+      "issue-174/downside-danger": {
+        "compared": 405,
+        "mismatches": 0
+      },
+      "issue-174/evidence-classification": {
+        "compared": 1134,
+        "mismatches": 0
+      },
+      "issue-176/affected-state-sensitivity": {
+        "compared": 72,
+        "mismatches": 0
+      },
+      "issue-176/oil-investable": {
+        "compared": 81,
+        "mismatches": 0
+      }
+    }
+  },
+  "panel_coverage_assertion": {
+    "window": [
+      "1987-10-01",
+      "2026-08-01"
+    ],
+    "months_in_window": 464,
+    "per_sleeve": {
+      "sp500": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.009591594827586215,
+        "ref_n": 464,
+        "ref_mean": 0.009591594827586215,
+        "ok": true
+      },
+      "nasdaq": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.010714957284950196,
+        "ref_n": 464,
+        "ref_mean": 0.010714957284950196,
+        "ok": true
+      },
+      "russell": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.007682885270175923,
+        "ref_n": 464,
+        "ref_mean": 0.007682885270175923,
+        "ok": true
+      },
+      "cash": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.002491289511494256,
+        "ref_n": 464,
+        "ref_mean": 0.002491289511494256,
+        "ok": true
+      },
+      "treasury2y": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.003085439175765083,
+        "ref_n": 464,
+        "ref_mean": 0.003085439175765083,
+        "ok": true
+      },
+      "treasury10y": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.004560099448029104,
+        "ref_n": 464,
+        "ref_mean": 0.004560099448029104,
+        "ok": true
+      },
+      "longtreasury": {
+        "n": 391,
+        "n_missing": 73,
+        "mean": 0.004177551741508057,
+        "ref_n": 391,
+        "ref_mean": 0.004177551741508057,
+        "ok": true
+      },
+      "gold": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.005052062860851589,
+        "ref_n": 464,
+        "ref_mean": 0.005052062860851589,
+        "ok": true
+      },
+      "oil": {
+        "n": 464,
+        "n_missing": 0,
+        "mean": 0.007709972847249307,
+        "ref_n": 464,
+        "ref_mean": 0.007709972847249307,
+        "ok": true
+      }
+    },
+    "longtreasury_gap": {
+      "n_missing": 73,
+      "first": "1987-10-01",
+      "last": "1993-10-01"
+    },
+    "pass": true
+  },
+  "tier_counts": {
+    "0": 3,
+    "Neutral": 42,
+    "High": 10,
+    "Low": 17
+  },
+  "total_non_cash_cells": 72,
+  "zero_cells": [
+    {
+      "state": "G_Low/I_Low",
+      "sleeve": "oil",
+      "path": "B",
+      "reason": "B:evidence=historically_unfavorable;meanEx<0;epHit<=0.40;severe_tail[p10_ex<=-0.04|worst_ep<=-0.15|p_material_monthly>=0.10];exWorstMeanEx<0"
+    },
+    {
+      "state": "G_Neutral/I_High",
+      "sleeve": "russell",
+      "path": "A",
+      "reason": "A:frozen_zero_candidate[#174 evidence-classification.future_zero_weight_candidate]=true"
+    },
+    {
+      "state": "G_High/I_Low",
+      "sleeve": "gold",
+      "path": "A",
+      "reason": "A:frozen_zero_candidate[#174 evidence-classification.future_zero_weight_candidate]=true"
+    }
+  ],
+  "cash_bias": [
+    {
+      "state": "G_Low/I_Low",
+      "score": 9,
+      "bias": "low"
+    },
+    {
+      "state": "G_Low/I_Neutral",
+      "score": 7,
+      "bias": "neutral"
+    },
+    {
+      "state": "G_Low/I_High",
+      "score": 3,
+      "bias": "high"
+    },
+    {
+      "state": "G_Neutral/I_Low",
+      "score": 11,
+      "bias": "low"
+    },
+    {
+      "state": "G_Neutral/I_Neutral",
+      "score": 7,
+      "bias": "neutral"
+    },
+    {
+      "state": "G_Neutral/I_High",
+      "score": 3,
+      "bias": "high"
+    },
+    {
+      "state": "G_High/I_Low",
+      "score": 6,
+      "bias": "neutral"
+    },
+    {
+      "state": "G_High/I_Neutral",
+      "score": 8,
+      "bias": "neutral"
+    },
+    {
+      "state": "G_High/I_High",
+      "score": 5,
+      "bias": "neutral"
+    }
+  ],
+  "confidence_counts": {
+    "limited": 36,
+    "full": 36
+  },
+  "limited_confidence_cells": [
+    "G_Low/I_Low|sp500",
+    "G_Low/I_Low|nasdaq",
+    "G_Low/I_Low|russell",
+    "G_Low/I_Low|oil",
+    "G_Low/I_Neutral|sp500",
+    "G_Low/I_Neutral|nasdaq",
+    "G_Low/I_Neutral|russell",
+    "G_Low/I_Neutral|oil",
+    "G_Low/I_High|sp500",
+    "G_Low/I_High|nasdaq",
+    "G_Low/I_High|russell",
+    "G_Low/I_High|oil",
+    "G_Neutral/I_Low|sp500",
+    "G_Neutral/I_Low|nasdaq",
+    "G_Neutral/I_Low|russell",
+    "G_Neutral/I_Low|oil",
+    "G_Neutral/I_Neutral|sp500",
+    "G_Neutral/I_Neutral|nasdaq",
+    "G_Neutral/I_Neutral|russell",
+    "G_Neutral/I_Neutral|oil",
+    "G_Neutral/I_High|sp500",
+    "G_Neutral/I_High|nasdaq",
+    "G_Neutral/I_High|russell",
+    "G_Neutral/I_High|oil",
+    "G_High/I_Low|sp500",
+    "G_High/I_Low|nasdaq",
+    "G_High/I_Low|russell",
+    "G_High/I_Low|oil",
+    "G_High/I_Neutral|sp500",
+    "G_High/I_Neutral|nasdaq",
+    "G_High/I_Neutral|russell",
+    "G_High/I_Neutral|oil",
+    "G_High/I_High|sp500",
+    "G_High/I_High|nasdaq",
+    "G_High/I_High|russell",
+    "G_High/I_High|oil"
+  ],
+  "low_confidence_cells": [
+    "G_Low/I_Neutral|oil",
+    "G_Low/I_High|oil",
+    "G_High/I_Low|oil"
+  ],
+  "policy_sensitive_cells": [
+    {
+      "state": "G_Low/I_Neutral",
+      "sleeve": "nasdaq",
+      "primary": "Neutral",
+      "common_sample": "Low",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_Low/I_Neutral",
+      "sleeve": "treasury2y",
+      "primary": "Neutral",
+      "common_sample": "High",
+      "evidence_full": "historically_favored"
+    },
+    {
+      "state": "G_Low/I_Neutral",
+      "sleeve": "treasury10y",
+      "primary": "Neutral",
+      "common_sample": "High",
+      "evidence_full": "historically_favored"
+    },
+    {
+      "state": "G_Low/I_Neutral",
+      "sleeve": "gold",
+      "primary": "Low",
+      "common_sample": "High",
+      "evidence_full": "historically_favored"
+    },
+    {
+      "state": "G_Low/I_High",
+      "sleeve": "treasury2y",
+      "primary": "Neutral",
+      "common_sample": "High",
+      "evidence_full": "historically_favored"
+    },
+    {
+      "state": "G_Low/I_High",
+      "sleeve": "treasury10y",
+      "primary": "Low",
+      "common_sample": "Neutral",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_Neutral/I_Low",
+      "sleeve": "treasury2y",
+      "primary": "High",
+      "common_sample": "Neutral",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_Neutral/I_Low",
+      "sleeve": "longtreasury",
+      "primary": "High",
+      "common_sample": "Low",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_Neutral/I_High",
+      "sleeve": "treasury10y",
+      "primary": "Low",
+      "common_sample": "Neutral",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_Neutral/I_High",
+      "sleeve": "longtreasury",
+      "primary": "Low",
+      "common_sample": "Neutral",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_High/I_Low",
+      "sleeve": "nasdaq",
+      "primary": "Neutral",
+      "common_sample": "Low",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_High/I_Low",
+      "sleeve": "treasury10y",
+      "primary": "Neutral",
+      "common_sample": "High",
+      "evidence_full": "historically_favored"
+    },
+    {
+      "state": "G_High/I_Neutral",
+      "sleeve": "treasury10y",
+      "primary": "Low",
+      "common_sample": "Neutral",
+      "evidence_full": "mixed"
+    },
+    {
+      "state": "G_High/I_High",
+      "sleeve": "gold",
+      "primary": "Neutral",
+      "common_sample": "Low",
+      "evidence_full": "historically_unfavorable"
+    }
+  ],
+  "sensitivity": {
+    "compared_cells": 72,
+    "changed_cells": 14,
+    "unchanged_cells": 58
+  },
+  "checks": [
+    {
+      "id": 1,
+      "description": "no historically_unfavorable cell receives High",
+      "pass": true,
+      "detail": "9x8 cells scanned"
+    },
+    {
+      "id": 2,
+      "description": "every 0 exposure satisfies the frozen zero rule (A or B)",
+      "pass": true,
+      "detail": "3 zero cells re-derived"
+    },
+    {
+      "id": 3,
+      "description": "insufficient_sample cells are never High",
+      "pass": true,
+      "detail": "low-confidence cells scanned"
+    },
+    {
+      "id": 4,
+      "description": "insufficient_sample cells are never 0",
+      "pass": true,
+      "detail": "low-confidence cells scanned"
+    },
+    {
+      "id": 5,
+      "description": "every macro state contains all 9 sleeves",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": 6,
+      "description": "every non-cash sleeve carries exactly one valid tier per state",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": 7,
+      "description": "Cash is residual only and never classified against itself",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": 8,
+      "description": "#176 hardened S&P 500 evidence supersedes the #174 broad-market proxy",
+      "pass": true,
+      "detail": "all 9 states"
+    },
+    {
+      "id": 9,
+      "description": "#176 investable-oil evidence supersedes WTI spot for allocation logic",
+      "pass": true,
+      "detail": "all 9 states"
+    },
+    {
+      "id": 10,
+      "description": "Nasdaq price-only source limitation remains explicit",
+      "pass": true,
+      "detail": "all 9 states"
+    },
+    {
+      "id": 11,
+      "description": "Russell price-only source limitation remains explicit",
+      "pass": true,
+      "detail": "all 9 states"
+    },
+    {
+      "id": 12,
+      "description": "no trajectory input enters the baseline",
+      "pass": true,
+      "detail": "matrix keys + frozen input paths + sources scanned"
+    },
+    {
+      "id": 13,
+      "description": "no V6.6 input enters the baseline",
+      "pass": true,
+      "detail": "matrix keys + frozen input paths + sources scanned"
+    },
+    {
+      "id": 14,
+      "description": "no manual overrides: every cell re-derives from the frozen rules",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": 15,
+      "description": "no percentages / weights / optimiser output is produced",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "artifact_hashes": {
+    "policy-matrix.csv": "c3e6a5b7cb726a0678a4ceb5ae55e84fabf0d539929b744cb3dec8221fb3bbcc",
+    "cash-bias.csv": "d36ac6cef78cfecbb92365c2129ed24b7028e26960358195fd66497612cb56ca",
+    "zero-audit.csv": "ed6d58f358d67717df2351c7b7db316a3b4ada95fcb093b8ef68ae47cd604a66",
+    "confidence.csv": "33c9727fe3bd99d8a06e75ee738de16796e4efc4e9d3cc7a206ff038a64e4e1c",
+    "sensitivity-common-sample.csv": "6caa8a7afad4bd2d6d30d552d57f5c88753e233ef00c93afee10425730e51d54",
+    "state-cards.md": "5b0becb6d78205af294c7fdd1749b299d76b0643c31786c374dbf2fcf98ffd68"
+  },
+  "inputs": {
+    "issue-160/deep-history-v01-monthly.csv": {
+      "head_blob_sha256": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc",
+      "worktree_normalised_sha256": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc"
+    },
+    "issue-174/evidence-classification.csv": {
+      "head_blob_sha256": "87ea365e1ffe4e6c0ab1d38e7e213fd98802abb5c873fe24f1e850606d9c87e9",
+      "worktree_normalised_sha256": "87ea365e1ffe4e6c0ab1d38e7e213fd98802abb5c873fe24f1e850606d9c87e9"
+    },
+    "issue-174/month-weighted-outcomes.csv": {
+      "head_blob_sha256": "f59909fdcb52612b71375fba8c2d8c25be7d6ce65035a50fe6f779d30fffaf31",
+      "worktree_normalised_sha256": "f59909fdcb52612b71375fba8c2d8c25be7d6ce65035a50fe6f779d30fffaf31"
+    },
+    "issue-174/episode-weighted-outcomes.csv": {
+      "head_blob_sha256": "fd057b84a1fbbe312de122f03ea17b126900085015fdde080e4757ed7eba5fdb",
+      "worktree_normalised_sha256": "fd057b84a1fbbe312de122f03ea17b126900085015fdde080e4757ed7eba5fdb"
+    },
+    "issue-174/era-stability.csv": {
+      "head_blob_sha256": "5e3abcc02354733d0ae86d4844312df49b0497fa10e052eff739a65b1e08eb7b",
+      "worktree_normalised_sha256": "5e3abcc02354733d0ae86d4844312df49b0497fa10e052eff739a65b1e08eb7b"
+    },
+    "issue-174/downside-danger.csv": {
+      "head_blob_sha256": "4ff60a9c5fccc190f6a37e5d76dbca3c164c336a9483d245369126816d063fd6",
+      "worktree_normalised_sha256": "4ff60a9c5fccc190f6a37e5d76dbca3c164c336a9483d245369126816d063fd6"
+    },
+    "issue-174/future-zero-candidates.csv": {
+      "head_blob_sha256": "4cf82f3a1625c5f4ac92dc2c781af32ef6cd0a95012506c88b3895798aacd139",
+      "worktree_normalised_sha256": "4cf82f3a1625c5f4ac92dc2c781af32ef6cd0a95012506c88b3895798aacd139"
+    },
+    "issue-174/nine-sleeve-monthly-returns.csv": {
+      "head_blob_sha256": "cbee7f210a55c25e73f890fc1743a6c0cc08b84bd0700820ba486ce38acb1b0a",
+      "worktree_normalised_sha256": "cbee7f210a55c25e73f890fc1743a6c0cc08b84bd0700820ba486ce38acb1b0a"
+    },
+    "issue-174/panel-comparison.json": {
+      "head_blob_sha256": "59747ce9ddd0458f32e283f7b092deccd6339d3bb90874f116215933cda0e5a7",
+      "worktree_normalised_sha256": "59747ce9ddd0458f32e283f7b092deccd6339d3bb90874f116215933cda0e5a7"
+    },
+    "issue-176/affected-state-sensitivity.csv": {
+      "head_blob_sha256": "1c3d42a7cd7857be423e06aa171751975ca20433d53ea6085e2c821a639dd6ff",
+      "worktree_normalised_sha256": "1c3d42a7cd7857be423e06aa171751975ca20433d53ea6085e2c821a639dd6ff"
+    },
+    "issue-176/oil-investable-state-cells.csv": {
+      "head_blob_sha256": "5d50e0c32c86c62565603a9f46611fa7ad118bd609b7c4d66728e5cdaf6038ce",
+      "worktree_normalised_sha256": "5d50e0c32c86c62565603a9f46611fa7ad118bd609b7c4d66728e5cdaf6038ce"
+    },
+    "issue-176/hardened-monthly-returns.csv": {
+      "head_blob_sha256": "7588023e1e242f78c9de43f6d0c4bbfd49ea33a4b05ec578353559a364a3434a",
+      "worktree_normalised_sha256": "7588023e1e242f78c9de43f6d0c4bbfd49ea33a4b05ec578353559a364a3434a"
+    }
+  },
+  "optimizer_used": false,
+  "percentages_assigned": false,
+  "trajectory_used": false,
+  "v6_6_used": false,
+  "manual_overrides": false,
+  "outcome_data_loaded": true,
+  "production_authorized": false
+}
