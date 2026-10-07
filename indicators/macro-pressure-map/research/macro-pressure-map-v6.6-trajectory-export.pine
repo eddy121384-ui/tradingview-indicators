@@ -1,0 +1,63 @@
+//@version=6
+indicator("Macro Pressure Map V6.6 Trajectory Export", shorttitle="MPM V6.6 TRAJ EXPORT", overlay=false)
+
+// Issue #133 research helper.
+//
+// Purpose:
+// Reconstruct the frozen V6.6 raw GPI/IPI axes from the displayed EMA(5)
+// pressure lines, then expose exact raw axes + regime id for chart-data export
+// OR Pine Logs fallback when CSV export is unavailable.
+//
+// IMPORTANT:
+// - Attach frozen V6.6 or V6.7 to the same SPY 1D chart.
+// - Keep "Smooth Main Pressure Lines" ON.
+// - Keep "Pressure Line Smoothing Length" = 5.
+// - Select the indicator's plotted GPI/IPI lines in the two source inputs below.
+// - This helper is research-only and does not change the production indicator.
+// - Essential-plan fallback: open Pine Logs and copy the compact monthly ISSUE133 rows.
+//
+// The inversion is the same frozen method used by Issue #64:
+// raw_t = (ema_t - (1-alpha) * ema_{t-1}) / alpha
+// with alpha = 2 / (5 + 1).
+
+tvGpiPlot = input.source(close, "Frozen V6.6/V6.7 plot: GPI - Growth Pressure")
+tvIpiPlot = input.source(close, "Frozen V6.6/V6.7 plot: IPI - Inflation Pressure")
+
+alpha = 2.0 / 6.0
+
+rawGPI = (tvGpiPlot - (1.0 - alpha) * tvGpiPlot[1]) / alpha
+rawIPI = (tvIpiPlot - (1.0 - alpha) * tvIpiPlot[1]) / alpha
+
+growthPositive = rawGPI > 10.0
+growthNegative = rawGPI < -10.0
+inflationPositive = rawIPI > 10.0
+inflationNegative = rawIPI < -10.0
+
+regimeId =
+     growthPositive and inflationNegative ? 1 :
+     growthPositive and not inflationPositive and not inflationNegative ? 2 :
+     growthPositive and inflationPositive ? 3 :
+     not growthPositive and not growthNegative and inflationNegative ? 4 :
+     not growthPositive and not growthNegative and not inflationPositive and not inflationNegative ? 5 :
+     not growthPositive and not growthNegative and inflationPositive ? 6 :
+     growthNegative and inflationNegative ? 7 :
+     growthNegative and not inflationPositive and not inflationNegative ? 8 :
+     9
+
+// Exportable research columns. They are intentionally hidden from the chart.
+plot(rawGPI, "ISSUE133 raw GPI", display=display.data_window)
+plot(rawIPI, "ISSUE133 raw IPI", display=display.data_window)
+plot(regimeId, "ISSUE133 regime id", display=display.data_window)
+
+// Essential-plan fallback: emit ONE compact row per completed month.
+// On the first confirmed daily bar of a new month, log the prior daily bar,
+// which is the completed prior month's final trading observation.
+// Historical Pine Logs support far more rows than the ~200-250 rows produced here.
+newMonth = (month != month[1]) or (year != year[1])
+
+if barstate.isconfirmed and newMonth and not na(rawGPI[1]) and not na(rawIPI[1])
+    dateText = str.tostring(year[1]) + "-" + str.tostring(month[1], "00") + "-" + str.tostring(dayofmonth[1], "00")
+    log.info("ISSUE133|date=" + dateText + "|gpi=" + str.tostring(rawGPI[1], "#.########") + "|ipi=" + str.tostring(rawIPI[1], "#.########") + "|regime=" + str.tostring(regimeId[1]))
+
+// Visual zero line only, to make it obvious that the helper loaded.
+hline(0, "Trajectory export helper", color=color.new(color.gray, 100))
