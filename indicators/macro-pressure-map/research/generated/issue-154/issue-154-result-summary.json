@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "issue": 154,
+  "validated_run": 37290886820,
+  "validated_head": "dea963dd2108c22025c012efae6da133503d8a1a",
+  "artifact_id": 11336511046,
+  "artifact_digest": "sha256:9198abdfcab8f4c70394ac75ac52d190139c9716b44962b847427689bfedef1b",
+  "verdict": "tv_native_reconstruction_failed",
+  "autopsy_authorized": false,
+  "metrics": {
+    "common_months": 222,
+    "first_common_month": "2008-03",
+    "last_common_month": "2026-08",
+    "gpi_correlation": 0.9961613510564349,
+    "ipi_correlation": 0.9952999840598379,
+    "gpi_mae": 1.4538396113878145,
+    "ipi_mae": 2.663399477489932,
+    "gpi_max_abs_error": 24.606164414956105,
+    "ipi_max_abs_error": 13.165850620645877,
+    "regime_agreement": 0.9459459459459459,
+    "r7_precision": 0.9433962264150944,
+    "r7_recall": 1.0,
+    "exact_triggers": 14,
+    "reconstructed_triggers": 17,
+    "matched_triggers": 14,
+    "trigger_precision": 0.8235294117647058,
+    "trigger_recall": 1.0,
+    "trigger_f1": 0.9032258064516129,
+    "trigger_count_ratio": 1.2142857142857142
+  },
+  "gates_passed": 8,
+  "gates_total": 10,
+  "failed_gates": [
+    "ipi_mae_le_1_50",
+    "regime_agreement_ge_0_95"
+  ],
+  "outcome_data_loaded": false,
+  "production_authorized": false
+}

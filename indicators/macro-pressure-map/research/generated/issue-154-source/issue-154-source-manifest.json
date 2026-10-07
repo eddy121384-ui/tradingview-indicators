@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "issue": 154,
+  "phase": "A-tradingview-source-freeze",
+  "connector": "TradingView Official MCP",
+  "interval": "1D",
+  "requested_count": 5000,
+  "exact_v66_signal_loaded": false,
+  "outcome_data_loaded": false,
+  "symbols": [
+    {
+      "symbol": "AMEX:SPY",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "e5ee0fb6087b9f0c89037160a312f39aa38ffc8daecd5d41fe3fcaaaeb79dde0",
+      "path": "AMEX_SPY.csv"
+    },
+    {
+      "symbol": "AMEX:IWM",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "67ebc35dcd7436764c1ac30f0f4be8420cc1f03c20c8d622aca3cae340b29947",
+      "path": "AMEX_IWM.csv"
+    },
+    {
+      "symbol": "AMEX:RSP",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "2170f3ea422be57c1447d7f0cda3f038cb5c52effbc0a1558b3cb38afca5d0dd",
+      "path": "AMEX_RSP.csv"
+    },
+    {
+      "symbol": "AMEX:XLY",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "b51af9a8d525d760ceff2fb591ab9370648cbdfdd602766506ca4deeacd7da86",
+      "path": "AMEX_XLY.csv"
+    },
+    {
+      "symbol": "AMEX:XLP",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "8a5ad574a60370d89f4ce7bc78dc5e7a066188f43039277f42f821de289f23b4",
+      "path": "AMEX_XLP.csv"
+    },
+    {
+      "symbol": "AMEX:XLI",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "32f0d0b64b578648f74f2c08a5f981accab3cdcef3fc1d1f6f32c4df9afde851",
+      "path": "AMEX_XLI.csv"
+    },
+    {
+      "symbol": "AMEX:XLU",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "a2f589f5b86b3d2ab48dd968f2d706e709a2f930e9593b93baa01316d6340788",
+      "path": "AMEX_XLU.csv"
+    },
+    {
+      "symbol": "COMEX:HG1!",
+      "rows": 5000,
+      "first_date": "2006-12-03",
+      "last_date": "2026-10-04",
+      "sha256": "479c6ab99b4a0d3297f7cdda73e9ee6867080d0d621c4d12b54208abfb58dbeb",
+      "path": "COMEX_HG1_.csv"
+    },
+    {
+      "symbol": "COMEX:GC1!",
+      "rows": 5000,
+      "first_date": "2006-12-03",
+      "last_date": "2026-10-04",
+      "sha256": "1ee2cfb670906eb551723cdcf106eaff73d82d35d0064d40f34cc1c6c55eed36",
+      "path": "COMEX_GC1_.csv"
+    },
+    {
+      "symbol": "FRED:T10YIE",
+      "rows": 5000,
+      "first_date": "2006-10-10",
+      "last_date": "2026-10-02",
+      "sha256": "7475f58cefa2e1f8f0507dd5ebd5bacdb3990aa2fa700d8dc99560c957292928",
+      "path": "FRED_T10YIE.csv"
+    },
+    {
+      "symbol": "AMEX:DBC",
+      "rows": 5000,
+      "first_date": "2006-11-15",
+      "last_date": "2026-10-02",
+      "sha256": "8f5fa850595eab6c7289ced819f48b9fdfd663b3e86eda19b5c644c4ad8a8b2a",
+      "path": "AMEX_DBC.csv"
+    },
+    {
+      "symbol": "NYMEX:CL1!",
+      "rows": 5000,
+      "first_date": "2006-11-27",
+      "last_date": "2026-10-04",
+      "sha256": "2d69b7873d71cce8ac5a511c318163976d594e5015cb08cfc048f07861c00172",
+      "path": "NYMEX_CL1_.csv"
+    },
+    {
+      "symbol": "NYMEX:RB1!",
+      "rows": 5000,
+      "first_date": "2006-11-27",
+      "last_date": "2026-10-04",
+      "sha256": "ff674b492bb148337107715b7a2ac0448a260c138ca5faafd1cf1ae57d8518cd",
+      "path": "NYMEX_RB1_.csv"
+    }
+  ],
+  "guardrail": "TradingView source freeze only; exact V6.6 target and asset-return outcomes were not loaded during acquisition."
+}
