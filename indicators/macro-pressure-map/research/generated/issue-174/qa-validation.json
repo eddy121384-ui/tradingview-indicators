@@ -1,0 +1,119 @@
+{
+  "qa_pairs": [
+    {
+      "sleeve": "treasury2y",
+      "etf": "SHY",
+      "note": "synthetic 2Y vs SHY TR (duration ~1.9y vs ~1.9y; expect high corr)",
+      "n": 289,
+      "pearson": 0.9846031063877413,
+      "mae_pp": 0.05822827493961134,
+      "sign_agree": 0.9515570934256056,
+      "first": "2002-08",
+      "last": "2026-08"
+    },
+    {
+      "sleeve": "treasury10y",
+      "etf": "IEF",
+      "note": "synthetic 10Y vs IEF TR (~8y vs ~7.5y; expect high corr)",
+      "n": 289,
+      "pearson": 0.8928280229898138,
+      "mae_pp": 0.728209678046145,
+      "sign_agree": 0.8615916955017301,
+      "first": "2002-08",
+      "last": "2026-08"
+    },
+    {
+      "sleeve": "longtreasury",
+      "etf": "TLT",
+      "note": "synthetic 20Y vs TLT TR (~13y vs ~15-18y; expect moderate-high corr, level differs)",
+      "n": 289,
+      "pearson": 0.986903693290554,
+      "mae_pp": 0.48607593370895613,
+      "sign_agree": 0.972318339100346,
+      "first": "2002-08",
+      "last": "2026-08"
+    },
+    {
+      "sleeve": "sp500",
+      "etf": "SPY",
+      "note": "French market TR vs SPY TR (universe differs; expect very high corr)",
+      "n": 403,
+      "pearson": 0.9873638914067003,
+      "mae_pp": 0.4793788580499666,
+      "sign_agree": 0.9602977667493796,
+      "first": "1993-02",
+      "last": "2026-08"
+    },
+    {
+      "sleeve": "nasdaq",
+      "etf": "QQQ",
+      "note": "NASDAQCOM price vs QQQ TR (price vs TR + composition; expect high corr, level differs)",
+      "n": 329,
+      "pearson": 0.9830873079020687,
+      "mae_pp": 0.9044221749576228,
+      "sign_agree": 0.9665653495440729,
+      "first": "1999-04",
+      "last": "2026-08"
+    },
+    {
+      "sleeve": "russell",
+      "etf": "IWM",
+      "note": "RUT price vs IWM TR (price vs TR; expect high corr)",
+      "n": 315,
+      "pearson": 0.9986232729881297,
+      "mae_pp": 0.21444316018263188,
+      "sign_agree": 0.9777777777777777,
+      "first": "2000-06",
+      "last": "2026-08"
+    },
+    {
+      "sleeve": "gold",
+      "etf": "GLD",
+      "note": "Pink Sheet gold price vs GLD TR (monthly-avg vs fund; expect very high corr)",
+      "n": 261,
+      "pearson": 0.6281160988941281,
+      "mae_pp": 2.937638759897205,
+      "sign_agree": 0.7279693486590039,
+      "first": "2004-12",
+      "last": "2026-08"
+    },
+    {
+      "sleeve": "oil",
+      "etf": "USO",
+      "note": "WTI spot vs USO TR (spot vs futures+roll; expect moderate corr, level differs)",
+      "n": 244,
+      "pearson": 0.7590797970827909,
+      "mae_pp": 5.497285106821408,
+      "sign_agree": 0.7459016393442623,
+      "first": "2006-05",
+      "last": "2026-08"
+    }
+  ],
+  "spot_plausibility": {
+    "treasury10y_1981_08": -0.029998977149370942,
+    "treasury2y_1981_08": -0.0013378743235545887,
+    "long_1981_08": -0.04085558054132066,
+    "treasury10y_2008_12": 0.04356501323500339,
+    "long_2008_12": 0.101047114418096,
+    "treasury10y_2022_10": -0.0242205604833714,
+    "long_2022_10": -0.04389988379769816,
+    "gold_1980_01": 0.4835164835164836,
+    "oil_1986_03": -0.18434670116429508,
+    "oil_2008_12": -0.2824986913278661,
+    "oil_2020_04": -0.43341321465251625,
+    "sp500_1987_10": -0.2259,
+    "nasdaq_2000_03_vs_2002": [
+      -0.026371763944394777,
+      0.13454089381089718
+    ]
+  },
+  "gaps": {
+    "treasury2y": 124,
+    "longtreasury": 82,
+    "nasdaq": 60,
+    "russell": 259,
+    "cash": 0,
+    "gold": 0,
+    "oil": 239
+  }
+}

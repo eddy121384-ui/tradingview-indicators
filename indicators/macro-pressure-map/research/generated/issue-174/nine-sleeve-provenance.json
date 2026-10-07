@@ -1,0 +1,157 @@
+{
+  "fetched_at": "2026-10-07T06:50:46.007Z",
+  "sources": {
+    "FRED:DGS2": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+      "bytes": 209124,
+      "sha256": "acc55db8e7e82a0719afb685dd422752569d806be362fb3340985486d7d4ecd0",
+      "header": "observation_date,DGS2",
+      "n_lines": 13135,
+      "first_line": "1976-06-01,7.26",
+      "last_line": "2026-10-05,4.84"
+    },
+    "FRED:DGS20": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS20",
+      "bytes": 262220,
+      "sha256": "4ff82ef1fb1c0a97923490f03d0a38b7e07d80fa38a594a3baa59100eacddd26",
+      "header": "observation_date,DGS20",
+      "n_lines": 16895,
+      "first_line": "1962-01-02,4.07",
+      "last_line": "2026-10-05,5.70"
+    },
+    "FRED:TB3MS": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=TB3MS",
+      "bytes": 17865,
+      "sha256": "631bc444a8c5370c3a2df12f484a67ae7b9a68c00fe8a33215895fb49c8cc08c",
+      "header": "observation_date,TB3MS",
+      "n_lines": 1113,
+      "first_line": "1934-01-01,0.72",
+      "last_line": "2026-09-01,3.94"
+    },
+    "FRED:NASDAQCOM": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQCOM",
+      "bytes": 280997,
+      "sha256": "ac87f1556a74271451b0b43d170a1a0db072431233782cf1152fbf1913f094ed",
+      "header": "observation_date,NASDAQCOM",
+      "n_lines": 14522,
+      "first_line": "1971-02-05,100.000",
+      "last_line": "2026-10-06,27599.890"
+    },
+    "FRED:MCOILWTICO": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=MCOILWTICO",
+      "bytes": 8355,
+      "sha256": "15d15b27577192946d70dd0170018862489d42da469a440a2d4daa2e00388629",
+      "header": "observation_date,MCOILWTICO",
+      "n_lines": 488,
+      "first_line": "1986-01-01,22.93",
+      "last_line": "2026-08-01,83.90"
+    },
+    "PINK_SHEET:gold_monthly": {
+      "url": "https://datahub.io/core/gold-prices/_r/-/data/monthly.csv",
+      "mirror_of": "World Bank Commodity Price Data (Pink Sheet) monthly gold, USD/oz; CC BY 4.0",
+      "bytes": 35730,
+      "sha256": "f5945c29f746ff14e54acd635dcbb43dbe9f4706f22d6ac8c5d7c3b7908ebcf5",
+      "n_lines": 2325,
+      "first_line": "1833-01,18.930",
+      "last_line": "2026-09,4319.000"
+    },
+    "Yahoo:^RUT": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5ERUT",
+      "bytes": 52743,
+      "sha256": "6193d54a37bd92c1319eb9af9eeba9d614e89439d7ad650c127dcc554f51394b",
+      "firstTradeDate": "1987-09-10T13:30:00.000Z",
+      "n_points": 470,
+      "currency": "USD",
+      "exchange": "Chicago Options"
+    },
+    "Yahoo:^IXIC": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC",
+      "bytes": 53932,
+      "sha256": "e8893b0e0b06673b6bdf4403ff020ff99c59e0883b1d26e942c1dcc91559e4fb",
+      "firstTradeDate": "1971-02-05T14:30:00.000Z",
+      "n_points": 502,
+      "currency": "USD",
+      "exchange": "Nasdaq GIDS"
+    },
+    "Yahoo:SHY": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SHY",
+      "bytes": 32409,
+      "sha256": "c305e2e8e0e2fca52239306fec67def8cf7ee885b151699c78ab89f78e2bf490",
+      "firstTradeDate": "2002-07-30T13:30:00.000Z",
+      "n_points": 292,
+      "currency": "USD",
+      "exchange": "NasdaqGM"
+    },
+    "Yahoo:IEF": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/IEF",
+      "bytes": 32942,
+      "sha256": "59adc373ece296028b9771c6140aeb29a9c0dd8b53874c2f30188059c98be531",
+      "firstTradeDate": "2002-07-30T13:30:00.000Z",
+      "n_points": 292,
+      "currency": "USD",
+      "exchange": "NasdaqGM"
+    },
+    "Yahoo:TLT": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/TLT",
+      "bytes": 33045,
+      "sha256": "d09079df07f15c991ab501310a1f576d340ceb218961eb7265a75d40854a7463",
+      "firstTradeDate": "2002-07-30T13:30:00.000Z",
+      "n_points": 292,
+      "currency": "USD",
+      "exchange": "NasdaqGM"
+    },
+    "Yahoo:SPY": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY",
+      "bytes": 42598,
+      "sha256": "8685eb89ac966dab36d02bd9460da62aeb3fc63db8825cdd5ed06813d31bc9dc",
+      "firstTradeDate": "1993-01-29T14:30:00.000Z",
+      "n_points": 406,
+      "currency": "USD",
+      "exchange": "NYSEArca"
+    },
+    "Yahoo:GLD": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GLD",
+      "bytes": 30380,
+      "sha256": "1fac9eca20a20921d0aecea0f4c62c9ae202b64623a329a7a9750d925e10c5eb",
+      "firstTradeDate": "2004-11-18T14:30:00.000Z",
+      "n_points": 264,
+      "currency": "USD",
+      "exchange": "NYSEArca"
+    },
+    "Yahoo:USO": {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/USO",
+      "bytes": 27689,
+      "sha256": "0b6458eafa8f2a7bd8c42e17408e0c9ff118f9eba434f5decac28766a1072d41",
+      "firstTradeDate": "2006-04-10T13:30:00.000Z",
+      "n_points": 247,
+      "currency": "USD",
+      "exchange": "NYSEArca"
+    },
+    "REUSE:indicators/macro-pressure-map/research/generated/issue-166/equity-monthly-total-returns.csv": {
+      "git_blob_bytes": 19150,
+      "git_blob_sha256": "9b0ff8ae234728c0eef5a66b3e1ab9e0a91109426f1c50244ff06a6f5a202460",
+      "working_tree_bytes": 19951,
+      "working_tree_sha256": "ff75a22aa1b620de37b34d09e2bf863b055607ab4dfd6e1c881cf0843705bdcd"
+    },
+    "REUSE:indicators/macro-pressure-map/research/generated/issue-166/treasury-monthly-total-returns.csv": {
+      "git_blob_bytes": 35796,
+      "git_blob_sha256": "69f505e92b2e5260f123d2ceaee973404283195e31b04917dcaaea486a6fb1ec",
+      "working_tree_bytes": 36573,
+      "working_tree_sha256": "afb62d50cd151f707a55eda2a033bc5c306d93679de4ec3f101c76c9fac360e0"
+    },
+    "FROZEN:macro": {
+      "path": "indicators/macro-pressure-map/research/generated/issue-160/deep-history-v01-monthly.csv",
+      "bytes": 175776,
+      "sha": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc",
+      "expected": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc"
+    },
+    "FROZEN:damodaran": {
+      "url": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html",
+      "note": "validation reference from #166; bytes/sha on record 656121 / 127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647"
+    },
+    "FROZEN:french": {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "note": "underlying #166 equity; file_sha256 d7d7fe37b150b5b15c9c069b3ba101dfe1af568c6d7b5db6e73cd0a6c0c9e5e5"
+    }
+  }
+}

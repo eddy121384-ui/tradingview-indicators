@@ -1,0 +1,394 @@
+{
+  "issue": 174,
+  "branch": "research/issue-174-nine-sleeve-macro-asset-map",
+  "base_head": "f8eed2c5fa7086c0359a11360ce36cf33936afac",
+  "macro": {
+    "path": "generated/issue-160/deep-history-v01-monthly.csv",
+    "sha256": "42516418ec8d1ce981d1b4bc05e2ae86809d6acbf5de63dccbad515db507dcfc",
+    "months": 723,
+    "first": "1966-03-01",
+    "last": "2026-08-01",
+    "thresholds": "±10",
+    "episodes": 362
+  },
+  "inputs": {
+    "equity_blob_sha256": "9b0ff8ae234728c0eef5a66b3e1ab9e0a91109426f1c50244ff06a6f5a202460",
+    "treasury10y_blob_sha256": "69f505e92b2e5260f123d2ceaee973404283195e31b04917dcaaea486a6fb1ec"
+  },
+  "coverage": {
+    "sp500": {
+      "first": "1966-03-01",
+      "last": "2026-08-01",
+      "n": 726
+    },
+    "nasdaq": {
+      "first": "1971-03-01",
+      "last": "2026-08-01",
+      "n": 666
+    },
+    "russell": {
+      "first": "1987-10-01",
+      "last": "2026-08-01",
+      "n": 467
+    },
+    "cash": {
+      "first": "1966-03-01",
+      "last": "2026-08-01",
+      "n": 726
+    },
+    "treasury2y": {
+      "first": "1976-07-01",
+      "last": "2026-08-01",
+      "n": 602
+    },
+    "treasury10y": {
+      "first": "1966-03-01",
+      "last": "2026-08-01",
+      "n": 726
+    },
+    "longtreasury": {
+      "first": "1966-03-01",
+      "last": "2026-08-01",
+      "n": 644
+    },
+    "gold": {
+      "first": "1966-03-01",
+      "last": "2026-08-01",
+      "n": 726
+    },
+    "oil": {
+      "first": "1986-02-01",
+      "last": "2026-08-01",
+      "n": 487
+    },
+    "_gaps_missing_returns_in_196603_202608": {
+      "treasury2y": 124,
+      "longtreasury": 82,
+      "nasdaq": 60,
+      "russell": 259,
+      "cash": 0,
+      "gold": 0,
+      "oil": 239
+    },
+    "_window": {
+      "first": "1966-03-01",
+      "last": "2026-08-01",
+      "calendar_months": 726
+    }
+  },
+  "state_counts": [
+    {
+      "state": "G_Low/I_Low",
+      "months": 62,
+      "episodes": 25,
+      "first": "1970-06-01",
+      "last": "2023-03-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 15
+    },
+    {
+      "state": "G_Low/I_Neutral",
+      "months": 45,
+      "episodes": 28,
+      "first": "1967-02-01",
+      "last": "2024-05-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 6
+    },
+    {
+      "state": "G_Low/I_High",
+      "months": 83,
+      "episodes": 31,
+      "first": "1966-05-01",
+      "last": "2022-08-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 14
+    },
+    {
+      "state": "G_Neutral/I_Low",
+      "months": 116,
+      "episodes": 57,
+      "first": "1971-04-01",
+      "last": "2026-02-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 8
+    },
+    {
+      "state": "G_Neutral/I_Neutral",
+      "months": 91,
+      "episodes": 57,
+      "first": "1967-07-01",
+      "last": "2026-08-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 6
+    },
+    {
+      "state": "G_Neutral/I_High",
+      "months": 112,
+      "episodes": 57,
+      "first": "1967-06-01",
+      "last": "2026-05-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 9
+    },
+    {
+      "state": "G_High/I_Low",
+      "months": 62,
+      "episodes": 25,
+      "first": "1971-10-01",
+      "last": "2026-07-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 13
+    },
+    {
+      "state": "G_High/I_Neutral",
+      "months": 80,
+      "episodes": 40,
+      "first": "1967-08-01",
+      "last": "2025-01-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 6
+    },
+    {
+      "state": "G_High/I_High",
+      "months": 72,
+      "episodes": 42,
+      "first": "1966-03-01",
+      "last": "2022-02-01",
+      "dur_min": 1,
+      "dur_median": 1,
+      "dur_max": 11
+    }
+  ],
+  "best_worst_by_state_monthly_mean": [
+    {
+      "state": "G_Low/I_Low",
+      "best": {
+        "sleeve": "longtreasury",
+        "mean": 0.015012469840259725
+      },
+      "worst": {
+        "sleeve": "oil",
+        "mean": -0.04064632623680096
+      }
+    },
+    {
+      "state": "G_Low/I_Neutral",
+      "best": {
+        "sleeve": "russell",
+        "mean": 0.013393931961280803
+      },
+      "worst": {
+        "sleeve": "oil",
+        "mean": -0.0013897925427325461
+      }
+    },
+    {
+      "state": "G_Low/I_High",
+      "best": {
+        "sleeve": "oil",
+        "mean": 0.05433313456278277
+      },
+      "worst": {
+        "sleeve": "nasdaq",
+        "mean": -0.0070659926215998195
+      }
+    },
+    {
+      "state": "G_Neutral/I_Low",
+      "best": {
+        "sleeve": "russell",
+        "mean": 0.018152275615993845
+      },
+      "worst": {
+        "sleeve": "oil",
+        "mean": -0.0014326064506497284
+      }
+    },
+    {
+      "state": "G_Neutral/I_Neutral",
+      "best": {
+        "sleeve": "oil",
+        "mean": 0.016869552284774894
+      },
+      "worst": {
+        "sleeve": "gold",
+        "mean": 0.00043682602483787234
+      }
+    },
+    {
+      "state": "G_Neutral/I_High",
+      "best": {
+        "sleeve": "oil",
+        "mean": 0.013348391534071963
+      },
+      "worst": {
+        "sleeve": "russell",
+        "mean": -0.0030240873634495235
+      }
+    },
+    {
+      "state": "G_High/I_Low",
+      "best": {
+        "sleeve": "sp500",
+        "mean": 0.009914516129032264
+      },
+      "worst": {
+        "sleeve": "oil",
+        "mean": -0.014386334081353515
+      }
+    },
+    {
+      "state": "G_High/I_Neutral",
+      "best": {
+        "sleeve": "russell",
+        "mean": 0.025562009028903595
+      },
+      "worst": {
+        "sleeve": "longtreasury",
+        "mean": 0.0012328391942219774
+      }
+    },
+    {
+      "state": "G_High/I_High",
+      "best": {
+        "sleeve": "oil",
+        "mean": 0.025004329348723552
+      },
+      "worst": {
+        "sleeve": "longtreasury",
+        "mean": 0.0009253374551599299
+      }
+    }
+  ],
+  "evidence_counts": {
+    "mixed": 62,
+    "historically_favored": 10,
+    "historically_unfavorable": 9
+  },
+  "zero_candidates": [
+    {
+      "state": "G_Neutral/I_High",
+      "sleeve": "russell"
+    },
+    {
+      "state": "G_High/I_Low",
+      "sleeve": "gold"
+    }
+  ],
+  "panels": {
+    "core": {
+      "start": "1976-07-01",
+      "end": "2026-08-01",
+      "n_months": 599
+    },
+    "full": {
+      "start": "1987-10-01",
+      "end": "2026-08-01",
+      "n_months": 464
+    },
+    "max_history_months": 723,
+    "core_month_means": {
+      "sp500": {
+        "n": 599,
+        "mean": 0.010538397328881477
+      },
+      "nasdaq": {
+        "n": 599,
+        "mean": 0.011274298340493477
+      },
+      "russell": {
+        "n": 464,
+        "mean": 0.007682885270175923
+      },
+      "cash": {
+        "n": 599,
+        "mean": 0.0035470645520311703
+      },
+      "treasury2y": {
+        "n": 599,
+        "mean": 0.004162350268550759
+      },
+      "treasury10y": {
+        "n": 599,
+        "mean": 0.005298059800258466
+      },
+      "longtreasury": {
+        "n": 517,
+        "mean": 0.00551264065271946
+      },
+      "gold": {
+        "n": 599,
+        "mean": 0.006637260605990044
+      },
+      "oil": {
+        "n": 484,
+        "mean": 0.00743804903511054
+      }
+    },
+    "full_month_means": {
+      "sp500": {
+        "n": 464,
+        "mean": 0.009591594827586215
+      },
+      "nasdaq": {
+        "n": 464,
+        "mean": 0.010714957284950196
+      },
+      "russell": {
+        "n": 464,
+        "mean": 0.007682885270175923
+      },
+      "cash": {
+        "n": 464,
+        "mean": 0.002491289511494256
+      },
+      "treasury2y": {
+        "n": 464,
+        "mean": 0.003085439175765083
+      },
+      "treasury10y": {
+        "n": 464,
+        "mean": 0.004560099448029104
+      },
+      "longtreasury": {
+        "n": 391,
+        "mean": 0.004177551741508057
+      },
+      "gold": {
+        "n": 464,
+        "mean": 0.005052062860851589
+      },
+      "oil": {
+        "n": 464,
+        "mean": 0.007709972847249307
+      }
+    }
+  },
+  "production_authorized": false,
+  "outcome_data_loaded": true,
+  "files": [
+    "downside-danger.csv",
+    "episode-weighted-outcomes.csv",
+    "era-stability.csv",
+    "evidence-classification.csv",
+    "future-zero-candidates.csv",
+    "month-weighted-outcomes.csv",
+    "nine-sleeve-coverage.json",
+    "nine-sleeve-monthly-returns.csv",
+    "nine-sleeve-provenance.json",
+    "nine-sleeve-source-matrix.csv",
+    "panel-comparison.json",
+    "qa-validation.json",
+    "state-month-counts.csv",
+    "summary.json"
+  ]
+}
