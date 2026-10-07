@@ -1,0 +1,61 @@
+{
+  "issue": 78,
+  "study": "factorized-classifier-architecture-oos4",
+  "cohort_role": "untouched-security cross-sectional architecture validation",
+  "selection_basis": {
+    "candidate_snapshot": "artifacts\\issue119_bbg_oos2\\issue119_bbg_oos2_candidates.csv",
+    "exclude_universes": [
+      "artifacts\\issue119_bbg_oos2\\issue119_bbg_oos2_universe_manifest.csv",
+      "artifacts\\issue78_equity_proof_policy_oos3\\snapshot\\issue119_bbg_oos2_universe_manifest.csv"
+    ],
+    "targets": {
+      "large": 100,
+      "mid": 100,
+      "small": 100
+    },
+    "sector_allocation": "equal-sector-within-size-sleeve",
+    "seed": "issue78-factorized-classifier-oos4-v1",
+    "exclusions": [
+      "all FIGIs in Issue #119 / OOS2 300-stock cohort",
+      "all FIGIs in Issue #78 / OOS3 300-stock cohort",
+      "AAPL / JPM / XOM calibration fixtures",
+      "same Issue #119 metadata eligibility rules"
+    ]
+  },
+  "created_utc": "2026-10-07T02:00:00.266773+00:00",
+  "candidate_rows": 1506,
+  "exclude_universe_count": 2,
+  "excluded_unique_prior_figi": 600,
+  "excluded_prior_candidate_rows": 600,
+  "excluded_calibration_candidate_rows": 3,
+  "remaining_candidate_rows_before_eligibility": 903,
+  "selected_rows": 300,
+  "selected_unique_figi": 300,
+  "counts_by_sleeve": {
+    "large": 100,
+    "mid": 100,
+    "small": 100
+  },
+  "counts_by_sector": {
+    "Communication Services": 6,
+    "Consumer Discretionary": 36,
+    "Consumer Staples": 19,
+    "Energy": 11,
+    "Financials": 47,
+    "Health Care": 34,
+    "Industrials": 52,
+    "Information Technology": 37,
+    "Materials": 20,
+    "Real Estate": 29,
+    "Utilities": 9
+  },
+  "overlap_with_prior_figi": 0,
+  "universe_sha256": "b8e4275dd993ec659c252eda4d538c80bbeef3e0e4b3455b298d9114bc9d5316",
+  "universe_file": "issue78_factorized_classifier_oos4_universe_manifest.csv",
+  "firewall": [
+    "No OOS4 price history was read.",
+    "No factor forward outcome was computed.",
+    "The universe must be frozen before OOS4 history is downloaded.",
+    "No security may be replaced after OOS4 outcomes are visible."
+  ]
+}

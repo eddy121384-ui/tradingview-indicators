@@ -1,0 +1,301 @@
+sleeve,source_index,security,figi,ticker,sector,market_cap,market_sector,security_type,primary_exchange,metadata_error,eligible,eligibility_reason,sample_hash,sample_rank
+large,SPX Index,TTWO UW Equity,BBG000BS26J9,TTWO,Communication Services,37835492641.05,Equity,Common Stock,UW,,True,eligible,0f20b3f096866571bf5c684969dafcf785c3b978f0b63c64da3b7148fb5aff5f,1
+large,SPX Index,NFLX UW Equity,BBG000CLD9D1,NFLX,Communication Services,288269543769.48004,Equity,Common Stock,UW,,True,eligible,60f92e5447650d067d378c6d4c766d636582e9ede94692dd3b7a00d739e2c3ac,2
+large,SPX Index,APP UW Equity,BBG00ZHSSNP4,APP,Communication Services,103152824240.0,Equity,Common Stock,UW,,True,eligible,62755633690b498368e16cbe95ec505fdf43bcd64e6f9920aef80abdd8688eb5,3
+large,SPX Index,VZ UN Equity,BBG000HS79Q4,VZ,Communication Services,193944906429.36,Equity,Common Stock,UN,,True,eligible,9fe4f48694d9332cdaa0df6a68471d6c602055619add4ed9b4bd06e810fb99e6,4
+large,SPX Index,NWS UW Equity,BBG004PLW2S7,NWS,Communication Services,16291909535.92,Equity,Common Stock,UW,,True,eligible,de0b63a73cdd1e8dd01c5c9dddb1b86b4e10f13949af4eab2dff0f243b713254,5
+large,SPX Index,PHM UN Equity,BBG000BR5699,PHM,Consumer Discretionary,22331221090.2,Equity,Common Stock,UN,,True,eligible,02751d294096bbf7f4bbd32261e94d2043c618c6bf54131de7f9babc294c929c,1
+large,SPX Index,TPR UN Equity,BBG000BY2CY6,TPR,Consumer Discretionary,22512489549.9,Equity,Common Stock,UN,,True,eligible,04afd40f865a2ee046c67497f05470f22bc4849df613ee0a8ea1599b0617416e,2
+large,SPX Index,DPZ UW Equity,BBG000P46LN5,DPZ,Consumer Discretionary,9668798688.45,Equity,Common Stock,UW,,True,eligible,05be938ba2c03c5aa6c31c32776eca385a368c6efb10271ace2f9b8e7c8340c6,3
+large,SPX Index,TSLA UW Equity,BBG000N9P426,TSLA,Consumer Discretionary,1411765715985.2998,Equity,Common Stock,UW,,True,eligible,0afda70d49b2315a98cbf0eec97f1ce6105eed1a8be5c2684a72a2ed97ed43a2,4
+large,SPX Index,NCLH UN Equity,BBG001WVB2M2,NCLH,Consumer Discretionary,6570978076.26,Equity,Common Stock,UN,,True,eligible,0bd041db5a59f0d04c62cc6db3964ce533d2a82823cc9e13e4a162a26d5cda65,5
+large,SPX Index,YUM UN Equity,BBG000BH3J68,YUM,Consumer Discretionary,37736762033.8,Equity,Common Stock,UN,,True,eligible,0c0db970e4efea1ceb389effcb35fd3c71a236e1df85466c608cbae0c569adcc,6
+large,SPX Index,GM UN Equity,BBG0014WFHK6,GM,Consumer Discretionary,70757692266.23999,Equity,Common Stock,UN,,True,eligible,137b7f3d87f6a5e365bf35265dac56d564c2a1be229aac0e6e34332c2abe9c72,7
+large,SPX Index,NKE UN Equity,BBG000C5HTN7,NKE,Consumer Discretionary,53984517802.17,Equity,Common Stock,UN,,True,eligible,13c1ed43fe699f0c60c9ea0cb1ab6754399d5ac3bf3ef1ba9a76cf71857c3250,8
+large,SPX Index,EXPE UW Equity,BBG000QY43Z7,EXPE,Consumer Discretionary,31712711000.890003,Equity,Common Stock,UW,,True,eligible,29c19b52cdac1b41f642153f905d79d35b8eaf35396e2304e9294d31d4a144a0,9
+large,SPX Index,TSN UN Equity,BBG000DKCFD9,TSN,Consumer Staples,17924287036.4,Equity,Common Stock,UN,,True,eligible,0dd754d11d036ab94ff51fe4158236cddb2e88297c7332671d60e13d7a39af7c,1
+large,SPX Index,CASY UW Equity,BBG000BF0GY0,CASY,Consumer Staples,22406731642.08,Equity,Common Stock,UW,,True,eligible,1c0e8e818ea97eca8184638bca0ed61974a60762930c819438fd05a999e5cd8c,2
+large,SPX Index,KR UN Equity,BBG000BMYBX0,KR,Consumer Staples,35252239503.0,Equity,Common Stock,UN,,True,eligible,1e032192626ef7ad3032adb6b76ce926e2e93494fd80775b5886e2c3fbed12fb,3
+large,SPX Index,KMB UW Equity,BBG000BMWF09,KMB,Consumer Staples,32848831583.26,Equity,Common Stock,UW,,True,eligible,292a1a64a4b1970f86604a06690fcea848e13630691e59151af4703e809d79a9,4
+large,SPX Index,DG UN Equity,BBG000NV1PS8,DG,Consumer Staples,27438110172.300003,Equity,Common Stock,UN,,True,eligible,2cb5d0cfd5e3bb19af62289404676ddc2777b63b1c2537c69e013c43d59ea4a4,5
+large,SPX Index,MO UN Equity,BBG000BP6MW1,MO,Consumer Staples,115429397604.37996,Equity,Common Stock,UN,,True,eligible,52d93918226754b361b0a34cc594dfcd5b8bd5d45f7c1a8fd726414827af18b3,6
+large,SPX Index,PEP UW Equity,BBG000DH7TN1,PEP,Consumer Staples,175388565203.0,Equity,Common Stock,UW,,True,eligible,5330eb717a6f5c01efbccf2e8f020c6b55998111d767d596f05b518d9db678ef,7
+large,SPX Index,BG UN Equity,BBG01JZ9SZ92,BG,Consumer Staples,20952511554.38,Equity,Common Stock,UN,,True,eligible,751b28271ff24c801a9b85902f923525ca760262bc38cf7cf98a946788ae50f1,8
+large,SPX Index,PM UN Equity,BBG000J2XPB0,PM,Consumer Staples,301996939940.64,Equity,Common Stock,UN,,True,eligible,9de8246a5a0dfbdc5f9117e3678990f43d5f58f3feaf8bc078e06146510a0695,9
+large,SPX Index,HAL UN Equity,BBG000BKTJ63,HAL,Energy,27018417801.81,Equity,Common Stock,UN,,True,eligible,629a7479e6781bd22689d6b75808ebb3b27548c6602bc55e231c23eab02492da,1
+large,SPX Index,ALL UN Equity,BBG000BVMJ93,ALL,Financials,57537826522.50001,Equity,Common Stock,UN,,True,eligible,0042f11db5cc4d47835f44d40a3cd29215a4f62874c65ca4dc2008d24da81b3d,1
+large,SPX Index,AON UN Equity,BBG00SSQW978,AON,Financials,57719792345.100006,Equity,Common Stock,UN,,True,eligible,02616739dafa14ff44222db5acd9c5ad7cf9858fb6b17e7f6acf574906709c14,2
+large,SPX Index,MA UN Equity,BBG000F20WW2,MA,Financials,497910423502.8,Equity,Common Stock,UN,,True,eligible,101f4b8355c52a6670d2aeb22e513ddd60beef276d639fdff68b11cfffe181b1,3
+large,SPX Index,TROW UW Equity,BBG000BVMYQ1,TROW,Financials,22144318388.500004,Equity,Common Stock,UW,,True,eligible,1064bb74e4459005832137985454dec2c7db8addcba79d38026ee412519aeaf4,4
+large,SPX Index,CB UN Equity,BBG000BR16M8,CB,Financials,127843521884.65,Equity,Common Stock,UN,,True,eligible,12427843e0970ee8397724264eeed848c0dd78935b3bc7fd503da0a4ba7d8bd2,5
+large,SPX Index,FIS UN Equity,BBG000BK2H93,FIS,Financials,17693870012.270004,Equity,Common Stock,UN,,True,eligible,129a4a5861bec3f7c41596bc1f4bc0aac62d549445b872168deebe5b016c8e3d,6
+large,SPX Index,MTB UN Equity,BBG000D9KZ32,MTB,Financials,31835120795.279995,Equity,Common Stock,UN,,True,eligible,15ebf47a16d364af363eb394430fd59508978af4bb9d3c13079bdec64a3f78f1,7
+large,SPX Index,STT UN Equity,BBG000BKFCH1,STT,Financials,49372148223.44999,Equity,Common Stock,UN,,True,eligible,2552c380b89028c5e307a346bccb1ee00ed21a03e6c8cf0623a5847487f65ee7,8
+large,SPX Index,WTW UW Equity,BBG000DB3XL1,WTW,Financials,27128821517.070004,Equity,Common Stock,UW,,True,eligible,29cdfcfd5519af1f96d09863996494f302b90658a1256a630bf830f9f08e4364,9
+large,SPX Index,AMP UN Equity,BBG000G3QP92,AMP,Financials,43827409939.04,Equity,Common Stock,UN,,True,eligible,2a43bbd9659b3b6cde8a5b2441504d75de4e1b356d8c33b0b5946d1664fc8faa,10
+large,SPX Index,HBAN UW Equity,BBG000BKX3B7,HBAN,Financials,30912346837.8,Equity,Common Stock,UW,,True,eligible,2a80acf3e840d2c712fe879d551334205580cb64d6b8b50ac5aac2042f6f7940,11
+large,SPX Index,AIG UN Equity,BBG000BBF265,AIG,Financials,38056164839.82,Equity,Common Stock,UN,,True,eligible,2e633085acd29eb39781eec806607765045b9c38aeced7822083b2081a4c8e9a,12
+large,SPX Index,AFL UN Equity,BBG000BBBRC7,AFL,Financials,56927531487.9,Equity,Common Stock,UN,,True,eligible,2e7d63d19a1bbe9aa94a2a81a6bc2306beb383e365ca75498cbabaae15232c9e,13
+large,SPX Index,ILMN UW Equity,BBG000DSQ5M9,ILMN,Health Care,41056899999.99999,Equity,Common Stock,UW,,True,eligible,0f9cae531f06797bd39b3a38aeaab0258aeec648f7347ed12a2ef4552aac036c,1
+large,SPX Index,COO UW Equity,BBG000BG3DT8,COO,Health Care,10757084981.58,Equity,Common Stock,UW,,True,eligible,1510c34fa14fdddf734c16716ed67a99d98e5e004aa3a5dc8e5bd10ec2eadbdf,2
+large,SPX Index,MDT UN Equity,BBG000BNWJ36,MDT,Health Care,114482841155.00002,Equity,Common Stock,UN,,True,eligible,183251995feb1b4bd51740203c8e23a72faeb53fdf0b1d8161799f3062aae4a6,3
+large,SPX Index,LLY UN Equity,BBG000BNBG44,LLY,Health Care,1115301023470.6997,Equity,Common Stock,UN,,True,eligible,1eb0fc47eea344b43f8496edb61ab5403386633a409d8c99d5a495668f54d637,4
+large,SPX Index,MTD UN Equity,BBG000BZCP64,MTD,Health Care,30961693160.34,Equity,Common Stock,UN,,True,eligible,29d4b8e810eb1ac2c34ca398192f1dc2fe3753d65c7ee30ef877b6f897bdfcce,5
+large,SPX Index,CRL UN Equity,BBG000BG5DL4,CRL,Health Care,14063394302.48,Equity,Common Stock,UN,,True,eligible,2a883e7f1757e84223a3404cb57426419b6918c08653fb188e8b7eb7a811aff1,6
+large,SPX Index,RVTY UN Equity,BBG000FXX8N1,RVTY,Health Care,16851778279.02,Equity,Common Stock,UN,,True,eligible,2bca846cc99bf9807087c896022de327a9abaccad01a846a3aeab8bd441492b8,7
+large,SPX Index,DGX UN Equity,BBG000BN85Z8,DGX,Health Care,26226917803.2,Equity,Common Stock,UN,,True,eligible,3de82277e90053f9c4df65e4d28832dee642b7cbe57d1bb350c026708a9cd687,8
+large,SPX Index,TECH UW Equity,BBG000C159P1,TECH,Health Care,11370890437.38,Equity,Common Stock,UW,,True,eligible,4111f22a481d10dd684acee23dc2b98bdf626237af9b92031a40347640452125,9
+large,SPX Index,SYK UN Equity,BBG000DN7RP0,SYK,Health Care,105601495294.26,Equity,Common Stock,UN,,True,eligible,4249857614c31959bc60f9c8fb1b8ded5ac0f832572dac865f57cc66c0138f03,10
+large,SPX Index,TT UN Equity,BBG000BM6966,TT,Industrials,99463677394.62,Equity,Common Stock,UN,,True,eligible,00eb97dd03ec1628d155ee7ef334c556acedcb410672c946386b67b049fd0f6b,1
+large,SPX Index,JBHT UW Equity,BBG000BMDQK4,JBHT,Industrials,21231350259.73,Equity,Common Stock,UW,,True,eligible,016b424dc27ad4a1473081c30a19382ff1c9ae082da6565065576a4c452c0797,2
+large,SPX Index,GNRC UN Equity,BBG000PQ4Z11,GNRC,Industrials,12108695340.81,Equity,Common Stock,UN,,True,eligible,04e8360c8a1d18db437a4e5e5ea9ee65ab0b4074284e0a1f26a4655a63a31211,3
+large,SPX Index,URI UN Equity,BBG000BXMGQ6,URI,Industrials,64976179116.880005,Equity,Common Stock,UN,,True,eligible,1078c274343ab0ae13de4f2594d9d3480f8d0f2a96c094167180e3dd0005e03f,4
+large,SPX Index,XYL UN Equity,BBG00256TDP9,XYL,Industrials,23561154198.92,Equity,Common Stock,UN,,True,eligible,1e0acc2c2c639bc341f30ab5d16955e1d3f004e84dc7c7560022f25e328d6fe7,5
+large,SPX Index,CHRW UW Equity,BBG000BTCSJ8,CHRW,Industrials,17322030485.920002,Equity,Common Stock,UW,,True,eligible,32c7686a9cae575938a4281d50f2ae156c51bb43e3363c9e774d0b728351709b,6
+large,SPX Index,FIX UN Equity,BBG000BWN5P2,FIX,Industrials,58362755780.69999,Equity,Common Stock,UN,,True,eligible,33093943ea303188d0a0a8da483e0a7bc215a449e342e2b1ff30d81d0919aa67,7
+large,SPX Index,AME UN Equity,BBG000B9XKF0,AME,Industrials,57698177277.47999,Equity,Common Stock,UN,,True,eligible,33b763b59b1e1da6c24c48f1887d78939af1180bf9041a87c95bcb24d517b587,8
+large,SPX Index,UPS UN Equity,BBG000L9CXY3,UPS,Industrials,80186164103.49998,Equity,Common Stock,UN,,True,eligible,37005700eed3d5bfe4579623e8cb9dd09e9fd74674cbf5c6f260a93367b31d28,9
+large,SPX Index,NOC UN Equity,BBG000BQ2F03,NOC,Industrials,71855478550.79999,Equity,Common Stock,UN,,True,eligible,37edfd9ae2d29f906975ee3935a784c8465dd5aa3f35da087bbf2f19c34229d6,10
+large,SPX Index,PCAR UW Equity,BBG000BQW5S2,PCAR,Industrials,58768647002.450005,Equity,Common Stock,UW,,True,eligible,45d591435eaf62d5042a2f2e64d3dd0b1b82fc1ab1f4b9a543bf1210953104be,11
+large,SPX Index,GE UN Equity,BBG000BK6PH2,GE,Industrials,330193894137.12,Equity,Common Stock,UN,,True,eligible,45db3eb1473e6d33a03390459ffc474a6416f734246b146ae535b57f9582b442,12
+large,SPX Index,GWW UN Equity,BBG000BKR342,GWW,Industrials,59144181859.98,Equity,Common Stock,UN,,True,eligible,49bdebc02e26e36973f5e02b4d9e2e40fac8755acff6a96538cdeb05ddd73750,13
+large,SPX Index,MAS UN Equity,BBG000BNNM75,MAS,Industrials,13479732714.8,Equity,Common Stock,UN,,True,eligible,51bc8c6daca54416fc92e63685636795191fe3219678a6aa3b0801d94cf81f96,14
+large,SPX Index,UNP UN Equity,BBG000BW3413,UNP,Industrials,162837396799.1,Equity,Common Stock,UN,,True,eligible,54713aea53a0a14c0b4af691bcb948b0769cef3177fc7ef3ff55dba2b7083f0b,15
+large,SPX Index,ADSK UW Equity,BBG000BM7TD3,ADSK,Information Technology,43302710000.0,Equity,Common Stock,UW,,True,eligible,0567c30db1495fc3239dcd30c491a2fe3d57d0cf1b256dd81d9958c3b03c5d2e,1
+large,SPX Index,ON UW Equity,BBG000DV8ZY3,ON,Information Technology,29451431693.65,Equity,Common Stock,UW,,True,eligible,0769c4c2bdb174be7b248676a0139281edec51067716811f188782e4dae29880,2
+large,SPX Index,CRM UN Equity,BBG000BN2GH0,CRM,Information Technology,187043210000.00003,Equity,Common Stock,UN,,True,eligible,0fdf24d5da9854fee74567b1b5a1fe0dd290012ea2452f031ce3fdb5be685f5b,3
+large,SPX Index,MU UW Equity,BBG000C60FN3,MU,Information Technology,1190357793290.98,Equity,Common Stock,UW,,True,eligible,102c321073c5561aab4a214bd20f76de939aeb0e745efe046034eecc7923eef8,4
+large,SPX Index,ROP UW Equity,BBG000F22737,ROP,Information Technology,35010909396.0,Equity,Common Stock,UW,,True,eligible,1151078e84f02b9ce3106efdea08b31da44c8c061a130a10ad170854f6f3b5c6,5
+large,SPX Index,FTNT UW Equity,BBG000BCMNX9,FTNT,Information Technology,129375210904.94,Equity,Common Stock,UW,,True,eligible,14972f09eff31daf1beb7921b14dc53474c2749576be3864e1d806be06cb1897,6
+large,SPX Index,TER UW Equity,BBG000BV4P35,TER,Information Technology,62739542975.00001,Equity,Common Stock,UW,,True,eligible,21190b865708f08630184571a8aa4fc3ac00466175c9ac2d0c0ac62bafd08e73,7
+large,SPX Index,APH UN Equity,BBG000B9YL12,APH,Information Technology,208669285571.0,Equity,Common Stock,UN,,True,eligible,235df831bc8a57507ac9bcbce3425ec1eb06c98e9ea023bd06cfaa741ae162e1,8
+large,SPX Index,INTC UW Equity,BBG000C0GFS4,INTC,Information Technology,613226615361.33,Equity,Common Stock,UW,,True,eligible,2389f45de535b25a374d4f93b32b85d16307ab11b24bd30345af10708a3c99cd,9
+large,SPX Index,ADBE UW Equity,BBG000BB5BP5,ADBE,Information Technology,89909092000.0,Equity,Common Stock,UW,,True,eligible,2600d163b8593bba38961932488ca52a9f6e58112929846072e6c5c855839509,10
+large,SPX Index,Q UN Equity,BBG01TRL73X9,Q,Information Technology,26132239106.13,Equity,Common Stock,UN,,True,eligible,28c343b1a8300adb6540c2082b3062ad35aa9bba985574a8e56dfc882eb5961e,11
+large,SPX Index,DDOG UW Equity,BBG00Q3HXSK1,DDOG,Information Technology,96751079043.5,Equity,Common Stock,UW,,True,eligible,2a35669dc37239867452bd77b51cf3d199aaa9a6df412ceb1c38298af475253b,12
+large,SPX Index,VRSN UW Equity,BBG000BGKTY8,VRSN,Information Technology,25470921000.000004,Equity,Common Stock,UW,,True,eligible,39fd758d770b79db340a6372311d4ac996a401257b8c59b799d671752df0a815,13
+large,SPX Index,PKG UN Equity,BBG000BB8WD9,PKG,Materials,20895333081.48,Equity,Common Stock,UN,,True,eligible,3805e1a440733a85182546fe90d165a23fdc864c688411d1f09a70c1c0c0e167,1
+large,SPX Index,AMCR UN Equity,BBG00LNJRTX7,AMCR,Materials,19783772075.1,Equity,Common Stock,UN,,True,eligible,3aa5856a9c270067e0e26d79ec428538d001e774dcfa6789c5804494adbc8922,2
+large,SPX Index,ECL UN Equity,BBG000BHL0C2,ECL,Materials,78556484418.69,Equity,Common Stock,UN,,True,eligible,4a5c58eb03e0bc3382e4a7e87664cfa1b87d3ed404d1df65c473945209c85c2b,3
+large,SPX Index,FCX UN Equity,BBG000BJDCQ6,FCX,Materials,103335820955.08,Equity,Common Stock,UN,,True,eligible,a166027b8f2ba9bce1e6797d9bed9bca38f562e1b09b05de77a908c62d8bb75f,4
+large,SPX Index,CF UN Equity,BBG000BWJJP7,CF,Materials,17481067396.3,Equity,Common Stock,UN,,True,eligible,aa77e28cd94d17016b0efc4c9733a768361a5b560995a412259ca0c6557caa15,5
+large,SPX Index,PPG UN Equity,BBG000BRJ952,PPG,Materials,23788323000.000004,Equity,Common Stock,UN,,True,eligible,ad0757b66b9d4488a073e06072f7580f7ef109bc332ebd113406e48fdf5a291f,6
+large,SPX Index,AVY UN Equity,BBG000BCQ742,AVY,Materials,13027223728.38,Equity,Common Stock,UN,,True,eligible,e920ca246dc7cd0cb92767dbc86268154bb9206259861b2c0c84538c1227448d,7
+large,SPX Index,UDR UN Equity,BBG000C412D7,UDR,Real Estate,10868368630.259998,Equity,REIT,UN,,True,eligible,0e221cd11c886dcbfbae01165258b8289043aba19bf0854afea9f1e9d2d03ee2,1
+large,SPX Index,MAA UN Equity,BBG000BLMZS8,MAA,Real Estate,13729983481.62,Equity,REIT,UN,,True,eligible,1311ba9fca956e37530dea12548ac56756e25a44962bc59d271a73bb0c84ccb7,2
+large,SPX Index,VTR UN Equity,BBG000FRVM00,VTR,Real Estate,44646851087.36,Equity,REIT,UN,,True,eligible,16d6a0132c01c3ffd14dc2d5e9c0bceaf6ffcfd87dc27ac076cd8f66661b5599,3
+large,SPX Index,VICI UN Equity,BBG00HZQTQG0,VICI,Real Estate,25533988662.78,Equity,REIT,UN,,True,eligible,1a9543270723ef7b0cd600703ba34ef8fbecb3777009908af6db77a4fdffd0e1,4
+large,SPX Index,BXP UN Equity,BBG000BS5F97,BXP,Real Estate,9967670941.08,Equity,REIT,UN,,True,eligible,324036aa9f4c616385609425e36d4250a5652b32db007c1e9c9dbda5807729b1,5
+large,SPX Index,WELL UN Equity,BBG000BKY3S8,WELL,Real Estate,167904743784.96002,Equity,REIT,UN,,True,eligible,6a30e50260081ab874a31c1b46b753796d8ba23da63db9affc1c41b273b06d8d,6
+large,SPX Index,EQIX UW Equity,BBG000MBDX12,EQIX,Real Estate,99763981564.02,Equity,REIT,UW,,True,eligible,76f5448c870e6ffa3d11221c7b12d6199526f3dc5460f98560a851a0be2d3704,7
+large,SPX Index,O UN Equity,BBG000DHPPZ6,O,Real Estate,52373272848.75,Equity,REIT,UN,,True,eligible,7e0dfdac33717665112077b5a4413b716dea459c75484c48b5bb74b374b39549,8
+large,SPX Index,KIM UN Equity,BBG000CN3V94,KIM,Real Estate,15167328237.880005,Equity,REIT,UN,,True,eligible,967559f07a9fa15fe026a32b63062419fc3ac40016d6ef9f09e99efb2ec339ca,9
+large,SPX Index,ES UN Equity,BBG000BQ8910,ES,Utilities,23835978433.120003,Equity,Common Stock,UN,,True,eligible,1a788da42551e17a2433b0d1d92075b140465c1cfbc4a9030ba56a2492323bbc,1
+large,SPX Index,DUK UN Equity,BBG000BHGGD2,DUK,Utilities,88459800000.0,Equity,Common Stock,UN,,True,eligible,260cabe81de46186f12f0cd109a2c51f57e6afcd223144dca96b3acb6db343f7,2
+large,SPX Index,AWK UN Equity,BBG000TRJ3B9,AWK,Utilities,25622026052.42,Equity,Common Stock,UN,,True,eligible,27d74d317963dca6469d75ef2b58df1a5bbf5f5e4f2bb5e4311350ecb7d6d7be,3
+large,SPX Index,SO UN Equity,BBG000BT9GG1,SO,Utilities,92917137588.75,Equity,Common Stock,UN,,True,eligible,479d89ce7bc7498b24a92e5ebf36a02333126c772f1f905a24248c9c1e43adb3,4
+large,SPX Index,CMS UN Equity,BBG000BFVZB9,CMS,Utilities,19629928713.6,Equity,Common Stock,UN,,True,eligible,7249b1d7cac1c72b630f7e74d3c2946041e6e6f3644d66d5197d28c6746d1369,5
+large,SPX Index,FE UN Equity,BBG000BB6PD6,FE,Utilities,24884109148.50001,Equity,Common Stock,UN,,True,eligible,86fca7ede52e0d2eedd310029d9d0233b918092191033865f548397c391cc966,6
+large,SPX Index,AEE UN Equity,BBG000B9XB97,AEE,Utilities,27511152000.0,Equity,Common Stock,UN,,True,eligible,8927ac0f68c4ca0917a6ce22b539b3b16aed33c68c68639d6b360ea5b6fa54c2,7
+large,SPX Index,AEP UW Equity,BBG000BB9X46,AEP,Utilities,64347767006.4,Equity,Common Stock,UW,,True,eligible,9ce2531ed5241d75dfa464eac7b3beaf8078395766b5c9649f16ef924378c463,8
+large,SPX Index,ETR UN Equity,BBG000C1FSD1,ETR,Utilities,45776549953.8,Equity,Common Stock,UN,,True,eligible,c9172d124e5f4f7af5beaeb6f1448e1a0232e26ddb02fe4557d14836d62ff9a6,9
+mid,MID Index,CHH UN Equity,BBG000BPBWF2,CHH,Consumer Discretionary,4635888066.0,Equity,Common Stock,UN,,True,eligible,0725c2933279bdea0f6e12bee50f25151c44fa105fa84379d5a7604dbec83fe1,1
+mid,MID Index,CAVA UN Equity,BBG01GXMF0Z3,CAVA,Consumer Discretionary,6024863692.839999,Equity,Common Stock,UN,,True,eligible,0a6ed1ac7297c27b64bdf6cb89e168f4fd5713421d0a08585a6a6601e192ea23,2
+mid,MID Index,RH UN Equity,BBG002293PN9,RH,Consumer Discretionary,2311360050.72,Equity,Common Stock,UN,,True,eligible,1cebd57c43ba0aaffaeb1488691ba8c937d3862eb8d97e0b6bec8664441eb7bc,3
+mid,MID Index,HGV UN Equity,BBG00CBYY6R6,HGV,Consumer Discretionary,2793405771.3,Equity,Common Stock,UN,,True,eligible,1d5c9c9502362bae74677fb3d39e93f8e22f281c73e106552c02958466a4ff6e,4
+mid,MID Index,ANF UN Equity,BBG000H9G9Y7,ANF,Consumer Discretionary,5693844705.860001,Equity,Common Stock,UN,,True,eligible,2f51859e06c0ef1fb8ff6f9d98656902734536c2c7d44e6835a76d24b190c1a9,5
+mid,MID Index,PLNT UN Equity,BBG009H04M71,PLNT,Consumer Discretionary,3059085082.5,Equity,Common Stock,UN,,True,eligible,44826599cb8861afb441fea2a551c5e19862969f7f7fc435644a768366342d86,6
+mid,MID Index,ARMK UN Equity,BBG005HMZVD0,ARMK,Consumer Discretionary,14304294887.44,Equity,Common Stock,UN,,True,eligible,45e6022df410653526744b97ae313da375b881ac69b864d6d8ed895c0462e92c,7
+mid,MID Index,LOPE UW Equity,BBG000FV4Q48,LOPE,Consumer Discretionary,3815921416.8,Equity,Common Stock,UW,,True,eligible,4aacf12c9c562369a5ce45b6956b6e9bdb9217a053485a1a286a41efb9b8b9d8,8
+mid,MID Index,BURL UN Equity,BBG004S641T9,BURL,Consumer Discretionary,16733339796.049995,Equity,Common Stock,UN,,True,eligible,4b25be11a85056849da614fd8c5443c381391015b094d600162f90a96731a8dd,9
+mid,MID Index,GNTX UW Equity,BBG000BKJB89,GNTX,Consumer Discretionary,4706665614.539999,Equity,Common Stock,UW,,True,eligible,4cd86191578e8105e5ffc2a4d76ec7f1da908911d98f1651f0ea1135f6af9895,10
+mid,MID Index,MUSA UN Equity,BBG004YZZZ28,MUSA,Consumer Discretionary,9559986081.64,Equity,Common Stock,UN,,True,eligible,53f8641c59e54c1f5367434ecbbcf15f178501cc3d110bfc03396146d4075de3,11
+mid,MID Index,VFC UN Equity,BBG000BWCLX0,VFC,Consumer Discretionary,5669000499.400001,Equity,Common Stock,UN,,True,eligible,5a5c7a5eae04f3abee44043108a75bf6cb6d5fa89eedf6f5c1a8cf22c1cb33f4,12
+mid,MID Index,TXRH UW Equity,BBG000PSJXW2,TXRH,Consumer Discretionary,10400804724.699997,Equity,Common Stock,UW,,True,eligible,5ddd9bc20ec60be347a0cd2ec38fb9f5dd13ae847c120414b185a650564c7708,13
+mid,MID Index,PVH UN Equity,BBG000BRRHK8,PVH,Consumer Discretionary,3494018093.09,Equity,Common Stock,UN,,True,eligible,7847e32282fe85c26e4a731d4a156b6d48cd77863956e03d526b544a5dcbedf8,14
+mid,MID Index,SCI UN Equity,BBG000BTHJB1,SCI,Consumer Discretionary,10529262861.179998,Equity,Common Stock,UN,,True,eligible,7a8d3b26204228c64f2f9bd139a076150962884e42350a2d021549d5757bc061,15
+mid,MID Index,JEF UN Equity,BBG000BNHV54,JEF,Financials,10865928532.23,Equity,Common Stock,UN,,True,eligible,02210a1e10d93ebd62f9422bff762e7d51873025fd932707292c3cdeca713150,1
+mid,MID Index,UNM UN Equity,BBG000BW2T82,UNM,Financials,14424915433.76,Equity,Common Stock,UN,,True,eligible,063305c772bfe0567e6b2814135339e68bb65a154474f6561be00859623bfa26,2
+mid,MID Index,UMBF UW Equity,BBG000DD95N0,UMBF,Financials,10133253002.6,Equity,Common Stock,UW,,True,eligible,0d3a4fd4aca20c27781ea02189bda22f7d3d3d177d1bd59e65f022c4fc70ae70,3
+mid,MID Index,ORI UN Equity,BBG000C4PNM5,ORI,Financials,9179279694.44,Equity,Common Stock,UN,,True,eligible,0e453a1db0a2abe6a2a0e2d2d358841ed8ab77703881e703f67f1b038aaaa2dd,4
+mid,MID Index,GBCI UN Equity,BBG000C3KFN8,GBCI,Financials,5737138649.18,Equity,Common Stock,UN,,True,eligible,1f7808621da4cc268f21c5c26bb739e56223dd23e0e8cc7e68f8487a761d4868,5
+mid,MID Index,VLY UW Equity,BBG000D4Z4M5,VLY,Financials,7062294788.28,Equity,Common Stock,UW,,True,eligible,2b47016498f293946d27a415faa67c5c5894dbea82a6f5854aa08e7858389639,6
+mid,MID Index,SLM UW Equity,BBG000BBD2K1,SLM,Financials,4303985338.199999,Equity,Common Stock,UW,,True,eligible,2d08a27d9c0086f4d2402963a080ae89fc4b07c7eff75ffb6f5c673e62eb2609,7
+mid,MID Index,AMG UN Equity,BBG000C06204,AMG,Financials,9519817135.29,Equity,Common Stock,UN,,True,eligible,31c0016925d982f0a2c9e7e6161d827e5451d4c6a04c2bffc4fbb8bcdcc95f7f,8
+mid,MID Index,AFG UN Equity,BBG000DPKMB6,AFG,Financials,11458088171.88,Equity,Common Stock,UN,,True,eligible,33e1d838e469c2d0fc050f55972e015db3808e1df59b278edaa0453246873d4e,9
+mid,MID Index,FAF UN Equity,BBG000V78W00,FAF,Financials,6607912000.0,Equity,Common Stock,UN,,True,eligible,3836cf0e49a42f60018112ff101ec31baa60cbc582951fdc1d14d7f119177d7d,10
+mid,MID Index,RLI UN Equity,BBG000BS8293,RLI,Financials,5137450860.6,Equity,Common Stock,UN,,True,eligible,3af3c7e5456b3c70429716fd8c7124108809698793aec165dfc5cfd22700ff14,11
+mid,MID Index,CFR UN Equity,BBG000C2PN67,CFR,Financials,9721312949.7,Equity,Common Stock,UN,,True,eligible,3b14b5e56ad9cf58d83ce0cf81512e1df90ede7b91b57b5e9089ea92bef604fb,12
+mid,MID Index,ESNT UN Equity,BBG0058YL7L3,ESNT,Financials,5701764715.92,Equity,Common Stock,UN,,True,eligible,3b3356141cdb1be6f342662d1154443d2088ef6023534737a8440302c36c71eb,13
+mid,MID Index,SSB UN Equity,BBG000BNQ0V3,SSB,Financials,9861340362.46,Equity,Common Stock,UN,,True,eligible,4181c18ebb3214a42be85d7d0a3de6003490895b9d4bf2932f19b53e6a5f88df,14
+mid,MID Index,RNR UN Equity,BBG000BFW132,RNR,Financials,13500210035.7,Equity,Common Stock,UN,,True,eligible,4867f4584565d29af9e3af8d284cd023ca9d45b902e11799e0083020f89203d5,15
+mid,MID Index,ASB UN Equity,BBG000BCFS48,ASB,Financials,5469086124.64,Equity,Common Stock,UN,,True,eligible,53c6583d9b2956d0d7eaa62906218729dc1ff39f1345340da2f3dbcee3395842,16
+mid,MID Index,RGA UN Equity,BBG000BDLFK9,RGA,Financials,16519362195.049995,Equity,Common Stock,UN,,True,eligible,5b070460f7f9667a6db21f4ff7f9b57e902911718c8b624d0f6024c22b5c8e3f,17
+mid,MID Index,EHC UN Equity,BBG000BGBVK8,EHC,Health Care,12234992683.68,Equity,Common Stock,UN,,True,eligible,1451fc3a785cc5783bd1cb4a29ea7ceca91cf250115da05cb54c6c6b5ae475a0,1
+mid,MID Index,ENSG UW Equity,BBG000K1VTD2,ENSG,Health Care,10278690060.24,Equity,Common Stock,UW,,True,eligible,2d1e3f4e25d3c73aee91332bfaeea3055150524a775f9efc98183fb73fa3c113,2
+mid,MID Index,EXEL UW Equity,BBG000BQ56F4,EXEL,Health Care,14463017362.04,Equity,Common Stock,UW,,True,eligible,5eaccb16074bcb33f5eb67395152037133105210f277666c137c24c6f2d56844,3
+mid,MID Index,HIMS UN Equity,BBG00Q53VYR2,HIMS,Health Care,6714760026.140001,Equity,Common Stock,UN,,True,eligible,63c5179ddf18080af42823c4b952eb16b441a5176540c676098a4d75d9990b3f,4
+mid,MID Index,BMRN UW Equity,BBG000CZX7N1,BMRN,Health Care,11509895710.14,Equity,Common Stock,UW,,True,eligible,65ff13dea43658020ffd822bbe59db1a4c9242a2f5c79f198d94008d3ecf1390,5
+mid,MID Index,UTHR UW Equity,BBG000BV5663,UTHR,Health Care,20825146593.68,Equity,Common Stock,UW,,True,eligible,6de3597048d39b1be0ceb19a77812f0401033da1ded21ba0bc9c21897e6efaea,6
+mid,MID Index,NVST UN Equity,BBG00LN4B5S5,NVST,Health Care,3811458234.57,Equity,Common Stock,UN,,True,eligible,7174400fb6ff1ede428aec73ed4b5d744267079ef823151d51eace77529a0295,7
+mid,MID Index,ROIV UQ Equity,BBG012S1T6W1,ROIV,Health Care,26711505094.700005,Equity,Common Stock,UW,,True,eligible,7a60ae949ee1f7879c344dd081da43fd622b53e25de451d4a7ae6681f5a38225,8
+mid,MID Index,GMED UN Equity,BBG002V87SJ4,GMED,Health Care,11717428582.58,Equity,Common Stock,UN,,True,eligible,86088ba6bbdbb0cc9ce8827327bbccaf458b806aae5676860a17c62ad76b11b3,9
+mid,MID Index,XRAY UW Equity,BBG000BX5KG7,XRAY,Health Care,1850003969.28,Equity,Common Stock,UW,,True,eligible,8c708b4b4666ee0212338ec49663698b8ef6b01635de0f6e76bbc07e30b676dc,10
+mid,MID Index,CHE UN Equity,BBG000C19T73,CHE,Health Care,6721880942.299999,Equity,Common Stock,UN,,True,eligible,9e36c3b90f9e9131b969bc00d448848243e6e2939742af7c656d5d4a746f9f04,11
+mid,MID Index,THC UN Equity,BBG000CPJ107,THC,Health Care,20768265670.0,Equity,Common Stock,UN,,True,eligible,bba6b004e1be0823b8e71d98eaa3b96978cf19cb6b121747c85768c524e6df4e,12
+mid,MID Index,PEN UN Equity,BBG009SYFXC3,PEN,Health Care,12572315713.96,Equity,Common Stock,UN,,True,eligible,de0b317160ff9300109ef43f4c5f64d8d4abb632c230bf89c0c5da0c6990f37d,13
+mid,MID Index,BRKR UW Equity,BBG000CL2SH7,BRKR,Health Care,9641297516.48,Equity,Common Stock,UW,,True,eligible,ea81b1a82bd0f6fbfff5089d33e4b0f807425d75bad4c5e0cf3500192fe213ad,14
+mid,MID Index,ULS UN Equity,BBG01K4KMRP4,ULS,Industrials,13083001610.4,Equity,Common Stock,UN,,True,eligible,09b9c4af1382ad034b1a90ec5057cf39d877045d9fda346ae02b59937c8e5285,1
+mid,MID Index,TREX UN Equity,BBG000BTGM43,TREX,Industrials,4526889043.6,Equity,Common Stock,UN,,True,eligible,0d1540d28da43c3b8ca3712517356822b0368e31ffa687cf5592d1f0ae854c12,2
+mid,MID Index,MLI UN Equity,BBG000C6W649,MLI,Industrials,13485429226.36,Equity,Common Stock,UN,,True,eligible,1108133ae638cfb59cba4287eb504068194687688ac4b803f44b8bd481c90bd6,3
+mid,MID Index,SAIA UW Equity,BBG000P5N228,SAIA,Industrials,8809303162.5,Equity,Common Stock,UW,,True,eligible,132bacc9613d4e6515f0b999b97b65bb658c99106c6bc63055d2d0cb536e73c7,4
+mid,MID Index,WCC UN Equity,BBG000D0FQ55,WCC,Industrials,17771409868.18,Equity,Common Stock,UN,,True,eligible,276a41b52d77e70013737063d9fe4987dfc1694778cef7528828f440720d6dfd,5
+mid,MID Index,MIDD UW Equity,BBG000DQNNX5,MIDD,Industrials,4824320191.32,Equity,Common Stock,UW,,True,eligible,2c7e1542967b0cd188877d70e600ffc3ac06a31723947dd7b6bbb5f8dd9848ac,6
+mid,MID Index,CW UN Equity,BBG000BGSQP6,CW,Industrials,19662420607.84,Equity,Common Stock,UN,,True,eligible,2d5339f731511b4f6a0d000d124ca4b308ce96a801156492d5f143a49131d35b,7
+mid,MID Index,WWD UW Equity,BBG000BD5D31,WWD,Industrials,19245394570.800003,Equity,Common Stock,UW,,True,eligible,2d9d6449c992be89f5f9fbc3e075b83c7e763dbff0e21b6b4876dff51a9deffb,8
+mid,MID Index,UFPI UW Equity,BBG000BL13Y5,UFPI,Industrials,4380925615.219999,Equity,Common Stock,UW,,True,eligible,372683c161b5d19b293367c4d0b92d96672f67d62441015ee09516fdf880ff58,9
+mid,MID Index,KTOS UW Equity,BBG000C1HZZ9,KTOS,Industrials,8272878880.89,Equity,Common Stock,UW,,True,eligible,3a5b738fd03b261ea30cbcb2036f66c5fdb4c6f2e21ba3f576ae1044aed38b8d,10
+mid,MID Index,AGCO UN Equity,BBG000DCD2J9,AGCO,Industrials,8236431647.690001,Equity,Common Stock,UN,,True,eligible,3b45514f89a7abe2148cfe661bc7aa10e6110a294aa805cd11e50f4145d71fe6,11
+mid,MID Index,MSM UN Equity,BBG000BCM158,MSM,Industrials,6821066837.72,Equity,Common Stock,UN,,True,eligible,3fff199dff407a8aad63b3d30fe98478bad055e8b6ac5d61b033818efef1e8bb,12
+mid,MID Index,AIT UN Equity,BBG000BBHK72,AIT,Industrials,12394750850.9,Equity,Common Stock,UN,,True,eligible,49ad2132c5886e5f27f87708c88737a53cf0e34ede633242a66ceb1aabc12ade,13
+mid,MID Index,LECO UW Equity,BBG000BB7F56,LECO,Industrials,14780871183.259998,Equity,Common Stock,UW,,True,eligible,4a6a0ae4eca24cbc42e17127ba43a62e1a6413fc171d608fa67725e69364d81d,14
+mid,MID Index,ESAB UN Equity,BBG0162JFDZ8,ESAB,Industrials,4180785222.500001,Equity,Common Stock,UN,,True,eligible,554e652132e8c3e1223b6810f5516207bb4b948d152254365d1f4b57817b61b2,15
+mid,MID Index,RRX UN Equity,BBG000BRXWM6,RRX,Industrials,10420295348.159998,Equity,Common Stock,UN,,True,eligible,591759c0993b3fd6e62823dfa8b4cba40c4b922f10a2591fbd63cec39ff1798d,16
+mid,MID Index,BAH UN Equity,BBG0015MBGS5,BAH,Industrials,8450019353.25,Equity,Common Stock,UN,,True,eligible,5975f2d8f2c9610c07ea1418a082ed60aa0750ca4d0069618ef8dfe741c2c6ab,17
+mid,MID Index,TRU UN Equity,BBG008FCB177,TRU,Industrials,12682004000.0,Equity,Common Stock,UN,,True,eligible,5993cf9121697a234ec8cdf5e8912fcbbf73a026357b125247c7d473858f5dad,18
+mid,MID Index,DY UN Equity,BBG000C4SQ18,DY,Industrials,8046641718.030001,Equity,Common Stock,UN,,True,eligible,59f7bf9087c663242e1bfd4e0281f0ad2491a9eb5cd628b30e15e39abb56a2f8,19
+mid,MID Index,ITT UN Equity,BBG00CVQZQG8,ITT,Industrials,18521892000.000004,Equity,Common Stock,UN,,True,eligible,5bcf339effe8de42260309735308661325fae286d43a0e742efcc7ec29308fd3,20
+mid,MID Index,SSD UN Equity,BBG000JLCF05,SSD,Industrials,7163712566.779999,Equity,Common Stock,UN,,True,eligible,5cc4a159c805d30ab21964ee7aa07bbaad03be6317aea6205b62fbdf4dbf5044,21
+mid,MID Index,IESC UQ Equity,BBG000PHV6M2,IESC,Industrials,12834871648.08,Equity,Common Stock,UQ,,True,eligible,5cf081f39a25751266b215946870551098a8799c045ba1690b54834dec98612e,22
+mid,MID Index,AAON UW Equity,BBG000C2M952,AAON,Industrials,7036593552.26,Equity,Common Stock,UW,,True,eligible,5e5219a2521b4265c36367702cf3611c9d676e9b73f8e56aa11029a4c68a80e2,23
+mid,MID Index,SLAB UW Equity,BBG000BB9N93,SLAB,Information Technology,7375055183.829999,Equity,Common Stock,UW,,True,eligible,06bd48d266488f4d3ff67a7dda5125afaa5de73489036dd127b0a2545c2c74d1,1
+mid,MID Index,AVT UW Equity,BBG000BCPMP7,AVT,Information Technology,8326303719.549998,Equity,Common Stock,UW,,True,eligible,074a66a5e885fe659965fc528aada6e7da90e7becc1a2f49a7a9938ae33a5763,2
+mid,MID Index,VIAV UW Equity,BBG000BP7SQ4,VIAV,Information Technology,10084665470.36,Equity,Common Stock,UW,,True,eligible,0bcab13ce6ed0aeb42ca43e2c26503ab510a9d643796903d5b01d0bafe85e932,3
+mid,MID Index,LFUS UW Equity,BBG000BGFS30,LFUS,Information Technology,10901396199.87,Equity,Common Stock,UW,,True,eligible,2327382dbad9af1f61d1d81fd77b7088bb3fdd5ee41fe620d2cc686717bc490d,4
+mid,MID Index,FN UN Equity,BBG000HBFT97,FN,Information Technology,14690860845.44,Equity,Common Stock,UN,,True,eligible,257a66b004e498703a01e6e7b1a76ad4e585f7e4e5cf5bf80d14636a6e28b78b,5
+mid,MID Index,CRUS UW Equity,BBG000C1DS52,CRUS,Information Technology,5990552066.329999,Equity,Common Stock,UW,,True,eligible,2838fbbf68c86ac197b1f96baaea06d1024453acc6efdf351cd1118fe37afef1,6
+mid,MID Index,BILL UN Equity,BBG00QVJV6Z0,BILL,Information Technology,3547514131.2000003,Equity,Common Stock,UN,,True,eligible,3a29865867b0a419105c8a630c2fd767af20fc74fb2f83d892e13a4276b26dfe,7
+mid,MID Index,SITM UQ Equity,BBG00QNSY1P8,SITM,Information Technology,19746145789.4,Equity,Common Stock,UQ,,True,eligible,3e76dd8dae23a869767b8cbf1a881c5291aac808ff3945bc7420d4b1b335e3f2,8
+mid,MID Index,DT UN Equity,BBG00PNN7C86,DT,Information Technology,16715883083.52,Equity,Common Stock,UN,,True,eligible,473b6f1bfcf5e0d0cb8a2d22845c813f24890df59c363d884ef133817ce7b91f,9
+mid,MID Index,TTMI UW Equity,BBG000BYQ9Y7,TTMI,Information Technology,13083275420.159998,Equity,Common Stock,UW,,True,eligible,4cc23d0db155bb5fbfdd90dbec74f3ddf095c6f096bd46cb2a51c589e1e8c3b4,10
+mid,MID Index,GWRE UN Equity,BBG0021RGSV1,GWRE,Information Technology,11903695685.420002,Equity,Common Stock,UN,,True,eligible,6054ad88b3e05c89fec551809a59a0db1943b97a04b116eea3ad163673a334f9,11
+mid,MID Index,TWLO UN Equity,BBG00D0HCDS1,TWLO,Information Technology,44073016635.600006,Equity,Common Stock,UN,,True,eligible,7008877f3daf9fbe85f8591be073630f09c0b4c61720164e5151bcd3b127c828,12
+mid,MID Index,MTSI UW Equity,BBG001YF9SP8,MTSI,Information Technology,21273886539.36,Equity,Common Stock,UW,,True,eligible,7622e526a728a4ff3f4d53a355ec091ed7850c751e68e5946daf690efeb09354,13
+mid,MID Index,SMTC UW Equity,BBG000DBN4F0,SMTC,Information Technology,16311452912.28,Equity,Common Stock,UW,,True,eligible,79b98163b0a55ee269943c936a87af876e26709087ab721cb138626fc2f599e7,14
+mid,MID Index,CDE UN Equity,BBG000BF8VT5,CDE,Materials,18369198414.26,Equity,Common Stock,UN,,True,eligible,22497119455c985230c9f065f1fa023ea215d1d5a0485d27f531c81a6e1de0e9,1
+mid,MID Index,AXTA UN Equity,BBG0070QYRW4,AXTA,Materials,6994173501.959999,Equity,Common Stock,UN,,True,eligible,562067fa2417fb40e356f665be4003a1560f20650c904da7240891c9d0e284e2,2
+mid,MID Index,NEU UN Equity,BBG000BJ5TW1,NEU,Materials,8391168690.640001,Equity,Common Stock,UN,,True,eligible,745fd290ff7c815866a0d7b5e58d916beacd9c6e6128c55c2907e84ea92c009a,3
+mid,MID Index,CLF UN Equity,BBG000BFRH97,CLF,Materials,6401459327.339999,Equity,Common Stock,UN,,True,eligible,7dde2e410607578a09e37eff77b84539d2f4871af43f5c3662a2653f2f57c582,4
+mid,MID Index,CBT UN Equity,BBG000BF3ZG5,CBT,Materials,4050452499.15,Equity,Common Stock,UN,,True,eligible,8c4c67b81764401d78517730aed383daa96ed03d4ddae0d7a05a0ec48a0d1b6a,5
+mid,MID Index,CMC UN Equity,BBG000BFSPW2,CMC,Materials,7134163364.15,Equity,Common Stock,UN,,True,eligible,dec58747113bf0c4587f900e98258add431378d182dd9a262a5b9d760cfd4717,6
+mid,MID Index,SLGN UN Equity,BBG000BPDFV9,SLGN,Materials,3799268619.000001,Equity,Common Stock,UN,,True,eligible,f23f117d48436d0e4e6a6db3a1ec85525c71cb2ef46054da9ccf7af6843e13f3,7
+mid,MID Index,IRT UN Equity,BBG004Q00KX1,IRT,Real Estate,3465445134.9,Equity,REIT,UN,,True,eligible,028b556c8cf5bb88e559b8a605600e212665cfb0d3c6a73516d282a807207904,1
+mid,MID Index,EPR UN Equity,BBG000BT0137,EPR,Real Estate,4365176375.56,Equity,REIT,UN,,True,eligible,1bc223c72fc2fd32d3002d91b8ca23f82f4d5f4ecf80e807cfaefa87fafd1014,2
+mid,MID Index,KRG UN Equity,BBG000BC2MV5,KRG,Real Estate,4968603938.4,Equity,REIT,UN,,True,eligible,28e263f440435355ee463fe84c1000e6f07b5568c5c84b780e1045ef8008a683,3
+mid,MID Index,CDP UN Equity,BBG000BXL661,CDP,Real Estate,3828737062.08,Equity,REIT,UN,,True,eligible,46319960ebf395c07e6c810ec263d69e9616db64cbc170dcae2960c445d08c41,4
+mid,MID Index,VNO UN Equity,BBG000BWHH82,VNO,Real Estate,6367170107.099999,Equity,REIT,UN,,True,eligible,63571eed94fbde5c08c7dd999867e70fc9f3a599bce91355cb64490457f4b7a9,5
+mid,MID Index,ELS UN Equity,BBG000BB7VP9,ELS,Real Estate,11465337690.52,Equity,REIT,UN,,True,eligible,6f7a105919cbf3cca53fee5793f8e6b7e411f603770e88b97447ff4c1e102166,6
+mid,MID Index,RYN UN Equity,BBG000BG7MZ7,RYN,Real Estate,5591289397.89,Equity,REIT,UN,,True,eligible,7a6cc783ca18491f8e330cb29e4ad8bbfb39c941110b3c451907d206f79f183b,7
+mid,MID Index,BRX UN Equity,BBG004V7PD50,BRX,Real Estate,8592424848.0,Equity,REIT,UN,,True,eligible,b9ca499faeb8d98e11b1d8960456a4d8a84daff219aabe6f3da742baf3226823,8
+mid,MID Index,SUI UN Equity,BBG000BLJXH9,SUI,Real Estate,13675811451.96,Equity,REIT,UN,,True,eligible,c19d56871c8f9636a3f2fc30df26a83d67294085e2eb3265fd556803fe150c85,9
+mid,MID Index,STAG UN Equity,BBG000BGLH82,STAG,Real Estate,7277598694.11,Equity,REIT,UN,,True,eligible,ccfbfda0bb2a7706699680b22442f84873895bfd95117c28ec48fd4372ffa26f,10
+small,SML Index,VSNT UW Equity,BBG01Y0PKWX9,VSNT,Communication Services,4517460731.880001,Equity,Common Stock,UW,,True,eligible,9927a44fffd3345b1437e07af1fb6e3e1ad654274fe56e73012bdc72a1022f52,1
+small,SML Index,MCRI UW Equity,BBG000BJ0NL1,MCRI,Consumer Discretionary,2101594812.46,Equity,Common Stock,UW,,True,eligible,031480b0ceb109508b198327d466f304dd53806c0c6733aeb5bcb2ef649970ab,1
+small,SML Index,LKQ UW Equity,BBG000PXDRY8,LKQ,Consumer Discretionary,5874708436.919999,Equity,Common Stock,UW,,True,eligible,05b1e741e54e482bcce8bd793eff1f5a48347163f0be8aa8b4fba3b86b5756a2,2
+small,SML Index,PATK UW Equity,BBG000BQSN08,PATK,Consumer Discretionary,2216160216.0,Equity,Common Stock,UW,,True,eligible,09ceabceda6b69163d0db9c5a2992328e0fe795df2ec1fa27278118338df3f2f,3
+small,SML Index,ADNT UN Equity,BBG00BL29G48,ADNT,Consumer Discretionary,1318357537.2,Equity,Common Stock,UN,,True,eligible,1340fa1453d00a4d0c8a0a47bbd908ac8f8d9d06f74bc90dbe87063e2027561a,4
+small,SML Index,WINA UQ Equity,BBG000BQ5KX3,WINA,Consumer Discretionary,1076357519.1599998,Equity,Common Stock,UQ,,True,eligible,16c785f70f692bc16fb009acc809b8800896bc1c4652e23f46e9971652948ce1,5
+small,SML Index,CRI UN Equity,BBG000CTM6D0,CRI,Consumer Discretionary,1138046735.0,Equity,Common Stock,UN,,True,eligible,27975f3c1b99fe8dd3dac03a709b8b6958f9e0efd05eab80594d6c1668113bc8,6
+small,SML Index,MHK UN Equity,BBG000FLZR62,MHK,Consumer Discretionary,7520318382.35,Equity,Common Stock,UN,,True,eligible,302d3405ef08554c26fe66284a7804d449f433927c2b0b4b432e3314a8f892e8,7
+small,SML Index,LTH UN Equity,BBG012J3H053,LTH,Consumer Discretionary,8846858521.32,Equity,Common Stock,UN,,True,eligible,3098f15c53379dce277ba6c83dbc983e76d587f1ba9d8423be10bc5789ac8c08,8
+small,SML Index,PRDO UW Equity,BBG000BDD183,PRDO,Consumer Discretionary,1877937420.55,Equity,Common Stock,UW,,True,eligible,313b1c54dd4927d6e505ca450e43f63ae0381f9a3cd99f915852217bd3b9b4a6,9
+small,SML Index,LRN UN Equity,BBG000QSXRZ5,LRN,Consumer Discretionary,3185977717.7,Equity,Common Stock,UN,,True,eligible,33376a3f25827a4e05a5901b33693720281663c76c9aa3468c6b06f691925d16,10
+small,SML Index,KMX UN Equity,BBG000BLN1T1,KMX,Consumer Discretionary,8025072478.799999,Equity,Common Stock,UN,,True,eligible,35547d7f183d13a6d54ee94fc5f3a1939f6698df92309dea655f445a5aac6bab,11
+small,SML Index,SONO UW Equity,BBG00LD41Z47,SONO,Consumer Discretionary,2125742802.63,Equity,Common Stock,UW,,True,eligible,3634f4f6bbae75dc9163a9af9ddf6a71a619778fd0156989a283d95925683b6e,12
+small,SML Index,DMC UN Equity,BBG000JLQJS2,DMC,Consumer Staples,1445503043.88,Equity,Common Stock,UN,,True,eligible,09b7b2aab4dafce1d75ff63d3943f803b7d6a37584abd059db04a0fb3db7210f,1
+small,SML Index,CHEF UW Equity,BBG001MFW708,CHEF,Consumer Staples,4559370236.08,Equity,Common Stock,UW,,True,eligible,0b025a117e9a926d211f2b69babc5af5a8ba8979d8529493f977b4ef8477a89c,2
+small,SML Index,UNFI UN Equity,BBG000BXB430,UNFI,Consumer Staples,2759506592.9999995,Equity,Common Stock,UN,,True,eligible,30344200b49de2eb8f921e2df35e5c3069c30cda3f1ea3feb967ecc37b825594,3
+small,SML Index,CENTA UW Equity,BBG000KTZWN9,CENTA,Consumer Staples,2197940567.44,Equity,Common Stock,UW,,True,eligible,31aaf0838326a58502da68c35cd324c25f75bca8aa534a74a3deaca7c5b8b7fe,4
+small,SML Index,FRPT UQ Equity,BBG00742MS54,FRPT,Consumer Staples,2747480090.58,Equity,Common Stock,UQ,,True,eligible,427194c0a3e52ff3ddce5e62fb60e0875641d1122417d969e726ff3cac69c092,5
+small,SML Index,FIZZ UW Equity,BBG000BF8P18,FIZZ,Consumer Staples,2768204480.1400003,Equity,Common Stock,UW,,True,eligible,4678cd0a27c4882d2e981c74b8d47e524fc873b63c018769cd5cf69d092fa907,6
+small,SML Index,TR UN Equity,BBG000BVJQF4,TR,Consumer Staples,2837124925.6406,Equity,Common Stock,UN,,True,eligible,6db5d263d89b2fdef3a86fb431b7a87d0fa592c69e0a0e47a7178edf049e82a1,7
+small,SML Index,COTY UN Equity,BBG0035Q1NX2,COTY,Consumer Staples,2360239723.52,Equity,Common Stock,UN,,True,eligible,9295b14b58770c20cca77e2d5880105839d96c0a67c268566e91c0897d60aabb,8
+small,SML Index,IPAR UW Equity,BBG000GCWFP9,IPAR,Consumer Staples,3777120611.14,Equity,Common Stock,UW,,True,eligible,a9f06a046662337edec4ead0ac1c079d6ab218ee677da3712e96e78b8b7c40d4,9
+small,SML Index,TAP UN Equity,BBG000BS7MP2,TAP,Consumer Staples,6786894987.535001,Equity,Common Stock,UN,,True,eligible,ab3fc21d155a52516b27fe5165d29b140399c241adafbfc0fef06100a1b82404,10
+small,SML Index,PARR UN Equity,BBG003C5DL52,PARR,Energy,3906267917.19,Equity,Common Stock,UN,,True,eligible,0682d97c8c9915eece39cfadef0d5cb7f9871f19ae16920d3e53c87953bf9963,1
+small,SML Index,NE UN Equity,BBG018QRJTQ1,NE,Energy,6802354908.979999,Equity,Common Stock,UN,,True,eligible,0dbb55ae43f5e0ba01848cf1d206c8cd14850e5a738484fb68f72780ed4bf80f,2
+small,SML Index,LEU UN Equity,BBG000BQ2L37,LEU,Energy,2871002769.96,Equity,Common Stock,UN,,True,eligible,12d31e1cdd4a3f1c34f8159b20b4abb65804055a089eebb28fcc9014af97adbb,3
+small,SML Index,TALO UN Equity,BBG00JPH4HT0,TALO,Energy,2748251603.28,Equity,Common Stock,UN,,True,eligible,15d6cd17a607cb335f9a78b6c48b5d9b36ff665b770fca3bbc6eccdf57a6da89,4
+small,SML Index,NOG UN Equity,BBG000DRVJ54,NOG,Energy,2473005260.88,Equity,Common Stock,UN,,True,eligible,3198bcc15852b0a846bba48d17e64a70cd9cd58a1b85e4d756fb4616efe2259b,5
+small,SML Index,INSW UN Equity,BBG00DGT2043,INSW,Energy,5364736294.41,Equity,Common Stock,UN,,True,eligible,5c76209a62268053b745517a0d6382848da0a6447391e3bce178c2a4c47645a1,6
+small,SML Index,CVI UN Equity,BBG000QHVBB2,CVI,Energy,5101927899.249999,Equity,Common Stock,UN,,True,eligible,7ee4f56eb104e8e797be98b2bd4e6b55d431d7bcde10c3763e6a572f800d4929,7
+small,SML Index,OII UN Equity,BBG000CPBGD8,OII,Energy,4562438926.8,Equity,Common Stock,UN,,True,eligible,8182949cae45e974bede0761fefb7a3479f7d8f858900a3165804a7f549fbcbc,8
+small,SML Index,WHD UN Equity,BBG00JRH1PD0,WHD,Energy,5157149748.08,Equity,Common Stock,UN,,True,eligible,82e32b071e58fcff2e6177394ccbdf85a45bbf05a0d31b46d7d2ed7b1aea32fd,9
+small,SML Index,GPOR UN Equity,BBG0112Z86H6,GPOR,Energy,2689539179.94,Equity,Common Stock,UN,,True,eligible,99fa165bc66a57d003648b9b05c36daf8f355e9b034702d9eb39537ec08ad209,10
+small,SML Index,EFC UN Equity,BBG000M1KG40,EFC,Financials,1592210470.9999998,Equity,REIT,UN,,True,eligible,00b90265c92639e9bf811b8b275bd2139bd1d419db7345b6b0d7eed9acdcbbe9,1
+small,SML Index,VIRT UN Equity,BBG0064N2TD1,VIRT,Financials,8126164477.909999,Equity,Common Stock,UN,,True,eligible,0350621fe582558c9164f01d082298c46c63d2f1163959e8ee31d8f4d1e29a9e,2
+small,SML Index,AUB UN Equity,BBG000BKS5P3,AUB,Financials,5505514240.8,Equity,Common Stock,UN,,True,eligible,04984b602ad72c7c7c4797e1f9aa13f7fa6439d8928d9398d47f066299fa04e3,3
+small,SML Index,TFIN UN Equity,BBG0074VHLS6,TFIN,Financials,1448725778.3100002,Equity,Common Stock,UN,,True,eligible,0814cb6bfc94a45b0dc6dbb729709b885447d6f09455612998a5ce8b601e8c3e,4
+small,SML Index,HOPE UW Equity,BBG000DXKRQ2,HOPE,Financials,1742398643.04,Equity,Common Stock,UW,,True,eligible,0f2fd4545665b2689aaf30b5fcd0020c010121d95cbcfe6ee4f43745caee4c87,5
+small,SML Index,PMT UN Equity,BBG000DKG066,PMT,Financials,703723061.3399999,Equity,REIT,UN,,True,eligible,1d7c1902b0453b6ca810b28b135f2a1ab4ad7a8d8647ba691ce7f9068ce5f2c7,6
+small,SML Index,PRK UA Equity,BBG000DCV496,PRK,Financials,3278645221.5,Equity,Common Stock,UA,,True,eligible,1e40d6b878a3ac805bd0587bd346c8b19046c782f268975688a08bfe476a32eb,7
+small,SML Index,TMP UA Equity,BBG000F61HF4,TMP,Financials,1405353647.5499997,Equity,Common Stock,UA,,True,eligible,202c1b91ea337c76d8eb9d565350f56f5c49e14215ba3b07ba0bf89885098b2b,8
+small,SML Index,EVTC UN Equity,BBG0043R5HN0,EVTC,Financials,1643792430.42,Equity,Common Stock,UN,,True,eligible,2266cc3c3760c71b8c775638fedd4d4a93b231d3a05292a93cfe67b2cc335241,9
+small,SML Index,RNST UN Equity,BBG000BR42H0,RNST,Financials,3643381974.9,Equity,Common Stock,UN,,True,eligible,22fd24eafb92a5e37069fdda2af011688c149fd8ab31d1f06a36f55e9b43d267,10
+small,SML Index,UCB UN Equity,BBG000BL7HW0,UCB,Financials,4098361346.97,Equity,Common Stock,UN,,True,eligible,271f9b50415cef209b1fea7a6c1394554cfba4b11c33f1c32cd0cec8e3930fff,11
+small,SML Index,MCY UN Equity,BBG000F1C943,MCY,Financials,5475165778.95,Equity,Common Stock,UN,,True,eligible,2b63ee3bb4306533893a7745413917527d966db31d69ab3bd716b70815821bb4,12
+small,SML Index,FULT UW Equity,BBG000BJZX31,FULT,Financials,4385307512.109999,Equity,Common Stock,UW,,True,eligible,2e65f6cad984b5ab9f0ae5e3b329e20fe8c7999b6efc7e8fd71708c8ec6168c8,13
+small,SML Index,ABCB UN Equity,BBG000CDY5M4,ABCB,Financials,5465213544.16,Equity,Common Stock,UN,,True,eligible,310a365cc6f2e7e8ac8887a82c7694c438e2cfee24314e4d5b2022bbbb6398ce,14
+small,SML Index,TRST UW Equity,BBG000BVP4W7,TRST,Financials,942485409.0,Equity,Common Stock,UW,,True,eligible,3246b45c176490da66aeab1b418d26044da1fc4fc4ad3b9f98464f84f015a400,15
+small,SML Index,WT UN Equity,BBG000KLDXD9,WT,Financials,3645381390.66,Equity,Common Stock,UN,,True,eligible,368be1333194f0309674c4f0a8038ceaf65f1ee9661e82e5ef40556964acbb56,16
+small,SML Index,ABR UN Equity,BBG000KMVGS8,ABR,Financials,827131304.88,Equity,REIT,UN,,True,eligible,36f6b5ebac940c457eebdbf0b121d7ad99204d6f5c713d725bfe9f19c9938b15,17
+small,SML Index,ASTH UR Equity,BBG000H80TH1,ASTH,Health Care,1958046711.84,Equity,Common Stock,UR,,True,eligible,0698feb923a6906c50d315c0f107ac9322b94e38e7577e3decb587db8c989262,1
+small,SML Index,MD UN Equity,BBG000H8LJM4,MD,Health Care,2106897317.03,Equity,Common Stock,UN,,True,eligible,1608b1a9b4d45a09c753b97ac9e57c20e771b6468277d430bc8ef31fe4f3c121,2
+small,SML Index,UFPT UR Equity,BBG000BJC5G3,UFPT,Health Care,2317695283.8,Equity,Common Stock,UR,,True,eligible,16e005c4e70686d4608fbb914ee0bbe62eacdbeedee793fa691fc2f9467374fa,3
+small,SML Index,QDEL UW Equity,BBG017TH37N0,QDEL,Health Care,742671874.4099998,Equity,Common Stock,UW,,True,eligible,18a097af6d53b7807fa6bfd502f2dc396757be28df2372dcd450b9da0d83029b,4
+small,SML Index,LFST UW Equity,BBG01138DHJ3,LFST,Health Care,4523538410.559999,Equity,Common Stock,UW,,True,eligible,1b2e3ca5c46530369b2474effbfec362ccc5895975059aba83aa18d1922eec28,5
+small,SML Index,COLL UW Equity,BBG008G2NTG4,COLL,Health Care,736733522.19,Equity,Common Stock,UW,,True,eligible,1b98d27d052263a874c499a0de2b074884b201a551f91c631312fd562a04bcf3,6
+small,SML Index,TFX UN Equity,BBG000BV5DX8,TFX,Health Care,5397395929.86,Equity,Common Stock,UN,,True,eligible,21a89f06609c85bb4e638c4a7c0bea33b92f4561300122df538bfe2f18d73d3c,7
+small,SML Index,PTGX UQ Equity,BBG00DB19MD4,PTGX,Health Care,9217048115.400002,Equity,Common Stock,UQ,,True,eligible,36d63c5b9032a57475c2bf7ae788d3d487c603424f36bfd59de7463017fb0b3a,8
+small,SML Index,ARQT UW Equity,BBG00R9RPLV3,ARQT,Health Care,3435161294.13,Equity,Common Stock,UW,,True,eligible,41574f5d989769ef5634ec0635cc8b91730fb8c6f25280d6e9bbde3beed12432,9
+small,SML Index,CON UN Equity,BBG01NBZ7QJ3,CON,Health Care,4509027144.959999,Equity,Common Stock,UN,,True,eligible,4b7083cc576d2294228974799495a92542f506e82e8ab448d70223acfdf09efb,10
+small,SML Index,MBC UN Equity,BBG01B9G4326,MBC,Industrials,1416293810.4,Equity,Common Stock,UN,,True,eligible,032d22d0bafb008163769f7d89476f6ccc78678ababf75d4a822cd415274d9b2,1
+small,SML Index,JBLU UW Equity,BBG000BRQHD7,JBLU,Industrials,1592257403.82,Equity,Common Stock,UW,,True,eligible,0552d06923bfb43f3e15f2a448c4a367641bea8e3c31f21302e8ac9dad922aaa,2
+small,SML Index,TILE UW Equity,BBG000BLV2J1,TILE,Industrials,2032842178.2000003,Equity,Common Stock,UW,,True,eligible,07cf944a30a09508216e9e868834fc778179f9d1e4d9ae072c008539236d19f4,3
+small,SML Index,VSEC UW Equity,BBG000BWK7G1,VSEC,Industrials,4901547359.8,Equity,Common Stock,UW,,True,eligible,087290108ac1c2d6661174311ffd5efd5866c639c76bc41ab30bc282f156296e,4
+small,SML Index,ARCB UW Equity,BBG000C1PQS8,ARCB,Industrials,2840186552.78,Equity,Common Stock,UW,,True,eligible,09a74dedc3361f3ba4f1fd9c174ee52f37b996e7defdeee38b8ada329b9ad5a3,5
+small,SML Index,ALGT UW Equity,BBG000LJTKK6,ALGT,Industrials,2092705145.2499995,Equity,Common Stock,UW,,True,eligible,1b20c2551f058d1cbe860692bb37a4d006f7082fae5a5c795415924b8297f00a,6
+small,SML Index,EPAC UN Equity,BBG000B9X091,EPAC,Industrials,1801579268.58,Equity,Common Stock,UN,,True,eligible,1ef17ba5c32d1100e57ddfa66647a02447b0258d76858e0a3797e49220335e20,7
+small,SML Index,RUN UW Equity,BBG009HT4X01,RUN,Industrials,1847296351.94,Equity,Common Stock,UW,,True,eligible,206b115de5332278ef14f6dd1ccd2fe5ca9859dadc398e215f5fa99288fa9de9,8
+small,SML Index,KRMN UN Equity,BBG01RXK1PP4,KRMN,Industrials,4463735285.44,Equity,Common Stock,UN,,True,eligible,27c76b4fa877fb340e000ca6ec759878979b4f60bc124592ed5a60b8952fe4a1,9
+small,SML Index,MWA UN Equity,BBG000JBCDZ4,MWA,Industrials,3378559693.5599995,Equity,Common Stock,UN,,True,eligible,289d4d9e73e893d6fb127aa20c5a8bba3a0f314ce46edbc45093848b2bf31a37,10
+small,SML Index,CNXC UW Equity,BBG00Y61NXR9,CNXC,Industrials,1552917007.5000002,Equity,Common Stock,UW,,True,eligible,2abac8e0389eaa4f0384bb0c163d6eaec6283824c73e3f1db6417ea80ce6d73d,11
+small,SML Index,MFP UW Equity,BBG01Y76YTM8,MFP,Industrials,1861233223.25,Equity,Common Stock,UW,,True,eligible,35d11301918e857462f8548076935f259d9697438ca80955514bd5b9f0d4b0fa,12
+small,SML Index,REZI UN Equity,BBG00HY28KC4,REZI,Industrials,2766659227.16,Equity,Common Stock,UN,,True,eligible,36b4b13d83c599f22724bb8cc4e87fc0533aca63fdfd0cf3bdf2959b90bf74af,13
+small,SML Index,MATX UN Equity,BBG000BBK5Q0,MATX,Industrials,6681927690.099999,Equity,Common Stock,UN,,True,eligible,3956367dc71e496cb60fcbb5efe4cd57309b97ee7c5ec433d8484b68d5cb5d59,14
+small,SML Index,AXTI UW Equity,BBG000BHZBQ8,AXTI,Information Technology,4830778528.04,Equity,Common Stock,UW,,True,eligible,030dd1c5af75d3ce2c49f368b192e08d4ed08588304ed3461162c7b14c994edf,1
+small,SML Index,ACMR UQ Equity,BBG00HPSG9G9,ACMR,Information Technology,5289856436.2,Equity,Common Stock,UQ,,True,eligible,0665be65befca51fb7a2865a2049ad2fa550777ef5d81e59fe313d4e280d05e2,2
+small,SML Index,ACIW UW Equity,BBG000PMC3K1,ACIW,Information Technology,4946806809.0,Equity,Common Stock,UW,,True,eligible,070cd2f451a45ebc9c9b3f9ee6a0231577834916984a7a51c44cc5a26ef6be82,3
+small,SML Index,ADIG UN Equity,BBG01WF7KBW4,ADIG,Information Technology,1406856858.94,Equity,Common Stock,UN,,True,eligible,0c9267fe4019dafa6069d4e45124db65cb4235a7fffe3640022fd2e1b7ead647,4
+small,SML Index,PRGS UW Equity,BBG000C4R3P4,PRGS,Information Technology,1616320044.2199998,Equity,Common Stock,UW,,True,eligible,1b4e18c24b1ea1bf671c6f4e9d948bf40f9d4e0f86ae3c9b4a915077a211ae38,5
+small,SML Index,MXL UW Equity,BBG000BB7246,MXL,Information Technology,8162387189.999999,Equity,Common Stock,UW,,True,eligible,1bf3039b3dcaa855dd6eeda0175f6442d5f3d172e9d7b393601b7d212d195a58,6
+small,SML Index,BOX UN Equity,BBG0067SDZN0,BOX,Information Technology,4299872225.82,Equity,Common Stock,UN,,True,eligible,1f8850a36d442f83f208fae5703f8aab9510aedcb09af58bc29ed98fc413b0e2,7
+small,SML Index,QTWO UN Equity,BBG005ZVK9V5,QTWO,Information Technology,3435743694.5,Equity,Common Stock,UN,,True,eligible,20921735f00ee6b903bd621b981a1ef1c0ab7027616ea626ab1e5f9dc2e856f2,8
+small,SML Index,YOU UN Equity,BBG011C0FS86,YOU,Information Technology,6218269841.4,Equity,Common Stock,UN,,True,eligible,253334879dcc02c6a522e0a0c66e7492e3b3c01426c05902f694e51812012e32,9
+small,SML Index,CRSR UW Equity,BBG00WWF7761,CRSR,Information Technology,1460388946.5,Equity,Common Stock,UW,,True,eligible,25a9af445b61c233fa87a78437dd0f766ee365ffe227053491108052fd17d38e,10
+small,SML Index,CENX UW Equity,BBG000BW1W95,CENX,Materials,3702349233.0,Equity,Common Stock,UW,,True,eligible,13c685e09abfcd99aca21fd86e2d3235b7b07a89a2484820c21f85246a2844f4,1
+small,SML Index,KOP UN Equity,BBG000QDQTD6,KOP,Materials,873147094.5600001,Equity,Common Stock,UN,,True,eligible,256bfa2d64f19be55a9164087fdc5a86b68c6248114bac3ba089c2575eddbd03,2
+small,SML Index,HCC UN Equity,BBG00GD1JMY1,HCC,Materials,4844591482.25,Equity,Common Stock,UN,,True,eligible,48de91e4bb96c9d4f3e0447aead2e0bd42c170d775713ffc61869407f7d0b682,3
+small,SML Index,FMC UN Equity,BBG000BJPBC0,FMC,Materials,1432578706.05,Equity,Common Stock,UN,,True,eligible,6eebf6ea794f8fb5b078ba2183d57227eacdb89060c98de3067c2849cb6c86c8,4
+small,SML Index,KWR UN Equity,BBG000DZT6B0,KWR,Materials,2759771246.7599998,Equity,Common Stock,UN,,True,eligible,bf345c8f582ba6bbcb3dc69dd84ee136017c378cb482ffa4cdb484c19c07cf35,5
+small,SML Index,ESI UN Equity,BBG005C4XHW7,ESI,Materials,8558424899.679999,Equity,Common Stock,UN,,True,eligible,d448c3701b0b72c5ac766d414aea85b5c42e4fe78aa2a48a6425ae3727cf0bec,6
+small,SML Index,MMI UN Equity,BBG005GBRSX9,MMI,Real Estate,1096365536.85,Equity,Common Stock,UN,,True,eligible,0b382254e05f76cad1f5b64361865e03146f48c32866f37b6e3ed1a236d54078,1
+small,SML Index,FCPT UN Equity,BBG009H33QS4,FCPT,Real Estate,2417933624.1800003,Equity,REIT,UN,,True,eligible,24252c35c6765f822736ad3d512366b3f20caffdcb2889eb2f54a55a95da2edf,2
+small,SML Index,AAT UN Equity,BBG00161BCW4,AAT,Real Estate,1328173127.1899998,Equity,REIT,UN,,True,eligible,2b3f59efdd854bfe7a1053c047bf9c951416af33d3cd5ed3a8e3c169daa6f303,3
+small,SML Index,SHO UN Equity,BBG000Q3TTW4,SHO,Real Estate,2101166533.3,Equity,REIT,UN,,True,eligible,3f6819648b8f3cf389af188033ac021b8b8cf88dced4952d60b8252fa11d4098,4
+small,SML Index,APLE UN Equity,BBG008P33727,APLE,Real Estate,3859952112.3,Equity,REIT,UN,,True,eligible,4656ae3a0cd8c0c47a71b4ca7382ae43e4bcc927cc53bd2337087ea43bfe0a6a,5
+small,SML Index,DEI UN Equity,BBG000PN1TY9,DEI,Real Estate,1619582531.89,Equity,REIT,UN,,True,eligible,468961bf455d9180ec308b74b6b0acb12c7a6ccf3f7e817c36817c922d5e6ace,6
+small,SML Index,MRP UN Equity,BBG01RQYH329,MRP,Real Estate,4373702397.18,Equity,REIT,UN,,True,eligible,5248af6d02c478ba85101cc61deff52ca1a45754ba8d58de34b25837e04da5be,7
+small,SML Index,SAFE UN Equity,BBG000H35M64,SAFE,Real Estate,864666778.8000001,Equity,REIT,UN,,True,eligible,5c9bca695a0b03857a5a54d8a4ec8dc754c0db45b0cf78a6d9de8c31cb6c8bc3,8
+small,SML Index,CWK UN Equity,BBG01YRJSMC1,CWK,Real Estate,2783704576.88,Equity,Common Stock,UN,,True,eligible,6e3191cad729c5992e6defa0618e0c825439b39c8579085a8f086daa59fa7563,9
+small,SML Index,SLG UN Equity,BBG000BVP7C2,SLG,Real Estate,3509195679.0,Equity,REIT,UN,,True,eligible,6f2f34d46f0d8cf07da44585446c6ddc7280a3f893461623c2aaad8c102875ee,10

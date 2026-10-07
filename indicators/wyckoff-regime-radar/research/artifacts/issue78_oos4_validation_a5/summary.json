@@ -1,0 +1,40 @@
+{
+  "integrity": {
+    "issue": 78,
+    "study": "Causal Core-2 OOS4 Validation A5",
+    "role": "untouched-cohort architecture validation; not a strategy claim",
+    "classifier_blob": "1eec08e791403453853b589373bb2270c508c3bb",
+    "figi_set_sha256": "b0c9423a6e3e5cbd61dcd17dc1a9c5a0fc50b8bc00286ba3a5b86f560209ca49",
+    "stocks": 300,
+    "raw_files": 300,
+    "raw_failures": 0,
+    "horizons": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "blocks": [
+      "ALL",
+      "2000-2004",
+      "2005-2009",
+      "2010-2014",
+      "2015-2019",
+      "2020-2026"
+    ],
+    "min_cell_bars": 5,
+    "min_aggregate_stocks": 30,
+    "oos4_touched": true,
+    "oos2_overlap": 0,
+    "oos3_overlap": 0
+  },
+  "frozen_design": {
+    "translation": "A4 verbatim (reused by import)",
+    "primary": "h10 hard 80/20",
+    "robustness": "70/30"
+  },
+  "notes": [
+    "First OOS4 outcome contact under A5 preregistration.",
+    "No thresholds, weights, or formulas changed for OOS4."
+  ]
+}
