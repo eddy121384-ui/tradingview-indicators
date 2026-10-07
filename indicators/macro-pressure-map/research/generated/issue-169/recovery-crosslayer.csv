@@ -1,0 +1,12 @@
+metric,value
+exact_triggers,14
+dh_triggers,27
+common_months,385
+state_agree,0.6312
+match_1m,0
+match_3m,5
+median_lag_3m,3
+matched_exact_n,5
+matched_exact_mean,0.045923
+unmatched_exact_n,9
+unmatched_exact_mean,-0.006408

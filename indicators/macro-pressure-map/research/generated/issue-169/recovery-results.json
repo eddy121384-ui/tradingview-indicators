@@ -1,0 +1,167 @@
+{
+ "issue": 169,
+ "snapshot_sha256": "1d03923503e7fe82a69b033897484c48aa646279ecf70164d090ed62a5a70719",
+ "snapshot_months": 388,
+ "snapshot_gaps": 0,
+ "equity_months": 800,
+ "treasury_months": 776,
+ "episodes_n": 55,
+ "triggers_n": 14,
+ "deep_triggers_n": 3,
+ "mild_triggers_n": 11,
+ "signals_n": 14,
+ "controls_n": 117,
+ "signal_spread": {
+  "mean": 0.012281,
+  "median": -0.000976,
+  "pos_frac": 0.428571
+ },
+ "control_spread": {
+  "mean": 0.02796,
+  "median": 0.051579
+ },
+ "incremental": -0.015678,
+ "bootstrap": {
+  "seed": 169,
+  "valid": 10000,
+  "draws": 10000,
+  "ci": [
+   -0.081909,
+   0.056752
+  ]
+ },
+ "equity_leg_mean": 0.032605,
+ "treasury_leg_mean": 0.020323,
+ "eras": {
+  "pre-2020": {
+   "sig_n": 11,
+   "ctl_n": 84,
+   "sig_mean": 0.00331,
+   "ctl_mean": 0.016205,
+   "incr": -0.012895
+  },
+  "2020-2022": {
+   "sig_n": 2,
+   "ctl_n": 12,
+   "sig_mean": 0.048684,
+   "ctl_mean": 0.085102,
+   "incr": -0.036419
+  },
+  "2023+": {
+   "sig_n": 1,
+   "ctl_n": 21,
+   "sig_mean": 0.038164,
+   "ctl_mean": 0.042327,
+   "incr": -0.004163
+  }
+ },
+ "loo": [
+  {
+   "ep": 4,
+   "date": "1998-03-31",
+   "evaluable": true,
+   "incr": -0.010719
+  },
+  {
+   "ep": 12,
+   "date": "2001-05-31",
+   "evaluable": true,
+   "incr": 0.003674
+  },
+  {
+   "ep": 21,
+   "date": "2006-11-30",
+   "evaluable": true,
+   "incr": -0.014524
+  },
+  {
+   "ep": 22,
+   "date": "2007-05-31",
+   "evaluable": true,
+   "incr": -0.012251
+  },
+  {
+   "ep": 25,
+   "date": "2009-01-30",
+   "evaluable": true,
+   "incr": -0.041577
+  },
+  {
+   "ep": 28,
+   "date": "2011-12-30",
+   "evaluable": true,
+   "incr": -0.016552
+  },
+  {
+   "ep": 33,
+   "date": "2014-12-31",
+   "evaluable": true,
+   "incr": -0.023412
+  },
+  {
+   "ep": 35,
+   "date": "2015-11-30",
+   "evaluable": true,
+   "incr": -0.013276
+  },
+  {
+   "ep": 38,
+   "date": "2017-08-31",
+   "evaluable": true,
+   "incr": -0.020019
+  },
+  {
+   "ep": 40,
+   "date": "2019-02-28",
+   "evaluable": true,
+   "incr": -0.014784
+  },
+  {
+   "ep": 41,
+   "date": "2019-10-31",
+   "evaluable": true,
+   "incr": -0.004893
+  },
+  {
+   "ep": 42,
+   "date": "2020-05-29",
+   "evaluable": true,
+   "incr": -0.018564
+  },
+  {
+   "ep": 47,
+   "date": "2022-12-30",
+   "evaluable": true,
+   "incr": -0.014626
+  },
+  {
+   "ep": 50,
+   "date": "2024-02-29",
+   "evaluable": true,
+   "incr": -0.017465
+  }
+ ],
+ "loo_evaluable_n": 14,
+ "concentration": 0.454459,
+ "delay": {
+  "sig_n": 14,
+  "ctl_n": 117,
+  "incr": -0.054421
+ },
+ "gates": [
+  true,
+  true,
+  false,
+  false,
+  true,
+  false,
+  false,
+  true,
+  false
+ ],
+ "verdict": "exact_v66_recovery_translation_not_supported",
+ "outcome_data_loaded": true,
+ "production_authorized": false,
+ "repeated_modern_sample": true,
+ "pristine_oos_claim": false
+}

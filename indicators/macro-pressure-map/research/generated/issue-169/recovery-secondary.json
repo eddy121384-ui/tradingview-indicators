@@ -1,0 +1,24 @@
+{
+ "native_t1_timing": {
+  "sig_n": 14,
+  "ctl_n": 117,
+  "sig_mean": 0.016531522744746285,
+  "ctl_mean": 0.026697324515503325,
+  "incr": -0.01016580177075704,
+  "sig_median": 0.02177914214692911
+ },
+ "spytlt": "unavailable - no frozen SPY/TLT total-return data in repository; nothing fetched",
+ "cross_layer": {
+  "common_months_n": 385,
+  "state_agree": 0.6311688311688312,
+  "exact_triggers_n": 14,
+  "dh_triggers_n": 27,
+  "match_1m": 0,
+  "match_3m": 5,
+  "median_lag_3m": 3,
+  "matched_exact_mean": 0.045922599999999994,
+  "matched_exact_n": 5,
+  "unmatched_exact_mean": -0.006408222222222215,
+  "unmatched_exact_n": 9
+ }
+}
