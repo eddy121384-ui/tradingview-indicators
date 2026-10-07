@@ -1,0 +1,34 @@
+name: Macro Pressure Map V6.7 Shadow Contract
+
+on:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/src/macro-pressure-map-v6.6.pine"
+      - "indicators/macro-pressure-map/src/macro-pressure-map-v6.7.pine"
+      - "indicators/macro-pressure-map/research/v6_6_core.py"
+      - "indicators/macro-pressure-map/research/test_v6_6_core.py"
+      - "indicators/macro-pressure-map/research/test_v6_7_action_layer_contract.py"
+      - "indicators/macro-pressure-map/specs/macro-pressure-map-v6.7-action-layer-shadow.md"
+      - ".github/workflows/macro-pressure-map-v6.7-shadow.yml"
+  push:
+    branches:
+      - "feat/issue-129-reflation-action-layer-shadow"
+    paths:
+      - "indicators/macro-pressure-map/**"
+      - ".github/workflows/macro-pressure-map-v6.7-shadow.yml"
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indicators/macro-pressure-map/research
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest numpy pandas
+      - name: Run frozen V6.6 and V6.7 shadow contract tests
+        run: python -m pytest -q test_v6_6_core.py test_v6_7_action_layer_contract.py
