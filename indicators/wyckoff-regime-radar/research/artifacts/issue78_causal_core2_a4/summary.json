@@ -1,0 +1,40 @@
+{
+  "integrity": {
+    "issue": 78,
+    "study": "Causal Core-2 Translation A4",
+    "role": "post-outcome architecture discovery; not fresh OOS validation",
+    "classifier_blob": "1eec08e791403453853b589373bb2270c508c3bb",
+    "figi_set_sha256": "017e9360402afa002dc0970088649e7c411c4f02333dec550f2432be3c0dd701",
+    "stocks": 300,
+    "raw_files": 300,
+    "raw_failures": 0,
+    "horizons": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "blocks": [
+      "ALL",
+      "2000-2004",
+      "2005-2009",
+      "2010-2014",
+      "2015-2019",
+      "2020-2026"
+    ],
+    "min_cell_bars": 5,
+    "min_aggregate_stocks": 30,
+    "oos4_touched": false
+  },
+  "a4_frozen": {
+    "percentile": "(less + 0.5*equal)/N_prior, prior-ready only",
+    "warmup_min_prior_ready": 252,
+    "hard": "struct>=.80/<=.20, ext<=.20/>=.80",
+    "relaxed": "70/30"
+  },
+  "notes": [
+    "OOS3 is deliberately reused for discovery under the 2026-10-05 amendment.",
+    "No result from this run is fresh OOS evidence.",
+    "Retrospective A3 bins are fidelity reference only, not truth."
+  ]
+}
