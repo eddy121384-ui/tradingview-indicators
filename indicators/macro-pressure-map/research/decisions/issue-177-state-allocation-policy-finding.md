@@ -240,6 +240,12 @@ policy; the equity/oil directions are the most stable.
    **Neutral**. Both series agree on the Low/Low zero.
 9. **Long Treasury at `G_Neutral/I_High` misses zero by +0.0154pp** on the
    ex-worst-episode mean. A single small-sign flip would have added a fourth zero cell.
+10. **The investable-oil switch also matters at `G_High/I_Low`** (raised by the
+   independent audit): under the superseded #174 WTI-spot series that cell would *also*
+   satisfy path B (mean excess −1.745%, episode hit 0.368, p10 −9.62%, ex-worst −0.817%)
+   and would therefore be `0`; the investable series is `insufficient_sample` (10 months)
+   and holds the cell at Neutral. Both oil divergences (§9.8 and here) follow the frozen
+   §2 hierarchy — no rule was bent.
 
 ## 10. Source / data limitations (explicit)
 
@@ -308,6 +314,19 @@ policy; the equity/oil directions are the most stable.
   independently reproduces the Low/Low oil zero inputs (n = 34, 15 episodes, mean excess
   −2.932%, episode hit 0.200, p10 −19.24%, worst episode −30.81%, P(ex < −2pp) 0.529,
   ex-worst −3.269%).
+- **Independent read-only audit** (separate agent, own re-implementation of the frozen
+  #174 §9 classifier, §10 strict-zero flag, month/episode/era/danger statistics and the
+  #177 tier/zero/cash/common-sample rules; **620 assertions, 0 FAIL**, artifacts compared
+  but never used as an arithmetic input). It independently reproduced all 72 tiers, the
+  full common-sample panel (all 72 `implied` tiers and 72 `evidence_full` labels), the
+  #176 supersession on all 18 sp500/oil cells, the 3 zero cells and the correct
+  non-zeroing of the 4 near-misses, the 9 Cash scores/biases, and all 6 artifact
+  SHA-256 hashes. It found **no rule violation, no hidden limitation and no
+  summary-vs-CSV inconsistency**. Its one structural finding — that `policy-matrix.csv`
+  serialised only the 72 non-cash cells — is fixed in the follow-up fix commit
+  `31965ed89cc48847adb8447bf8680f310d22f83c` (see §12.10); after the fix the matrix is a true 9×9 (81 rows) and the cash
+  rows now carry `cash_role`, `opportunity_score`, `cash_bias`, `confidence=full` and the
+  cash limitation note.
 - **Parent regression**: `test_issue_174_nine_sleeve_backbone.py` 24/24,
   `test_issue_174_mirror.mjs` 12/12, `test_issue_176_backbone.py` 7/7,
   `test_issue_176_mirror.mjs` 5/5 — all pass, no #174/#176 artifact touched.
@@ -365,6 +384,18 @@ policy; the equity/oil directions are the most stable.
    (which would have failed on a clone with `core.autocrlf=true`), and exact float
    equality across toolchains (pandas and JS sum in different orders, so the frozen
    `1e-12` tolerance is used).
+10. **The machine-readable "9×9" matrix serialised only 8 sleeves per state.** The builder
+    built the Cash row in memory (so its internal "every state contains all 9 sleeves"
+    check passed) but wrote only the 72 non-cash rows to `policy-matrix.csv`; Cash
+    `confidence=full` and the Cash limitation note existed in no generated artifact. This
+    was found by the independent read-only audit, not by the internal checks — a reminder
+    that an internal check is only as strong as the object it is applied to. Fixed by
+    serialising the full 81-row matrix (72 non-cash cells + 9 Cash rows) with three added
+    columns (`cash_role`, `opportunity_score`, `cash_bias`), and by extending the
+    acceptance suite to assert the matrix Cash rows directly. **The fix changed no tier**:
+    all 72 non-cash rows are unchanged in state/sleeve/exposure/confidence/evidence/zero
+    path/limitation/policy_sensitive (drift 0 verified by diff), and `tier_counts`,
+    the 3 zero cells, the Cash biases and the 14 sensitivity changes are identical.
 
 ## 13. Deliverables (all paths contain `issue-177`)
 
@@ -377,7 +408,7 @@ policy; the equity/oil directions are the most stable.
 | `research/test_issue_177_mirror.mjs` | executed Node mirror (10 assertions) |
 | `research/test_issue_177_matrix.mjs` | independent acceptance suite (20 checks) |
 | `research/test_issue_177_pandas_mirror.py` | third independent mirror, Python + pandas + numpy (5 checks) |
-| `research/generated/issue-177/policy-matrix.csv` | 9×9 machine-readable matrix (72 rows) |
+| `research/generated/issue-177/policy-matrix.csv` | 9×9 machine-readable matrix (81 rows: 72 non-cash cells + 9 Cash residual rows) |
 | `research/generated/issue-177/state-cards.md` | human-readable state cards |
 | `research/generated/issue-177/cash-bias.csv` | Cash residual / score / bias table |
 | `research/generated/issue-177/zero-audit.csv` | zero-exposure audit with rule path + reason |
