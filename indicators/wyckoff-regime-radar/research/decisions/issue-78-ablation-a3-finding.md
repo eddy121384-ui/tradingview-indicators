@@ -54,13 +54,22 @@ evidence. If a future primitive family ever motivates S/D again, it needs a
 fresh preregistration — not a placeholder axis.
 
 ## 5. Conclusion 2 — probe verdict: bull_low retained as leading conditioner,
-with explicit caveats
+with explicit caveats (Phase-0 correction 2026-10-07: corrected against the
+committed artifact; no calculation changed)
 
-bullish-structure + low-extension is the best *level* cell (highest means,
-medians, and positive fractions of the four at every horizon) and the only
-cell whose median-stock median stays positive (+0.13 h10 ALL, positive in
-4/5 blocks). But its mean is negative (−0.072), its bull low-vs-high contrast
-is ~0 ALL, and two blocks are negative. Retain as the leading probe-state
+bullish-structure + low-extension leads ONLY on median-stock median:
+highest of the four cells at every horizon (h1 +0.024, h5 +0.062, h10
++0.131, h20 +0.337; positive in 4/5 blocks at h10, 2020–26 ≈ −0.001).
+On equal-stock mean and positive-stock fraction, bull_high leads at h10
+(−0.033 vs −0.072; 52.1% vs 51.0%) and h20 (−0.082 vs −0.134; 51.2% vs
+50.9%); bull_low leads those two metrics only at h1/h5. Both bull cells
+— not bull_low alone — keep positive median-stock medians at every
+horizon and in every h10 block (bull_high medians: +0.009/+0.033/+0.120/
++0.180; positive in 5/5 blocks). The earlier wording claiming bull_low
+the outright leader on means and hit rates "at every horizon" and the
+"only" positive-median cell was factually wrong and is retracted here.
+The retain-with-caveats verdict stands, resting on the median profile —
+not on means or hit rates. Retain as the leading probe-state
 conditioner for later work — a conditioning context, NOT a validated edge,
 policy, or gate.
 
