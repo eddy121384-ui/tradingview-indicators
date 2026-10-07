@@ -430,7 +430,7 @@ check(1, "no historically_unfavorable cell receives High", tierRows.every((r) =>
 check(2, "every 0 exposure satisfies the frozen zero rule (A or B)", tierRows.filter((r) => r.exposure === "0").every((r) => { const d = deriveCell(r.state, r.sleeve); return (d.inp.flagA || d.ruleB) && r.zero_rule_path !== ""; }), "3 zero cells re-derived");
 check(3, "insufficient_sample cells are never High", tierRows.every((r) => !(r.evidence === "insufficient_sample" && r.exposure === "High")), "low-confidence cells scanned");
 check(4, "insufficient_sample cells are never 0", tierRows.every((r) => !(r.evidence === "insufficient_sample" && r.exposure === "0")), "low-confidence cells scanned");
-check(5, "every macro state contains all 9 sleeves", STATES.every((st) => matrix.filter((r) => r.state === st).length === 9));
+check(5, "every macro state contains all 9 sleeves", STATES.every((st) => matrix.filter((r) => r.state === st).length === 9), "9x9 matrix serialised in full (72 non-cash cells + 9 Cash rows)");
 check(6, "every non-cash sleeve carries exactly one valid tier per state", tierRows.every((r) => TIERS.includes(r.exposure)) && STATES.every((st) => NONCASH.every((sl) => tierRows.filter((r) => r.state === st && r.sleeve === sl).length === 1)));
 check(7, "Cash is residual only and never classified against itself", matrix.filter((r) => r.sleeve === "cash").every((r) => r.exposure === "residual" && r.cash_role === "residual" && r.evidence === "NA"));
 check(8, "#176 hardened S&P 500 evidence supersedes the #174 broad-market proxy", tierRows.filter((r) => r.sleeve === "sp500").every((r) => r.source === "#176 hardened S&P TR" && r.evidence === sens176.map.get(r.state + "|sp500").ev_new), "all 9 states");
@@ -475,8 +475,10 @@ function csv(rows, cols) {
   const f = (v) => (typeof v === "number" ? (isFinite(v) ? String(v) : "") : (v ?? ""));
   return cols.join(",") + "\n" + rows.map((r) => cols.map((c) => f(r[c])).join(",")).join("\n") + "\n";
 }
-const mcols = ["state", "sleeve", "exposure", "confidence", "evidence", "mean_ex", "ep_hit", "era_label", "severe_tail", "p10_ex", "worst_ep", "p_material", "p_under", "worst_monthly", "ex_worst_mean_ex", "future_zero_candidate", "zero_rule_path", "zero_rule_reason", "low_confidence", "policy_sensitive", "source", "limitation", "n_months", "n_episodes"];
-fs.writeFileSync(path.join(GEN, "policy-matrix.csv"), csv(tierRows, mcols));
+// policy-matrix.csv serialises the full 9 states x 9 sleeves (72 non-cash cells +
+// 9 Cash residual rows), so the machine-readable matrix matches Issue #177's 9x9 shape.
+const mcols = ["state", "sleeve", "exposure", "confidence", "evidence", "mean_ex", "ep_hit", "era_label", "severe_tail", "p10_ex", "worst_ep", "p_material", "p_under", "worst_monthly", "ex_worst_mean_ex", "future_zero_candidate", "zero_rule_path", "zero_rule_reason", "low_confidence", "policy_sensitive", "source", "limitation", "n_months", "n_episodes", "cash_role", "opportunity_score", "cash_bias"];
+fs.writeFileSync(path.join(GEN, "policy-matrix.csv"), csv(matrix, mcols));
 fs.writeFileSync(path.join(GEN, "cash-bias.csv"),
   "state,opportunity_score,cash_bias,cash_role\n" + STATES.map((st) => { const r = matrix.find((x) => x.state === st && x.sleeve === "cash"); return [st, r.opportunity_score, r.cash_bias, "residual"].join(","); }).join("\n") + "\n");
 const zeroRows = tierRows.filter((r) => r.exposure === "0");
@@ -542,6 +544,7 @@ const summary = {
   self_check_gate: { mismatches: mism, tables: chkByTable },
   panel_coverage_assertion: panelOut,
   tier_counts: counts,
+  total_cells: matrix.length,
   total_non_cash_cells: tierRows.length,
   zero_cells: zeroRows.map((r) => ({ state: r.state, sleeve: r.sleeve, path: r.zero_rule_path, reason: r.zero_rule_reason })),
   cash_bias: STATES.map((st) => { const r = matrix.find((x) => x.state === st && x.sleeve === "cash"); return { state: st, score: r.opportunity_score, bias: r.cash_bias }; }),

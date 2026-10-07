@@ -181,25 +181,42 @@ const sens = readCsv(path.join(GEN, "sensitivity-common-sample.csv"));
 const summary = JSON.parse(fs.readFileSync(path.join(GEN, "summary.json"), "utf8"));
 const cards = fs.readFileSync(path.join(GEN, "state-cards.md"), "utf8");
 const cell = (st, sl) => matrix.find((r) => r.state === st && r.sleeve === sl);
+const NC = matrix.filter((r) => r.sleeve !== "cash");
+const MATRIX_CASH = matrix.filter((r) => r.sleeve === "cash");
 
 // ---------------------------------------------------------------- 1. structure
-ok("1 all 9 states x 8 non-cash sleeves present exactly once", () => {
-  assert.strictEqual(matrix.length, 72, "matrix rows " + matrix.length);
-  for (const st of STATES) for (const sl of NONCASH) {
+ok("1 all 9 states x 9 sleeves present exactly once (72 non-cash cells + 9 Cash rows)", () => {
+  assert.strictEqual(matrix.length, 81, "matrix rows " + matrix.length);
+  for (const st of STATES) for (const sl of ALL_SLEEVES) {
     const m = matrix.filter((r) => r.state === st && r.sleeve === sl);
     assert.strictEqual(m.length, 1, "dup/missing " + st + "|" + sl);
   }
+  for (const r of NC) assert.notStrictEqual(r.exposure, "residual", r.state + "|" + r.sleeve + " non-cash must carry a tier");
+  for (const r of MATRIX_CASH) assert.strictEqual(r.exposure, "residual", r.state + " cash exposure");
   assert.strictEqual(cashRows.length, 9, "cash rows " + cashRows.length);
   assert.deepStrictEqual([...new Set(cashRows.map((r) => r.state))].sort(), [...STATES].sort());
 });
 ok("2 every non-cash exposure is exactly one of 0/Low/Neutral/High", () => {
-  for (const r of matrix) assert.ok(["0", "Low", "Neutral", "High"].includes(r.exposure), "bad tier " + r.exposure + " " + r.state + "|" + r.sleeve);
+  for (const r of NC) assert.ok(["0", "Low", "Neutral", "High"].includes(r.exposure), "bad tier " + r.exposure + " " + r.state + "|" + r.sleeve);
 });
 ok("3 Cash is residual with role/score/bias and never classified against itself", () => {
   for (const r of cashRows) {
     assert.strictEqual(r.cash_role, "residual");
     assert.ok(["high", "neutral", "low"].includes(r.cash_bias));
     assert.ok(/^\d+$/.test(r.opportunity_score));
+  }
+  // The 9x9 matrix itself must carry the Cash row with its role, score, bias,
+  // confidence and limitation note - not just cash-bias.csv.
+  assert.strictEqual(MATRIX_CASH.length, 9, "cash rows inside policy-matrix.csv");
+  for (const r of MATRIX_CASH) {
+    const cr = cashRows.find((x) => x.state === r.state);
+    assert.ok(cr, "cash-bias row for " + r.state);
+    assert.strictEqual(r.cash_role, "residual", r.state + " matrix cash_role");
+    assert.strictEqual(num(r.opportunity_score), num(cr.opportunity_score), r.state + " matrix opportunity_score");
+    assert.strictEqual(r.cash_bias, cr.cash_bias, r.state + " matrix cash_bias");
+    assert.strictEqual(r.confidence, "full", r.state + " cash confidence");
+    assert.ok(r.limitation.length > 5, r.state + " cash limitation note");
+    assert.strictEqual(r.source.length > 0, true, r.state + " cash source");
   }
 });
 
@@ -249,7 +266,7 @@ ok("7 #174 non-hardened cells still take their frozen tail inputs unchanged", ()
 
 // ---------------------------------------------------------------- 3. zero audit
 ok("8 every zero cell satisfies condition A or B (audited independently)", () => {
-  const zeros = matrix.filter((r) => r.exposure === "0");
+  const zeros = NC.filter((r) => r.exposure === "0");
   assert.strictEqual(zeros.length, zeroAudit.length, "zero-audit row count");
   for (const r of zeros) {
     const inp = frozenInput(r.state, r.sleeve);
@@ -262,7 +279,7 @@ ok("8 every zero cell satisfies condition A or B (audited independently)", () =>
   for (const a of zeroAudit) assert.ok(["A", "B"].includes(a.zero_rule_path) && a.zero_rule_reason.length > 5, "audit row " + a.state + "|" + a.sleeve);
 });
 ok("9 no zero exists outside the frozen zero rule; no unfavorable cell is High", () => {
-  for (const r of matrix) {
+  for (const r of NC) {
     const inp = frozenInput(r.state, r.sleeve);
     const b = pathB(inp.evidence, inp.meanEx, inp.epHit, inp.p10ex, inp.worstEp, inp.pMat, inp.exWorst);
     if (r.exposure === "0") assert.ok(inp.flagA || b);
@@ -270,7 +287,7 @@ ok("9 no zero exists outside the frozen zero rule; no unfavorable cell is High",
   }
 });
 ok("10 insufficient_sample cells are never High and never 0 (low_confidence set)", () => {
-  for (const r of matrix) {
+  for (const r of NC) {
     if (r.evidence === "insufficient_sample") {
       assert.ok(r.exposure === "Neutral", r.state + "|" + r.sleeve + " insufficient -> " + r.exposure);
       assert.strictEqual(r.low_confidence, "true", r.state + "|" + r.sleeve + " low_confidence");
@@ -293,9 +310,9 @@ ok("11 opportunity score and cash bias recompute from the eight non-cash tiers",
 // ---------------------------------------------------------------- 5. provenance / limitations
 ok("12 confidence mapping is exactly: limited for sp500/nasdaq/russell/oil", () => {
   const limited = ["sp500", "nasdaq", "russell", "oil"];
-  for (const r of matrix) assert.strictEqual(r.confidence, limited.includes(r.sleeve) ? "limited" : "full", r.state + "|" + r.sleeve);
+  for (const r of NC) assert.strictEqual(r.confidence, limited.includes(r.sleeve) ? "limited" : "full", r.state + "|" + r.sleeve);
   assert.strictEqual(conf.length, 72);
-  for (const r of matrix) {
+  for (const r of NC) {
     const c = conf.find((x) => x.state === r.state && x.sleeve === r.sleeve);
     assert.ok(c, "confidence row missing");
     assert.strictEqual(c.confidence, r.confidence);
@@ -385,12 +402,15 @@ ok("19 summary.json is internally consistent with the artifacts", () => {
   assert.strictEqual(summary.panel_coverage_assertion.pass, true);
   assert.strictEqual(summary.percentages_assigned, false);
   assert.ok(summary.checks.length >= 15 && summary.checks.every((c) => c.pass === true), "all builder checks pass");
+  assert.strictEqual(matrix.length, 81, "9 states x 9 sleeves in policy-matrix.csv");
   const counts = { High: 0, Neutral: 0, Low: 0, "0": 0 };
-  for (const r of matrix) counts[r.exposure]++;
+  for (const r of NC) counts[r.exposure]++;
   assert.deepStrictEqual(summary.tier_counts, counts, "tier counts");
   assert.strictEqual(counts.High + counts.Neutral + counts.Low + counts["0"], 72);
   assert.strictEqual(summary.zero_cells.length, counts["0"]);
   assert.strictEqual(summary.total_non_cash_cells, 72);
+  assert.strictEqual(summary.total_cells ?? 81, 81);
+  assert.ok(MATRIX_CASH.every((r) => r.cash_role === "residual"), "cash rows serialised in the 9x9 matrix");
   for (const z of summary.zero_cells) assert.ok(/^[AB]:/.test(z.reason), "zero reason");
   assert.strictEqual(Object.keys(summary.inputs).length, 12);
   for (const [p, v] of Object.entries(summary.inputs)) assert.strictEqual(v.head_blob_sha256, v.worktree_normalised_sha256, "input pin " + p);

@@ -134,6 +134,7 @@
     "High": 10,
     "Low": 17
   },
+  "total_cells": 81,
   "total_non_cash_cells": 72,
   "zero_cells": [
     {
@@ -383,7 +384,7 @@
       "id": 5,
       "description": "every macro state contains all 9 sleeves",
       "pass": true,
-      "detail": ""
+      "detail": "9x9 matrix serialised in full (72 non-cash cells + 9 Cash rows)"
     },
     {
       "id": 6,
@@ -447,7 +448,7 @@
     }
   ],
   "artifact_hashes": {
-    "policy-matrix.csv": "c3e6a5b7cb726a0678a4ceb5ae55e84fabf0d539929b744cb3dec8221fb3bbcc",
+    "policy-matrix.csv": "203eac6ae914489e3a38b820877aa17541d9e76145d1f8fc213bb5f68396e24c",
     "cash-bias.csv": "d36ac6cef78cfecbb92365c2129ed24b7028e26960358195fd66497612cb56ca",
     "zero-audit.csv": "ed6d58f358d67717df2351c7b7db316a3b4ada95fcb093b8ef68ae47cd604a66",
     "confidence.csv": "33c9727fe3bd99d8a06e75ee738de16796e4efc4e9d3cc7a206ff038a64e4e1c",

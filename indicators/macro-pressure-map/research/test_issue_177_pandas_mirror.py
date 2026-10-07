@@ -197,7 +197,9 @@ class TestIssue177PandasMirror(unittest.TestCase):
 
     def test_invariants(self):
         m = self.r.matrix
-        self.assertEqual(len(m), 72)  # non-cash cells; Cash lives in cash-bias.csv
+        # 9 states x 9 sleeves: 72 non-cash cells + 9 Cash residual rows
+        self.assertEqual(len(m), 81)
+        self.assertEqual(len(m[m.sleeve != "cash"]), 72)
         self.assertEqual(len(self.r.cash), 9)
         self.assertEqual(len(m[(m.sleeve != "cash") & (m.evidence == "historically_unfavorable") & (m.exposure == "High")]), 0)
         ins = m[(m.sleeve != "cash") & (m.evidence == "insufficient_sample")]
