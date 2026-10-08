@@ -1175,6 +1175,36 @@ def decode_hmm(model: dict, entries: list[dict], mean, std) -> dict:
     }
 
 
+def trimmed_group_means(props: np.ndarray, fid: np.ndarray, split: np.ndarray,
+                        state: np.ndarray, n_stocks: int, K: int):
+    """Per-(stock, split, state) 1%-trimmed property means (frozen §7 rule)."""
+    n_props = props.shape[1]
+    t_sum = np.zeros((n_stocks, 2, K, n_props))
+    t_cnt = np.zeros((n_stocks, 2, K, n_props))
+    key = (fid * 2 + split) * K + state
+    order = np.argsort(key, kind="stable")
+    keys_sorted = key[order]
+    bounds = np.searchsorted(keys_sorted, np.arange(n_stocks * 2 * K + 1))
+    for g in range(n_stocks * 2 * K):
+        lo_i, hi_i = bounds[g], bounds[g + 1]
+        if hi_i - lo_i < MIN_CELL_BARS:
+            continue
+        idx = order[lo_i:hi_i]
+        stock, rem = divmod(g, 2 * K)
+        sp, st = divmod(rem, K)
+        for j in range(n_props):
+            v = props[idx, j]
+            v = v[np.isfinite(v)]
+            if len(v) < MIN_CELL_BARS:
+                continue
+            lo, hi = np.percentile(v, [100 * TRIM_FRAC, 100 * (1 - TRIM_FRAC)])
+            vv = v[(v >= lo) & (v <= hi)]
+            if len(vv):
+                t_sum[stock, sp, st, j] = vv.sum()
+                t_cnt[stock, sp, st, j] = len(vv)
+    return t_sum, t_cnt
+
+
 def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
                     block_code: dict, sleeves: list[str],
                     pooled_sd: dict) -> dict:
@@ -1225,11 +1255,10 @@ def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
                 cent_std[sp, k] = dec["std_coords"][mk].mean(axis=0)
                 cent_raw[sp, k] = dec["raw_coords"][mk].mean(axis=0)
 
-    drift = (
-        np.abs(model["mu"] - cent_std[1]).max(axis=1)
-        if occ_eval.sum()
-        else np.full(K, np.inf)
-    )
+    # §10 reproducible state: eval vs TRAIN centroid drift in training-
+    # standardised units (model-vs-eval drift kept as an extra diagnostic).
+    drift = np.abs(cent_std[1] - cent_std[0]).max(axis=1)
+    drift_model = np.abs(model["mu"] - cent_std[1]).max(axis=1)
 
     # dominant Atlas joint bin + purity + NMI
     dominant = np.zeros((2, K), dtype=int)
@@ -1271,11 +1300,16 @@ def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
     # per (figi, state, split) means of gate properties, for pair separation
     n_props = dec["props"].shape[1]
     fid = dec["figi_id"].astype(int)
-    counts = np.zeros((len(entries), 2, K))
-    sums = np.zeros((len(entries), 2, K, n_props))
+    n_stocks = len(entries)
+    counts = np.zeros((n_stocks, 2, K))
+    sums = np.zeros((n_stocks, 2, K, n_props))
     np.add.at(counts, (fid, split, state), 1.0)
     for j in range(n_props):
         np.add.at(sums[:, :, :, j], (fid, split, state), dec["props"][:, j])
+    # §7 tail insensitivity: 1% top/bottom-trimmed per-stock means
+    t_sum, t_cnt = trimmed_group_means(
+        dec["props"], fid, split, state, n_stocks, K
+    )
 
     reproducible = []
     for k in range(K):
@@ -1303,27 +1337,42 @@ def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
                     continue
                 signs = []
                 mags = []
+                trim_mags = []
                 for sp in (0, 1):
                     ca = counts[:, sp, a]
                     cb = counts[:, sp, b]
                     sa = sums[:, sp, a, j]
                     sb = sums[:, sp, b, j]
                     ok = (ca >= MIN_CELL_BARS) & (cb >= MIN_CELL_BARS)
+                    ok_t = (
+                        (t_cnt[:, sp, a, j] >= MIN_CELL_BARS)
+                        & (t_cnt[:, sp, b, j] >= MIN_CELL_BARS)
+                    )
                     if ok.sum() < MIN_AGG_STOCKS:
                         signs.append(0)
                         mags.append(0.0)
+                        trim_mags.append(0.0)
                         continue
                     per_stock = sa[ok] / ca[ok] - sb[ok] / cb[ok]
                     delta = float(per_stock.mean())
                     sign_frac = float(
                         np.mean(np.sign(per_stock) == np.sign(delta))
                     ) if delta != 0 else 0.0
+                    both = ok & ok_t
+                    per_stock_t = (
+                        t_sum[both, sp, a, j] / t_cnt[both, sp, a, j]
+                        - t_sum[both, sp, b, j] / t_cnt[both, sp, b, j]
+                    )
+                    delta_t = float(per_stock_t.mean()) if len(per_stock_t) else 0.0
+                    trim_ok = bool(len(per_stock_t) and np.sign(delta_t) == np.sign(delta))
                     separated = (
                         abs(delta) >= PATH_SD_FRAC * sd
                         and sign_frac >= PATH_SIGN_FRAC
+                        and trim_ok
                     )
                     signs.append(np.sign(delta) if separated else 0)
                     mags.append(delta)
+                    trim_mags.append(delta_t)
                 agreed = (
                     signs[0] != 0 and signs[1] != 0 and signs[0] == signs[1]
                 )
@@ -1334,6 +1383,8 @@ def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
                         "property": prop,
                         "delta_train": mags[0],
                         "delta_eval": mags[1],
+                        "delta_train_trimmed": trim_mags[0],
+                        "delta_eval_trimmed": trim_mags[1],
                         "separated_both": bool(agreed),
                     }
                 )
@@ -1365,6 +1416,35 @@ def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
             else []
         )
 
+    # per-block centroid drift vs the training centroids (diagnostic, §10)
+    block_drift = {}
+    for name, code in block_code.items():
+        m = dec["block_id"] == code
+        vals = []
+        for k in range(K):
+            mk = m & (state == k)
+            vals.append(
+                float(np.abs(dec["std_coords"][mk].mean(axis=0) - cent_std[0][k]).max())
+                if mk.sum()
+                else math.nan
+            )
+        block_drift[name] = vals
+
+    # mean decoded run length per state, inside contiguous runs only
+    rid = dec["run_id"]
+    new_seg = np.ones(len(rid), dtype=bool)
+    new_seg[1:] = (rid[1:] != rid[:-1]) | (state[1:] != state[:-1])
+    seg_id = np.cumsum(new_seg) - 1
+    seg_len = np.bincount(seg_id)
+    seg_state = state[new_seg]
+    seg_split = split[new_seg]
+    mean_run = np.full((2, K), math.nan)
+    for sp in (0, 1):
+        for k in range(K):
+            m = (seg_split == sp) & (seg_state == k)
+            if m.any():
+                mean_run[sp, k] = float(seg_len[m].mean())
+
     return {
         "K": K,
         "n_bars_decoded": int(n_bars),
@@ -1378,6 +1458,9 @@ def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
         "centroids_raw_train": cent_raw[0].tolist(),
         "centroids_raw_eval": cent_raw[1].tolist(),
         "centroid_drift": drift.tolist(),
+        "centroid_drift_model_eval": drift_model.tolist(),
+        "mean_run_len_train": mean_run[0].tolist(),
+        "mean_run_len_eval": mean_run[1].tolist(),
         "dominant_bin_train": dominant[0].tolist(),
         "dominant_bin_eval": dominant[1].tolist(),
         "dominant_bin_stable": bool(
@@ -1390,13 +1473,21 @@ def hmm_diagnostics(model: dict, dec: dict, entries: list[dict], mean, std,
         "max_single_state_share_eval": float(occ_eval.max()),
         "reproducible": reproducible,
         "n_reproducible": int(sum(reproducible)),
-        "dominant_bin_agreement": float(
-            np.mean([
-                1.0 if reproducible[k] and dominant[0, k] == dominant[1, k] else 0.0
-                for k in range(K)
-            ])
+        # §10 C: share of *reproducible* states whose train and eval dominant
+        # Atlas bins agree (0 when no state is reproducible)
+        "dominant_bin_agreement": (
+            float(
+                np.mean([
+                    1.0 if dominant[0, k] == dominant[1, k] else 0.0
+                    for k in range(K)
+                    if reproducible[k]
+                ])
+            )
+            if sum(reproducible)
+            else 0.0
         ),
         "block_occupancy": block_occ,
+        "block_centroid_drift": block_drift,
         "sleeve_occupancy": sleeve_occ,
         "pair_tests": pair_rows,
         "counts": counts,
@@ -1438,7 +1529,18 @@ def hmm_verdict(diag: dict) -> dict:
             f"dominant-bin agreement {diag['dominant_bin_agreement']:.3f}, "
             f"NMI {diag['nmi_state_atlas']:.3f}"
         )
-    return {"verdict": verdict, "reason": reason, "K": K, "n_reproducible": n_r}
+    return {
+        "verdict": verdict,
+        "reason": reason,
+        "K": K,
+        "n_reproducible": n_r,
+        "C": float(diag["dominant_bin_agreement"]),
+        "C_definition": (
+            "share of reproducible states whose train and eval dominant Atlas "
+            "bins agree"
+        ),
+        "nmi_state_atlas": float(diag["nmi_state_atlas"]),
+    }
 
 
 # --------------------------------------------------------------------------
@@ -1617,7 +1719,7 @@ def evaluate_dimension(dim: str, redun_sum: pd.DataFrame,
         same_sleeves = int(
             np.sum(np.sign(adeq_sleeves["equal_stock_mean_delta"]) == sign0)
         )
-        b_ok = len(adeq_blocks) >= 4 and same_blocks >= len(adeq_blocks) - 1
+        b_ok = len(adeq_blocks) >= 4 and same_blocks >= 4
         s_ok = len(adeq_sleeves) >= 1 and same_sleeves == len(adeq_sleeves)
         g3_detail[prop] = {
             "adequate_blocks": int(len(adeq_blocks)),
@@ -1724,7 +1826,10 @@ def hmm_state_summary(diag: dict) -> pd.DataFrame:
                 "occupancy_train": diag["occupancy_train"][k],
                 "occupancy_eval": diag["occupancy_eval"][k],
                 "persistence_eval": diag["persistence_eval"][k],
-                "centroid_drift": diag["centroid_drift"][k],
+                "mean_run_len_train": diag["mean_run_len_train"][k],
+                "mean_run_len_eval": diag["mean_run_len_eval"][k],
+                "centroid_drift_eval_vs_train": diag["centroid_drift"][k],
+                "centroid_drift_model_vs_eval": diag["centroid_drift_model_eval"][k],
                 "dominant_bin_train": diag["dominant_bin_train"][k],
                 "dominant_bin_eval": diag["dominant_bin_eval"][k],
                 "atlas_purity_eval": diag["atlas_purity_eval"][k],
@@ -1743,6 +1848,15 @@ def hmm_stability_table(diag: dict) -> pd.DataFrame:
     for block, occ in diag["block_occupancy"].items():
         for k, v in enumerate(occ):
             rows.append({"scope": block, "scope_kind": "block", "state": k, "occupancy": v})
+        for k, v in enumerate(diag["block_centroid_drift"].get(block, [])):
+            rows.append(
+                {
+                    "scope": block,
+                    "scope_kind": "block_centroid_drift",
+                    "state": k,
+                    "occupancy": v,
+                }
+            )
     for sleeve, occ in diag["sleeve_occupancy"].items():
         for k, v in enumerate(occ):
             rows.append(
@@ -1806,6 +1920,8 @@ def hmm_pair_table(diag: dict) -> pd.DataFrame:
                     "property": item["property"],
                     "delta_train": item["delta_train"],
                     "delta_eval": item["delta_eval"],
+                    "delta_train_trimmed": item.get("delta_train_trimmed", math.nan),
+                    "delta_eval_trimmed": item.get("delta_eval_trimmed", math.nan),
                     "separated_both": item["separated_both"],
                     "pair_adds_structure": pair["adds_structure"],
                     "pair_separated_properties": pair["separated_properties"],

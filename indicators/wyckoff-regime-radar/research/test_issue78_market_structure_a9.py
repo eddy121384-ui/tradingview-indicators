@@ -448,6 +448,212 @@ def test_publication_ready_frozen_constants():
         assert token in prereg, token
 
 
+# extra: HMM diagnostic definitions and the gate ladder ----------------------
+
+def _synthetic_hmm():
+    """Two stocks, K=2, deterministic states, clean runs and known centroids."""
+    K = 2
+    n_bars = 20
+    # train run: long state-0 run then long state-1 run; eval run: reversed
+    state = np.array([0] * 5 + [1] * 5 + [1] * 5 + [0] * 5)
+    split = np.array([0] * 10 + [1] * 10, dtype=np.int8)
+    run_id = np.array([0] * 10 + [1] * 10)
+    figi_id = run_id
+    std = np.zeros((n_bars, 4))
+    raw = np.zeros((n_bars, 4))
+    for i in range(n_bars):
+        base = 0.0 if state[i] == 0 else 5.0
+        shift = 0.0 if split[i] == 0 else 0.5
+        std[i] = base + shift
+        raw[i] = (base + shift) / 10.0
+    # both states sit in the same dominant Atlas bin (the adds-structure case)
+    joint = np.zeros((n_bars, 4), dtype=int)
+    rng = np.random.default_rng(7)
+    props = rng.normal(0, 1, (n_bars, len(a9.GATE_PROPS)))
+    props[state == 1] += 1.0
+    dec = {
+        "state": state,
+        "split": split,
+        "run_id": run_id,
+        "figi_id": figi_id,
+        "std_coords": std,
+        "raw_coords": raw,
+        "joint_bin": joint,
+        "props": props,
+        "block_id": np.zeros(n_bars, dtype=np.int8),
+        "sleeve_id": np.zeros(n_bars, dtype=np.int8),
+    }
+    model = {
+        "K": K,
+        "A": np.array([[0.8, 0.2], [0.3, 0.7]]),
+        "mu": np.array([[10.0] * 4, [20.0] * 4]),
+        "var": np.ones((K, 4)),
+        "pi": np.array([0.5, 0.5]),
+    }
+    entries = [{"figi": "A"}, {"figi": "B"}]
+    pooled_sd = {p: 1.0 for p in a9.GATE_PROPS}
+    return model, dec, entries, pooled_sd
+
+
+def test_hmm_diagnostics_definitions():
+    model, dec, entries, pooled_sd = _synthetic_hmm()
+    diag = a9.hmm_diagnostics(
+        model, dec, entries, np.zeros(4), np.ones(4),
+        {"b1": 0}, ["large"], pooled_sd,
+    )
+    # §10 drift is EVAL vs TRAIN centroid, not model-vs-eval
+    assert diag["centroid_drift"] == [0.5, 0.5]
+    assert min(diag["centroid_drift_model_eval"]) > 5.0
+    # C is the share of *reproducible* states that agree (here both do)
+    assert diag["reproducible"] == [True, True]
+    assert diag["dominant_bin_agreement"] == 1.0
+    assert diag["atlas_purity_eval"] == [1.0, 1.0]
+    assert diag["mean_run_len_eval"] == [5.0, 5.0]
+    assert diag["mean_run_len_train"] == [5.0, 5.0]
+    assert set(diag["block_centroid_drift"]) == {"b1"}
+    assert diag["block_centroid_drift"]["b1"] == [0.25, 0.25]
+    assert diag["pair_tests"], "the reproducible pair must be tested"
+    assert diag["pair_tests"][0]["adds_structure"] is False
+    assert diag["n_bars_decoded"] == 20
+
+
+def _verdict_diag(K, occ_train, occ_eval, repro, agree, nmi=0.5, pairs=None):
+    occ_t = np.asarray(occ_train, dtype=float)
+    occ_e = np.asarray(occ_eval, dtype=float)
+    return {
+        "K": K,
+        "occupancy_train": occ_t.tolist(),
+        "occupancy_eval": occ_e.tolist(),
+        "reproducible": list(repro),
+        "dominant_bin_agreement": float(
+            np.mean(agree) if len(agree) else 0.0
+        ),
+        "nmi_state_atlas": nmi,
+        "pair_tests": pairs or [],
+    }
+
+
+def test_hmm_verdict_ladder():
+    half = [0.5, 0.5]
+    # 1. INSUFFICIENT: fewer than two adequately occupied training states
+    v = a9.hmm_verdict(_verdict_diag(2, [0.99, 0.01], half, [True, True], [1, 1]))
+    assert v["verdict"] == "HMM_INSUFFICIENT"
+    v = a9.hmm_verdict(_verdict_diag(2, half, [0.99, 0.01], [True, True], [1, 1]))
+    assert v["verdict"] == "HMM_INSUFFICIENT"
+    # 2. UNSTABLE: too few reproducible states
+    v = a9.hmm_verdict(_verdict_diag(3, [0.4, 0.3, 0.3], [0.4, 0.3, 0.3],
+                                     [True, False, False], [1, 0, 0]))
+    assert v["verdict"] == "HMM_UNSTABLE"
+    # 3. ADDS_STABLE_STRUCTURE wins over convergence
+    pairs = [{"state_a": 0, "state_b": 1, "adds_structure": True}]
+    v = a9.hmm_verdict(_verdict_diag(2, half, half, [True, True], [1, 1],
+                                     pairs=pairs))
+    assert v["verdict"] == "HMM_ADDS_STABLE_STRUCTURE"
+    # 4. CONVERGES: C must be the agreement share among R states, so K=5 with
+    #    |R|=4 and 3 agreements gives C=0.75 (not 3/5=0.60)
+    agree = [1.0, 1.0, 1.0, 0.0]
+    v = a9.hmm_verdict(
+        _verdict_diag(5, [0.2] * 5, [0.2] * 5, [True] * 4 + [False], agree)
+    )
+    assert abs(v["C"] - 0.75) < 1e-12
+    assert v["verdict"] == "HMM_CONVERGES_WITH_ATLAS"
+    # 5. otherwise UNSTABLE
+    v = a9.hmm_verdict(
+        _verdict_diag(4, [0.25] * 4, [0.25] * 4, [True] * 3 + [False],
+                      [0.0, 0.0, 0.0], nmi=0.10)
+    )
+    assert v["verdict"] == "HMM_UNSTABLE"
+
+
+def _gate_frames(dim, spearman, mi, separated_props, block_same_sign=True,
+                 adequate_cells=3, separated=True):
+    pairs = a9.PAIR_FOR_DIM[dim]
+    redun = pd.DataFrame(
+        [
+            {
+                "pair": p, "scope": "ALL", "scope_kind": "ALL",
+                "equal_stock_mean_spearman": spearman,
+                "equal_stock_mean_mi_nats": mi,
+            }
+            for p in pairs
+        ]
+    )
+    rows = []
+    for prop in separated_props:
+        rows.append(
+            {
+                "dim": dim, "property": prop, "horizon": 10, "scope": "ALL",
+                "scope_kind": "ALL", "stocks": 200,
+                "equal_stock_mean_delta": 0.5, "separated": separated,
+            }
+        )
+        for name in a9.BLOCK_NAMES:
+            flip = (not block_same_sign) and name in ("2000-2004", "2005-2009")
+            rows.append(
+                {
+                    "dim": dim, "property": prop, "horizon": 10, "scope": name,
+                    "scope_kind": "block", "stocks": 40,
+                    "equal_stock_mean_delta": -0.5 if flip else 0.5,
+                    "separated": separated,
+                }
+            )
+        rows.append(
+            {
+                "dim": dim, "property": prop, "horizon": 10, "scope": "large",
+                "scope_kind": "sleeve", "stocks": 40,
+                "equal_stock_mean_delta": 0.5, "separated": separated,
+            }
+        )
+    sep = pd.DataFrame(rows)
+    cond = pd.DataFrame(
+        [
+            {
+                "dim": dim, "property": prop, "scope": "bull_low", "stocks": 40,
+                "equal_stock_mean_delta": 0.5, "adequate": True,
+            }
+            for prop in separated_props
+            for _ in range(adequate_cells)
+        ]
+    )
+    breadth = pd.DataFrame(
+        [{"dim": dim, "pass": True, "stocks_with_both_bins": 200,
+          "low_bar_share": 0.3, "high_bar_share": 0.3}]
+    )
+    return redun, sep, cond, breadth
+
+
+def test_dimension_gate_ladder():
+    # G1 fail -> REJECT_REDUNDANT
+    redun, sep, cond, breadth = _gate_frames("d4", 0.9, 0.2, ["fwd_10", "abs_10"])
+    out = a9.evaluate_dimension("d4", redun, sep, cond, breadth)
+    assert out["classification"] == "REJECT_REDUNDANT"
+    assert out["G1_novelty"] is False
+    # G1+G2 pass, G3 fail -> REJECT_UNSTABLE
+    redun, sep, cond, breadth = _gate_frames(
+        "d4", 0.1, 0.02, ["fwd_10", "abs_10"], block_same_sign=False
+    )
+    out = a9.evaluate_dimension("d4", redun, sep, cond, breadth)
+    assert out["G3_temporal_sleeve_stability"] is False
+    assert out["classification"] == "REJECT_UNSTABLE"
+    # G1-G5 pass -> KEEP_AS_ATLAS_DIMENSION
+    redun, sep, cond, breadth = _gate_frames("d4", 0.1, 0.02, ["fwd_10", "abs_10"])
+    out = a9.evaluate_dimension("d4", redun, sep, cond, breadth)
+    assert out["classification"] == "KEEP_AS_ATLAS_DIMENSION"
+    assert out["G4_separated_properties"] == ["abs_10", "fwd_10"]
+    # G1-G3 pass but G5 (Core-2 conditioning) cannot be shown -> descriptive
+    redun, sep, cond, breadth = _gate_frames(
+        "d4", 0.1, 0.02, ["fwd_10", "abs_10"], adequate_cells=1
+    )
+    out = a9.evaluate_dimension("d4", redun, sep, cond, breadth)
+    assert out["G3_temporal_sleeve_stability"] is True
+    assert out["G5_core2_conditioning"] is False
+    assert out["classification"] == "KEEP_AS_DESCRIPTIVE_ONLY"
+    # fewer than two separated properties cannot satisfy G3 -> REJECT_UNSTABLE
+    redun, sep, cond, breadth = _gate_frames("d3", 0.1, 0.02, ["fwd_10"])
+    out = a9.evaluate_dimension("d3", redun, sep, cond, breadth)
+    assert out["classification"] == "REJECT_UNSTABLE"
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in sorted(globals().items()):
