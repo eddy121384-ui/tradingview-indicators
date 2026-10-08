@@ -1,0 +1,16 @@
+{
+  "issue": 180,
+  "branch": "research/issue-180-tradable-implementation-reality-check",
+  "strict_panel": [
+    "2006-06-01",
+    "2026-08-01"
+  ],
+  "strict_months": 240,
+  "full_live_B_months": 721,
+  "inputs_sha256": {
+    "issue-178/weight-matrix.csv": "b9d0b18823001b7425fd1adab9cd908af291cafedb3f6b89e5c70fc54c8ab9cb",
+    "issue-178/policy.json": "876d99726410fe07205c5df5577be91b1641928e07b6ff69259637b5bd8cbfea",
+    "issue-178/backtest-monthly.csv": "0bcb86d117851caeb563050ff86978318ac0a92e53e4003027c44d58446e9563"
+  },
+  "production_authorized": false
+}

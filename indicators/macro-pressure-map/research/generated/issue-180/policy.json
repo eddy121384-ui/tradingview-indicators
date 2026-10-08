@@ -1,0 +1,42 @@
+{
+  "issue": 180,
+  "branch": "research/issue-180-tradable-implementation-reality-check",
+  "primary_proxies": {
+    "sp500": "SPY",
+    "nasdaq": "QQQ (Nasdaq-100 proxy, labeled)",
+    "russell": "IWM",
+    "cash": "T-bill accrual (identical)",
+    "treasury2y": "SHY",
+    "treasury10y": "IEF",
+    "longtreasury": "TLT",
+    "gold": "GLD",
+    "oil": "USO"
+  },
+  "alternate_proxies": {
+    "nasdaq": "ONEQ (genuine Composite)"
+  },
+  "costs": {
+    "primary_rate_per_turnover": "0.0002",
+    "alternate_rate": "0.0010",
+    "expense_treatment": "embedded in adjclose NAV; not added"
+  },
+  "execution": {
+    "primary": "month-end close, B-2 confirmed",
+    "alternate": "1-month lag"
+  },
+  "missing_data": "proxy missing -> weight to cash; strict panel 2006-06-01, 0 drops",
+  "tracking_classes": {
+    "sp500": "implementation_faithful",
+    "nasdaq": "implementation_materially_different",
+    "russell": "implementation_acceptable_with_limitation",
+    "treasury2y": "implementation_acceptable_with_limitation",
+    "treasury10y": "implementation_materially_different",
+    "longtreasury": "implementation_acceptable_with_limitation",
+    "gold": "implementation_materially_different",
+    "oil": "implementation_materially_different",
+    "nasdaq_vs_TR": "QA_only",
+    "nasdaq_alt": "QA_only"
+  },
+  "weights": "frozen #178 weight-matrix.csv (SHA-pinned)",
+  "production_authorized": false
+}

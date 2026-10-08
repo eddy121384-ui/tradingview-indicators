@@ -1,0 +1,76 @@
+{
+  "fetched_at": "2026-10-08T02:38:01.283Z",
+  "sources": {
+    "Yahoo:SPY": {
+      "bytes": 49055,
+      "sha256": "b9787f605eafd2728b9f078f6ca52834bcc9f6e8c435faf97062753bf7454420",
+      "ticker": "SPY",
+      "er": "0.0945%",
+      "inception": "1993-01-29"
+    },
+    "Yahoo:QQQ": {
+      "bytes": 41337,
+      "sha256": "497324ffa22a02923e8d24fa06abb5d54bec07867f6a69c30f6d511a92a2f8a9",
+      "ticker": "QQQ",
+      "er": "0.20%",
+      "inception": "1999-03-10"
+    },
+    "Yahoo:ONEQ": {
+      "bytes": 35979,
+      "sha256": "86b65c20f7d95c249c5b08afabd4b1ad4cb965dc56ecfb3973546fb0bfab3918",
+      "ticker": "ONEQ",
+      "er": "0.21%",
+      "inception": "2003-09-25"
+    },
+    "Yahoo:IWM": {
+      "bytes": 40984,
+      "sha256": "3ad1b1d9d4bd2cb5e211903c71491dbb4129f08778a1d22c7a9227acad275b5d",
+      "ticker": "IWM",
+      "er": "0.19%",
+      "inception": "2000-05-22"
+    },
+    "Yahoo:SHY": {
+      "bytes": 46322,
+      "sha256": "3cf8b5c5f664f4f8353ee886b3d55be76a8be57f6cb47203fbfe40a40ebe015d",
+      "ticker": "SHY",
+      "er": "0.15%",
+      "inception": "2002-07-22"
+    },
+    "Yahoo:IEF": {
+      "bytes": 46830,
+      "sha256": "9a89456dd6959bfde9299699413ab01f5a36f0a189b4b97a9375072604e5d98b",
+      "ticker": "IEF",
+      "er": "0.15%",
+      "inception": "2002-07-22"
+    },
+    "Yahoo:TLT": {
+      "bytes": 46901,
+      "sha256": "69db1fe9c4e47bada3fe7fc2968ce7713c8bd9a759d3affd7effd2c947c58160",
+      "ticker": "TLT",
+      "er": "0.15%",
+      "inception": "2002-07-30"
+    },
+    "Yahoo:GLD": {
+      "bytes": 30383,
+      "sha256": "731212e01abac8e41668be9c6afee2fed73b7b62f8d00ce1d11be9bbe7519c32",
+      "ticker": "GLD",
+      "er": "0.40%",
+      "inception": "2004-11-18"
+    },
+    "Yahoo:USO": {
+      "bytes": 27799,
+      "sha256": "06bc02811c46c1a2c94bf1b764dc9482ba9851b70f45e1617185aed426a135f6",
+      "ticker": "USO",
+      "er": "0.60%",
+      "inception": "2006-04-10"
+    },
+    "FRED:NASDAQCOM": {
+      "bytes": 280997,
+      "sha256": "ac87f1556a74271451b0b43d170a1a0db072431233782cf1152fbf1913f094ed"
+    },
+    "FRED:NASDAQXCMP": {
+      "bytes": 114395,
+      "sha256": "4fe59ba0fc59dc2fb50be79c31133bd29bb66a26adc6092d4c583e0c1e5f7304"
+    }
+  }
+}

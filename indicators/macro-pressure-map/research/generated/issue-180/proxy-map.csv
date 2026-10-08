@@ -1,0 +1,10 @@
+sleeve,target,proxy,type,exposure,carry,roll,fee,start,liquidty,mismatch
+"sp500","S&P 500 TR","SPY","ETF","S&P 500 TR net of 0.0945% ER","dividends included","—","0.0945%","1993-01","very high liquidity",""
+"nasdaq","Nasdaq Composite","QQQ","ETF","Nasdaq-100 TR net of 0.20% ER — LABELED PROXY, NOT Composite","Nasdaq-100 dividends","—","0.20%","1999-03","very high liquidity","universe mismatch quantified"
+"russell","Russell 2000 price","IWM","ETF","Russell 2000 TR net of 0.19% ER (dividends INCLUDED — improvement over price)","dividends included","—","0.19%","2000-05","high liquidity","TR-vs-price wedge favors implementation"
+"cash","3M T-bill","T-bill accrual","bills","identical series (no tracking diff)","interest","—","—","1934+","perfect","none"
+"treasury2y","~2Y CMT TR","SHY","ETF","1-3Y Treasury TR net of 0.15% ER (maturity-band vs point)","coupons","—","0.15%","2002-07","high liquidity","band-vs-point duration nuance"
+"treasury10y","~10Y CMT TR","IEF","ETF","7-10Y Treasury TR net of 0.15% ER","coupons","—","0.15%","2002-07","high liquidity","band-vs-point duration nuance"
+"longtreasury","~20Y CMT TR","TLT","ETF","20+Y Treasury TR net of 0.15% ER (longer duration than 20Y point)","coupons","—","0.15%","2002-07","high liquidity","TLT duration ~15-18y vs synth ~13y"
+"gold","gold price","GLD","ETF","gold price net of 0.40% ER","none","—","0.40%","2004-11","high liquidity","ER drag + monthly-avg vs month-end timing"
+"oil","investable CL+collateral","USO","commodity pool","front-month WTI fund net of 0.60% ER; laddered since Apr-2020","collateral in NAV","front-month roll (laddered post-2020)","0.60%","2006-04","high liquidity","roll-calendar + 2020-regime differences"
