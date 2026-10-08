@@ -1,0 +1,22 @@
+{
+  "research": {
+    "aligned": {
+      "n": 83,
+      "mean_contrib": -0.0008115224068830563
+    },
+    "divergent": {
+      "n": 149,
+      "mean_contrib": -0.00031987163632580927
+    }
+  },
+  "tradable": {
+    "aligned": {
+      "n": 83,
+      "mean_contrib": -0.0005628429100289327
+    },
+    "divergent": {
+      "n": 149,
+      "mean_contrib": -0.00010963562636162965
+    }
+  }
+}

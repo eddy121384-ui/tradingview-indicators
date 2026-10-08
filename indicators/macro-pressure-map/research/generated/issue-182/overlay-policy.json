@@ -1,0 +1,45 @@
+{
+  "issue": 182,
+  "budget_pp": 5,
+  "scope": "total Equity <-> Cash only",
+  "pro_rata": "frozen structural equity weights",
+  "caps": {
+    "sleeve": {
+      "sp500": 35,
+      "nasdaq": 20,
+      "russell": 15
+    },
+    "family": 60,
+    "cash_floor": 2
+  },
+  "timing": "V6.6 state(m-1) -> month m; alternate lag state(m-2)",
+  "costs": {
+    "primary_rate": 0.0002,
+    "alternate_rate": 0.001
+  },
+  "panels": {
+    "research": "2007-01+ backbone",
+    "tradable": "2007-01+ ETF"
+  },
+  "verdict": "v66_tactical_overlay_candidate_supported",
+  "gates": {
+    "g1_cagr": true,
+    "g2_sharpe": true,
+    "g3_maxdd": true,
+    "g4_turnover": true,
+    "g5_concentration": true,
+    "g6_segment": true,
+    "g7_state": true
+  },
+  "gate_values": {
+    "cagr_gap_pp": -0.3110035298276692,
+    "sharpe_gap": 0.011325457538783557,
+    "maxdd_gap_pp": 1.3209953365677651,
+    "incr_turnover_pp": 21.179911279407055,
+    "top1_share": null,
+    "benefit_positive": false,
+    "worst_seg_pp": -0.6507149998973949,
+    "worst_state_pp": -0.6688106936487841
+  },
+  "production_authorized": false
+}

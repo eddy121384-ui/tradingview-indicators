@@ -1,0 +1,26 @@
+{
+  "research": {
+    "n_transitions": 36,
+    "n_inside": 172,
+    "n_outside": 60,
+    "mean_inside": -0.0005497815718979312,
+    "mean_outside": -0.0003409133869565856,
+    "freq_inside": {
+      "risk-on": 30,
+      "risk-off": 114,
+      "neutral": 28
+    }
+  },
+  "tradable": {
+    "n_transitions": 36,
+    "n_inside": 172,
+    "n_outside": 60,
+    "mean_inside": -0.00035780161141884116,
+    "mean_outside": -0.000025163211604059053,
+    "freq_inside": {
+      "risk-on": 30,
+      "risk-off": 114,
+      "neutral": 28
+    }
+  }
+}

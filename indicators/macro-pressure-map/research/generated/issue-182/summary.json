@@ -1,0 +1,36 @@
+{
+  "issue": 182,
+  "branch": "research/issue-182-v66-tactical-overlay",
+  "verdict": "v66_tactical_overlay_candidate_supported",
+  "gates": {
+    "g1_cagr": true,
+    "g2_sharpe": true,
+    "g3_maxdd": true,
+    "g4_turnover": true,
+    "g5_concentration": true,
+    "g6_segment": true,
+    "g7_state": true
+  },
+  "gate_values": {
+    "cagr_gap_pp": -0.3110035298276692,
+    "sharpe_gap": 0.011325457538783557,
+    "maxdd_gap_pp": 1.3209953365677651,
+    "incr_turnover_pp": 21.179911279407055,
+    "top1_share": null,
+    "benefit_positive": false,
+    "worst_seg_pp": -0.6507149998973949,
+    "worst_state_pp": -0.6688106936487841
+  },
+  "months_research": 232,
+  "months_tradable": 232,
+  "inputs_sha256": {
+    "issue-178/weight-matrix.csv": "b9d0b18823001b7425fd1adab9cd908af291cafedb3f6b89e5c70fc54c8ab9cb",
+    "issue-178/policy.json": "876d99726410fe07205c5df5577be91b1641928e07b6ff69259637b5bd8cbfea",
+    "issue-178/backtest-monthly.csv": "0bcb86d117851caeb563050ff86978318ac0a92e53e4003027c44d58446e9563",
+    "issue-180/implementation-monthly.csv": "374a758cd0746d358838fa94d56213f8b5235d62abf4abbe09de4885aedba614",
+    "issue-180/proxy-monthly-returns.csv": "b11fbf8bb9fde8b5cb0bc45fd0ea2d8494511a458691639165c86328755a27e4",
+    "issue-182/tactical-timeline.csv": "e314bb857e4eb06b210a4f3102ab7a358451dbb89950b1de8b7386eb670ded62",
+    "issue-182/overlay-weights.csv": "46ff4d04043b44c40164d7235997f504c73648a1889dc78e5dcaf0b7f2d34f85"
+  },
+  "production_authorized": false
+}

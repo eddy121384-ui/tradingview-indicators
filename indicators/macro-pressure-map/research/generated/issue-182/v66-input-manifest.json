@@ -1,0 +1,13 @@
+{
+  "source_branch": "origin/research/issue-133-state-trajectory",
+  "source_path": "indicators/macro-pressure-map/research/data/issue-133-exact-monthly.csv.gz.b64",
+  "gzip_sha256": "6087d7eceff168147b4db2e8688ce308dc12aa6b4187ff0c18f1d5e51e4beda2",
+  "csv_sha256": "1d03923503e7fe82a69b033897484c48aa646279ecf70164d090ed62a5a70719",
+  "rows": 388,
+  "first": "1994-05",
+  "last": "2026-08",
+  "schema": "date(month-end),gpi,ipi,regime",
+  "primary_window_start": "2007-01-01",
+  "month_key": "calendar month of month-end date",
+  "band_rule": "Low<-10<=Neutral<=+10<High on GPI/IPI"
+}

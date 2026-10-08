@@ -1,0 +1,5 @@
+# Preserve byte-exactness of hash-pinned research artifacts.
+# The issue-182 V6.6 snapshot is verified by SHA256; CRLF conversion would
+# silently break verification on Windows checkouts.
+*.b64 binary
+*.gz.b64 binary
