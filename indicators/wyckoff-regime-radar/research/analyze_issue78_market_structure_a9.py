@@ -2029,12 +2029,24 @@ def run_discovery(universe_path: Path, manifest_path: Path, raw_dir: Path,
                 ],
                 "scaler_mean": [float(x) for x in mean],
                 "scaler_std": [float(x) for x in std],
+                "model_mu_std": model["mu"].tolist(),
+                "model_var_std": model["var"].tolist(),
                 "centroids_std_train": diag["centroids_std_train"],
                 "centroids_std_eval": diag["centroids_std_eval"],
                 "centroids_raw_train": diag["centroids_raw_train"],
                 "centroids_raw_eval": diag["centroids_raw_eval"],
                 "transition_model": diag["transition_model"],
                 "initial_model": [float(x) for x in model["pi"]],
+                "train_ll": float(model["train_ll"]),
+                "bic": float(model["bic"]),
+                "n_train_bars": int(model["n_train"]),
+                "n_params": int(model["n_params"]),
+                "iterations": int(model["iters"]),
+                "transport_note": (
+                    "frozen model for OOS4 transport: reuse model_mu_std, "
+                    "model_var_std, transition_model, initial_model, scaler_mean, "
+                    "scaler_std without refit"
+                ),
             },
             indent=2,
         )
