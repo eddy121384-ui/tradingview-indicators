@@ -1,0 +1,203 @@
+{
+  "issue": 178,
+  "base_head": "bc652bd615f2c5e9137050d01c666dbcd9528cd3",
+  "baseline": {
+    "sp500": 25,
+    "nasdaq": 12,
+    "russell": 8,
+    "treasury2y": 8,
+    "treasury10y": 14,
+    "longtreasury": 8,
+    "gold": 6,
+    "oil": 4
+  },
+  "family_budgets": {
+    "equity": 45,
+    "rates": 30,
+    "real_assets": 10,
+    "cash": 15
+  },
+  "multipliers": {
+    "0": 0,
+    "Low": 0.5,
+    "Neutral": 1,
+    "High": 1.75
+  },
+  "sleeve_caps": {
+    "sp500": 35,
+    "nasdaq": 20,
+    "russell": 15,
+    "treasury2y": 15,
+    "treasury10y": 25,
+    "longtreasury": 15,
+    "gold": 12,
+    "oil": 8
+  },
+  "family_caps": {
+    "equity": 60,
+    "rates": 50,
+    "real": 15
+  },
+  "cash": {
+    "min": 2,
+    "max": 60,
+    "min_by_bias": {
+      "low": 5,
+      "neutral": 10,
+      "high": 20
+    }
+  },
+  "rounding": "2dp largest-remainder, tier-0 excluded",
+  "rebalance_primary": "B-2 confirmation",
+  "matrix": [
+    {
+      "state": "G_Low/I_Low",
+      "weights": {
+        "sp500": 23.52,
+        "nasdaq": 11.29,
+        "russell": 7.52,
+        "treasury2y": 12.54,
+        "treasury10y": 21.95,
+        "longtreasury": 12.54,
+        "gold": 5.64,
+        "oil": 0,
+        "cash": 5
+      },
+      "binds": "family:rates",
+      "cash_bias": "low"
+    },
+    {
+      "state": "G_Low/I_Neutral",
+      "weights": {
+        "sp500": 25,
+        "nasdaq": 12,
+        "russell": 8,
+        "treasury2y": 8,
+        "treasury10y": 14,
+        "longtreasury": 8,
+        "gold": 3,
+        "oil": 4,
+        "cash": 18
+      },
+      "binds": "",
+      "cash_bias": "neutral"
+    },
+    {
+      "state": "G_Low/I_High",
+      "weights": {
+        "sp500": 12.5,
+        "nasdaq": 6,
+        "russell": 4,
+        "treasury2y": 8,
+        "treasury10y": 7,
+        "longtreasury": 4,
+        "gold": 6,
+        "oil": 4,
+        "cash": 48.5
+      },
+      "binds": "",
+      "cash_bias": "high"
+    },
+    {
+      "state": "G_Neutral/I_Low",
+      "weights": {
+        "sp500": 31.08,
+        "nasdaq": 10.65,
+        "russell": 7.1,
+        "treasury2y": 12.43,
+        "treasury10y": 12.43,
+        "longtreasury": 12.43,
+        "gold": 5.33,
+        "oil": 3.55,
+        "cash": 5
+      },
+      "binds": "sleeve:sp500",
+      "cash_bias": "low"
+    },
+    {
+      "state": "G_Neutral/I_Neutral",
+      "weights": {
+        "sp500": 25,
+        "nasdaq": 12,
+        "russell": 8,
+        "treasury2y": 8,
+        "treasury10y": 14,
+        "longtreasury": 8,
+        "gold": 3,
+        "oil": 4,
+        "cash": 18
+      },
+      "binds": "",
+      "cash_bias": "neutral"
+    },
+    {
+      "state": "G_Neutral/I_High",
+      "weights": {
+        "sp500": 25,
+        "nasdaq": 12,
+        "russell": 0,
+        "treasury2y": 4,
+        "treasury10y": 7,
+        "longtreasury": 4,
+        "gold": 6,
+        "oil": 4,
+        "cash": 38
+      },
+      "binds": "",
+      "cash_bias": "high"
+    },
+    {
+      "state": "G_High/I_Low",
+      "weights": {
+        "sp500": 25,
+        "nasdaq": 12,
+        "russell": 4,
+        "treasury2y": 8,
+        "treasury10y": 14,
+        "longtreasury": 14,
+        "gold": 0,
+        "oil": 4,
+        "cash": 19
+      },
+      "binds": "",
+      "cash_bias": "neutral"
+    },
+    {
+      "state": "G_High/I_Neutral",
+      "weights": {
+        "sp500": 30.44,
+        "nasdaq": 17.39,
+        "russell": 12.17,
+        "treasury2y": 4,
+        "treasury10y": 7,
+        "longtreasury": 4,
+        "gold": 6,
+        "oil": 4,
+        "cash": 15
+      },
+      "binds": "sleeve:sp500;sleeve:nasdaq;family:equity",
+      "cash_bias": "neutral"
+    },
+    {
+      "state": "G_High/I_High",
+      "weights": {
+        "sp500": 25,
+        "nasdaq": 12,
+        "russell": 8,
+        "treasury2y": 4,
+        "treasury10y": 7,
+        "longtreasury": 4,
+        "gold": 6,
+        "oil": 4,
+        "cash": 30
+      },
+      "binds": "",
+      "cash_bias": "neutral"
+    }
+  ],
+  "inputs_sha256": {
+    "issue-177/policy-matrix.csv": "5d3778eddf6205ee996fcf0fa4560647f9982f8ce33c75924a16cb9e4eadd368",
+    "issue-177/cash-bias.csv": "2633c7e1e5d52ddc7931a7d07e03572800a36d4202b4bc8581880dcaef14dfc8"
+  },
+  "production_authorized": false
+}

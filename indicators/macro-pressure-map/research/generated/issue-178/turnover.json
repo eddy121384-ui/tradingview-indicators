@@ -1,0 +1,15 @@
+{
+  "max_history": {
+    "turnover_ann": 35.0402340638043,
+    "switches": 106,
+    "stateChanges": 106,
+    "raw_state_changes": 358,
+    "avg_months_between": 6.80188679245283,
+    "avg_wchange": 19.86164210692052
+  },
+  "full_universe": {
+    "turnover_ann": 36.45826721675659,
+    "switches": 39,
+    "raw_state_changes": 157
+  }
+}
