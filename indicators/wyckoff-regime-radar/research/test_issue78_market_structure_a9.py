@@ -654,6 +654,77 @@ def test_dimension_gate_ladder():
     assert out["classification"] == "REJECT_UNSTABLE"
 
 
+def _sep_rows(dim, values, stocks=200, prop_sd=None):
+    rows = []
+    for prop, delta in values.items():
+        rows.append(
+            {
+                "dim": dim, "property": prop, "horizon": 10, "scope": "ALL",
+                "scope_kind": "ALL", "stocks": stocks,
+                "equal_stock_mean_delta": delta,
+                "abs_delta_over_sd": abs(delta) if prop_sd is None else prop_sd,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def test_oos4_g6_rule():
+    import analyze_issue78_market_structure_a9_oos4 as oos4
+
+    gate_eval = {"gates": {"d4": {"G4_separated_properties": ["abs_10", "fwd_10"]}}}
+    o3 = _sep_rows("d4", {"fwd_10": 0.5, "abs_10": -0.4})
+    # same signs on OOS4 -> pass
+    o4 = _sep_rows("d4", {"fwd_10": 0.31, "abs_10": -0.22})
+    g = oos4.g6_for_dimension("d4", o3, o4, gate_eval)
+    assert g["available"] is True and g["pass"] is True and g["same_sign"] == 2
+    # one reversal at |delta| >= 0.20*sd -> fail even though signs mostly agree
+    o4 = _sep_rows("d4", {"fwd_10": 0.31, "abs_10": 0.55}, prop_sd=0.30)
+    g = oos4.g6_for_dimension("d4", o3, o4, gate_eval)
+    assert g["pass"] is False and len(g["reversals"]) == 1
+    # no adequate OOS4 property -> G6 technically unavailable
+    o4 = _sep_rows("d4", {"fwd_10": 0.31, "abs_10": -0.22}, stocks=10)
+    g = oos4.g6_for_dimension("d4", o3, o4, gate_eval)
+    assert g["available"] is False and g["pass"] is False
+
+
+def test_frozen_model_roundtrip():
+    import json as _json
+    import analyze_issue78_market_structure_a9_oos4 as oos4
+
+    p = Path("artifacts/_a9_model_roundtrip.json")
+    Path("artifacts").mkdir(exist_ok=True)
+    p.write_text(
+        _json.dumps(
+            {
+                "K": 2,
+                "feature_order": ["a", "b", "c", "d"],
+                "scaler_mean": [1.0, 2.0, 3.0, 4.0],
+                "scaler_std": [0.5, 0.5, 0.5, 0.5],
+                "model_mu_std": [[0.0] * 4, [1.0] * 4],
+                "model_var_std": [[1.0] * 4, [2.0] * 4],
+                "centroids_std_train": [[0.0] * 4, [1.0] * 4],
+                "centroids_std_eval": [[0.0] * 4, [1.0] * 4],
+                "centroids_raw_train": [[0.0] * 4, [1.0] * 4],
+                "centroids_raw_eval": [[0.0] * 4, [1.0] * 4],
+                "transition_model": [[0.9, 0.1], [0.2, 0.8]],
+                "initial_model": [0.5, 0.5],
+                "train_ll": -1.0,
+                "bic": 1.0,
+                "n_train_bars": 10,
+                "n_params": 5,
+                "iterations": 3,
+            }
+        ),
+        encoding="utf-8",
+    )
+    model, mean, std = oos4.frozen_model_from(p)
+    assert model["K"] == 2
+    assert np.allclose(model["var"], [[1.0] * 4, [2.0] * 4])
+    assert np.allclose(mean, [1.0, 2.0, 3.0, 4.0])
+    assert np.allclose(std, 0.5)
+    p.unlink()
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in sorted(globals().items()):
