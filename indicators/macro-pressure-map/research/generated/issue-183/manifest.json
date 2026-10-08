@@ -1,0 +1,374 @@
+{
+  "issue": 183,
+  "branch": "research/issue-183-allocation-lineage-repair",
+  "required_start_head": "57852112ce95913d48297b35f803a1583cbab314",
+  "parent_final_commits": {
+    "issue-177": "bc652bd615f2c5e9137050d01c666dbcd9528cd3",
+    "issue-178": "10dcdce0ec86b0493d6df6b916b720eba46dcbe6",
+    "issue-180": "ac251ad5149d9f550d82dfb34b3551fe01032367",
+    "issue-182": "57852112ce95913d48297b35f803a1583cbab314"
+  },
+  "sha_convention": "sha256 of the working-tree bytes as read by the engine (CRLF on Windows checkouts); git_blob_sha256 = sha256 of the committed LF blob; pinned historical parent SHAs in #178/#180/#182 were recorded from scan-time bytes and are compared against worktree_sha256",
+  "artifacts": {
+    "generated/issue-177/policy-matrix.csv": {
+      "worktree_sha256": "5d3778eddf6205ee996fcf0fa4560647f9982f8ce33c75924a16cb9e4eadd368",
+      "git_blob_sha256_parent_commit": "203eac6ae914489e3a38b820877aa17541d9e76145d1f8fc213bb5f68396e24c",
+      "git_blob_sha256_head": "203eac6ae914489e3a38b820877aa17541d9e76145d1f8fc213bb5f68396e24c",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-177/cash-bias.csv": {
+      "worktree_sha256": "2633c7e1e5d52ddc7931a7d07e03572800a36d4202b4bc8581880dcaef14dfc8",
+      "git_blob_sha256_parent_commit": "d36ac6cef78cfecbb92365c2129ed24b7028e26960358195fd66497612cb56ca",
+      "git_blob_sha256_head": "d36ac6cef78cfecbb92365c2129ed24b7028e26960358195fd66497612cb56ca",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/weight-matrix.csv": {
+      "worktree_sha256": "b9d0b18823001b7425fd1adab9cd908af291cafedb3f6b89e5c70fc54c8ab9cb",
+      "git_blob_sha256_parent_commit": "777d2177ac9cc1f018ba8239da66768cceb3b2f2aad0ce2f1f384128a358b945",
+      "git_blob_sha256_head": "777d2177ac9cc1f018ba8239da66768cceb3b2f2aad0ce2f1f384128a358b945",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/policy.json": {
+      "worktree_sha256": "876d99726410fe07205c5df5577be91b1641928e07b6ff69259637b5bd8cbfea",
+      "git_blob_sha256_parent_commit": "a78aa6fc5c098b2c28b4f30c30b9637f682ff4a2fdd51c4e6aeae661d130c997",
+      "git_blob_sha256_head": "a78aa6fc5c098b2c28b4f30c30b9637f682ff4a2fdd51c4e6aeae661d130c997",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/backtest-monthly.csv": {
+      "worktree_sha256": "0bcb86d117851caeb563050ff86978318ac0a92e53e4003027c44d58446e9563",
+      "git_blob_sha256_parent_commit": "5652bbf72427b9b2d673bf5e299bdd6a12433cbc738d431dbde0bc8da5178928",
+      "git_blob_sha256_head": "5652bbf72427b9b2d673bf5e299bdd6a12433cbc738d431dbde0bc8da5178928",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/benchmarks.json": {
+      "worktree_sha256": "af7bab5521b47b2aedee8b32f54926c939e6d459f6deadf534fd392fc444c988",
+      "git_blob_sha256_parent_commit": "a54084d02229effcc1cd97c61c7ead08ff10a2cc0647b9608b0cfffc21ab7bbc",
+      "git_blob_sha256_head": "a54084d02229effcc1cd97c61c7ead08ff10a2cc0647b9608b0cfffc21ab7bbc",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/performance.json": {
+      "worktree_sha256": "9a0042b3817cf476638af842c39e92d1eb541159c4f250fc915d6163ec07df5f",
+      "git_blob_sha256_parent_commit": "4d1caeba8ba1f8eb0cefa9de737d711f4d8bf6e6a575930f16bf1758995a1371",
+      "git_blob_sha256_head": "4d1caeba8ba1f8eb0cefa9de737d711f4d8bf6e6a575930f16bf1758995a1371",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/turnover.json": {
+      "worktree_sha256": "cf7d2082d434af5ee5d91c84d4ccec29ea2448ebeed3181b227de5c2c347118e",
+      "git_blob_sha256_parent_commit": "fa3677fc4d4c5159e0af9564fad2aff8e747d40d3c9e92ba9e23de736adb7036",
+      "git_blob_sha256_head": "fa3677fc4d4c5159e0af9564fad2aff8e747d40d3c9e92ba9e23de736adb7036",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/era-report.json": {
+      "worktree_sha256": "dfd0e68c95436d133f0be5f9eedd4b43478334972d51a1b4fcf9a922fd4eeaae",
+      "git_blob_sha256_parent_commit": "4ffaaf2d88989c76a9d2692ffa009a6cc2cafd4063e3cb4d6cffd46a1b0ee939",
+      "git_blob_sha256_head": "4ffaaf2d88989c76a9d2692ffa009a6cc2cafd4063e3cb4d6cffd46a1b0ee939",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/sensitivity.json": {
+      "worktree_sha256": "c1592d3ab2ec76c22cd7fe163e76c1eb770fadc4aba604f5ef944e26ea5189d4",
+      "git_blob_sha256_parent_commit": "0069915483ce7f8b6bcbf29bdf6a03521251c01611e77052ac90ab1955b0baea",
+      "git_blob_sha256_head": "0069915483ce7f8b6bcbf29bdf6a03521251c01611e77052ac90ab1955b0baea",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/summary.json": {
+      "worktree_sha256": "18817ccccf31a69702152892c92ea8bb3b72dbd3c9c908b479344fb7b99f1d4a",
+      "git_blob_sha256_parent_commit": "83436a8005842a6411417d5a6a19ae2fcc6871a4a03900b21ea312950b18fdf1",
+      "git_blob_sha256_head": "83436a8005842a6411417d5a6a19ae2fcc6871a4a03900b21ea312950b18fdf1",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-178/state-cards.md": {
+      "worktree_sha256": "7a0a4831e657c9f612693a69453ea6f0604bfa3ff721b25f4a01cb9a6312f283",
+      "git_blob_sha256_parent_commit": "1b736b4b9f406a7abef069a0e260bcc5e7a2e470104bba07a920c7382ebaa90f",
+      "git_blob_sha256_head": "1b736b4b9f406a7abef069a0e260bcc5e7a2e470104bba07a920c7382ebaa90f",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/implementation-monthly.csv": {
+      "worktree_sha256": "374a758cd0746d358838fa94d56213f8b5235d62abf4abbe09de4885aedba614",
+      "git_blob_sha256_parent_commit": "742a58bcf6c3ce5a1b363359d89d64bfdaeb56ca7f5844bbf9e9375676c9955f",
+      "git_blob_sha256_head": "742a58bcf6c3ce5a1b363359d89d64bfdaeb56ca7f5844bbf9e9375676c9955f",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/proxy-monthly-returns.csv": {
+      "worktree_sha256": "b11fbf8bb9fde8b5cb0bc45fd0ea2d8494511a458691639165c86328755a27e4",
+      "git_blob_sha256_parent_commit": "52658c595dc4af63b51f572e88cf14af7afb7319f1b66f522aeba66077e35fc9",
+      "git_blob_sha256_head": "52658c595dc4af63b51f572e88cf14af7afb7319f1b66f522aeba66077e35fc9",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/proxy-map.csv": {
+      "worktree_sha256": "8909c300646162d7c071ea4e595343302d9489fd0312eb846030b170bc8091f7",
+      "git_blob_sha256_parent_commit": "d12a28008f3afe486860d8991a61357f9af33c30e0f2eef22a46eba51e523758",
+      "git_blob_sha256_head": "d12a28008f3afe486860d8991a61357f9af33c30e0f2eef22a46eba51e523758",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/benchmarks.json": {
+      "worktree_sha256": "7b80c0a36054ed861ee6fa7b4fc52448029da9ec979655d906b6db32230547e4",
+      "git_blob_sha256_parent_commit": "3eebeb853e82ff80524453bd0bac2441d4a29c95f0de08ecd620c8c372f2e764",
+      "git_blob_sha256_head": "3eebeb853e82ff80524453bd0bac2441d4a29c95f0de08ecd620c8c372f2e764",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/performance.json": {
+      "worktree_sha256": "52d2207b5936aa72e33b6a53aa4f16b3759c5eb587a0f6bf2f4904c44b85bb97",
+      "git_blob_sha256_parent_commit": "37915b1ef7e5486bab652be50ef3ec63cd99610d0a4077351f213df887ae5e34",
+      "git_blob_sha256_head": "37915b1ef7e5486bab652be50ef3ec63cd99610d0a4077351f213df887ae5e34",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/tracking.csv": {
+      "worktree_sha256": "cfe4174314c491ba248cc61623062cee3468f59ec13416f9e329c13aa8646424",
+      "git_blob_sha256_parent_commit": "af28d899b2d46c1aa0e1aa5e5bc1d8ffb4726a8c9a7046a46cc2a92051858956",
+      "git_blob_sha256_head": "af28d899b2d46c1aa0e1aa5e5bc1d8ffb4726a8c9a7046a46cc2a92051858956",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/policy.json": {
+      "worktree_sha256": "0dd0290106feedbef5daf74eff0941527fe27c94f9c0d1132fc9441b530d2c60",
+      "git_blob_sha256_parent_commit": "2ecaa9b2d6c70e8eb5a8db79bee0340e90e6f0f4e350bc074db6e9c70e7bf68f",
+      "git_blob_sha256_head": "2ecaa9b2d6c70e8eb5a8db79bee0340e90e6f0f4e350bc074db6e9c70e7bf68f",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/summary.json": {
+      "worktree_sha256": "7e7488ee573bd1ef11fa71cad2f79e1944b35008450fb039fcb5abff20649dfa",
+      "git_blob_sha256_parent_commit": "4ef3d41433bdd1510d134e80084d8866ff7f8c742de0e0cf48a52ea9bfea3e13",
+      "git_blob_sha256_head": "4ef3d41433bdd1510d134e80084d8866ff7f8c742de0e0cf48a52ea9bfea3e13",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/state-implementation.csv": {
+      "worktree_sha256": "028be667b980ef56edfc61edf112fc9f9f4c36e34b2531fefc3cf036be41d592",
+      "git_blob_sha256_parent_commit": "dfaf465082be3910d6f0b9cab7f3e40d418698f8e86554000620c41a1c1d09e7",
+      "git_blob_sha256_head": "dfaf465082be3910d6f0b9cab7f3e40d418698f8e86554000620c41a1c1d09e7",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/era-live.json": {
+      "worktree_sha256": "cde27ed5a1d3d57e5cc411b5c31428ab7ae2959b545b16c10e76f08e8e6ae27d",
+      "git_blob_sha256_parent_commit": "40e5bbf4d33f2dc96dabfa478f79ba745355f0c0f470385e77cf37f35f28ab35",
+      "git_blob_sha256_head": "40e5bbf4d33f2dc96dabfa478f79ba745355f0c0f470385e77cf37f35f28ab35",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-180/sensitivity.json": {
+      "worktree_sha256": "c46770dce16edd6dfa78957118ca7a0ed03176069c4a08f4fde3eb8d702a26a0",
+      "git_blob_sha256_parent_commit": "88cbedb4016c66d2819a11f56ca257cd0fa4090a50582651e82668616a8c3d1b",
+      "git_blob_sha256_head": "88cbedb4016c66d2819a11f56ca257cd0fa4090a50582651e82668616a8c3d1b",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/tactical-timeline.csv": {
+      "worktree_sha256": "a7f60836fe91918f8549958b10d44a42915df145a56516d8633fa48a08022223",
+      "git_blob_sha256_parent_commit": "e314bb857e4eb06b210a4f3102ab7a358451dbb89950b1de8b7386eb670ded62",
+      "git_blob_sha256_head": "e314bb857e4eb06b210a4f3102ab7a358451dbb89950b1de8b7386eb670ded62",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/overlay-weights.csv": {
+      "worktree_sha256": "1c7e9d2d31de68414c18f0e8db2dea1a6a3db579dbd83bf64c0a0f0baa8cce8d",
+      "git_blob_sha256_parent_commit": "46ff4d04043b44c40164d7235997f504c73648a1889dc78e5dcaf0b7f2d34f85",
+      "git_blob_sha256_head": "46ff4d04043b44c40164d7235997f504c73648a1889dc78e5dcaf0b7f2d34f85",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/overlay-policy.json": {
+      "worktree_sha256": "b1d4cd64206337fbb99b820e3149bd95e81911f6e8aa80fd962d2feeb4b3110f",
+      "git_blob_sha256_parent_commit": "4cb1b3470530de455405f82067453cf32536f6abc3374c8ca5595bcac23f8c0b",
+      "git_blob_sha256_head": "4cb1b3470530de455405f82067453cf32536f6abc3374c8ca5595bcac23f8c0b",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/v66-input-manifest.json": {
+      "worktree_sha256": "1e8669f44a3dce9d1f951627e1ca6d0417313b7b9d350d9c8d7e61c81196bffa",
+      "git_blob_sha256_parent_commit": "fc26c9ec68bd41ead20d44931f37a486e520cf9e3f1d743d3e7c39ac70b7d142",
+      "git_blob_sha256_head": "fc26c9ec68bd41ead20d44931f37a486e520cf9e3f1d743d3e7c39ac70b7d142",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/v66-exact-monthly.csv.gz.b64": {
+      "worktree_sha256": "b9c35b3fe4e2271b3ac3ce950e2530f6aa08fbbc307914384898338ca8fd500c",
+      "git_blob_sha256_parent_commit": "b9c35b3fe4e2271b3ac3ce950e2530f6aa08fbbc307914384898338ca8fd500c",
+      "git_blob_sha256_head": "b9c35b3fe4e2271b3ac3ce950e2530f6aa08fbbc307914384898338ca8fd500c",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/performance.json": {
+      "worktree_sha256": "c61d88bd53069377c5de52abae780eca78ea2d70de39ddd6c77a3b433a4ba041",
+      "git_blob_sha256_parent_commit": "246a4454253b56e4dbdc2034427629ca855f1e2811d72ed8b416bb814841ebff",
+      "git_blob_sha256_head": "246a4454253b56e4dbdc2034427629ca855f1e2811d72ed8b416bb814841ebff",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/summary.json": {
+      "worktree_sha256": "5e0de735fa6d42485e1875ea5ed55d5d3071856dcead232670a36f564c482cf7",
+      "git_blob_sha256_parent_commit": "cdde370a988e2474a0ff14682d44993c583bb6b5c364b729aaa20d7623c9841e",
+      "git_blob_sha256_head": "cdde370a988e2474a0ff14682d44993c583bb6b5c364b729aaa20d7623c9841e",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/alignment.json": {
+      "worktree_sha256": "a5e4062a75d30c935a03d02f51126ac6974ca40cfa58b5dc1c8867e2956e574c",
+      "git_blob_sha256_parent_commit": "47dc9b8b48c80e4de36e077f72de4bcd6570837c8c4557001537271c723afbf8",
+      "git_blob_sha256_head": "47dc9b8b48c80e4de36e077f72de4bcd6570837c8c4557001537271c723afbf8",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/transition.json": {
+      "worktree_sha256": "e3fc162de2899c93101d9c8e2c725bb5616f4367e31eb35d2077b1faa0798ef8",
+      "git_blob_sha256_parent_commit": "1a2aa3f0cb30bda920b4d33fbd7e01c24f9dfe41fe14ec8a9aaa3cca44527bf6",
+      "git_blob_sha256_head": "1a2aa3f0cb30bda920b4d33fbd7e01c24f9dfe41fe14ec8a9aaa3cca44527bf6",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/era-stability.json": {
+      "worktree_sha256": "68e08981ef5100e8fa36a7375df1fed870e1359c125c960aae572b437bec5a3d",
+      "git_blob_sha256_parent_commit": "bfe6136a41a9364e2c11b9fc5333be966abd407f31aad8ea3a08143098298733",
+      "git_blob_sha256_head": "bfe6136a41a9364e2c11b9fc5333be966abd407f31aad8ea3a08143098298733",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/state-diagnostics.csv": {
+      "worktree_sha256": "0a082dd9de41f10117048319982d57187b5040f9129fe11ce2244bd132956990",
+      "git_blob_sha256_parent_commit": "7d64ba8de950793c5c2c83c2626fa7ed856aa75bb6a2c9843be8e964a444ced3",
+      "git_blob_sha256_head": "7d64ba8de950793c5c2c83c2626fa7ed856aa75bb6a2c9843be8e964a444ced3",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/sensitivity.json": {
+      "worktree_sha256": "d0204733b18c236322d3e8192ea7a67ba89d931048bb2cf2b5c29720e7d673db",
+      "git_blob_sha256_parent_commit": "4ef162e83a06489e0439afce3e4e014743958dc3d61bba03d5e3f01fd9f56d90",
+      "git_blob_sha256_head": "4ef162e83a06489e0439afce3e4e014743958dc3d61bba03d5e3f01fd9f56d90",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/incremental.json": {
+      "worktree_sha256": "4722bd8dea0037432439605576395ab4ca13a67d3fe7f10cb2c5d44c8611c446",
+      "git_blob_sha256_parent_commit": "5d11d10f27870d00300c8b78c44c599a67a93505e47804a53c9684d99093721b",
+      "git_blob_sha256_head": "5d11d10f27870d00300c8b78c44c599a67a93505e47804a53c9684d99093721b",
+      "unmodified_since_parent": true
+    },
+    "generated/issue-182/benchmarks.json": {
+      "worktree_sha256": "ed405819ad148b7ad6fc0c6a61f531421fd5d51cab4cdc1702ad6335ee82c653",
+      "git_blob_sha256_parent_commit": "55fb1922950cf68eea9333cc7efb4b86d39fb5de6960284845b9f4f723733135",
+      "git_blob_sha256_head": "55fb1922950cf68eea9333cc7efb4b86d39fb5de6960284845b9f4f723733135",
+      "unmodified_since_parent": true
+    }
+  },
+  "parents_unmodified": {
+    "all": true
+  },
+  "v66_payload": {
+    "source": "generated/issue-182/v66-exact-monthly.csv.gz.b64",
+    "gzip_sha256": "6087d7eceff168147b4db2e8688ce308dc12aa6b4187ff0c18f1d5e51e4beda2",
+    "gzip_sha256_frozen": "6087d7eceff168147b4db2e8688ce308dc12aa6b4187ff0c18f1d5e51e4beda2",
+    "csv_sha256": "1d03923503e7fe82a69b033897484c48aa646279ecf70164d090ed62a5a70719",
+    "csv_sha256_frozen": "1d03923503e7fe82a69b033897484c48aa646279ecf70164d090ed62a5a70719",
+    "rows": 388,
+    "rows_frozen": 388,
+    "unchanged": true,
+    "classification_worktree_sha256": "a7f60836fe91918f8549958b10d44a42915df145a56516d8633fa48a08022223",
+    "classification_git_blob_sha256": "e314bb857e4eb06b210a4f3102ab7a358451dbb89950b1de8b7386eb670ded62",
+    "classification_pinned_in_182_summary": "e314bb857e4eb06b210a4f3102ab7a358451dbb89950b1de8b7386eb670ded62",
+    "classification_matches_pin": true
+  },
+  "policy_constants": {
+    "issue_177_zero_cells": [
+      [
+        "G_Low/I_Low",
+        "oil"
+      ],
+      [
+        "G_Neutral/I_High",
+        "russell"
+      ],
+      [
+        "G_High/I_Low",
+        "gold"
+      ]
+    ],
+    "issue_178_baseline": {
+      "sp500": 25,
+      "nasdaq": 12,
+      "russell": 8,
+      "treasury2y": 8,
+      "treasury10y": 14,
+      "longtreasury": 8,
+      "gold": 6,
+      "oil": 4
+    },
+    "issue_178_tier_multipliers": {
+      "0": 0,
+      "Low": 0.5,
+      "Neutral": 1,
+      "High": 1.75
+    },
+    "issue_178_sleeve_caps": {
+      "sp500": 35,
+      "nasdaq": 20,
+      "russell": 15,
+      "treasury2y": 15,
+      "treasury10y": 25,
+      "longtreasury": 15,
+      "gold": 12,
+      "oil": 8
+    },
+    "issue_178_family_caps": {
+      "equity": 60,
+      "rates": 50,
+      "real": 15
+    },
+    "issue_178_cash_min": 2,
+    "issue_178_cash_max": 60,
+    "issue_178_cash_bias_minimums": {
+      "low": 5,
+      "neutral": 10,
+      "high": 20
+    },
+    "issue_178_rebalance": "B-2 confirmation",
+    "issue_180_proxy_map": {
+      "\"sp500\"": "\"S&P 500 TR\"",
+      "\"nasdaq\"": "\"Nasdaq Composite\"",
+      "\"russell\"": "\"Russell 2000 price\"",
+      "\"cash\"": "\"3M T-bill\"",
+      "\"treasury2y\"": "\"~2Y CMT TR\"",
+      "\"treasury10y\"": "\"~10Y CMT TR\"",
+      "\"longtreasury\"": "\"~20Y CMT TR\"",
+      "\"gold\"": "\"gold price\"",
+      "\"oil\"": "\"investable CL+collateral\""
+    },
+    "issue_180_cost_primary": 0.0002,
+    "issue_180_cost_alt": 0.001,
+    "issue_182_v66_budget_pp": 5,
+    "issue_182_v66_bands": "+-10",
+    "issue_182_tactical_timing": "V6.6 state(m-1) -> month m",
+    "issue_182_gate_thresholds": {
+      "g1_cagr_pp": -0.5,
+      "g2_sharpe": -0.05,
+      "g3_maxdd_pp": -3,
+      "g4_incr_turnover_pp": 40,
+      "g5_top1_share": 0.6,
+      "g6_worst_seg_pp": -1,
+      "g7_worst_state_pp": -3
+    },
+    "issue_183_sensitivities": {
+      "S1": "budget 10pp",
+      "S2": "V6.6 state(m-2)",
+      "S3": "cost 10bp"
+    }
+  },
+  "matrix_reproduction": {
+    "method": "corrected component engine (reads cash-bias.csv column 2 `cash_bias`) + frozen issue_178_build.mjs roundLR 2dp largest-remainder == frozen weight-matrix.csv",
+    "corrected_engine_reproduces_frozen_matrix_exactly": true,
+    "buggy_engine_reproduces_frozen_matrix_exactly": false,
+    "corrected_mismatch_cells": 0,
+    "buggy_mismatch_cells": 17,
+    "buggy_mismatch_detail": [
+      [
+        "G_Low/I_Low",
+        [
+          "sp500",
+          "nasdaq",
+          "russell",
+          "treasury2y",
+          "treasury10y",
+          "longtreasury",
+          "gold",
+          "cash"
+        ]
+      ],
+      [
+        "G_Neutral/I_Low",
+        [
+          "sp500",
+          "nasdaq",
+          "russell",
+          "treasury2y",
+          "treasury10y",
+          "longtreasury",
+          "gold",
+          "oil",
+          "cash"
+        ]
+      ]
+    ]
+  }
+}

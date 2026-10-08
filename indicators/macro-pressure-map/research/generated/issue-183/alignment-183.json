@@ -1,0 +1,78 @@
+{
+  "issue": 183,
+  "phase": "C",
+  "research": {
+    "aligned": {
+      "n": 83,
+      "mean_contrib": -0.0005255597631226046
+    },
+    "divergent": {
+      "n": 149,
+      "mean_contrib": -0.00008514228626419256
+    },
+    "cell_counts": {
+      "G_Neutral/I_High|neutral": 5,
+      "G_Neutral/I_Neutral|risk-off": 29,
+      "G_Neutral/I_Neutral|neutral": 4,
+      "G_Low/I_High|risk-off": 7,
+      "G_Low/I_High|neutral": 2,
+      "G_Low/I_High|risk-on": 1,
+      "G_Low/I_Low|risk-off": 19,
+      "G_Low/I_Low|neutral": 4,
+      "G_Low/I_Low|risk-on": 6,
+      "G_Neutral/I_Low|risk-on": 8,
+      "G_Neutral/I_Low|risk-off": 26,
+      "G_Neutral/I_Low|neutral": 9,
+      "G_High/I_Neutral|risk-off": 26,
+      "G_Neutral/I_High|risk-off": 22,
+      "G_Neutral/I_High|risk-on": 4,
+      "G_High/I_Neutral|risk-on": 8,
+      "G_High/I_Neutral|neutral": 3,
+      "G_Neutral/I_Neutral|risk-on": 6,
+      "G_High/I_Low|risk-off": 2,
+      "G_High/I_Low|neutral": 1,
+      "G_High/I_High|risk-off": 27,
+      "G_High/I_High|neutral": 4,
+      "G_Low/I_Neutral|risk-off": 5,
+      "G_Low/I_Neutral|neutral": 2,
+      "G_Low/I_Neutral|risk-on": 2
+    }
+  },
+  "tradable": {
+    "aligned": {
+      "n": 83,
+      "mean_contrib": -0.0005628429100289327
+    },
+    "divergent": {
+      "n": 149,
+      "mean_contrib": -0.00010963562636162965
+    },
+    "cell_counts": {
+      "G_Neutral/I_High|neutral": 5,
+      "G_Neutral/I_Neutral|risk-off": 29,
+      "G_Neutral/I_Neutral|neutral": 4,
+      "G_Low/I_High|risk-off": 7,
+      "G_Low/I_High|neutral": 2,
+      "G_Low/I_High|risk-on": 1,
+      "G_Low/I_Low|risk-off": 19,
+      "G_Low/I_Low|neutral": 4,
+      "G_Low/I_Low|risk-on": 6,
+      "G_Neutral/I_Low|risk-on": 8,
+      "G_Neutral/I_Low|risk-off": 26,
+      "G_Neutral/I_Low|neutral": 9,
+      "G_High/I_Neutral|risk-off": 26,
+      "G_Neutral/I_High|risk-off": 22,
+      "G_Neutral/I_High|risk-on": 4,
+      "G_High/I_Neutral|risk-on": 8,
+      "G_High/I_Neutral|neutral": 3,
+      "G_Neutral/I_Neutral|risk-on": 6,
+      "G_High/I_Low|risk-off": 2,
+      "G_High/I_Low|neutral": 1,
+      "G_High/I_High|risk-off": 27,
+      "G_High/I_High|neutral": 4,
+      "G_Low/I_Neutral|risk-off": 5,
+      "G_Low/I_Neutral|neutral": 2,
+      "G_Low/I_Neutral|risk-on": 2
+    }
+  }
+}

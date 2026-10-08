@@ -1,0 +1,8 @@
+{
+  "issue": 183,
+  "runs": 2,
+  "artifacts_compared": 29,
+  "byte_identical": true,
+  "errors": [],
+  "method": "in-process recompute of the full Phase A/B/C pipeline; every generated artifact compared byte-for-byte"
+}

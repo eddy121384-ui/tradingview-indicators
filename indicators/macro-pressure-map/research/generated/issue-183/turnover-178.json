@@ -1,0 +1,75 @@
+{
+  "issue": 183,
+  "phase": "A",
+  "old": {
+    "max_history": {
+      "turnover_ann": 35.0402340638043,
+      "switches": 106,
+      "stateChanges": 106,
+      "raw_state_changes": 358,
+      "avg_months_between": 6.80188679245283,
+      "avg_wchange": 19.86164210692052
+    },
+    "full_universe": {
+      "turnover_ann": 36.45826721675659,
+      "switches": 39,
+      "raw_state_changes": 157
+    }
+  },
+  "corrected": {
+    "max_history": {
+      "turnover_ann": 33.85277035521045,
+      "switches": 106,
+      "stateChanges": 106,
+      "raw_state_changes": 358,
+      "avg_months_between": 6.80188679245283,
+      "avg_wchange": 19.188559297253725
+    },
+    "full_universe": {
+      "turnover_ann": 34.817080291970804,
+      "switches": 39,
+      "stateChanges": 40,
+      "raw_state_changes": 157,
+      "avg_months_between": 7.0256410256410255,
+      "avg_wchange": 20.384358974358975
+    }
+  },
+  "comparison": {
+    "turnover_ann": {
+      "old_max": 35.0402340638043,
+      "new_max": 33.85277035521045,
+      "old_full": 36.45826721675659,
+      "new_full": 34.817080291970804
+    },
+    "switches": {
+      "old_max": 106,
+      "new_max": 106,
+      "old_full": 39,
+      "new_full": 39
+    },
+    "stateChanges": {
+      "old_max": 106,
+      "new_max": 106,
+      "old_full": null,
+      "new_full": 40
+    },
+    "raw_state_changes": {
+      "old_max": 358,
+      "new_max": 358,
+      "old_full": 157,
+      "new_full": 157
+    },
+    "avg_months_between": {
+      "old_max": 6.80188679245283,
+      "new_max": 6.80188679245283,
+      "old_full": null,
+      "new_full": 7.0256410256410255
+    },
+    "avg_wchange": {
+      "old_max": 19.86164210692052,
+      "new_max": 19.188559297253725,
+      "old_full": null,
+      "new_full": 20.384358974358975
+    }
+  }
+}

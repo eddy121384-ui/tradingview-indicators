@@ -1,0 +1,177 @@
+{
+  "issue": 183,
+  "defect": {
+    "file": "indicators/macro-pressure-map/research/issue_178_backtest.mjs",
+    "function": "loadTiers()",
+    "line": 40,
+    "defective_read": "cb[c[0]] = c[1]   // column 1 = opportunity_score",
+    "correct_read": "cb[c[0]] = c[2]   // column 2 = cash_bias",
+    "effect": "CMIN_BIAS[cash-bias] lookup undefined -> bias-minimum scaling never fires",
+    "affected_states": [
+      "G_Low/I_Low",
+      "G_Neutral/I_Low"
+    ],
+    "buggy_gross_exposure": {
+      "G_Low/I_Low": 102.99999999999999,
+      "G_Neutral/I_Low": 109
+    },
+    "corrected_gross_exposure": {
+      "G_Low/I_Low": 100.00000000000001,
+      "G_Neutral/I_Low": 100
+    },
+    "other_states_identical": true,
+    "matrix_reproduction": {
+      "corrected_engine_reads_cash_bias_reproduces_frozen_matrix_exactly": true,
+      "buggy_engine_reads_opportunity_score_reproduces_frozen_matrix_exactly": false,
+      "corrected_mismatches": 0,
+      "buggy_mismatches": 17,
+      "buggy_mismatch_cells": [
+        [
+          "G_Low/I_Low",
+          [
+            "sp500",
+            "nasdaq",
+            "russell",
+            "treasury2y",
+            "treasury10y",
+            "longtreasury",
+            "gold",
+            "cash"
+          ]
+        ],
+        [
+          "G_Neutral/I_Low",
+          [
+            "sp500",
+            "nasdaq",
+            "russell",
+            "treasury2y",
+            "treasury10y",
+            "longtreasury",
+            "gold",
+            "oil",
+            "cash"
+          ]
+        ]
+      ]
+    }
+  },
+  "parent_artifacts_modified": false,
+  "parents_unmodified_all": true,
+  "issue_178": {
+    "old_cagr": 0.08847451667221562,
+    "corrected_cagr": 0.08754741451678028,
+    "delta_pp": -0.09271021554353442,
+    "old_vol": 0.07208889292980289,
+    "corrected_vol": 0.07084768698676548,
+    "old_maxdd": -0.17369976128207787,
+    "corrected_maxdd": -0.17038136359474054,
+    "old_sharpe": 0.5913004299827651,
+    "corrected_sharpe": 0.5884341713007546,
+    "turnover_old_ann": 35.0402340638043,
+    "turnover_corrected_ann": 33.85277035521045,
+    "verdict": "state_weight_policy_candidate_revalidated"
+  },
+  "issue_180": {
+    "verdict": "tradable_implementation_revalidated",
+    "fails": 0,
+    "gauges": {
+      "g1_cagr_gap_pp": {
+        "value": 0.40342996865245784,
+        "threshold": "abs<=1.0",
+        "pass": true
+      },
+      "g2_te_pct": {
+        "value": 1.013710525378483,
+        "threshold": "<=2.5",
+        "pass": true
+      },
+      "g3_maxdd_gap_pp": {
+        "value": 0.5850504661492395,
+        "threshold": ">=-5.0",
+        "pass": true
+      },
+      "g4_cost_drag_pct": {
+        "value": 0.006946100000000002,
+        "threshold": "<=0.4",
+        "pass": true
+      },
+      "g5_state_rank_kept": {
+        "value": true,
+        "threshold": "best+worst unchanged",
+        "pass": true,
+        "rank_A": [
+          "G_High/I_Neutral",
+          "G_Low/I_Low",
+          "G_Neutral/I_Low",
+          "G_Neutral/I_Neutral",
+          "G_Low/I_Neutral",
+          "G_High/I_High",
+          "G_High/I_Low",
+          "G_Neutral/I_High",
+          "G_Low/I_High"
+        ],
+        "rank_B": [
+          "G_High/I_Neutral",
+          "G_Low/I_Low",
+          "G_Low/I_Neutral",
+          "G_Neutral/I_Low",
+          "G_Neutral/I_Neutral",
+          "G_High/I_High",
+          "G_High/I_Low",
+          "G_Neutral/I_High",
+          "G_Low/I_High"
+        ]
+      },
+      "g6_defensive_vol_worse_pp": {
+        "value": 0.45260268547366866,
+        "threshold": "<=2.0",
+        "pass": true
+      }
+    }
+  },
+  "issue_182": {
+    "old_verdict": "v66_tactical_overlay_candidate_supported",
+    "old_gate_values": {
+      "cagr_gap_pp": -0.3110035298276692,
+      "sharpe_gap": 0.011325457538783557,
+      "maxdd_gap_pp": 1.3209953365677651,
+      "incr_turnover_pp": 21.179911279407055,
+      "top1_share": null,
+      "benefit_positive": false,
+      "worst_seg_pp": -0.6507149998973949,
+      "worst_state_pp": -0.6688106936487841
+    },
+    "corrected_verdict": "v66_tactical_overlay_candidate_supported",
+    "corrected_gate_values": {
+      "cagr_gap_pp": -0.3110035298276692,
+      "sharpe_gap": 0.011325457538783557,
+      "maxdd_gap_pp": 1.3209953365677651,
+      "incr_turnover_pp": 21.179911279407055,
+      "top1_share": null,
+      "benefit_positive": false,
+      "worst_seg_pp": -0.6507149998973949,
+      "worst_state_pp": -0.6688106936487841
+    },
+    "corrected_gates": {
+      "g1_cagr": true,
+      "g2_sharpe": true,
+      "g3_maxdd": true,
+      "g4_turnover": true,
+      "g5_concentration": true,
+      "g6_segment": true,
+      "g7_state": true
+    },
+    "fails": 0,
+    "true_pure_tactical_C_minus_A_pp": -0.3110035298276692,
+    "baseline_alignment_proof": {
+      "research_matched": 232,
+      "research_mismatches": 0,
+      "tradable_matched": 232,
+      "tradable_mismatches": 0,
+      "gross_violations": [],
+      "pass": true
+    }
+  },
+  "overall_verdict": "allocation_lineage_repair_complete"
+}

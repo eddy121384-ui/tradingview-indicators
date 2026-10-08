@@ -1,0 +1,28 @@
+{
+  "issue": 183,
+  "phase": "C",
+  "research": {
+    "n_transitions": 36,
+    "n_inside": 172,
+    "n_outside": 60,
+    "mean_inside": -0.00032565122373674245,
+    "mean_outside": -0.0000049275084970196745,
+    "freq_inside": {
+      "risk-on": 30,
+      "risk-off": 114,
+      "neutral": 28
+    }
+  },
+  "tradable": {
+    "n_transitions": 36,
+    "n_inside": 172,
+    "n_outside": 60,
+    "mean_inside": -0.00035780161141884116,
+    "mean_outside": -0.000025163211604059053,
+    "freq_inside": {
+      "risk-on": 30,
+      "risk-off": 114,
+      "neutral": 28
+    }
+  }
+}

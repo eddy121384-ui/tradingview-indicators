@@ -1,0 +1,64 @@
+{
+  "issue": 183,
+  "phase": "C",
+  "describe": "original #182 S1/S2/S3 exactly; descriptive, never promoted",
+  "sensitivities": {
+    "S1_budget10": {
+      "params": {
+        "budget_pp": 10,
+        "lag_months": 1,
+        "cost_rate": 0.0002
+      },
+      "C": {
+        "n": 232,
+        "cagr": 0.07464883196206484,
+        "vol_ann": 0.06832098643417504,
+        "cash_excess_ann": 0.05854370788410157,
+        "sharpe_like": 0.8693162527330487,
+        "maxdd": -0.1377598094557123,
+        "worst_month": -0.06091152994261126,
+        "pos_frac": 0.6422413793103449,
+        "downside_vol": 0.039916587836453535
+      },
+      "incr_vs_primary_C_cagr_pp": -0.3579133006820445
+    },
+    "S2_lag2": {
+      "params": {
+        "budget_pp": 5,
+        "lag_months": 2,
+        "cost_rate": 0.0002
+      },
+      "C": {
+        "n": 231,
+        "cagr": 0.0781016329759614,
+        "vol_ann": 0.07365719605813975,
+        "cash_excess_ann": 0.06210382431329009,
+        "sharpe_like": 0.857229579057021,
+        "maxdd": -0.1587866291534361,
+        "worst_month": -0.06946277026533268,
+        "pos_frac": 0.645021645021645,
+        "downside_vol": 0.04400672136890036
+      },
+      "incr_vs_primary_C_cagr_pp": -0.01263319929238893
+    },
+    "S3_cost10bp": {
+      "params": {
+        "budget_pp": 5,
+        "lag_months": 1,
+        "cost_rate": 0.001
+      },
+      "C": {
+        "n": 232,
+        "cagr": 0.07773853572220446,
+        "vol_ann": 0.07299275638340737,
+        "cash_excess_ann": 0.06158710808819445,
+        "sharpe_like": 0.8576055048774349,
+        "maxdd": -0.1518661019861801,
+        "worst_month": -0.06144026239075425,
+        "pos_frac": 0.646551724137931,
+        "downside_vol": 0.043140937436055016
+      },
+      "incr_vs_primary_C_cagr_pp": -0.04894292466808281
+    }
+  }
+}

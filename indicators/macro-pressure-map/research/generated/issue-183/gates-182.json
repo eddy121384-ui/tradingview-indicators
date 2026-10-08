@@ -1,0 +1,50 @@
+{
+  "issue": 183,
+  "phase": "C",
+  "framework": "ORIGINAL #182 seven gates, thresholds unchanged",
+  "primary_panel": "tradable",
+  "values": {
+    "cagr_gap_pp": -0.3110035298276692,
+    "sharpe_gap": 0.011325457538783557,
+    "maxdd_gap_pp": 1.3209953365677651,
+    "incr_turnover_pp": 21.179911279407055,
+    "top1_share": null,
+    "benefit_positive": false,
+    "worst_seg_pp": -0.6507149998973949,
+    "worst_state_pp": -0.6688106936487841
+  },
+  "gates": {
+    "g1_cagr": true,
+    "g2_sharpe": true,
+    "g3_maxdd": true,
+    "g4_turnover": true,
+    "g5_concentration": true,
+    "g6_segment": true,
+    "g7_state": true
+  },
+  "fails": 0,
+  "verdict": "v66_tactical_overlay_candidate_supported",
+  "research_reference": {
+    "values": {
+      "cagr_gap_pp": -0.2716620102541256,
+      "sharpe_gap": 0.016745327746100713,
+      "maxdd_gap_pp": 1.476549801971383,
+      "incr_turnover_pp": 21.179911279407055,
+      "top1_share": null,
+      "benefit_positive": false,
+      "worst_seg_pp": -0.6195704656462908,
+      "worst_state_pp": -0.6695723244577935
+    },
+    "gates": {
+      "g1_cagr": true,
+      "g2_sharpe": true,
+      "g3_maxdd": true,
+      "g4_turnover": true,
+      "g5_concentration": true,
+      "g6_segment": true,
+      "g7_state": true
+    },
+    "fails": 0,
+    "verdict": "v66_tactical_overlay_candidate_supported"
+  }
+}

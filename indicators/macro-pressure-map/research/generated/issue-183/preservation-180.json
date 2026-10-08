@@ -1,0 +1,91 @@
+{
+  "issue": 183,
+  "phase": "B",
+  "gauges": {
+    "g1_cagr_gap_pp": {
+      "value": 0.40342996865245784,
+      "threshold": "abs<=1.0",
+      "pass": true
+    },
+    "g2_te_pct": {
+      "value": 1.013710525378483,
+      "threshold": "<=2.5",
+      "pass": true
+    },
+    "g3_maxdd_gap_pp": {
+      "value": 0.5850504661492395,
+      "threshold": ">=-5.0",
+      "pass": true
+    },
+    "g4_cost_drag_pct": {
+      "value": 0.006946100000000002,
+      "threshold": "<=0.4",
+      "pass": true
+    },
+    "g5_state_rank_kept": {
+      "value": true,
+      "threshold": "best+worst unchanged",
+      "pass": true,
+      "rank_A": [
+        "G_High/I_Neutral",
+        "G_Low/I_Low",
+        "G_Neutral/I_Low",
+        "G_Neutral/I_Neutral",
+        "G_Low/I_Neutral",
+        "G_High/I_High",
+        "G_High/I_Low",
+        "G_Neutral/I_High",
+        "G_Low/I_High"
+      ],
+      "rank_B": [
+        "G_High/I_Neutral",
+        "G_Low/I_Low",
+        "G_Low/I_Neutral",
+        "G_Neutral/I_Low",
+        "G_Neutral/I_Neutral",
+        "G_High/I_High",
+        "G_High/I_Low",
+        "G_Neutral/I_High",
+        "G_Low/I_High"
+      ]
+    },
+    "g6_defensive_vol_worse_pp": {
+      "value": 0.45260268547366866,
+      "threshold": "<=2.0",
+      "pass": true
+    }
+  },
+  "fails": 0,
+  "semantic_unresolved": false,
+  "verdict": "tradable_implementation_revalidated",
+  "strict_panel": [
+    "2006-06-01",
+    "2026-08-01"
+  ],
+  "strict_months": 240,
+  "te_ann": 0.01013710525378483,
+  "drag_ann": 0.00006946100000000002,
+  "rank_A": [
+    "G_High/I_Neutral",
+    "G_Low/I_Low",
+    "G_Neutral/I_Low",
+    "G_Neutral/I_Neutral",
+    "G_Low/I_Neutral",
+    "G_High/I_High",
+    "G_High/I_Low",
+    "G_Neutral/I_High",
+    "G_Low/I_High"
+  ],
+  "rank_B": [
+    "G_High/I_Neutral",
+    "G_Low/I_Low",
+    "G_Low/I_Neutral",
+    "G_Neutral/I_Low",
+    "G_Neutral/I_Neutral",
+    "G_High/I_High",
+    "G_High/I_Low",
+    "G_Neutral/I_High",
+    "G_Low/I_High"
+  ],
+  "defensive_vol_worse_pp": 0.45260268547366866
+}

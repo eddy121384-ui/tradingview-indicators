@@ -1,0 +1,110 @@
+{
+  "issue": 183,
+  "branch": "research/issue-183-allocation-lineage-repair",
+  "required_start_head": "57852112ce95913d48297b35f803a1583cbab314",
+  "defect": "issue_178_backtest.mjs loadTiers() read cash-bias.csv column 1 (opportunity_score) instead of column 2 (cash_bias)",
+  "affected_states": [
+    "G_Low/I_Low",
+    "G_Neutral/I_Low"
+  ],
+  "buggy_gross_exposure": {
+    "G_Low/I_Low": 102.99999999999999,
+    "G_Neutral/I_Low": 109
+  },
+  "corrected_gross_exposure": {
+    "G_Low/I_Low": 100.00000000000001,
+    "G_Neutral/I_Low": 100
+  },
+  "verdict_178": "state_weight_policy_candidate_revalidated",
+  "verdict_basis_178": {
+    "basis": "spec §4 comparative revalidation",
+    "old_policy_minus_neutral_gap_pp": 0.5163838532602272,
+    "new_policy_minus_neutral_gap_pp": 0.42367363771669275,
+    "rel_cagr_gap_pp": -0.09271021554353442,
+    "same_sign_as_buggy_run": true,
+    "maxdd_gap_pp": 0.33183976873373267,
+    "turnover_gap_pp": -1.187463708593846,
+    "applied_cash_range": [
+      5,
+      60
+    ],
+    "applied_gross_max_pct": 100,
+    "buggy_applied_cash_range": [
+      2,
+      60
+    ],
+    "buggy_applied_gross_max_pct": 109,
+    "no_cap_or_cash_violation": true,
+    "new_cap_or_cash_violations_vs_buggy_run": 0,
+    "availability_rule": "frozen matrix row when all sleeves have history; otherwise #178 computeWeights(state, available) with cash_bias read correctly (never missing-weight-to-Cash)",
+    "sensitivities_stable_within_1pp": true,
+    "verdict": "state_weight_policy_candidate_revalidated"
+  },
+  "verdict_180": "tradable_implementation_revalidated",
+  "verdict_182": "v66_tactical_overlay_candidate_supported",
+  "overall_verdict": "allocation_lineage_repair_complete",
+  "key_corrected_178": {
+    "cagr": 0.08754741451678028,
+    "vol_ann": 0.07084768698676548,
+    "sharpe_like": 0.5884341713007546,
+    "maxdd": -0.17038136359474054,
+    "worst_month": -0.07859162336865452,
+    "turnover_ann": 33.85277035521045,
+    "avg_family_weights": {
+      "equity": 41.024216099448736,
+      "rates": 24.756219523357935,
+      "real": 6.487248149731614,
+      "cash": 27.732316227461858
+    }
+  },
+  "key_corrected_182": {
+    "cagr_gap_pp": -0.3110035298276692,
+    "sharpe_gap": 0.011325457538783557,
+    "maxdd_gap_pp": 1.3209953365677651,
+    "incr_turnover_pp": 21.179911279407055,
+    "worst_seg_pp": -0.6507149998973949,
+    "worst_state_pp": -0.6688106936487841,
+    "benefit_positive": false,
+    "top1_share": null
+  },
+  "gates_182": {
+    "g1_cagr": true,
+    "g2_sharpe": true,
+    "g3_maxdd": true,
+    "g4_turnover": true,
+    "g5_concentration": true,
+    "g6_segment": true,
+    "g7_state": true
+  },
+  "gates_180": {
+    "g1_cagr_gap_pp": true,
+    "g2_te_pct": true,
+    "g3_maxdd_gap_pp": true,
+    "g4_cost_drag_pct": true,
+    "g5_state_rank_kept": true,
+    "g6_defensive_vol_worse_pp": true
+  },
+  "leverage_contribution_pp_per_yr": 0.09459275232860459,
+  "matrix_serialization_contribution_pp_per_yr": 0.000023660236696901585,
+  "total_repair_effect_pp_per_yr": 0.09461641256530147,
+  "matrix_reproduction": {
+    "corrected_engine_reproduces_frozen_matrix_exactly": true,
+    "buggy_engine_reproduces_frozen_matrix_exactly": false,
+    "corrected_mismatches": 0,
+    "buggy_mismatches": 17
+  },
+  "inputs_sha256": {
+    "issue-178/weight-matrix.csv": "b9d0b18823001b7425fd1adab9cd908af291cafedb3f6b89e5c70fc54c8ab9cb",
+    "issue-178/backtest-monthly.csv": "0bcb86d117851caeb563050ff86978318ac0a92e53e4003027c44d58446e9563",
+    "issue-180/proxy-monthly-returns.csv": "b11fbf8bb9fde8b5cb0bc45fd0ea2d8494511a458691639165c86328755a27e4",
+    "issue-180/proxy-map.csv": "8909c300646162d7c071ea4e595343302d9489fd0312eb846030b170bc8091f7",
+    "issue-182/tactical-timeline.csv": "a7f60836fe91918f8549958b10d44a42915df145a56516d8633fa48a08022223",
+    "issue-182/overlay-weights.csv": "1c7e9d2d31de68414c18f0e8db2dea1a6a3db579dbd83bf64c0a0f0baa8cce8d",
+    "issue-183/corrected-structural-monthly.csv": "53d2853e90c717574a0d8d6400327b7f6df86ffaf5ce9ee80217c7ef7bf81978",
+    "issue-183/corrected-implementation-monthly.csv": "82a39c9d96deb3d48c02f8431e49d86565aedb5093b425b7a1416cb29095ed3f",
+    "issue-183/corrected-overlay-monthly.csv": "ed3da50b20d7a666fd33365e2b2beafc60b386cefa160bf21aa1c270974f1669"
+  },
+  "parents_unmodified": true,
+  "v66_payload_unchanged": true,
+  "production_authorized": false
+}
