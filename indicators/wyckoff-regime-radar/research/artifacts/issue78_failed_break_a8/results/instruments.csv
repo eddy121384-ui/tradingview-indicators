@@ -1,0 +1,9 @@
+family,instrument,source,bars,eligible_bars,first_date,last_date,f0_bull_events,f0_bear_events,raw_bull_events,raw_bear_events,nonreclaim_events
+FX,EURUSD,issue-55 canonical static D1,2400,2381,2012-12-04,2022-03-04,41,41,70,78,66
+FX,USDJPY,issue-55 canonical static D1,2400,2381,2012-12-04,2022-03-04,29,39,85,57,74
+FX,GBPUSD,issue-55 canonical static D1,2400,2381,2012-12-04,2022-03-04,43,37,74,79,73
+FX,AUDUSD,issue-55 canonical static D1,2400,2381,2012-12-04,2022-03-04,44,35,69,84,74
+RATES,US2Y,Bloomberg USGG2YR Index yield OHLC 1998-2026,7473,7242,1998-01-01,2026-08-31,97,103,232,191,223
+RATES,US5Y,Bloomberg USGG5YR Index yield OHLC 1998-2026,7473,7438,1998-01-01,2026-08-31,121,112,237,219,223
+RATES,US10Y,Bloomberg USGG10YR Index yield OHLC 1998-2026,7473,7450,1998-01-01,2026-08-31,117,102,236,230,247
+RATES,US30Y,Bloomberg USGG30YR Index yield OHLC 1998-2026,7473,7432,1998-01-01,2026-08-31,123,126,235,240,226

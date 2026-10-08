@@ -1,0 +1,27 @@
+{
+  "integrity": {
+    "issue": 78,
+    "study": "Failed-Break Cross-Market Symmetry A8",
+    "role": "transport replication; not fresh final validation",
+    "classifier_blob": "1eec08e791403453853b589373bb2270c508c3bb",
+    "horizons": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "min_cell_events": 5,
+    "min_family_instruments": 3,
+    "oos4_touched": false,
+    "oos5_touched": false
+  },
+  "frozen_design": {
+    "event": "A7 F0 verbatim (levels, 3-bar window, timing, dedup)",
+    "controls": "A6 raw T0 + non-reclaimed, mutually exclusive",
+    "normalization": "frozen sym_atr; no volume gate (preregistered)"
+  },
+  "notes": [
+    "Quote/yield series used exactly as stored; never inverted.",
+    "Family aggregates are one-instrument-one-vote, never pooled."
+  ]
+}

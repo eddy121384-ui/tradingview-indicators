@@ -1,0 +1,52 @@
+{
+  "instruments": [
+    {
+      "name": "EURUSD",
+      "family": "FX",
+      "file": "data/frozen/issue-55-eurusd-static-d1.csv",
+      "source": "issue-55 canonical static D1"
+    },
+    {
+      "name": "USDJPY",
+      "family": "FX",
+      "file": "data/frozen/issue-55-usdjpy-static-d1.csv",
+      "source": "issue-55 canonical static D1"
+    },
+    {
+      "name": "GBPUSD",
+      "family": "FX",
+      "file": "data/frozen/issue-55-gbpusd-static-d1.csv",
+      "source": "issue-55 canonical static D1"
+    },
+    {
+      "name": "AUDUSD",
+      "family": "FX",
+      "file": "data/frozen/issue-55-audusd-static-d1.csv",
+      "source": "issue-55 canonical static D1"
+    },
+    {
+      "name": "US2Y",
+      "family": "RATES",
+      "file": "artifacts/issue78_failed_break_a8/rates_snapshot/raw/USGG2YR.csv.gz",
+      "source": "Bloomberg USGG2YR Index yield OHLC 1998-2026"
+    },
+    {
+      "name": "US5Y",
+      "family": "RATES",
+      "file": "artifacts/issue78_failed_break_a8/rates_snapshot/raw/USGG5YR.csv.gz",
+      "source": "Bloomberg USGG5YR Index yield OHLC 1998-2026"
+    },
+    {
+      "name": "US10Y",
+      "family": "RATES",
+      "file": "artifacts/issue78_failed_break_a8/rates_snapshot/raw/USGG10YR.csv.gz",
+      "source": "Bloomberg USGG10YR Index yield OHLC 1998-2026"
+    },
+    {
+      "name": "US30Y",
+      "family": "RATES",
+      "file": "artifacts/issue78_failed_break_a8/rates_snapshot/raw/USGG30YR.csv.gz",
+      "source": "Bloomberg USGG30YR Index yield OHLC 1998-2026"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "issue": 78,
+  "study": "failed-break cross-market symmetry A8",
+  "frozen_fx": [
+    {
+      "pair": "EURUSD",
+      "file": "data/frozen/issue-55-eurusd-static-d1.csv",
+      "frozen_sha256": "990f805bc5856b4256d33375efa69a76b0f619021094548e75bd6edfa7721089",
+      "rows": 2400,
+      "start": "2012-12-04",
+      "end": "2022-03-04",
+      "quote": "as-quoted, never inverted"
+    },
+    {
+      "pair": "USDJPY",
+      "file": "data/frozen/issue-55-usdjpy-static-d1.csv",
+      "frozen_sha256": "4bb03153cd94814bff9759ac43fddc9e71c7c0d59c5f837219c42e860cabc71c",
+      "rows": 2400,
+      "start": "2012-12-04",
+      "end": "2022-03-04",
+      "quote": "as-quoted, never inverted"
+    },
+    {
+      "pair": "GBPUSD",
+      "file": "data/frozen/issue-55-gbpusd-static-d1.csv",
+      "frozen_sha256": "229b9c748c26226495432bc56e802ba8b17563a623775bdbc05627bfc49665c9",
+      "rows": 2400,
+      "start": "2012-12-04",
+      "end": "2022-03-04",
+      "quote": "as-quoted, never inverted"
+    },
+    {
+      "pair": "AUDUSD",
+      "file": "data/frozen/issue-55-audusd-static-d1.csv",
+      "frozen_sha256": "e66d77f181107fd3538e4adfa97e8470c3345e3d6e2a68fd4217fec101ac258b",
+      "rows": 2400,
+      "start": "2012-12-04",
+      "end": "2022-03-04",
+      "quote": "as-quoted, never inverted"
+    }
+  ],
+  "frozen_rates": [
+    {
+      "tenor": "US2Y",
+      "bloomberg": "USGG2YR Index",
+      "space": "yield"
+    },
+    {
+      "tenor": "US5Y",
+      "bloomberg": "USGG5YR Index",
+      "space": "yield"
+    },
+    {
+      "tenor": "US10Y",
+      "bloomberg": "USGG10YR Index",
+      "space": "yield"
+    },
+    {
+      "tenor": "US30Y",
+      "bloomberg": "USGG30YR Index",
+      "space": "yield"
+    }
+  ],
+  "rates_fields": [
+    "PX_OPEN",
+    "PX_HIGH",
+    "PX_LOW",
+    "PX_LAST"
+  ],
+  "rates_window": {
+    "start": "1998-01-01",
+    "end": "2026-08-31"
+  },
+  "normalization": "issue119 contract v2 (OHLC range repair, diagnostics retained)",
+  "note": "German/Japanese benchmarks excluded per prereg scope (US four suffice). FX worktree restored byte-exact 2026-10-08 (CRLF trap); disk SHAs verified against canonical manifest."
+}
