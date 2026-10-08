@@ -1,0 +1,4 @@
+dim,stocks_with_both_bins,low_bars,high_bars,atlas_ready_bars,low_bar_share,high_bar_share,adequate_stocks,adequate_bar_share,pass
+d3,261,254938,223628,790629,0.32244959393090816,0.2828482132580515,True,True,True
+d3_rob,256,270983,217014,790629,0.34274356240411114,0.2744827219846477,True,True,True
+d4,263,234870,240423,790629,0.2970672717545144,0.3040907935327442,True,True,True

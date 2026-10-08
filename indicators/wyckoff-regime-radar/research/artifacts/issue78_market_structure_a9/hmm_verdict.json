@@ -1,0 +1,9 @@
+{
+  "verdict": "HMM_UNSTABLE",
+  "reason": "dominant-bin agreement 0.250, NMI 0.632",
+  "K": 5,
+  "n_reproducible": 4,
+  "C": 0.25,
+  "C_definition": "share of reproducible states whose train and eval dominant Atlas bins agree",
+  "nmi_state_atlas": 0.6324181136612316
+}

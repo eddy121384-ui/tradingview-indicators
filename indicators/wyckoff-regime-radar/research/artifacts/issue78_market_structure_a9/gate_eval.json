@@ -1,0 +1,382 @@
+{
+  "gates": {
+    "d3": {
+      "dim": "d3",
+      "label": "D3 Compression/Expansion (primary: RV20)",
+      "G1_novelty": false,
+      "G1_detail": {
+        "d3_rv_vs_struct": {
+          "mean_spearman": -0.2401429804730499,
+          "mean_mi_nats": 0.18498109723228454,
+          "pass": false
+        },
+        "d3_rv_vs_ext": {
+          "mean_spearman": 0.09561227005051338,
+          "mean_mi_nats": 0.1463418688462878,
+          "pass": false
+        }
+      },
+      "G2_breadth": true,
+      "G2_detail": {
+        "dim": "d3",
+        "stocks_with_both_bins": 261,
+        "low_bars": 254938,
+        "high_bars": 223628,
+        "atlas_ready_bars": 790629,
+        "low_bar_share": 0.32244959393090816,
+        "high_bar_share": 0.2828482132580515,
+        "adequate_stocks": true,
+        "adequate_bar_share": true,
+        "pass": true
+      },
+      "G3_temporal_sleeve_stability": true,
+      "G3_detail": {
+        "abs_1": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "abs_10": {
+          "adequate_blocks": 5,
+          "blocks_same_sign": 5,
+          "adequate_sleeves": 3,
+          "sleeves_same_sign": 3,
+          "pass": true
+        },
+        "abs_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "abs_5": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "fvol_10": {
+          "adequate_blocks": 5,
+          "blocks_same_sign": 5,
+          "adequate_sleeves": 3,
+          "sleeves_same_sign": 3,
+          "pass": true
+        },
+        "fvol_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "fvol_5": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "mae_10": {
+          "adequate_blocks": 5,
+          "blocks_same_sign": 4,
+          "adequate_sleeves": 3,
+          "sleeves_same_sign": 3,
+          "pass": true
+        },
+        "mae_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "mfe_10": {
+          "adequate_blocks": 5,
+          "blocks_same_sign": 5,
+          "adequate_sleeves": 3,
+          "sleeves_same_sign": 3,
+          "pass": true
+        },
+        "mfe_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        }
+      },
+      "G4_path_separation": true,
+      "G4_separated_properties": [
+        "abs_1",
+        "abs_10",
+        "abs_20",
+        "abs_5",
+        "fvol_10",
+        "fvol_20",
+        "fvol_5",
+        "mae_10",
+        "mae_20",
+        "mfe_10",
+        "mfe_20"
+      ],
+      "G5_core2_conditioning": true,
+      "G5_detail": {
+        "abs_10": {
+          "adequate_cores": 4,
+          "cores_same_sign": 4,
+          "need": 3,
+          "pass": true
+        },
+        "fvol_10": {
+          "adequate_cores": 4,
+          "cores_same_sign": 4,
+          "need": 3,
+          "pass": true
+        },
+        "mae_10": {
+          "adequate_cores": 4,
+          "cores_same_sign": 4,
+          "need": 3,
+          "pass": true
+        },
+        "mfe_10": {
+          "adequate_cores": 4,
+          "cores_same_sign": 4,
+          "need": 3,
+          "pass": true
+        }
+      },
+      "separated_property_count": 11,
+      "classification": "REJECT_REDUNDANT"
+    },
+    "d3_rob": {
+      "dim": "d3_rob",
+      "label": "D3 robustness (NATR20)",
+      "G1_novelty": false,
+      "G1_detail": {
+        "d3_natr_vs_struct": {
+          "mean_spearman": -0.37089482256079065,
+          "mean_mi_nats": 0.24534320724779232,
+          "pass": false
+        },
+        "d3_natr_vs_ext": {
+          "mean_spearman": 0.05185413362536458,
+          "mean_mi_nats": 0.1426896766632574,
+          "pass": false
+        }
+      },
+      "G2_breadth": true,
+      "G2_detail": {
+        "dim": "d3_rob",
+        "stocks_with_both_bins": 256,
+        "low_bars": 270983,
+        "high_bars": 217014,
+        "atlas_ready_bars": 790629,
+        "low_bar_share": 0.34274356240411114,
+        "high_bar_share": 0.2744827219846477,
+        "adequate_stocks": true,
+        "adequate_bar_share": true,
+        "pass": true
+      },
+      "G3_temporal_sleeve_stability": true,
+      "G3_detail": {
+        "abs_1": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "abs_10": {
+          "adequate_blocks": 5,
+          "blocks_same_sign": 5,
+          "adequate_sleeves": 3,
+          "sleeves_same_sign": 3,
+          "pass": true
+        },
+        "abs_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "abs_5": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "cont_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "fvol_10": {
+          "adequate_blocks": 5,
+          "blocks_same_sign": 5,
+          "adequate_sleeves": 3,
+          "sleeves_same_sign": 3,
+          "pass": true
+        },
+        "fvol_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "fvol_5": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "lret_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "mae_10": {
+          "adequate_blocks": 5,
+          "blocks_same_sign": 3,
+          "adequate_sleeves": 3,
+          "sleeves_same_sign": 3,
+          "pass": false
+        },
+        "mae_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "mfe_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        },
+        "rev_20": {
+          "adequate_blocks": 0,
+          "blocks_same_sign": 0,
+          "adequate_sleeves": 0,
+          "sleeves_same_sign": 0,
+          "pass": false
+        }
+      },
+      "G4_path_separation": true,
+      "G4_separated_properties": [
+        "abs_1",
+        "abs_10",
+        "abs_20",
+        "abs_5",
+        "cont_20",
+        "fvol_10",
+        "fvol_20",
+        "fvol_5",
+        "lret_20",
+        "mae_10",
+        "mae_20",
+        "mfe_20",
+        "rev_20"
+      ],
+      "G5_core2_conditioning": true,
+      "G5_detail": {
+        "abs_10": {
+          "adequate_cores": 4,
+          "cores_same_sign": 4,
+          "need": 3,
+          "pass": true
+        },
+        "fvol_10": {
+          "adequate_cores": 4,
+          "cores_same_sign": 4,
+          "need": 3,
+          "pass": true
+        },
+        "mae_10": {
+          "adequate_cores": 4,
+          "cores_same_sign": 4,
+          "need": 3,
+          "pass": true
+        }
+      },
+      "separated_property_count": 13,
+      "classification": "REJECT_REDUNDANT"
+    },
+    "d4": {
+      "dim": "d4",
+      "label": "D4 Path Efficiency (ER20)",
+      "G1_novelty": false,
+      "G1_detail": {
+        "d4_vs_struct": {
+          "mean_spearman": 0.03129366924583824,
+          "mean_mi_nats": 0.08912538864546553,
+          "pass": true
+        },
+        "d4_vs_ext": {
+          "mean_spearman": 0.6068594620364183,
+          "mean_mi_nats": 0.3455774018524113,
+          "pass": false
+        }
+      },
+      "G2_breadth": true,
+      "G2_detail": {
+        "dim": "d4",
+        "stocks_with_both_bins": 263,
+        "low_bars": 234870,
+        "high_bars": 240423,
+        "atlas_ready_bars": 790629,
+        "low_bar_share": 0.2970672717545144,
+        "high_bar_share": 0.3040907935327442,
+        "adequate_stocks": true,
+        "adequate_bar_share": true,
+        "pass": true
+      },
+      "G3_temporal_sleeve_stability": false,
+      "G3_detail": {},
+      "G4_path_separation": false,
+      "G4_separated_properties": [],
+      "G5_core2_conditioning": false,
+      "G5_detail": {},
+      "separated_property_count": 0,
+      "classification": "REJECT_REDUNDANT"
+    }
+  },
+  "classification": {
+    "D3": "REJECT_REDUNDANT",
+    "D4": "REJECT_REDUNDANT",
+    "D3_primary_rv20": "REJECT_REDUNDANT",
+    "D3_robustness_natr20": "REJECT_REDUNDANT",
+    "d3_rule": {
+      "headline": "REJECT_REDUNDANT",
+      "primary_classification": "REJECT_REDUNDANT",
+      "robustness_classification": "REJECT_REDUNDANT",
+      "weaker_of": "d3",
+      "note": "D3 headline = the weaker of the primary (RV20) and robustness (NATR20) classifications (frozen anti-cherry-pick rule)."
+    }
+  },
+  "thresholds": {
+    "novel_spearman_max": 0.5,
+    "novel_mi_max": 0.1,
+    "path_sd_frac": 0.1,
+    "path_sign_frac": 0.6,
+    "trim_frac": 0.01,
+    "low_max": 0.3,
+    "high_min": 0.7,
+    "min_agg_stocks": 30,
+    "min_cell_bars": 5
+  }
+}

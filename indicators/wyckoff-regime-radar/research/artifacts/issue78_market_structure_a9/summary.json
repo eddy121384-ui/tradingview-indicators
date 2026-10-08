@@ -1,0 +1,78 @@
+{
+  "integrity": {
+    "issue": 78,
+    "child_issue": 181,
+    "study": "Market Structure Dimension Audit A9",
+    "role": "post-outcome architecture discovery; not fresh OOS validation",
+    "prereg_commit": "df160addf8b363eba05c076a3372ab95f475d838",
+    "classifier_blob": "1eec08e791403453853b589373bb2270c508c3bb",
+    "figi_set_sha256": "017e9360402afa002dc0970088649e7c411c4f02333dec550f2432be3c0dd701",
+    "universe_sha256": "f6753c46788accf4a90e8d917fe2863a96e2c70006355ee5fdd1c326d4cb7712",
+    "manifest_sha256": "8c836bf71b034a96a37fdaa865099d64f469616882e7fa2da9af60b24d02e09a",
+    "stocks": 300,
+    "smoke_limit": 0,
+    "raw_files": 300,
+    "raw_failures": 0,
+    "atlas_ready_bars": 790629,
+    "horizons": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "blocks": [
+      "ALL",
+      "2000-2004",
+      "2005-2009",
+      "2010-2014",
+      "2015-2019",
+      "2020-2026"
+    ],
+    "sleeves": [
+      "large",
+      "mid",
+      "small"
+    ],
+    "oos4_touched": false,
+    "oos5_touched": false
+  },
+  "frozen": {
+    "d1": "dir_structure (A1, reused)",
+    "d2": "extension = |dir_velocity| (A1, reused)",
+    "d3_primary": "rv20 = 20d realised log-return vol, causal 252-pct",
+    "d3_robustness": "natr20 = gap-safe WilderATR20/close, causal 252-pct",
+    "d4": "ER20, causal 252-pct",
+    "bins": "LOW<=0.30, HIGH>=0.70 descriptive; Core-2 hard 80/20 for conditioning",
+    "hmm": "pooled diagonal-Gaussian EM, K in {2,3,4,5} by train BIC, split 2015-01-01",
+    "hmm_selected_K": 5,
+    "hmm_train_end": "2015-01-01"
+  },
+  "classification": {
+    "D3": "REJECT_REDUNDANT",
+    "D4": "REJECT_REDUNDANT",
+    "D3_primary_rv20": "REJECT_REDUNDANT",
+    "D3_robustness_natr20": "REJECT_REDUNDANT",
+    "d3_rule": {
+      "headline": "REJECT_REDUNDANT",
+      "primary_classification": "REJECT_REDUNDANT",
+      "robustness_classification": "REJECT_REDUNDANT",
+      "weaker_of": "d3",
+      "note": "D3 headline = the weaker of the primary (RV20) and robustness (NATR20) classifications (frozen anti-cherry-pick rule)."
+    }
+  },
+  "hmm_verdict": {
+    "verdict": "HMM_UNSTABLE",
+    "reason": "dominant-bin agreement 0.250, NMI 0.632",
+    "K": 5,
+    "n_reproducible": 4,
+    "C": 0.25,
+    "C_definition": "share of reproducible states whose train and eval dominant Atlas bins agree",
+    "nmi_state_atlas": 0.6324181136612316
+  },
+  "notes": [
+    "OOS3 is deliberately reused discovery under the 2026-10-05 amendment.",
+    "No result from this run is fresh OOS evidence.",
+    "HMM is a benchmark; the Atlas stays primary.",
+    "OOS4 replication is conditional on an OOS3 KEEP candidate."
+  ]
+}
