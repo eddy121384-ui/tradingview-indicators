@@ -1,0 +1,243 @@
+{
+  "issue": 183,
+  "suite": "research/test_issue_183_asserts.mjs (independent; does not import the replay)",
+  "spec_commit": "149bf0bc994b523033f540f60c286df51dcb4866",
+  "total": 58,
+  "pass": 58,
+  "fail": 0,
+  "results": [
+    {
+      "name": "1. frozen #178 matrix reproduced exactly by corrected engine (cash_bias, 2dp largest-remainder)",
+      "pass": true
+    },
+    {
+      "name": "1b. defective engine (opportunity_score) does NOT reproduce the matrix",
+      "pass": true
+    },
+    {
+      "name": "2. all 9 frozen state rows sum to 100%",
+      "pass": true
+    },
+    {
+      "name": "bug. exactly the 2 documented states lever up (Low-Low, Neutral-Low)",
+      "pass": true
+    },
+    {
+      "name": "bug. Low-Low buggy gross exposure = 103%",
+      "pass": true
+    },
+    {
+      "name": "bug. Neutral-Low buggy gross exposure = 109% (non-cash 107% + 2% cash floor)",
+      "pass": true
+    },
+    {
+      "name": "bug. corrected gross exposure = 100% for both",
+      "pass": true
+    },
+    {
+      "name": "bug. all other 7 states identical buggy vs corrected",
+      "pass": true
+    },
+    {
+      "name": "3. corrected structural monthly stream: no gross exposure > 100%",
+      "pass": true
+    },
+    {
+      "name": "3a. corrected structural monthly stream: gross exposure is exactly 100% in all 721 applied months",
+      "pass": true
+    },
+    {
+      "name": "3b. corrected applied Cash respects the frozen [2,60] band in every month",
+      "pass": true
+    },
+    {
+      "name": "3b2. corrected stream reproduces the frozen #178 allocation dates 1:1",
+      "pass": true
+    },
+    {
+      "name": "3c. defective engine reproduces the frozen #178 return series exactly (like-for-like counterfactual)",
+      "pass": true
+    },
+    {
+      "name": "3d. corrected #182 overlay stream: gross(A) <= 100%",
+      "pass": true
+    },
+    {
+      "name": "3e. corrected #182 overlay stream: gross(B) <= 100%",
+      "pass": true
+    },
+    {
+      "name": "3f. corrected #180 implementation stream reproduces frozen #180 exactly (alloc_state/impl_pre/impl_post/turnover, 721/721 months)",
+      "pass": true
+    },
+    {
+      "name": "3g. corrected #180 research A leg equals the corrected structural stream (only repaired quantity)",
+      "pass": true
+    },
+    {
+      "name": "4. no negative weights in the frozen matrix",
+      "pass": true
+    },
+    {
+      "name": "4b. no negative weights in any independently reconstructed overlay row",
+      "pass": true
+    },
+    {
+      "name": "5. frozen zero cells remain exactly zero in the matrix",
+      "pass": true
+    },
+    {
+      "name": "5b. frozen zero cells stay zero under the tactical overlay",
+      "pass": true
+    },
+    {
+      "name": "6. B-2 confirmation rule unchanged (corrected #183 == frozen #178 == frozen #180 timeline)",
+      "pass": true
+    },
+    {
+      "name": "7. #180 proxy map unchanged",
+      "pass": true
+    },
+    {
+      "name": "8. #180 cost model unchanged: impl_post == impl_pre - turnover x 2bp",
+      "pass": true
+    },
+    {
+      "name": "9. #180 execution timing unchanged (B-2 confirmed state applied to month m)",
+      "pass": true
+    },
+    {
+      "name": "10. V6.6 payload bytes unchanged (gzip + csv SHA256 vs frozen manifest)",
+      "pass": true
+    },
+    {
+      "name": "11. V6.6 classification unchanged: frozen band rule reproduces every stored signal",
+      "pass": true
+    },
+    {
+      "name": "11b. V6.6 classification file byte-identical to the #182-pinned SHA",
+      "pass": true
+    },
+    {
+      "name": "12. +/-5pp tactical budget unchanged (reconstruction == frozen #182 overlay-weights.csv)",
+      "pass": true
+    },
+    {
+      "name": "12b. equity delta never exceeds the frozen 5pp budget and Cash never breaches the 2% floor",
+      "pass": true
+    },
+    {
+      "name": "13. tactical timing unchanged (V6.6 state m-1 applied to month m, no look-ahead)",
+      "pass": true
+    },
+    {
+      "name": "13b. look-ahead detector: same-month signal is NOT the one applied",
+      "pass": true
+    },
+    {
+      "name": "14. original #182 gate thresholds unchanged in the frozen parent source",
+      "pass": true
+    },
+    {
+      "name": "14b. corrected #182 verdict derives from the ORIGINAL seven gates",
+      "pass": true
+    },
+    {
+      "name": "15. all pinned #177/#178/#180/#182 artifacts unmodified since their parent commits",
+      "pass": true
+    },
+    {
+      "name": "15b. manifest records the required starting HEAD",
+      "pass": true
+    },
+    {
+      "name": "15c. parent final commits recorded correctly",
+      "pass": true
+    },
+    {
+      "name": "C1. corrected #182 PRIMARY (tradable) A/B/C identical to #182: the repaired leg was already matrix-based",
+      "pass": true
+    },
+    {
+      "name": "C2. corrected #182 primary C-A equals the original #182 primary C-A (true pure tactical effect, not a bug artifact)",
+      "pass": true
+    },
+    {
+      "name": "C3. corrected #182 RESEARCH leg DOES change (repair materially affects the research baseline)",
+      "pass": true
+    },
+    {
+      "name": "B1. corrected #180 tradable legs (B/C) identical to #180: the tradable implementation was already matrix-based",
+      "pass": true
+    },
+    {
+      "name": "B2. corrected #180 research A leg changes vs #180 (buggy parent baseline replaced)",
+      "pass": true
+    },
+    {
+      "name": "A1. corrected #178 policy metrics differ from the buggy frozen run",
+      "pass": true
+    },
+    {
+      "name": "A2. corrected #178 is worse on CAGR but better on MaxDD/vol (no performance restoration)",
+      "pass": true
+    },
+    {
+      "name": "16. deterministic rerun reproduces every repaired artifact byte-for-byte",
+      "pass": true
+    },
+    {
+      "name": "16b. replay self-check reports 2 identical in-process runs",
+      "pass": true
+    },
+    {
+      "name": "17. workspace changes are confined to Issue #183 artifacts",
+      "pass": true
+    },
+    {
+      "name": "17a. no pre-existing TRACKED file (production, Pine, parent artifact) is modified or staged",
+      "pass": true
+    },
+    {
+      "name": "17b. no production Pine file changed since the #182 final commit",
+      "pass": true
+    },
+    {
+      "name": "17c. no untracked/modified Pine files",
+      "pass": true
+    },
+    {
+      "name": "V. summary records production_authorized=false",
+      "pass": true
+    },
+    {
+      "name": "V2. three parent verdicts + overall verdict are from the frozen allowed sets",
+      "pass": true
+    },
+    {
+      "name": "V3. #178 verdict basis implements every spec section 4 operand",
+      "pass": true
+    },
+    {
+      "name": "V4. revalidated verdict follows from those operands",
+      "pass": true
+    },
+    {
+      "name": "V5. panel provenance recorded (721 applied of 724 calendar months, 3 inherited drops)",
+      "pass": true
+    },
+    {
+      "name": "V6. repair delta is robust to the frozen annualisation choice",
+      "pass": true
+    },
+    {
+      "name": "V7. #180 semantic mapping resolved by data (not hardcoded)",
+      "pass": true
+    },
+    {
+      "name": "V8. inputs_sha256 keys resolve to real workspace paths",
+      "pass": true
+    }
+  ],
+  "production_authorized": false
+}

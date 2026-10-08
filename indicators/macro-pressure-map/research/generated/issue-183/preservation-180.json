@@ -87,5 +87,30 @@
     "G_Neutral/I_High",
     "G_Low/I_High"
   ],
-  "defensive_vol_worse_pp": 0.45260268547366866
+  "defensive_vol_worse_pp": 0.45260268547366866,
+  "implementation_identity_180": {
+    "source": "generated/issue-180/implementation-monthly.csv",
+    "compared_months": 721,
+    "diffs": {
+      "alloc_state": 0,
+      "impl_pre": 0,
+      "impl_post": 0,
+      "turnover": 0,
+      "rows": 0
+    },
+    "pass": true,
+    "note": "frozen #180 length/cols, only research_ret differs (repaired)"
+  },
+  "implementation_cash": {
+    "all_months_range": [
+      5,
+      100
+    ],
+    "strict_panel_range": [
+      5,
+      48.5
+    ],
+    "gross_exposure": "exactly 100% in every row (missing-proxy weight is carried as Cash)",
+    "note": "Inherited frozen #180 behaviour: before a tradable proxy exists its weight is held in Cash with no CASH_MAX re-derivation (issue_180_backtest.mjs lines 97/111-120). The spec section 2 Cash-in-[2,60] assert therefore applies to the #178 POLICY stream (Phase A), whose applied cash is [5,60]; on the #180 strict panel (2006-06+) no proxy is missing, so the implementation cash band is inside [2,60] as well."
+  }
 }

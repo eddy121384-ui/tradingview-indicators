@@ -199,6 +199,32 @@ const BUG_GROSS = {};
   const badB = ov.filter((r) => +r.gross_B > 100 + 1e-6);
   ok("3d. corrected #182 overlay stream: gross(A) <= 100%", badA.length === 0, `violations=${badA.length}`);
   ok("3e. corrected #182 overlay stream: gross(B) <= 100%", badB.length === 0, `violations=${badB.length}`);
+  // Lineage identity: #180's implementation legs do not consume the defective
+  // engine at all, so the corrected #180 stream must reproduce the frozen #180
+  // matrix/availability columns EXACTLY, with only the research A leg repaired.
+  {
+    const f180 = rowsCSV("generated/issue-180/implementation-monthly.csv");
+    const c183 = rowsCSV("generated/issue-183/corrected-implementation-monthly.csv");
+    let cells = 0, rowMis = 0;
+    for (let i = 0; i < f180.length; i++) {
+      if (!c183[i] || f180[i].date !== c183[i].date) { rowMis++; continue; }
+      for (const k of ["alloc_state", "impl_pre", "impl_post", "turnover"]) {
+        const a = f180[i][k], b = c183[i][k];
+        const same = /^-?[0-9.eE+-]+$/.test(a) && /^-?[0-9.eE+-]+$/.test(b) ? Math.abs(+a - +b) <= 1e-12 : a === b;
+        if (!same) cells++;
+      }
+    }
+    ok("3f. corrected #180 implementation stream reproduces frozen #180 exactly (alloc_state/impl_pre/impl_post/turnover, 721/721 months)", cells === 0 && rowMis === 0 && f180.length === c183.length, `cells=${cells} rows=${rowMis} n=${c183.length}`);
+    let aMis = 0, aWorst = 0;
+    for (let i = 0; i < c183.length; i++) {
+      const s = rows[i];
+      if (!s || s.date !== c183[i].date) continue;
+      const d = Math.abs(+s.port_ret - +c183[i].research_ret);
+      if (d > 1e-12) aMis++;
+      aWorst = Math.max(aWorst, d);
+    }
+    ok("3g. corrected #180 research A leg equals the corrected structural stream (only repaired quantity)", aMis === 0, `mismatches=${aMis} worst=${aWorst}`);
+  }
   const negMatrix = STATES.flatMap((st) => ORDER.concat(["cash"]).filter((s) => SW.get(st)[s] < -1e-9).map((s) => st + ":" + s));
   ok("4. no negative weights in the frozen matrix", negMatrix.length === 0, JSON.stringify(negMatrix.slice(0, 5)));
   // independent overlay reconstruction must never go negative
@@ -434,6 +460,23 @@ function prevMonth(d) { let y = +d.slice(0, 4), m = +d.slice(5, 7) - 1; if (m < 
     ["v66_tactical_overlay_candidate_supported", "v66_tactical_overlay_candidate_suggestive", "v66_tactical_overlay_not_supported"].includes(s.verdict_182) &&
     ["allocation_lineage_repair_complete", "allocation_lineage_repair_complete_with_material_changes", "allocation_lineage_repair_failed"].includes(s.overall_verdict),
     JSON.stringify({ a: s.verdict_178, b: s.verdict_180, c: s.verdict_182, o: s.overall_verdict }));
+  // spec section 4 basis must carry every operand, evaluated independently
+  const vb = s.verdict_basis_178;
+  ok("V3. #178 verdict basis implements every spec section 4 operand",
+    Math.abs(vb.rel_cagr_gap_pp) <= 1.0 && vb.same_sign_as_buggy_run === true && vb.maxdd_gap_pp >= -3.0 &&
+    Math.abs(vb.turnover_gap_pp) <= 5.0 && vb.no_new_cap_or_cash_violation === true && vb.sensitivities_stable_within_1pp === true,
+    JSON.stringify(vb));
+  ok("V4. revalidated verdict follows from those operands", s.verdict_178 === "state_weight_policy_candidate_revalidated");
+}
+{
+  // panel provenance: dropped months and annualisation robustness must be stated
+  const pp = jG("performance-178.json").panel_provenance;
+  ok("V5. panel provenance recorded (721 applied of 724 calendar months, 3 inherited drops)",
+    pp && pp.applied_months === 721 && pp.calendar_span_months === 724 && pp.dropped_months.length === 3,
+    JSON.stringify(pp && { a: pp.applied_months, c: pp.calendar_span_months, d: pp.dropped_months }));
+  ok("V6. repair delta is robust to the frozen annualisation choice", pp && pp.delta_robust_to_annualization === true, JSON.stringify(pp && { a: pp.cagr_delta_pp_applied_basis, c: pp.cagr_delta_pp_calendar_basis }));
+  ok("V7. #180 semantic mapping resolved by data (not hardcoded)", jG("preservation-180.json").semantic_unresolved === false);
+  ok("V8. inputs_sha256 keys resolve to real workspace paths", Object.keys(jG("summary.json").inputs_sha256).every((k) => k.startsWith("generated/")));
 }
 
 console.log(`\nissue-183 independent assertions: ${pass} pass, ${fail} fail`);

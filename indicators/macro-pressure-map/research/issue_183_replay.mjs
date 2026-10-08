@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Issue #183 — corrected lineage replay: Phase A (#178), Phase B (#180), Phase C (#182).
+// Issue #183 ??corrected lineage replay: Phase A (#178), Phase B (#180), Phase C (#182).
 //
 // Frozen contract: indicators/macro-pressure-map/research/issue-183-lineage-repair-spec.md
 //
@@ -15,7 +15,7 @@
 //
 // Reads are CRLF-normalised: the historical parents were produced on LF content
 // and this Windows checkout converts text files to CRLF. Numeric parsing is
-// CRLF-safe, but string fields (V6.6 `signal`) are not — normalising to LF makes
+// CRLF-safe, but string fields (V6.6 `signal`) are not ??normalising to LF makes
 // this replay byte-identical to the parent semantics.
 
 import fs from "node:fs";
@@ -206,7 +206,7 @@ const MATRIX_REPRO = {};
     fixed_reproduces_frozen_matrix_exactly: MATRIX_REPRO.fixed_engine_reads_cash_bias.total_mismatches === 0,
     buggy_reproduces_frozen_matrix_exactly: MATRIX_REPRO.buggy_engine_reads_opportunity_score.total_mismatches === 0,
   };
-  console.log("matrix reproduction mismatches — corrected engine:", MATRIX_REPRO.fixed_engine_reads_cash_bias.total_mismatches,
+  console.log("matrix reproduction mismatches ??corrected engine:", MATRIX_REPRO.fixed_engine_reads_cash_bias.total_mismatches,
     "| buggy engine (#178 defect):", MATRIX_REPRO.buggy_engine_reads_opportunity_score.total_mismatches);
   if (!MATRIX_REPRO.conclusion.fixed_reproduces_frozen_matrix_exactly) { console.error("FAIL-STOP: corrected engine does not reproduce frozen matrix"); process.exit(1); }
 }
@@ -307,6 +307,13 @@ function implRet(sl, ym) {
   const v = rPx.get(ym)?.[sl];
   return fin(v) ? v : NaN;
 }
+// Frozen #180 semantic mapping: each sleeve must have a declared proxy in
+// generated/issue-180/proxy-map.csv AND its own return column in
+// proxy-monthly-returns.csv. Issue #183 reuses that map unchanged, so #180's one
+// open semantic question is resolved BY DATA rather than asserted by hand.
+const PROXY_MAP = Object.fromEntries(readLF(`${G180}/proxy-map.csv`).trim().split("\n").slice(1).map((l) => { const c = l.split(","); return [c[0].replace(/"/g, ""), c[2].replace(/"/g, "")]; }));
+const PX_COLUMNS = new Set(readLF(`${G180}/proxy-monthly-returns.csv`).split("\n")[0].split(","));
+const semanticUnresolvedDerived = ORDER.some((s) => !PROXY_MAP[s] || !PX_COLUMNS.has(s));
 
 // ---------------------------------------------------------------- metrics
 function downsideVol(rs) {
@@ -342,17 +349,26 @@ function metricsJSON(m) { const o = {}; for (const k of Object.keys(m)) o[k] = f
 function matrixW(state, avail) {
   const base = SW.get(state);
   // Issue #183 makes the frozen matrix the authoritative state allocation. When
-  // every sleeve has history — every #178 full-universe month and every #180 and
-  // #182 month — the frozen row is used VERBATIM.
+  // every sleeve has history ??every #178 full-universe month and every #180 and
+  // #182 month ??the frozen row is used VERBATIM.
   if (ORDER.every((s) => avail.has(s))) return { ...base };
   // Partial history (early max-history months only): #178's own documented
   // availability rule governs (issue_178_backtest.mjs computeWeights restricted
   // to available sleeves, with the correctly-read cash_bias). Absorbing the
   // missing-sleeve weight into Cash instead would breach the frozen CASH_MAX=60
-  // and is NOT what the frozen parent does; spec §2 asserts Cash in [2,60] in
+  // and is NOT what the frozen parent does; spec section 2 asserts Cash in [2,60] in
   // every applied month, which this branch satisfies.
   return fixedWeights(state, avail);
 }
+// Frozen #180/#182 IMPLEMENTATION rule: the matrix row verbatim. The caller then
+// applies #180's own documented treatment for sleeves whose tradable proxy has
+// no history at that date ??`missing proxy weight -> Cash`
+// (issue_180_backtest.mjs lines 97/111-120) ??with NO CASH_MAX re-derivation,
+// because a proxy that does not exist yet cannot be bought. This is deliberately
+// a DIFFERENT availability rule from #178's policy rule above; the two parents
+// differ by design and Issue #183 must not silently unify them. Starting 2006-06
+// (the #180 strict panel) every proxy has history, so this rule is inert there.
+const frozenRow = (st) => ({ ...SW.get(st) });
 
 // generic corrected structural runner (B-2 timeline; frozen #178 turnover semantics)
 function runCorrected(wfn, months, retFn) {
@@ -413,7 +429,7 @@ function avgFamily(R) {
 }
 
 // =============================================================================
-//  PHASE A — corrected #178 structural replay
+//  PHASE A ??corrected #178 structural replay
 // =============================================================================
 const FULL = { lo: "2000-09-01", hi: "2023-06-01" };
 const inFull = (m) => m.date >= FULL.lo && m.date <= FULL.hi;
@@ -491,15 +507,15 @@ function sensRun178(kind) {
   return out;
 }
 // =============================================================================
-//  PHASE B — corrected #180 tradable implementation
+//  PHASE B ??corrected #180 tradable implementation
 // =============================================================================
 function runImpl(retFn, months, costRate, lagMonths, wfn) {
-  const A = [], B = [], C = [], turn = [], states = [];
+  const A = [], B = [], C = [], turn = [], states = [], Ws = [];
   let prevW = null;
   const eff = months.map((m, i) => (i - lagMonths >= 0 ? months[i - lagMonths].dhState : null));
   for (let i = 0; i < months.length; i++) {
     const m = months[i], st = eff[i];
-    if (st === null || st === undefined) { A.push(NaN); B.push(NaN); C.push(NaN); turn.push(0); states.push(null); continue; }
+    if (st === null || st === undefined) { A.push(NaN); B.push(NaN); C.push(NaN); turn.push(0); states.push(null); Ws.push(null); continue; }
     const ym = m.date.slice(0, 7);
     const base = wfn(st, new Set(ORDER.filter((s) => fin(retFn(s, ym)))));
     const w = { ...base };
@@ -528,14 +544,15 @@ function runImpl(retFn, months, costRate, lagMonths, wfn) {
     }
     A.push(oka ? pa : NaN);
     states.push(st);
+    Ws.push({ ...w });
     prevW = { ...w };
   }
-  return { A, B, C, turn, states };
+  return { A, B, C, turn, states, Ws };
 }
 const STRICT_LO = "2006-06-01";
 
 // =============================================================================
-//  PHASE C — corrected #182 frozen V6.6 overlay
+//  PHASE C ??corrected #182 frozen V6.6 overlay
 // =============================================================================
 const V66 = new Map(), V66G = new Map();
 {
@@ -833,7 +850,7 @@ function compute() {
   const avgFamA = avgFamily(rAmax);
 
   // old-vs-corrected series + leverage isolation
-  // Full-precision corrected engine (reads cash_bias) — separates the Cash-bias
+  // Full-precision corrected engine (reads cash_bias) ??separates the Cash-bias
   // repair effect from the frozen 2dp largest-remainder matrix serialization.
   const rAfixed = runCorrected((st, av) => fixedWeights(st, av), tlB2, researchRet);
   const perfFixed = metrics(rAfixed.rets, rAfixed.cashr);
@@ -943,7 +960,7 @@ function compute() {
     for (const pn of ["max_history", "full_universe"]) cmpA.sensitivity[sk][pn] = cmpMetA(oldSens[sk][pn].met, newSensA[sk][pn].met);
   }
 
-  // corrected #178 verdict (spec §4 comparative-revalidation framing)
+  // corrected #178 verdict (spec section 4 comparative-revalidation framing)
   const oldGap178 = oldPerf.max_history.policy.met.cagr - oldBench.max_history.neutral.met.cagr;
   const newGap178 = newPerfA.max_history.policy.cagr - newBenchA.max_history.neutral.cagr;
   const relCagrGap = newGap178 - oldGap178;
@@ -955,12 +972,15 @@ function compute() {
   const outOfBand = (rt, w) => rt.cash < CASH_MIN - 1e-9 || rt.cash > CASH_MAX + 1e-9 || w > 100 + 1e-9;
   const capsOk178 = rowsA.every((r) => !outOfBand(r.corr, r.gross_corr));
   const newViolations178 = rowsA.filter((r) => outOfBand(r.corr, r.gross_corr) && !outOfBand(r.buggy, r.gross_buggy)).map((r) => r.date);
+  const noNewViolation178 = newViolations178.length === 0;
+  const sensitivitiesStable178 = Object.values(cmpA.sensitivity).every((s) => Math.abs(s.max_history.cagr.delta) <= 0.01);
+  // spec section 4 basis, implemented literally and in the frozen order.
   let verdict178;
   if (maxddGap178 < -0.10) verdict178 = "state_weight_policy_candidate_invalidated_by_repair";
-  else if (Math.abs(relCagrGap) <= 0.01 && sameSign178 && maxddGap178 >= -0.03 && Math.abs(turnGap178) <= 5 && capsOk178) verdict178 = "state_weight_policy_candidate_revalidated";
+  else if (Math.abs(relCagrGap) <= 0.01 && sameSign178 && maxddGap178 >= -0.03 && Math.abs(turnGap178) <= 5 && noNewViolation178 && sensitivitiesStable178) verdict178 = "state_weight_policy_candidate_revalidated";
   else verdict178 = "state_weight_policy_candidate_revalidated_with_limitations";
   const verdictBasis178 = {
-    basis: "spec §4 comparative revalidation",
+    basis: "spec section 4 comparative revalidation",
     old_policy_minus_neutral_gap_pp: oldGap178 * 100,
     new_policy_minus_neutral_gap_pp: newGap178 * 100,
     rel_cagr_gap_pp: relCagrGap * 100,
@@ -973,11 +993,38 @@ function compute() {
     buggy_applied_gross_max_pct: Math.max(...rowsA.map((r) => r.gross_buggy)),
     no_cap_or_cash_violation: capsOk178,
     new_cap_or_cash_violations_vs_buggy_run: newViolations178.length,
+    no_new_cap_or_cash_violation: noNewViolation178,
     availability_rule: "frozen matrix row when all sleeves have history; otherwise #178 computeWeights(state, available) with cash_bias read correctly (never missing-weight-to-Cash)",
-    sensitivities_stable_within_1pp: Object.values(cmpA.sensitivity).every((s) => Math.abs(s.max_history.cagr.delta) <= 0.01),
+    sensitivities_stable_within_1pp: sensitivitiesStable178,
     verdict: verdict178,
   };
 
+  // Panel provenance: the frozen parents SKIP months whose inputs are non-finite,
+  // so the headline CAGR annualises on 12/applied_months rather than the calendar
+  // span. Recorded here so the (inherited) inflation of absolute CAGR levels is
+  // stated, and so the repair delta can be shown to survive re-annualisation.
+  const appliedKeys = new Set(rowsA.map((r) => r.date.slice(0, 7)));
+  const spanKeys = [];
+  {
+    let y = Number(rowsA[0].date.slice(0, 4)), mo = Number(rowsA[0].date.slice(5, 7));
+    const ey = Number(rowsA[N - 1].date.slice(0, 4)), emo = Number(rowsA[N - 1].date.slice(5, 7));
+    while (y < ey || (y === ey && mo <= emo)) { spanKeys.push(`${y}-${String(mo).padStart(2, "0")}`); mo++; if (mo === 13) { mo = 1; y++; } }
+  }
+  const calCagr = (c) => (1 + c) ** (N / spanKeys.length) - 1;
+  const panelProvenance = {
+    first_applied_month: rowsA[0].date,
+    last_applied_month: rowsA[N - 1].date,
+    applied_months: N,
+    calendar_span_months: spanKeys.length,
+    dropped_months: spanKeys.filter((k) => !appliedKeys.has(k)),
+    dropped_reason: "inherited frozen-parent behaviour (issue_178_backtest.mjs skips months with non-finite macro/market inputs); not introduced by Issue #183",
+    annualization: `CAGR uses 12/${N} applied months, not the ${spanKeys.length}-month calendar span`,
+    cagr_old_calendar_time: calCagr(oldPerf.max_history.policy.met.cagr),
+    cagr_corrected_calendar_time: calCagr(newPerfA.max_history.policy.cagr),
+    cagr_delta_pp_applied_basis: (oldPerf.max_history.policy.met.cagr - newPerfA.max_history.policy.cagr) * 100,
+    cagr_delta_pp_calendar_basis: (calCagr(oldPerf.max_history.policy.met.cagr) - calCagr(newPerfA.max_history.policy.cagr)) * 100,
+    delta_robust_to_annualization: Math.abs((calCagr(oldPerf.max_history.policy.met.cagr) - calCagr(newPerfA.max_history.policy.cagr)) - (oldPerf.max_history.policy.met.cagr - newPerfA.max_history.policy.cagr)) * 100 < 0.01,
+  };
   out.phase_a = {
     old_performance: { max_history: oldPerf.max_history.policy.met, full_universe: oldPerf.full_universe.policy.met },
     corrected_performance: newPerfA,
@@ -986,6 +1033,7 @@ function compute() {
     state_means_corrected: newStateA, avg_family_weights_corrected: avgFamA,
     leverage_isolation: leverageIso,
     matrix_reproduction: MATRIX_REPRO,
+    panel_provenance: panelProvenance,
     old_buggy_identity: oldBuggyIdentity,
     corrected_full_precision_fixed_engine: { max_history: perfFixed },
     verdict_relative_gap: { rel_cagr_gap_vs_neutral: relCagrGap, maxdd_gap: maxddGap178, turnover_gap: turnGap178 },
@@ -999,7 +1047,7 @@ function compute() {
   files["old-vs-corrected-178.csv"] =
     "date,alloc_state,gross_exposure_buggy,gross_exposure_corrected,old_buggy_ret,corrected_ret,delta\n" +
     rowsA.map((r) => [r.date, r.state, r.gross_buggy.toFixed(6), r.gross_corr.toFixed(6), num(r.old_ret), num(r.new_ret), fin(r.old_ret) && fin(r.new_ret) ? (r.old_ret - r.new_ret) : ""].join(",")).join("\n") + "\n";
-  files["performance-178.json"] = JSON.stringify({ issue: 183, phase: "A", old: { max_history: oldPerf.max_history, full_universe: oldPerf.full_universe }, corrected: newPerfA, benchmarks_old: oldBench, benchmarks_corrected: newBenchA, benchmark_identity_errors: out.benchmark_identity_178.errors }, null, 2);
+  files["performance-178.json"] = JSON.stringify({ issue: 183, phase: "A", old: { max_history: oldPerf.max_history, full_universe: oldPerf.full_universe }, corrected: newPerfA, benchmarks_old: oldBench, benchmarks_corrected: newBenchA, benchmark_identity_errors: out.benchmark_identity_178.errors, panel_provenance: panelProvenance }, null, 2);
   files["comparison-178.json"] = JSON.stringify({ issue: 183, phase: "A", comparison: cmpA }, null, 2);
   files["era-178.json"] = JSON.stringify({ issue: 183, phase: "A", old: { max_history: oldEra.max_history, full_universe: oldEra.full_universe }, corrected: newEraA, comparison: cmpA.eras }, null, 2);
   files["state-level-178.csv"] = "state,n_months,buggy_gross,corrected_gross,old_mean,corrected_mean,delta_mean,contrib_to_cagr_diff_pp_yr,avg_equity,avg_rates,avg_real,avg_cash,mean_equity_buggy,mean_cash_buggy\n" +
@@ -1026,7 +1074,7 @@ function compute() {
 
   // ---------------- Phase B ----------------
   const sIdx = tlB2.map((m, i) => (m.date >= STRICT_LO ? i : -1)).filter((i) => i >= 0);
-  const RB = runImpl(implRet, tlB2, COST, 0, matrixW);
+  const RB = runImpl(implRet, tlB2, COST, 0, frozenRow);
   const cashB = tlB2.map((m) => researchRet("cash", m.date.slice(0, 7)));
   const sub = (arr) => sIdx.map((i) => arr[i]);
   const cIdx = sIdx.filter((i) => fin(RB.A[i]) && fin(RB.B[i]) && fin(RB.C[i]) && fin(cashB[i]));
@@ -1062,7 +1110,7 @@ function compute() {
     g6_defensive_vol_worse_pp: { value: defWorse, threshold: "<=2.0", pass: defWorse <= 2.0 },
   };
   const fails180 = Object.values(gauges180).filter((g) => !g.pass).length;
-  const semanticUnresolved = false; // #183 re-uses frozen #180 sleeve tracking classes
+  const semanticUnresolved = semanticUnresolvedDerived; // derived from the frozen #180 proxy map + return columns
   let verdict180;
   if (fails180 === 0) verdict180 = "tradable_implementation_revalidated";
   else if (fails180 <= 2 && !semanticUnresolved && te * 100 <= 4) verdict180 = "tradable_implementation_revalidated_with_limitations";
@@ -1111,7 +1159,7 @@ function compute() {
     for (const i of cIdx) {
       const m = tlB2[i], ym = m.date.slice(0, 7), st = RB.states[i];
       const px = (s) => (s === "nasdaq" ? oneqRet.get(ym) : implRet(s, ym));
-      const base = matrixW(st, new Set(ORDER.filter((s) => fin(px(s)))));
+      const base = frozenRow(st); // frozen #180 implementation rule (see frozenRow)
       const w = { ...base };
       let moved = 0;
       for (const s of ORDER) if (w[s] > 0 && !fin(px(s))) { moved += w[s]; w[s] = 0; }
@@ -1122,10 +1170,10 @@ function compute() {
       R1.push(pr - RB.turn[i] * COST); C1.push(cashB[i]);
     }
     sensB.ONEQ_nasdaq = metrics(R1, C1);
-    const r3 = runImpl(implRet, tlB2, COST_ALT, 0, matrixW);
+    const r3 = runImpl(implRet, tlB2, COST_ALT, 0, frozenRow);
     const R3 = cIdx.map((i) => r3.C[i]), C3 = cIdx.map((i) => cashB[i]);
     sensB.cost_10bp = metrics(R3, C3);
-    const r4 = runImpl(implRet, tlB2, COST, 1, matrixW);
+    const r4 = runImpl(implRet, tlB2, COST, 1, frozenRow);
     const R4 = cIdx.map((i) => r4.C[i]), C4 = cIdx.map((i) => cashB[i]);
     sensB.lag_1mo = metrics(R4, C4);
   }
@@ -1143,11 +1191,48 @@ function compute() {
   files["corrected-implementation-monthly.csv"] =
     "date,alloc_state,research_ret,impl_pre,impl_post,turnover\n" +
     tlB2.map((m, i) => [m.date, RB.states[i] ?? "", num(RB.A[i]), num(RB.B[i]), num(RB.C[i]), RB.turn[i]].join(",")).join("\n") + "\n";
-  files["preservation-180.json"] = JSON.stringify({ issue: 183, phase: "B", gauges: gauges180, fails: fails180, semantic_unresolved: semanticUnresolved, verdict: verdict180, strict_panel: out.phase_b.strict_panel, strict_months: sIdx.length, te_ann: te, drag_ann: dragAnnB, rank_A: rA180, rank_B: rB180, defensive_vol_worse_pp: defWorse }, null, 2);
   files["performance-180.json"] = JSON.stringify({ issue: 183, phase: "B", strict: { A: mAB, B: mBB, C: mCB }, benchmarks: benchNew180, benchmark_identity_errors: out.benchmark_identity_180.errors, sensitivities: sensB }, null, 2);
   files["state-implementation-183.csv"] = "state,n,research_mean,pre_mean,post_mean,drag,vol_pre,worst_pre\n" +
     Object.keys(sA).sort().map((st) => [st, sA[st].n, sA[st].mean, sB[st]?.mean ?? "", sC[st]?.mean ?? "", (sB[st]?.mean ?? NaN) - sA[st].mean, sB[st]?.vol ?? "", sB[st]?.worst ?? ""].join(",")).join("\n") + "\n";
   files["sensitivity-180.json"] = JSON.stringify({ issue: 183, phase: "B", describe: "original #180 sensitivities (descriptive only; primary never replaced)", sensitivities: sensB }, null, 2);
+
+  // FAIL-STOP lineage identity: the corrected #180 implementation stream must be
+  // byte-identical to the frozen #180 `implementation-monthly.csv` in every
+  // column the frozen parent produced from the matrix + proxy availability
+  // (alloc_state, impl_pre, impl_post, turnover) across all 721 max-history
+  // months. Only the A/research leg may differ (that is the repaired quantity).
+  {
+    const par = readLF(`${G180}/implementation-monthly.csv`).trim().split("\n");
+    const hdr = par[0].split(",");
+    const ci = Object.fromEntries(hdr.map((k, j) => [k, j]));
+    const rows180 = par.slice(1).map((l) => { const c = l.replace(/"/g, "").split(","); return c; });
+    const eq = (a, b) => (a === "" || b === "" ? a === b : Math.abs(parseFloat(a) - parseFloat(b)) <= 1e-12);
+    const diffs = { alloc_state: 0, impl_pre: 0, impl_post: 0, turnover: 0, rows: 0 };
+    for (let i = 0; i < tlB2.length; i++) {
+      const f = rows180[i];
+      if (!f || f[ci.date] !== tlB2[i].date) { diffs.rows++; continue; }
+      if ((RB.states[i] ?? "") !== f[ci.alloc_state]) diffs.alloc_state++;
+      const mine = [num(RB.B[i]), num(RB.C[i]), String(RB.turn[i])];
+      const theirs = [f[ci.impl_pre], f[ci.impl_post], f[ci.turnover]];
+      ["impl_pre", "impl_post", "turnover"].forEach((k, j) => { if (!eq(mine[j], theirs[j])) diffs[k]++; });
+    }
+    diffs.rows += Math.max(0, rows180.length - tlB2.length) + Math.max(0, tlB2.length - rows180.length);
+    const implIdOk = Object.values(diffs).every((v) => v === 0);
+    const implCash = RB.Ws.filter(Boolean).map((w) => w.cash);
+    const implCashStrict = sIdx.map((i) => RB.Ws[i]?.cash).filter((x) => x !== undefined);
+    out.phase_b.implementation_identity_180 = { source: "generated/issue-180/implementation-monthly.csv", compared_months: rows180.length, diffs, pass: implIdOk, note: "frozen #180 length/cols, only research_ret differs (repaired)" };
+    out.phase_b.implementation_cash = {
+      all_months_range: [Math.min(...implCash), Math.max(...implCash)],
+      strict_panel_range: [Math.min(...implCashStrict), Math.max(...implCashStrict)],
+      gross_exposure: "exactly 100% in every row (missing-proxy weight is carried as Cash)",
+      note: "Inherited frozen #180 behaviour: before a tradable proxy exists its weight is held in Cash with no CASH_MAX re-derivation (issue_180_backtest.mjs lines 97/111-120). The spec section 2 Cash-in-[2,60] assert therefore applies to the #178 POLICY stream (Phase A), whose applied cash is [5,60]; on the #180 strict panel (2006-06+) no proxy is missing, so the implementation cash band is inside [2,60] as well.",
+    };
+    console.log("Phase B frozen-#180 implementation identity:", JSON.stringify(diffs), implIdOk ? "PASS" : "FAIL");
+    console.log("Phase B applied cash:", JSON.stringify(out.phase_b.implementation_cash.all_months_range), "strict", JSON.stringify(out.phase_b.implementation_cash.strict_panel_range));
+    if (!implIdOk) { console.error("FAIL-STOP: corrected implementation stream does not reproduce frozen #180 (matrix+availability columns)"); process.exit(1); }
+  }
+
+  files["preservation-180.json"] = JSON.stringify({ issue: 183, phase: "B", gauges: gauges180, fails: fails180, semantic_unresolved: semanticUnresolved, verdict: verdict180, strict_panel: out.phase_b.strict_panel, strict_months: sIdx.length, te_ann: te, drag_ann: dragAnnB, rank_A: rA180, rank_B: rB180, defensive_vol_worse_pp: defWorse, implementation_identity_180: out.phase_b.implementation_identity_180, implementation_cash: out.phase_b.implementation_cash }, null, 2);
 
   // ---------------- Phase C ----------------
   const PR = runPanelC(researchRet, 5, 0, COST);
@@ -1228,7 +1313,7 @@ function compute() {
   files["alignment-183.json"] = JSON.stringify({ issue: 183, phase: "C", research: { aligned: pcR.v66.aligned, divergent: pcR.v66.divergent, cell_counts: pcR.v66.cell_counts }, tradable: { aligned: pcT.v66.aligned, divergent: pcT.v66.divergent, cell_counts: pcT.v66.cell_counts } }, null, 2);
   files["era-182-183.json"] = JSON.stringify({ issue: 183, phase: "C", research: pcR.era, tradable: pcT.era, old_182_reference: JSON.parse(readLF(`${G182}/era-stability.json`)) }, null, 2);
   files["sensitivity-183.json"] = JSON.stringify({ issue: 183, phase: "C", describe: "original #182 S1/S2/S3 exactly; descriptive, never promoted", sensitivities: sensC }, null, 2);
-  // spec §6 deliverable names (aliases of the split artifacts above; identical content)
+  // spec section 6 deliverable names (aliases of the split artifacts above; identical content)
   files["state-diagnostics.csv"] = files["state-diagnostics-183.csv"];
   files["era-report.json"] = JSON.stringify({ issue: 183, deliverable: "research/generated/issue-183/era-report.json", phase_a: JSON.parse(files["era-178.json"]), phase_c: JSON.parse(files["era-182-183.json"]) }, null, 2);
   files["transition-alignment.json"] = JSON.stringify({ issue: 183, deliverable: "research/generated/issue-183/transition-alignment.json", transition: JSON.parse(files["transition-183.json"]), alignment: JSON.parse(files["alignment-183.json"]) }, null, 2);
@@ -1279,7 +1364,7 @@ function compute() {
   manifest.policy_constants = {    issue_177_zero_cells: ZEROS, issue_178_baseline: BASE, issue_178_tier_multipliers: MULT,
     issue_178_sleeve_caps: SCAP, issue_178_family_caps: FCAP, issue_178_cash_min: CASH_MIN, issue_178_cash_max: CASH_MAX,
     issue_178_cash_bias_minimums: CMIN_BIAS, issue_178_rebalance: "B-2 confirmation",
-    issue_180_proxy_map: Object.fromEntries(readLF(`${G180}/proxy-map.csv`).trim().split("\n").slice(1).map((l) => { const c = l.split(","); return [c[0], c[1]]; })),
+    issue_180_proxy_map: PROXY_MAP,
     issue_180_cost_primary: COST, issue_180_cost_alt: COST_ALT,
     issue_182_v66_budget_pp: 5, issue_182_v66_bands: "+-10", issue_182_tactical_timing: "V6.6 state(m-1) -> month m",
     issue_182_gate_thresholds: { g1_cagr_pp: -0.50, g2_sharpe: -0.05, g3_maxdd_pp: -3.0, g4_incr_turnover_pp: 40.0, g5_top1_share: 0.60, g6_worst_seg_pp: -1.0, g7_worst_state_pp: -3.0 },
@@ -1330,7 +1415,7 @@ function compute() {
     },
     overall_verdict: null,
   };
-  // overall verdict (spec §4)
+  // overall verdict (spec section 4)
   const anyInvalid = [verdict178, verdict180, G.verdict].some((v) => /invalidated|not_supported/.test(v));
   const anyMaterial = !["state_weight_policy_candidate_revalidated", "tradable_implementation_revalidated", "v66_tactical_overlay_candidate_supported"].includes(verdict178) ||
     verdict180 !== "tradable_implementation_revalidated" || G.verdict !== "v66_tactical_overlay_candidate_supported" ||
@@ -1365,7 +1450,7 @@ function compute() {
       corrected_mismatches: MATRIX_REPRO.fixed_engine_reads_cash_bias.total_mismatches,
       buggy_mismatches: MATRIX_REPRO.buggy_engine_reads_opportunity_score.total_mismatches,
     },
-    inputs_sha256: { "issue-178/weight-matrix.csv": shaWt(`${G178}/weight-matrix.csv`), "issue-178/backtest-monthly.csv": shaWt(`${G178}/backtest-monthly.csv`), "issue-180/proxy-monthly-returns.csv": shaWt(`${G180}/proxy-monthly-returns.csv`), "issue-180/proxy-map.csv": shaWt(`${G180}/proxy-map.csv`), "issue-182/tactical-timeline.csv": shaWt(`${G182}/tactical-timeline.csv`), "issue-182/overlay-weights.csv": shaWt(`${G182}/overlay-weights.csv`), "issue-183/corrected-structural-monthly.csv": sha256(Buffer.from(files["corrected-structural-monthly.csv"])), "issue-183/corrected-implementation-monthly.csv": sha256(Buffer.from(files["corrected-implementation-monthly.csv"])), "issue-183/corrected-overlay-monthly.csv": sha256(Buffer.from(files["corrected-overlay-monthly.csv"])) },
+    inputs_sha256: { "generated/issue-178/weight-matrix.csv": shaWt(`${G178}/weight-matrix.csv`), "generated/issue-178/backtest-monthly.csv": shaWt(`${G178}/backtest-monthly.csv`), "generated/issue-180/proxy-monthly-returns.csv": shaWt(`${G180}/proxy-monthly-returns.csv`), "generated/issue-180/proxy-map.csv": shaWt(`${G180}/proxy-map.csv`), "generated/issue-182/tactical-timeline.csv": shaWt(`${G182}/tactical-timeline.csv`), "generated/issue-182/overlay-weights.csv": shaWt(`${G182}/overlay-weights.csv`), "generated/issue-183/corrected-structural-monthly.csv": sha256(Buffer.from(files["corrected-structural-monthly.csv"])), "generated/issue-183/corrected-implementation-monthly.csv": sha256(Buffer.from(files["corrected-implementation-monthly.csv"])), "generated/issue-183/corrected-overlay-monthly.csv": sha256(Buffer.from(files["corrected-overlay-monthly.csv"])) },
     parents_unmodified: manifest.parents_unmodified.all,
     v66_payload_unchanged: manifest.v66_payload.unchanged,
     production_authorized: false,

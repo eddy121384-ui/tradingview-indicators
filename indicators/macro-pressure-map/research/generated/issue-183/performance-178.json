@@ -498,5 +498,23 @@
       }
     }
   },
-  "benchmark_identity_errors": []
+  "benchmark_identity_errors": [],
+  "panel_provenance": {
+    "first_applied_month": "1966-05-01",
+    "last_applied_month": "2026-08-01",
+    "applied_months": 721,
+    "calendar_span_months": 724,
+    "dropped_months": [
+      "2025-10",
+      "2025-11",
+      "2026-01"
+    ],
+    "dropped_reason": "inherited frozen-parent behaviour (issue_178_backtest.mjs skips months with non-finite macro/market inputs); not introduced by Issue #183",
+    "annualization": "CAGR uses 12/721 applied months, not the 724-month calendar span",
+    "cagr_old_calendar_time": 0.08809221720470806,
+    "cagr_corrected_calendar_time": 0.08716927927585161,
+    "cagr_delta_pp_applied_basis": 0.09271021554353442,
+    "cagr_delta_pp_calendar_basis": 0.09229379288564488,
+    "delta_robust_to_annualization": true
+  }
 }
