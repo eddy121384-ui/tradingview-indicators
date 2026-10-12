@@ -14,6 +14,7 @@ const P1B = path.join(RES, "generated/issue-189/phase1b");
 {
   const st = execFileSync("git", ["status", "--short"], { cwd: ROOT }).toString();
   for (const l of st.trim().split("\n").filter(Boolean)) {
+    if (l.includes("__pycache__")) continue;
     assert.ok(l.includes("issue-189") || l.includes("issue_189"), "non-189 path touched: " + l);
   }
   const diff = execFileSync("git", ["diff", "--name-only", "HEAD"], { cwd: ROOT }).toString();

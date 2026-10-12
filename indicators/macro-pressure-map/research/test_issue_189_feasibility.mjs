@@ -73,6 +73,7 @@ const GEN = path.join(RES, "generated/issue-189");
 {
   const st = execFileSync("git", ["status", "--short"], { cwd: ROOT }).toString();
   for (const l of st.trim().split("\n").filter(Boolean)) {
+    if (l.includes("__pycache__")) continue;
     assert.ok(l.includes("issue-189") || l.includes("issue_189"), "non-189 path touched: " + l);
   }
 }

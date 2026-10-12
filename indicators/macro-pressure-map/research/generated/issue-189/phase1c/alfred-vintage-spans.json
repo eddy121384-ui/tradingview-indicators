@@ -1,0 +1,313 @@
+{
+  "fetched_at": "2026-10-12T09:46:32.352Z",
+  "pulls": [
+    {
+      "series": "INDPRO",
+      "requested_vintage": "1960-01-01",
+      "http": 200,
+      "returned_column": "INDPRO_19600101",
+      "obs_first": "1919-01-01",
+      "obs_last": "1959-11-01",
+      "obs_rows": 491,
+      "bytes": 7083,
+      "sha256": "886f0ea48271eb2c17199417aaf37acdcf6f0421d217572c5d84446cf92075c4"
+    },
+    {
+      "series": "INDPRO",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "INDPRO_20000801",
+      "obs_first": "1921-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 954,
+      "bytes": 17168,
+      "sha256": "7654e3f708cf636d7d3c6e6c900c2b4e770018ecb1416d2a7b79a75e5065dd86"
+    },
+    {
+      "series": "INDPRO",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "INDPRO_20060601",
+      "obs_first": "1921-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 1024,
+      "bytes": 19318,
+      "sha256": "c063761d5f38125cc64908aba41383e577bb628357fcbd10ebbc540ec3a4d74e"
+    },
+    {
+      "series": "UNRATE",
+      "requested_vintage": "1960-03-15",
+      "http": 200,
+      "returned_column": "UNRATE_19600315",
+      "obs_first": "1948-01-01",
+      "obs_last": "1960-02-01",
+      "obs_rows": 146,
+      "bytes": 2223,
+      "sha256": "38c30c7ba309776ed58bf65629713de8d8d80b73185b0048ad24a38a9cbb1020"
+    },
+    {
+      "series": "UNRATE",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "UNRATE_20000801",
+      "obs_first": "1948-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 630,
+      "bytes": 9493,
+      "sha256": "dee45d0b05ebfdd48eb1cf5ed83cc5484767f5610cbddf03e80ea98e17d94a57"
+    },
+    {
+      "series": "UNRATE",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "UNRATE_20060601",
+      "obs_first": "1948-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 700,
+      "bytes": 10543,
+      "sha256": "161d8f2a78b747804e2011870e77f5414e9337ed429a2c5e2dca478e68e26dbe"
+    },
+    {
+      "series": "PERMIT",
+      "requested_vintage": "1999-08-17",
+      "http": 200,
+      "returned_column": "PERMIT_19990817",
+      "obs_first": "1960-01-01",
+      "obs_last": "1999-07-01",
+      "obs_rows": 475,
+      "bytes": 7569,
+      "sha256": "e2a44e84f8193489e0902240cfbaa9fbf86ade46a67d6d51cc78b1170e1643c7"
+    },
+    {
+      "series": "PERMIT",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "PERMIT_20000801",
+      "obs_first": "1960-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 486,
+      "bytes": 7745,
+      "sha256": "5c78615748a290fe389bee0b6c242160a759d3b60e3376c1a00993af62ebeeeb"
+    },
+    {
+      "series": "PERMIT",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "PERMIT_20060601",
+      "obs_first": "1960-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 556,
+      "bytes": 9977,
+      "sha256": "64da02265a7ad35ed8336e7c3ed79a8db434caf8b07630e6e5c4045c96480fd3"
+    },
+    {
+      "series": "DSPI",
+      "requested_vintage": "1979-12-18",
+      "http": 200,
+      "returned_column": "DSPI_19791218",
+      "obs_first": "1959-01-01",
+      "obs_last": "1979-11-01",
+      "obs_rows": 251,
+      "bytes": 4361,
+      "sha256": "e6152cd4b8d0d260ca870246948f532c61f3aaf97dca6ea523a3fb98bcab4c7d"
+    },
+    {
+      "series": "DSPI",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "DSPI_20000801",
+      "obs_first": "1959-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 498,
+      "bytes": 8818,
+      "sha256": "3ed2cc92331381769b4ef50484617ebf4a6eaa0711d867402704c2cbd601d1fb"
+    },
+    {
+      "series": "DSPI",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "DSPI_20060601",
+      "obs_first": "1959-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 568,
+      "bytes": 10078,
+      "sha256": "67f1bc9dab8a02719acef9ea1e2adf2695ec6747947c7d813258d2463f134fa6"
+    },
+    {
+      "series": "PCEPI",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "PCEPI_20000801",
+      "obs_first": "1959-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 498,
+      "bytes": 8546,
+      "sha256": "38c59548e435fa150879f799c3d4e5d0dfe344c8db64f5c4a48bd0314a50a1a4"
+    },
+    {
+      "series": "PCEPI",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "PCEPI_20060601",
+      "obs_first": "1959-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 568,
+      "bytes": 10326,
+      "sha256": "08a09c6a23106caac9c4863877330b97b5ef53498cd42a8d3a48715789bf7718"
+    },
+    {
+      "series": "CPIAUCSL",
+      "requested_vintage": "1972-07-21",
+      "http": 200,
+      "returned_column": "CPIAUCSL_19720721",
+      "obs_first": "1970-12-01",
+      "obs_last": "1972-06-01",
+      "obs_rows": 19,
+      "bytes": 377,
+      "sha256": "6a0183873907bc94b2b81a0b592e98bc739c1efe7eeaa0f87aaecfc92f92d35e"
+    },
+    {
+      "series": "CPIAUCSL",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "CPIAUCSL_20000801",
+      "obs_first": "1947-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 642,
+      "bytes": 11152,
+      "sha256": "8a294870dbc801ec25763482ae5d51d1dcc9721b53873e66681ebea462921ecf"
+    },
+    {
+      "series": "CPIAUCSL",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "CPIAUCSL_20060601",
+      "obs_first": "1947-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 712,
+      "bytes": 12412,
+      "sha256": "f80c552793adee277a249c1aadce71662451a39b60cc5e6f1837244688f32509"
+    },
+    {
+      "series": "PCEPILFE",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "PCEPILFE_20000801",
+      "obs_first": "1959-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 498,
+      "bytes": 8549,
+      "sha256": "e96cc98626561d81ba0d0d84aca06521a094d64d605d93a94757b0a4b10c67ff"
+    },
+    {
+      "series": "PCEPILFE",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "PCEPILFE_20060601",
+      "obs_first": "1959-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 568,
+      "bytes": 10328,
+      "sha256": "c664e8dbc316aa4d15c2c22336feb4fc22ee3b638fefb15b839cdde5dc146677"
+    },
+    {
+      "series": "PPIACO",
+      "requested_vintage": "1996-12-11",
+      "http": 200,
+      "returned_column": "PPIACO_19961211",
+      "obs_first": "1946-01-01",
+      "obs_last": "1996-11-01",
+      "obs_rows": 611,
+      "bytes": 9975,
+      "sha256": "cd4a05fe56a91c4eb0e7fad8d8dffec2d33948b54bc1f24f2189ad7974950a03"
+    },
+    {
+      "series": "PPIACO",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "PPIACO_20000801",
+      "obs_first": "1913-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 1050,
+      "bytes": 17042,
+      "sha256": "ac3aba6f8b785d2efdefbaa652768b9d804a8c05c3c53549dd92717ed742b8d0"
+    },
+    {
+      "series": "PPIACO",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "PPIACO_20060601",
+      "obs_first": "1913-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 1120,
+      "bytes": 18232,
+      "sha256": "9a7fd9c34718d57513ab1ec5a6615203258491d0a35a6f1fd6cfb6431ff278fe"
+    },
+    {
+      "series": "AHETPI",
+      "requested_vintage": "1999-08-06",
+      "http": 200,
+      "returned_column": "AHETPI_19990806",
+      "obs_first": "1964-01-01",
+      "obs_last": "1999-07-01",
+      "obs_rows": 427,
+      "bytes": 6975,
+      "sha256": "cee1d15d172ab7fa1885e4d6acbfdce4e239a5761469e9a9d9080529778606cd"
+    },
+    {
+      "series": "AHETPI",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "AHETPI_20000801",
+      "obs_first": "1964-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 438,
+      "bytes": 7162,
+      "sha256": "163727e6b915e009d9c608ecac60b5b0f156838b6bd6b25682c4e11a66f95767"
+    },
+    {
+      "series": "AHETPI",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "AHETPI_20060601",
+      "obs_first": "1964-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 508,
+      "bytes": 8357,
+      "sha256": "10eccf9c169a7a3aa5f109e781bda9126f58ce74f8039ba22b6800aff32170e3"
+    },
+    {
+      "series": "CPIENGSL",
+      "requested_vintage": "1996-12-12",
+      "http": 200,
+      "returned_column": "CPIENGSL_19961212",
+      "obs_first": "1957-01-01",
+      "obs_last": "1996-11-01",
+      "obs_rows": 479,
+      "bytes": 7815,
+      "sha256": "a7d8f6a55b3c3fe5bbc18489aef04a79a43980cf0e8c6383d6e94aff3a11dd7b"
+    },
+    {
+      "series": "CPIENGSL",
+      "requested_vintage": "2000-08-01",
+      "http": 200,
+      "returned_column": "CPIENGSL_20000801",
+      "obs_first": "1957-01-01",
+      "obs_last": "2000-06-01",
+      "obs_rows": 522,
+      "bytes": 8543,
+      "sha256": "e707f06e710d96a590119f81401744309caec4be61479fd053457d187fd25a7b"
+    },
+    {
+      "series": "CPIENGSL",
+      "requested_vintage": "2006-06-01",
+      "http": 200,
+      "returned_column": "CPIENGSL_20060601",
+      "obs_first": "1957-01-01",
+      "obs_last": "2006-04-01",
+      "obs_rows": 592,
+      "bytes": 9734,
+      "sha256": "84ca1ff690e308334713217841a468c6a48359099560c22098c1618ef3a1665f"
+    }
+  ]
+}
