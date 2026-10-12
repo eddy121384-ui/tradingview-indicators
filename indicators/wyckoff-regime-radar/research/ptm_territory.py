@@ -199,8 +199,13 @@ class FrozenReference:
 
     @property
     def allows_new_territory_claim(self) -> bool:
-        """Fail closed: only a fully valid reference may claim new territory."""
-        return self.validity == VALIDITY_OK
+        """Fail closed: only a fully valid, complete reference may claim.
+
+        ``coverage >= 1.0`` is required independently of
+        ``min_reference_coverage`` so that lowering that knob cannot reopen a
+        claim on a partial reference window.
+        """
+        return self.validity == VALIDITY_OK and self.coverage >= 1.0
 
 
 def build_reference(
@@ -223,11 +228,15 @@ def build_reference(
         )
     k = int(config.reference_bars)
     start = anchor_index - k
-    if start < 0:
+    window_len = max(min(anchor_index, len(bars)) - max(start, 0), 0)
+    if start < 0 or window_len < k:
+        # Covers both "not enough history before the anchor" and "the anchor
+        # itself is past the end of the data", which would otherwise silently
+        # freeze a truncated window and report a misleading DEGRADED state.
         return FrozenReference(
             anchor_index=anchor_index,
             direction=int(np.sign(direction)) or 1,
-            n_bars=0,
+            n_bars=window_len,
             n_valid=0,
             coverage=0.0,
             q_low=None,
@@ -241,8 +250,8 @@ def build_reference(
             degenerate=False,
             validity=VALIDITY_UNKNOWN_INSUFFICIENT_HISTORY,
             validity_detail=(
-                f"need {k} completed bars before anchor {anchor_index}, "
-                f"only {max(anchor_index, 0)} available"
+                f"need {k} completed bars ending at anchor {anchor_index}, "
+                f"only {window_len} available"
             ),
         )
 
@@ -499,6 +508,7 @@ class TerritoryObservation:
     stall_flag: bool | None
     is_new_territory_claim: bool
     suspect_scale_break: bool
+    drift_scale_warning: bool
     reference_coverage: float
     degenerate_reference: bool
     validity: str
@@ -533,9 +543,14 @@ def _touch_flags(
             hi = ref.highs[i]
         overlap = min(hi, inner_high) - max(lo, inner_low)
         if config.touch_mode == TOUCH_MIN_OVERLAP_FRACTION:
-            flags.append(overlap >= min_overlap and overlap > 0.0)
+            flags.append(overlap >= min_overlap)
         else:
-            flags.append(overlap > 0.0)
+            # The v0.2 predicate is INCLUSIVE: high >= P-w and low <= P+w.
+            # At tick-aligned prices w is often an exact multiple of the price
+            # quantum, so a strict (>0) test would drop real band-edge touches
+            # and could report a price equal to every reference bar as
+            # "never visited".  Inclusive matches the written definition.
+            flags.append(overlap >= 0.0)
     return flags
 
 
@@ -649,6 +664,7 @@ def observe(
         stall_flag=None,
         is_new_territory_claim=False,
         suspect_scale_break=False,
+        drift_scale_warning=False,
         reference_coverage=ref.coverage,
         degenerate_reference=ref.degenerate,
         validity=ref.validity,
@@ -730,9 +746,16 @@ def observe(
 
     median_ref = float(ref.median_close) if ref.median_close is not None else 0.0
     prev_close = float(bars[t - 1].close) if t > 0 else p
+    # A split or a futures roll is an OVERNIGHT re-basing, so the latch keys on
+    # the one-bar jump only.  Comparing the level against the reference median
+    # instead would flag any sustained large move -- and because a ratio is not
+    # invariant under arithmetic price reflection, that version silently
+    # suppressed new-territory claims on long downtrends but not long uptrends
+    # of the same size.  The drift comparison is reported, never gated on.
     instantaneous_break = scale_ratio_break(
-        p, median_ref, config.suspect_scale_break_factor
-    ) or scale_ratio_break(p, prev_close, config.suspect_scale_break_factor)
+        p, prev_close, config.suspect_scale_break_factor
+    )
+    drift_break = scale_ratio_break(p, median_ref, config.suspect_scale_break_factor)
     suspect = bool(scale_break_latched or instantaneous_break)
 
     acceptance = None
@@ -760,8 +783,11 @@ def observe(
         range_3_w=range_3,
         bars_since_significant_progress=bars_since_progress,
         stall_flag=stall,
-        is_new_territory_claim=bool(novelty_fresh and ref.allows_new_territory_claim),
+        is_new_territory_claim=bool(
+            novelty_fresh and ref.allows_new_territory_claim and not suspect
+        ),
         suspect_scale_break=suspect,
+        drift_scale_warning=bool(drift_break),
     )
     return TerritoryObservation(**base)
 

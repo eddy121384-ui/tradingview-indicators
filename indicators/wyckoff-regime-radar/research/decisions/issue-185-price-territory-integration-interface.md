@@ -47,6 +47,7 @@ them and does not treat Core-2 as an entry engine.
    |   DETERIORATION          <-- N falls back after a claim        |
    |   PROGRESS / STAGNATION  <-- separate channel, NOT mixed in    |
    |   UNKNOWN / DEGRADED     <-- fail closed, no claim             |
+   |   SCALE-BREAK SUSPECT    <-- price unit broken, no claim       |
    +-------------------------------+-------------------------------+
                                    |
                 (no automatic action; evidence only)
@@ -56,6 +57,21 @@ them and does not treat Core-2 as an entry engine.
                                    v
    DEFENSE (Warning-First, hard stop) -- independent, never bypassed
 ```
+
+The exact claim rule, stated once so downstream code cannot misread it:
+
+```
+is_new_territory_claim  ==  validity == OK
+                        and  reference_coverage == 1.0
+                        and  revisit_episodes <= 1     # UNVISITED or SPARSE
+                        and  not suspect_scale_break
+```
+
+`R == 1` (class `SPARSE`) **does** raise the claim flag even though the diagram
+lists it under "no-evidence-yet": the class label describes evidence strength,
+the boolean describes whether that closed bar is permitted to claim. A consumer
+that wants only the strongest state must test `novelty_class == "UNVISITED"`
+explicitly instead of the boolean.
 
 Overlapping probes: under the frozen default `first_probe_wins` the first probe
 of an episode freezes the reference; later probes inside the same opportunity

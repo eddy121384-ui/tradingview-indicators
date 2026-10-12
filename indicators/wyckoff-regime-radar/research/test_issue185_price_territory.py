@@ -420,6 +420,51 @@ def test_futures_roll_is_screened():
     assert all(o.suspect_scale_break for o in ep.observations)
 
 
+def test_scale_break_screen_is_reflection_symmetric():
+    # Regression: keying the latch on the level vs the reference median made a
+    # sustained +60% trend keep its new-territory claims while the mirrored
+    # -37.5% trend had them suppressed, because a price ratio is not invariant
+    # under arithmetic reflection.  A split/roll is an overnight re-basing, so
+    # only the one-bar jump may latch.
+    fx = long_trend_unbounded_novelty()
+    m = 200.0
+    mirrored = [
+        Bar(open=m - b.open, high=m - b.low, low=m - b.high, close=m - b.close,
+            valid=b.valid, label=b.label)
+        for b in fx.bars
+    ]
+    up = evaluate_episode(fx.bars, fx.probe_index, 1, fx.config)
+    dn = evaluate_episode(mirrored, fx.probe_index, -1, fx.config)
+    assert [o.is_new_territory_claim for o in up.observations] == \
+        [o.is_new_territory_claim for o in dn.observations]
+    assert [o.suspect_scale_break for o in up.observations] == \
+        [o.suspect_scale_break for o in dn.observations]
+    assert all(not o.suspect_scale_break for o in up.observations)
+    assert any(o.is_new_territory_claim for o in up.observations)
+    # the drift ratio is still surfaced, just not gated on
+    assert any(o.drift_scale_warning for o in dn.observations)
+
+
+def test_scale_break_screen_is_multiplicative_not_affine():
+    # Known, documented limitation.  A split or roll is a MULTIPLICATIVE
+    # re-basing, which is what the screen detects, so the screen is invariant
+    # under price inversion but NOT under arithmetic reflection.  A halved
+    # path latches; the reflected path is a x1.485 one-bar jump, which sits
+    # just inside the 1.5 band and does not.  The consequence is unequal
+    # treatment of an equally large one-bar rally, and it is recorded here
+    # rather than hidden: see the finding doc defect register D8.
+    from ptm_territory import scale_ratio_break
+
+    assert scale_ratio_break(51.5, 100.0, 1.5) is True
+    assert scale_ratio_break(148.5, 100.0, 1.5) is False
+    # ... but the screen IS symmetric in the reciprocal sense: a 2.5x re-basing
+    # and a 0.4x re-basing are both caught by the same factor.
+    assert scale_ratio_break(250.0, 100.0, 2.0) is True
+    assert scale_ratio_break(40.0, 100.0, 2.0) is True
+    assert scale_ratio_break(194.0, 100.0, 2.0) is False
+    assert scale_ratio_break(51.5, 100.0, 2.0) is False
+
+
 def test_scale_break_screen_is_a_prompt_not_a_gate():
     # A genuine -55% move is indistinguishable from a 2:1 split using price
     # alone; documented false positive, so the screen must never gate trading.
@@ -429,6 +474,81 @@ def test_scale_break_screen_is_a_prompt_not_a_gate():
     # ... and any split milder than the factor slips through: documented
     # false negative (a 3:2 split leaves 66.7, which sits on the boundary).
     assert scale_ratio_break(70.0, 100.0, 1.5) is False
+
+
+def test_latched_scale_break_blocks_new_territory_claims():
+    # A suspect price unit must not be reported as brand-new territory, even
+    # though the numbers stay available for diagnostics.
+    for fx in (unadjusted_split(), futures_roll()):
+        ep = run(fx)
+        assert any(o.suspect_scale_break for o in ep.observations), fx.name
+        assert all(not o.is_new_territory_claim for o in ep.observations), fx.name
+        # the numbers themselves are still published for diagnosis
+        assert all(o.novelty is not None for o in ep.observations), fx.name
+
+
+def test_inclusive_touch_counts_an_exact_band_edge():
+    # v0.2 is inclusive: high >= P-w and low <= P+w.  At close 115.20 with
+    # w = 0.8 the inner high is exactly 116.00, and 12 reference bars have
+    # low == 116.00.  A strict (> 0) overlap test silently drops them.
+    ep = run(wide_box_traversal())
+    o = obs_at_close(ep, 115.2)
+    assert o.inner_high == pytest.approx(116.0)
+    assert o.occupancy == pytest.approx(0.20)
+    assert o.revisit_episodes == 12
+
+
+def test_a_price_equal_to_every_reference_bar_is_visited():
+    # All 120 reference bars sit exactly at 100.0.  Under a strict overlap
+    # test the query price 100.0 is reported as UNVISITED (novelty 1.0) even
+    # though every bar is exactly there.
+    ep = run(degenerate_history_tick_fallback())
+    o = obs_at_close(ep, 100.0)
+    assert o.w == pytest.approx(0.01)
+    assert o.revisit_episodes == 1
+    assert o.novelty == pytest.approx(0.5)
+    assert o.novelty_class == "SPARSE"
+    assert o.is_new_territory_claim is False
+
+
+def test_exact_band_edge_cannot_create_a_false_claim():
+    # Two reference bars touch the inner band only at its exact lower edge
+    # (high == P-w).  The inclusive predicate counts them; a strict one would
+    # report R = 0 and emit a false new-territory claim.
+    ref = (
+        [Bar(open=100.0, high=100.0, low=100.0, close=100.0) for _ in range(58)]
+        + [Bar(open=100.0, high=117.0, low=100.0, close=117.0)]
+        + [Bar(open=100.0, high=103.0, low=100.0, close=103.0)]
+        + [Bar(open=100.0, high=117.0, low=100.0, close=117.0)]
+        + [Bar(open=120.0, high=120.0, low=120.0, close=120.0) for _ in range(59)]
+    )
+    probe = Bar(open=120.0, high=118.0, low=118.0, close=118.0)
+    ep = evaluate_episode(ref + [probe], 120, 1)
+    o = ep.observations[0]
+    assert o.w == pytest.approx(1.0)
+    assert o.inner_low == pytest.approx(117.0)
+    assert o.revisit_episodes == 2
+    assert o.novelty == pytest.approx(1.0 / 3.0)
+    assert o.is_new_territory_claim is False
+
+
+def test_anchor_past_end_of_data_is_unknown():
+    bars = [Bar(open=100.0, high=100.0 + (i % 5), low=99.0, close=100.0 + (i % 5))
+            for i in range(120)]
+    for anchor in (121, 123, 400):
+        ref = build_reference(bars, anchor, 1)
+        assert ref.validity == VALIDITY_UNKNOWN_INSUFFICIENT_HISTORY, anchor
+        assert ref.w is None
+        assert ref.is_usable is False
+
+
+def test_lowered_min_reference_coverage_cannot_reopen_a_claim():
+    # coverage < 1.0 must block the claim independently of the config knob.
+    ep = evaluate_episode(missing_reference_bars().bars, 120, 1,
+                          PTMConfig(min_reference_coverage=0.0))
+    assert ep.reference.coverage < 1.0
+    assert ep.reference.allows_new_territory_claim is False
+    assert all(not o.is_new_territory_claim for o in ep.observations)
 
 
 def test_no_cross_bar_path_is_inferred():
@@ -728,6 +848,25 @@ def test_same_reference_different_path_gives_same_novelty_different_er():
 # ===========================================================================
 
 
+def test_forward_mutation_cannot_change_an_earlier_observation():
+    # Stronger than truncation: replace every bar strictly AFTER t with
+    # garbage while keeping the series length.  If any forward read existed,
+    # the observation at t would move.
+    checked = 0
+    for fx in all_fixtures():
+        full = evaluate_episode(fx.bars, fx.probe_index, fx.direction, fx.config)
+        for t in range(fx.probe_index, len(fx.bars), 3):
+            mut = list(fx.bars)
+            for i in range(t + 1, len(mut)):
+                mut[i] = Bar(open=1e9, high=1e9, low=1e9, close=1e9,
+                             valid=mut[i].valid, label=mut[i].label)
+            got = evaluate_episode(mut, fx.probe_index, fx.direction, fx.config)
+            assert got.observations[t - fx.probe_index] == \
+                full.observations[t - fx.probe_index], (fx.name, t)
+            checked += 1
+    assert checked > 200
+
+
 def test_config_fingerprint_pins_every_free_choice():
     fp = PTMConfig().fingerprint()
     assert fp["reference_bars"] == 120
@@ -736,6 +875,17 @@ def test_config_fingerprint_pins_every_free_choice():
     assert fp["radius_divisor"] == 20.0
     assert fp["outer_multiplier"] == 2.0
     assert fp["acceptance_window"] == 3
+    # A fingerprint is only useful if a changed free choice actually changes
+    # it AND changes output; otherwise it is a decorative echo of constants.
+    base = PTMConfig()
+    fx = wide_box_traversal()
+    base_obs = evaluate_episode(fx.bars, fx.probe_index, fx.direction, base)
+    for knob, value in (("reference_bars", 60), ("radius_divisor", 5.0),
+                        ("quantile_high", 0.75), ("outer_multiplier", 1.0)):
+        variant = PTMConfig(**{knob: value})
+        assert variant.fingerprint() != base.fingerprint(), knob
+        alt = evaluate_episode(fx.bars, fx.probe_index, fx.direction, variant)
+        assert alt.observations != base_obs.observations, knob
 
 
 def test_required_scenario_names_are_actually_implemented():

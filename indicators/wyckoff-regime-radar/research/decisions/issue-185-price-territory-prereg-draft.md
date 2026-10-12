@@ -36,7 +36,13 @@ a persistent trend?
 
 The prereg tests **both** sides of the trade-off and predeclares rejection.
 
-## 2. Frozen instrument (v0.2.1 = v0.2 + amendments A1–A6)
+## 2. Frozen instrument (v0.2.1 = v0.2 + amendments A1–A7)
+
+Prototype state at the time of writing: v0.2, plus A4, A5 and A7, are
+implemented and covered by 76 synthetic tests; A1, A2 and A3 are specified but
+**not implemented**. The engineering-review verdict `PROCEED_TO_PREREG` is
+conditional on A1–A3 landing inside the prereg commit. If any of them is
+rejected, the correct verdict reverts to `REDESIGN`.
 
 All of the following are frozen before outcomes:
 
@@ -46,13 +52,20 @@ All of the following are frozen before outcomes:
    linear interpolation, in instrument-native price units.
 3. **Bands.** Inner `[P−w, P+w]`; outer `[P−2w, P+2w]`; `P` is the completed
    close.
-4. **Touch.** Historical bar range overlaps the inner band with strictly
-   positive overlap. The outer re-arm test uses the whole bar range.
-5. **Outputs.** `R` (revisit episodes), `O` (occupancy share), `N = 1/(1+R)`,
-   `A` (mean of ≤3 post-anchor `N` including the current close),
-   `evidence_bars`, `F` (context only, never a gate).
+4. **Touch.** Historical bar **range** satisfies the inclusive inner-band test
+   `high ≥ P−w and low ≤ P+w` (see amendment note A7 below). The outer re-arm
+   test uses the whole bar range and requires the bar to be entirely outside.
+5. **Outputs.** `R` (revisit episodes), `O` (occupancy share over **valid**
+   reference bars), `N = 1/(1+R)`, `A` (mean of ≤3 post-anchor `N` including
+   the current close), `evidence_bars`, `F` (context only, never a gate).
+   A new-territory claim is raised only when validity is `OK`, reference
+   coverage is 1.0, `R ≤ 1`, and no scale break is latched.
 6. **Anchor policy.** `first_probe_wins` with a 120-bar staleness cap (A5).
-7. **Amendments, all instrument-validity guards, none of them tuned:**
+7. **Amendments — instrument-validity guards, none of them tuned.** `A1`, `A2`
+   and `A3` are **not yet implemented**: they are implementation prerequisites
+   that must land, with tests, inside the prereg commit and be re-verified
+   before any outcome is read. Their thresholds are declared below and are
+   frozen at that point, not afterwards.
    * **A1** reference adequacy — claims blocked unless
      `reference_cycle_count ≥ 1`, `envelope_covered_fraction ≥ f_min`, and
      `max_close_gap_w ≤ g_max`, with `f_min` and `g_max` declared in the frozen
@@ -63,9 +76,14 @@ All of the following are frozen before outcomes:
      pre-declared bound;
    * **A4** range-overlap primary, minimum-overlap-fraction variant emitted as
      a mandatory secondary statistic;
+   * **A5** `first_probe_wins` anchor with a 120-bar staleness cap;
    * **A6** stagnation/progress diagnostics are reported separately and are
      **not** combined with `N` and **not** used as a filter in the primary
-     challenger.
+     challenger;
+   * **A7** the touch predicate is inclusive, exactly as written in the v0.2
+     spec, and the scale-break screen may suppress a claim but may never create
+     one. Both are implemented and pinned by tests (see the finding doc §6.C
+     `C1`, `C2`).
 8. **Candidate count: 2 challenger policies.** No additional variants may be
    added after any outcome is seen. Any further variant is a new prereg.
 

@@ -33,7 +33,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: python -m pip install --quiet numpy pandas pillow pytest
+        run: python -m pip install --quiet numpy pandas pillow==12.3.0 pytest
 
       - name: Syntax
         run: |
@@ -47,11 +47,31 @@ jobs:
         working-directory: indicators/wyckoff-regime-radar/research
         run: python -m pytest -q test_issue185_price_territory.py
 
-      - name: Artifact reproducibility
+      - name: Artifact reproducibility (text artifacts, byte-for-byte)
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
           python analyze_issue185_price_territory.py --outdir /tmp/issue185_out
-          diff -r artifacts/issue185_price_territory /tmp/issue185_out
+          python analyze_issue185_price_territory.py --outdir /tmp/issue185_out2
+          diff -r --exclude=charts artifacts/issue185_price_territory /tmp/issue185_out
+          echo "text artifacts reproduce byte-for-byte"
+
+      - name: Chart determinism and structural sanity
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          # Charts are rendered with Pillow's bundled default font so that the
+          # renderer has no OS-dependent font lookup; PNG bytes are compared
+          # between two runs on this runner rather than across platforms.
+          diff -r /tmp/issue185_out/charts /tmp/issue185_out2/charts
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          charts = sorted(Path("/tmp/issue185_out/charts").glob("*.png"))
+          assert len(charts) == 10, f"expected 10 charts, found {len(charts)}"
+          for p in charts:
+              with Image.open(p) as im:
+                  assert im.size == (1180, 980) or im.size == (1180, 650), (p.name, im.size)
+          print(f"chart artifacts ok: {len(charts)}")
+          PY
 
       - uses: actions/upload-artifact@v4
         with:

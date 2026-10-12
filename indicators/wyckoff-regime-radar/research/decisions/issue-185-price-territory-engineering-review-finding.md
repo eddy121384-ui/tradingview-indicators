@@ -14,8 +14,9 @@ search, no OOS5 contact, no Pine and no production change, no merge.
 | Base lineage | `e316d19` (A9 finding) → `04a982c` (A5 untouched OOS4 validation of causal Core-2) → `61724c2` (A4 Core-2) |
 | Not based on | `research/issue-78-trigger-layer-discovery`, `research/issue-78-failed-break-*` (frozen event side-branch) |
 | Artifacts | `indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory/` |
-| Tests | `python -m pytest -q test_issue185_price_territory.py` → **67 passed** |
+| Tests | `python -m pytest -q test_issue185_price_territory.py` → **76 passed** |
 | Runner | `python analyze_issue185_price_territory.py` |
+| Independent audit | separate adversarial verification pass by a second agent (different context, own from-scratch reimplementation); its findings drove §6.C |
 
 **Design conclusion: `PROCEED_TO_PREREG`** — conditional on the mandatory
 pre-outcome amendments `A1`–`A6` in §7. This is a *design feasibility*
@@ -58,7 +59,8 @@ decided.
 | inner touch | bar **range** overlaps the inner band: `high_i ≥ P−w and low_i ≤ P+w` |
 | re-arm | the **entire** historical bar is outside the outer band: `low_i > P+2w or high_i < P−2w` |
 | revisit episodes `R` | armed-gated touch count; a touch while armed counts and disarms |
-| occupancy `O` | share of valid reference bars touching the inner band, `0..1` |
+| occupancy `O` | share of **valid** reference bars touching the inner band, `0..1` (denominator is `n_valid`, not 120 — see AM6) |
+| novel territory claim | `is_new_territory_claim` is true iff validity is `OK`, the reference is complete (coverage 1.0), `R ≤ 1` (class `UNVISITED` or `SPARSE`), and no scale break is latched |
 | novelty `N` | `1 / (1 + R)` |
 | acceptance trace `A` | mean of `N` over at most the last **3** post-anchor closes **including the current one** |
 | evidence maturity | `min(3, t − t0 + 1)`, reported on every bar |
@@ -67,7 +69,8 @@ decided.
 | stagnation | `days_since_best_frontier`, `frontier_change_3`, `progress_3_w`, `range_3_w`, `bars_since_significant_progress`, `stall_flag` — descriptive only |
 | anchor policy | `first_probe_wins`: overlapping probes attach to the open episode and do **not** reset maturity |
 | observability | every value is a completed-close value; `actionable_at_bar = bar_index + 1` |
-| fail-closed | `UNKNOWN_*` → all numbers `None`; `DEGRADED_*` → numbers reported but **no new-territory claim** |
+| fail-closed | `UNKNOWN_*` → all territory numbers `None` (only the positional `evidence_bars` counter remains); `DEGRADED_*` → numbers reported but **no new-territory claim** |
+| scale break | a latched one-bar price-unit break (`suspect_scale_break`) suppresses the claim while leaving the numbers published for diagnosis; the level-vs-median drift ratio is reported separately as `drift_scale_warning` and never gates |
 | `direction` contract | must be `+1` or `−1`; any other value **raises** `ValueError` rather than being silently coerced to long |
 | non-finite reference | any non-finite OHLC in the reference → `UNKNOWN_NONFINITE_REFERENCE` (no numbers, no claim) |
 | non-finite query | any non-finite OHLC in the query bar → `UNKNOWN_NONFINITE_QUERY` (no numbers, no claim) |
@@ -176,10 +179,12 @@ default.
 **d. Can dwelling and repeated return be reliably distinguished?**
 The two primitives are genuinely separable, which is why they are reported
 separately: `long_period_box` gives low R with non-zero O (0.092), while
-`wide_box_traversal` gives high R with O = 0.20 at 118 and 0.077 N. However
-`R` is *not* a pure function of the territory: it is a function of how many
-legs fit into 120 bars (see (a)). **Verdict: distinguishable as signatures,
-not yet comparable as a scale across instruments (defect D2).**
+`wide_box_traversal` gives high R with O = 0.20 at 118 and N = 0.1429. At 116
+the same fixture reads N = 0.0769, the readout the design published for the
+fake-breakout case. However `R` is *not* a pure function of the territory: it
+is a function of how many legs fit into 120 bars (see (a)). **Verdict:
+distinguishable as signatures, not yet comparable as a scale across
+instruments (defect D2).**
 
 **e. What does daily OHLC leave unidentifiable?**
 The intraday path order. One bar can cross the inner band many times and is
@@ -235,7 +240,7 @@ preregistration, fix is bounded · **S3** documented limitation, acceptable.
 | **D5** | S2 | with a frozen reference, novelty never decays; a dead stall is indistinguishable from a live trend | 250-bar trend → N=1.000 at bar 369, `days_since_best_frontier`=0 every bar; 18 flat bars → N=1.000, `stall_flag`=True | amendment **A6**: progress/stagnation stays a **separate** reporting channel and a separate preregistered challenger; explicitly **not** folded into novelty. **Not solved by this review.** |
 | **D6** | S3 | at the first close beyond the envelope, true and fake breakouts are identical | `true_trend` vs `fake_breakout` identical through 121.60 | irreducible. The prereg must not test any policy that acts on the first claim alone |
 | **D7** | S2 | a gappy or sparse reference overstates novelty and v0.2 math cannot detect it | `gappy_reference` → `max_close_gap_w` = 20.0, `envelope_covered_fraction` = 0.002, R=0 at the un-observed middle | amendment **A1** extended: `max_close_gap_w` and `envelope_covered_fraction` are mandatory reported diagnostics with pre-declared thresholds blocking claims |
-| **D8** | S3 | the scale-break screen is a weak heuristic | a genuine −55% move is flagged (false positive); any split milder than the factor is missed (false negative) | data-quality prompt only, never a gate; prefer an explicit adjustment/roll field from the data layer |
+| **D8** | S3 | the scale-break screen is a weak heuristic: it detects a **multiplicative** re-basing, which is the real phenomenon, so it is invariant under price inversion but **not** under arithmetic reflection | a genuine overnight −48.5% move is flagged (false positive) while the reflected +48.5% jump (ratio 1.485, just inside the 1.5 band) is not; any split milder than the factor is missed (false negative) | screen stays a data-quality prompt that suppresses claims (C2); `drift_scale_warning` surfaces the level-vs-median ratio without gating (AM8). Prefer an explicit adjustment/roll field from the data layer. **Residual asymmetry is pinned by a test, not hidden** |
 | **D9** | S2 | v0.2 does not specify anchor management for overlapping probes, and the choice materially changes the output | `first_probe_wins` keeps `evidence_bars`=3 at bar 135; `reanchor_each_probe` resets it to 1 at the same bar | amendment **A5**: freeze `first_probe_wins` + 120-bar staleness cap, or state the alternative explicitly, before outcomes |
 
 ### B. Design ambiguities resolved by this implementation
@@ -247,6 +252,9 @@ preregistration, fix is bounded · **S3** documented limitation, acceptable.
 | AM3 | acceptance trace "at most the most recent three closes" — is the current close included? | **yes, included** | this is what makes the first close actionable; excluding it delays the trace by one bar |
 | AM4 | does the outer re-arm test use the bar range or the close? | **bar range** ("the entire reference bar is outside") | using closes would re-arm far more often and inflate `R` |
 | AM5 | `P` = current price: close, or high/low? | **completed close** | the design is defined "at today's completed close"; using the high would leak the day's extreme into a close-time decision |
+| AM6 | occupancy denominator: 120, or the number of valid reference bars? | **`n_valid`**, matching the §2 wording "share of valid reference bars" | with 8 missing bars `missing_reference_bars` reports O 7.1% higher than a `/120` reading; it also means O is not comparable across different coverage |
+| AM7 | inner touch boundary: inclusive (`≥`/`≤`) or strict overlap? | **inclusive**, exactly as written in the spec (`high_i ≥ P−w and low_i ≤ P+w`) | at tick-aligned prices `w` is often an exact multiple of the price quantum, so the choice is not measure-zero in practice — see §6.C `C1` |
+| AM8 | what may latch the scale-break screen? | only a **one-bar** price-unit break; the level-vs-median ratio is reported as `drift_scale_warning` but never latches | the drift version flagged any sustained large move and, because a ratio is not invariant under arithmetic reflection, silently suppressed claims on long downtrends but not equally sized uptrends — see §6.C `C5` |
 
 ### C. Hardening applied during this review (robustness, not design defects)
 
@@ -264,7 +272,26 @@ with regression tests.
 prevent, which is why they are called out rather than buried. They do not
 change any fixture result: all 42 artifacts still reproduce byte-for-byte.
 
-### D. Standing limitations (not defects — declared)
+### D. Conformance defects found by the independent audit and fixed
+
+These were found by a second, adversarial verification pass that wrote its own
+reimplementation of `R/O/N` straight from the spec text and diffed the whole
+fixture family against it. Each fix carries a regression test.
+
+| id | conformance issue | wrong behaviour before | behaviour now |
+|---|---|---|---|
+| **C1** | inner touch used a **strict** overlap (`> 0`) while the v0.2 spec is **inclusive** (`high ≥ P−w`, `low ≤ P+w`) | at close 115.20 with `w = 0.8` the inner high is exactly 116.00 and 12 reference bars have `low == 116.00`; they were dropped, so O read 0.10 instead of 0.20. Worst case: 120 reference bars all exactly at 100.0 and a query at 100.0 were reported `UNVISITED` with N = 1.0 (a price equal to every bar called "never visited"), and a constructed band-edge case emitted a **false new-territory claim** | inclusive predicate; O = 0.20, the equal-price case reads R = 1, N = 0.5, and the band-edge case reads R = 2, N = 0.333, claim = False. The published v0.2 readouts are unchanged and still reproduce exactly |
+| **C2** | a **latched scale break did not block** `is_new_territory_claim`, contradicting the spec's requirement to return UNKNOWN when the price quantum is unavailable and the fixture's own note that an unadjusted split "must be screened, **not** reported as a brand-new territory" | `unadjusted_split` and `futures_roll` each emitted 11 new-territory claims with N = 1.0 after the price unit broke | claims are suppressed while the numbers stay published for diagnosis: both fixtures now report 0 claims with 11 latched suspect bars |
+| **C3** | an anchor **past the end of the data** silently froze a truncated window and reported `DEGRADED_REFERENCE_COVERAGE` | `build_reference(bars, 123)` on 120 bars returned a 117-bar reference with `w` and a misleading "mostly complete" state | `UNKNOWN_INSUFFICIENT_HISTORY` with no numbers, whenever the frozen window cannot hold exactly 120 bars |
+| **C4** | lowering `min_reference_coverage` could reopen claims on a **partial** reference | with `min_reference_coverage = 0.0`, `missing_reference_bars` (coverage 0.933) reported validity `OK` and emitted 4 claims | the claim gate independently requires coverage 1.0, so the knob can no longer reopen a claim; validity and numbers are unchanged |
+| **C5** | the scale-break latch keyed partly on the **level vs the reference median**, so any sustained large move latched it | a 250-bar one-way advance kept its claims (its ratio stayed under 1.5) while the *arithmetically reflected* downtrend latched and lost all of them — a long/short asymmetry created by a data-quality heuristic | only a one-bar jump latches, which is what a split or roll actually is; the drift ratio is still reported (`drift_scale_warning`), and the asymmetry disappeared from the reflected-path test |
+| **C6** | the chart renderer looked up `DejaVuSans.ttf` **by bare name** | resolves on Linux, raises on Windows, so chart bytes would differ by platform and could fail the CI reproducibility gate for a reason unrelated to the indicator | the renderer always uses Pillow's bundled default font; CI pins `pillow==12.3.0` |
+
+`C1` and `C2` changed behaviour, not just robustness, and the published readouts
+were re-derived after them: all eight still match exactly, and the artifact tree
+still reproduces byte-for-byte.
+
+### E. Standing limitations (not defects — declared)
 
 * **L1** intraday path order is unidentifiable from daily OHLC; multiple
   intraday crossings count once.
@@ -323,23 +350,33 @@ empirical information is not established and is not claimed.**
 Justification, restricted to design feasibility and non-duplication:
 
 1. v0.2 is implementable as a deterministic, causal, non-repainting,
-   long/short-symmetric, fail-closed information layer, and 67 synthetic
-   assertions pass — including future-append invariance at every truncation.
+   long/short-symmetric, fail-closed information layer, and 76 synthetic
+   assertions pass — including future-append invariance at every truncation
+   and a forward-mutation test that replaces every later bar with garbage.
 2. The published v0.2 readouts are independently re-derived exactly, and the
    rejected v0.1 close-only aliasing is independently demonstrated
-   (0 vs 30 episodes on the same reference).
-3. The primary use case is served: across 53 post-probe bars of large-box
-   traversal reaching 118, 119 and one tick above 120, PTM **never** claims new
+   (0 vs 30 episodes on the same reference). A second, independent
+   reimplementation of `R/O/N` written from the spec text agrees with the
+   module on 698 of 698 observations.
+3. The primary use case is served **for boxes whose sweep period fits inside
+   the 120-bar window**: across 53 post-probe bars of large-box traversal
+   reaching 118, 119 and one tick above 120, PTM **never** claims new
    territory, while a genuine escape is recognised on the same completed close
-   as the escape (latency 0).
+   as the escape (latency 0). This does **not** carry over to a box whose
+   sweep is longer than the window, which is defect `D1`.
 4. The observable is not a strict function of ER20, rolling range/ATR width or
    a Donchian gate on controlled paths.
-5. Every failure found is bounded, reproduced by a named fixture, and has a
-   pre-outcome instrument-validity guard.
+5. Every failure found is reproduced by a named fixture. The guards that
+   address them are **specified** as `A1`–`A6` in §7; `A4` exists in the
+   prototype as a challenger mode, while `A1`, `A2` and `A3` are **not yet
+   implemented** and their thresholds are undeclared, so they are
+   implementation prerequisites inside the preregistration commit rather than
+   satisfied conditions.
 
-Conditions (mandatory): amendments `A1`–`A6`, the falsification criteria in the
-prereg draft, and an explicit statement that PTM is a **challenger evidence
-layer** only.
+Conditions (mandatory): amendments `A1`–`A6`, with `A1`, `A2` and `A3`
+implemented and re-tested **inside** the prereg commit before any outcome is
+read; the falsification criteria below; and an explicit statement that PTM is a
+**challenger evidence layer** only.
 
 ### What `PROCEED_TO_PREREG` does not mean
 
@@ -366,6 +403,30 @@ Reject PTM at outcome stage if any holds:
 * the stall failure (D5) produces materially worse large-trend harvest
   (MFE ≥ 8 ATR) than the frozen R0 benchmark.
 
+### Independent verification pass
+
+A second agent, with a fresh context and no access to this document's
+reasoning, audited the prototype against the spec text and wrote its own
+`R/O/N` implementation. Results:
+
+| check | outcome |
+|---|---|
+| spec conformance of the core geometry | confirmed, **except** the strict/inclusive touch predicate (`C1`, fixed) and the scale-break claim gate (`C2`, fixed) |
+| 19 cited numbers re-derived independently | 19/19 exact |
+| `R/O/N` recomputed from the spec text over the whole fixture family | after `C1`: 698/698 observations agree |
+| truncation causality, every fixture × every cut | 0 violations |
+| forward **mutation** (all later bars replaced by garbage) | 0 violations |
+| long/short reflection symmetry | 0 violations after `C5`; the residual scale-break asymmetry is multiplicative-vs-affine and is now pinned by a test |
+| fail-closed sweep over all observations | 0 cases of numeric novelty under `UNKNOWN_*`; 0 claims under `DEGRADED_*` |
+| artifact reproducibility | 42/42 files byte-identical |
+| document/table consistency | reproduction table 8/8, latency table 8/8, `summary.json` fields as stated |
+
+Its two harshest objections, both accepted and now reflected above: the verdict
+was conditional on guards (`A1`–`A3`) that were not implemented, and the
+"primary use case is served" claim depended on every fixture window containing
+at least three complete sweeps. Both are now stated as conditions rather than
+as achieved results.
+
 ## 10. Artifacts
 
 ```
@@ -374,7 +435,7 @@ indicators/wyckoff-regime-radar/research/
   ptm_territory_fixtures.py                     27 deterministic fixtures
   ptm_territory_charts.py                       Pillow audit charts
   analyze_issue185_price_territory.py           runner
-  test_issue185_price_territory.py              67 tests
+  test_issue185_price_territory.py              76 tests
   decisions/issue-185-price-territory-engineering-review-finding.md   (this file)
   decisions/issue-185-price-territory-integration-interface.md
   decisions/issue-185-price-territory-prereg-draft.md
@@ -388,10 +449,17 @@ indicators/wyckoff-regime-radar/research/
     charts/*.png                                audit and comparison charts
 ```
 
-The whole artifact tree (42 files) is byte-for-byte reproducible: re-running
-`analyze_issue185_price_territory.py --outdir <tmp>` and hashing every file
-against the committed tree yields zero differences, and CI enforces this with
-`diff -r artifacts/issue185_price_territory <tmp>`.
+The whole artifact tree (42 files) reproduces byte-for-byte on one machine:
+re-running `python analyze_issue185_price_territory.py --outdir <tmp>` and
+hashing every file against the committed tree yields zero differences. CI
+enforces the **text** artifacts (CSV, JSON, Markdown) with
+`diff -r --exclude=charts` against the committed tree, and enforces chart
+determinism by diffing the PNGs of two runs on the same runner plus a
+count/dimension sanity check. PNG bytes are deliberately **not** asserted
+across platforms: rasterisation depends on the Pillow/FreeType build, which is
+why Pillow is pinned and the renderer no longer performs an OS-dependent font
+lookup (`C6`). Line endings are handled by git normalisation (blobs are LF), so
+the comparison is always between two trees produced on the *same* platform.
 
 ## 11. Boundary statement
 

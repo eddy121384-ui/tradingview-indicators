@@ -54,8 +54,8 @@ Source: issue #185 comment 6117510142. The numbers above are an INDEPENDENT reco
 | wide_box_traversal__short_mirror | 120 | 168.0 | nan | nan | 0 | 0 | 0.0769 | OK |
 | missing_reference_bars | 120 | 127.0 | nan | nan | 0 | 0 | 1.0 | DEGRADED_REFERENCE_COVERAGE |
 | adjusted_split | 120 | 127.0 | 127.0 | 0.0 | 4 | 0 | 1.0 | OK |
-| unadjusted_split | 120 | nan | 120.0 | nan | 11 | 0 | 1.0 | OK |
-| futures_roll | 120 | 120.0 | 120.0 | 0.0 | 11 | 0 | 1.0 | OK |
+| unadjusted_split | 120 | nan | nan | nan | 0 | 0 | 1.0 | OK |
+| futures_roll | 120 | 120.0 | nan | nan | 0 | 0 | 1.0 | OK |
 | gappy_reference | 120 | 123.0 | 120.0 | -3.0 | 3 | 0 | 0.0164 | OK |
 | crossed_but_not_closed | 120 | 124.0 | 120.0 | -4.0 | 1 | 0 | 0.0323 | OK |
 | degenerate_history | 120 | 121.0 | nan | nan | 0 | 0 | nan | UNKNOWN_ZERO_BAND_WIDTH |
@@ -63,9 +63,9 @@ Source: issue #185 comment 6117510142. The numbers above are an INDEPENDENT reco
 | sparse_slow_box | 120 | nan | nan | nan | 0 | 0 | 0.25 | OK |
 | long_period_box | 120 | 120.0 | 120.0 | 0.0 | 12 | 0 | 1.0 | OK |
 | long_wick | 120 | nan | 120.0 | nan | 5 | 0 | 0.5 | OK |
-| volatility_regime_shift | 120 | nan | 120.0 | nan | 9 | 0 | 0.5 | OK |
+| volatility_regime_shift | 120 | nan | nan | nan | 0 | 0 | 0.5 | OK |
 | nondup_ref_box | 120 | nan | nan | nan | 0 | 0 | 0.1429 | OK |
-| nondup_ref_far | 120 | nan | 120.0 | nan | 20 | 0 | 1.0 | OK |
+| nondup_ref_far | 120 | nan | nan | nan | 0 | 0 | 1.0 | OK |
 | nondup_path_smooth | 120 | nan | nan | nan | 0 | 0 | 0.1429 | OK |
 | nondup_path_choppy | 120 | nan | nan | nan | 0 | 0 | 0.1429 | OK |
 

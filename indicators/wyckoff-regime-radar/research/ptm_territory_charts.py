@@ -35,10 +35,15 @@ TOP = 92
 
 
 def _font(size: int = 12) -> ImageFont.ImageFont:
-    try:
-        return ImageFont.truetype("DejaVuSans.ttf", size)
-    except Exception:
-        return ImageFont.load_default()
+    """Pillow's bundled default font.
+
+    A bare ``ImageFont.truetype("DejaVuSans.ttf")`` lookup resolves on Linux
+    but raises on Windows, so chart bytes would differ by platform and the CI
+    reproducibility gate could fail for a reason unrelated to the indicator.
+    The bundled default keeps rendering identical wherever Pillow is
+    installed, at the cost of a small bitmap face.
+    """
+    return ImageFont.load_default()
 
 
 class Panel:
