@@ -1,0 +1,467 @@
+{
+  "issue": 189,
+  "phase": 1,
+  "generated_from": "frozen public-catalog evidence table (no vintage pulls, no returns)",
+  "A_exact_mapping_count": {
+    "exact_verified_PIT": 0,
+    "date_only_conservative_PIT": 6,
+    "partial_PIT": 4,
+    "proxy_not_equivalent": 0,
+    "unavailable": 1,
+    "note": "no intraday timestamps verified anywhere; G5 blocks full PIT in all months"
+  },
+  "B_years": [
+    {
+      "year": 1960,
+      "fully": false,
+      "roles_ok": 1
+    },
+    {
+      "year": 1961,
+      "fully": false,
+      "roles_ok": 1
+    },
+    {
+      "year": 1962,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1963,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1964,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1965,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1966,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1967,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1968,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1969,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1970,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1971,
+      "fully": false,
+      "roles_ok": 2
+    },
+    {
+      "year": 1972,
+      "fully": false,
+      "roles_ok": 3
+    },
+    {
+      "year": 1973,
+      "fully": false,
+      "roles_ok": 3
+    },
+    {
+      "year": 1974,
+      "fully": false,
+      "roles_ok": 3
+    },
+    {
+      "year": 1975,
+      "fully": false,
+      "roles_ok": 3
+    },
+    {
+      "year": 1976,
+      "fully": false,
+      "roles_ok": 3
+    },
+    {
+      "year": 1977,
+      "fully": false,
+      "roles_ok": 3
+    },
+    {
+      "year": 1978,
+      "fully": false,
+      "roles_ok": 3
+    },
+    {
+      "year": 1979,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1980,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1981,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1982,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1983,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1984,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1985,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1986,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1987,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1988,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1989,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1990,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1991,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1992,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1993,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1994,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1995,
+      "fully": false,
+      "roles_ok": 4
+    },
+    {
+      "year": 1996,
+      "fully": false,
+      "roles_ok": 6
+    },
+    {
+      "year": 1997,
+      "fully": false,
+      "roles_ok": 6
+    },
+    {
+      "year": 1998,
+      "fully": false,
+      "roles_ok": 6
+    },
+    {
+      "year": 1999,
+      "fully": false,
+      "roles_ok": 8
+    },
+    {
+      "year": 2000,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2001,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2002,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2003,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2004,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2005,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2006,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2007,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2008,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2009,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2010,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2011,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2012,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2013,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2014,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2015,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2016,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2017,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2018,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2019,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2020,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2021,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2022,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2023,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2024,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2025,
+      "fully": false,
+      "roles_ok": 10
+    },
+    {
+      "year": 2026,
+      "fully": false,
+      "roles_ok": 10
+    }
+  ],
+  "C_etf_2006_2026": {
+    "roles_non_unavailable": {
+      "G1": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G2": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G3": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G4n": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G4d": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G5": {
+        "ok": 0,
+        "tot": 21
+      },
+      "I1": {
+        "ok": 21,
+        "tot": 21
+      },
+      "I2": {
+        "ok": 21,
+        "tot": 21
+      },
+      "I3": {
+        "ok": 21,
+        "tot": 21
+      },
+      "I4": {
+        "ok": 21,
+        "tot": 21
+      },
+      "I5": {
+        "ok": 21,
+        "tot": 21
+      }
+    },
+    "roles_exactish": {
+      "G1": {
+        "ok": 0,
+        "tot": 21
+      },
+      "G2": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G3": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G4n": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G4d": {
+        "ok": 21,
+        "tot": 21
+      },
+      "G5": {
+        "ok": 0,
+        "tot": 21
+      },
+      "I1": {
+        "ok": 21,
+        "tot": 21
+      },
+      "I2": {
+        "ok": 21,
+        "tot": 21
+      },
+      "I3": {
+        "ok": 0,
+        "tot": 21
+      },
+      "I4": {
+        "ok": 0,
+        "tot": 21
+      },
+      "I5": {
+        "ok": 0,
+        "tot": 21
+      }
+    },
+    "full_pit_identifiable": false,
+    "reason": "G5 ISM has no public vintage archive in any month; G4/I2 warmup truncated at window start (vintages from 2000-08)"
+  },
+  "D_gaps": [
+    "G5 all months (no public ISM vintage archive)",
+    "G4 pre-2000-08 (PCEPI binding)",
+    "I2 pre-2000-08",
+    "G3 pre-1999-08 (ALFRED; FRASER PDFs unverified future work)",
+    "I1 pre-1972-07",
+    "I3 pre-1996-12 + definition TBD",
+    "I4 1960-63 + pre-1999-08 + concept TBD",
+    "I5 pre-1996-12 + concept TBD",
+    "G1 data-vintage list unconfirmed (API key needed)",
+    "G2 Jan-Feb 1960 + pre-1967 splice"
+  ],
+  "D_lawful_remedies": [
+    "ALFRED API vintage-date pull with key (env-only, Phase 2)",
+    "FRASER/SCB/BLS archive digitization for pre-1999/2000 gaps",
+    "ISM history license or documented exclusion analysis (new issue if concept changes)",
+    "no revised-value fills, no proxy swaps, no requirement loosening"
+  ],
+  "verdict": "partially_feasible",
+  "verdict_note": "10/11 roles identifiable from 2000-08 with stated caveats; full five-finite PIT identifiable in ZERO months 1960-2026 (G5); pre-2000 full PIT not verifiable",
+  "production_authorized": false
+}

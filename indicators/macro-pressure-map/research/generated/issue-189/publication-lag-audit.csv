@@ -1,0 +1,12 @@
+role,agency_release,schedule_rule,typical_lag_days,timezone,conservative_staleness_at_month_end,evidence_url
+"G1","Fed G.17 IP","mid-month, 9:15am","14-18","US Eastern","1 month (prior-month value released mid-current-month)","https://www.federalreserve.gov/releases/g17"
+"G2","BLS Employment Situation","first Friday, 8:30am","4-8","US Eastern","1 month","https://www.bls.gov/schedule/news_release/empsit.htm"
+"G3","Census/HUD NRC","~12th workday, 8:30am","16-22","US Eastern","1 month","https://www.census.gov/construction/nrc/"
+"G4n","BEA PI&O","end of following month, 8:30am","28-32","US Eastern","1-2 months (borderline at month-end close; conservative rule pushes to next session)","https://www.bea.gov/news/schedule"
+"G4d","BEA PI&O (PCE)","end of following month, 8:30am","28-32","US Eastern","1-2 months (same borderline)","https://www.bea.gov/news/schedule"
+"G5","ISM ROB mfg","first business day, 10:00am (Jan: second)","1-4","US Eastern","1 month IF archived (it is not publicly)","https://www.ismworld.org/supply-management-news-and-reports/reports/rob-report-calendar"
+"I1","BLS CPI","mid-month, 8:30am","11-15","US Eastern","1 month","https://www.bls.gov/schedule/news_release/cpi.htm"
+"I2","BEA PI&O (core PCE)","end of following month, 8:30am","28-32","US Eastern","1-2 months (same borderline)","https://www.bea.gov/news/schedule"
+"I3","BLS PPI","mid-month, 8:30am","10-14","US Eastern","1 month","https://www.bls.gov/schedule/news_release/ppi.htm"
+"I4","BLS Employment Situation (earnings)","first Friday, 8:30am","4-8","US Eastern","1 month","https://www.bls.gov/schedule/news_release/empsit.htm"
+"I5","BLS CPI (energy comp.)","mid-month, 8:30am","11-15","US Eastern","1 month","https://www.bls.gov/schedule/news_release/cpi.htm"
