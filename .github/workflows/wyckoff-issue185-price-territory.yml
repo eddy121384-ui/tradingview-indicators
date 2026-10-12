@@ -1,0 +1,62 @@
+name: Wyckoff Issue 185 Price Territory Engineering Review
+
+on:
+  push:
+    branches:
+      - research/issue-185-price-territory-engineering-review
+    paths:
+      - '.github/workflows/wyckoff-issue185-price-territory.yml'
+      - 'indicators/wyckoff-regime-radar/research/ptm_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
+  pull_request:
+    paths:
+      - '.github/workflows/wyckoff-issue185-price-territory.yml'
+      - 'indicators/wyckoff-regime-radar/research/ptm_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install --quiet numpy pandas pillow pytest
+
+      - name: Syntax
+        run: |
+          python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_charts.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py
+
+      - name: PTM engineering review tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m pytest -q test_issue185_price_territory.py
+
+      - name: Artifact reproducibility
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python analyze_issue185_price_territory.py --outdir /tmp/issue185_out
+          diff -r artifacts/issue185_price_territory /tmp/issue185_out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue185-price-territory-artifacts
+          path: indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory
+
+      - name: Diff check
+        run: git diff --check
