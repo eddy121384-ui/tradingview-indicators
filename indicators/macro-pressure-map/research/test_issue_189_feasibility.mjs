@@ -53,14 +53,18 @@ const GEN = path.join(RES, "generated/issue-189");
   assert.ok(Array.isArray(s.D_gaps) && s.D_gaps.length > 0);
   assert.ok(s.B_years.length === 67);
 }
-// 6. determinism: rebuild -> identical bytes
+// 6. determinism: rebuild -> identical bytes (files only; subdirs belong to later phases)
 {
   const before = {};
   for (const f of fs.readdirSync(GEN).sort()) {
+    const p = path.join(GEN, f);
+    if (!fs.statSync(p).isFile()) continue;
     before[f] = createHash("sha256").update(fs.readFileSync(path.join(GEN, f))).digest("hex");
   }
   execFileSync("node", [path.join(RES, "issue_189_feasibility.mjs")], { cwd: ROOT, stdio: "ignore" });
   for (const f of fs.readdirSync(GEN).sort()) {
+    const p = path.join(GEN, f);
+    if (!fs.statSync(p).isFile()) continue;
     const after = createHash("sha256").update(fs.readFileSync(path.join(GEN, f))).digest("hex");
     assert.strictEqual(after, before[f], "non-deterministic file: " + f);
   }

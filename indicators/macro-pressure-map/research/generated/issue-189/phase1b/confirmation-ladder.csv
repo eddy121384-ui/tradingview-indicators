@@ -1,0 +1,12 @@
+role,confirmation_level,level_note
+G1,L1,L1 catalog only (INDPRO ID/SA/units verified; data-vintage list needs API key)
+G2,L2,L2 definition matched (UNRATE SA U-3 inverted; pre-1967 splice noted)
+G3,L2,L2 definition matched for YoY purposes (SAAR scaling immaterial to 12m%)
+G4n,L2,L2 definition matched (DSPI nominal SAAR; real-order preserved)
+G4d,L2,L2 definition matched (PCEPI chain SA level)
+G5,L0,L0 no counterpart; bounded spot evidence only (see ism-spot-evidence.csv)
+I1,L2,L2 definition matched (CPIAUCSL SA index YoY)
+I2,L2,L2 definition matched (PCEPILFE chain SA YoY)
+I3,L1,L1 catalog only (PPIACO assumed; TV index concept TBD)
+I4,L1,L1 catalog only (AHETPI assumed; TV wage concept TBD; 1960-63 gap)
+I5,L1,L1 catalog only (CPIENGSL assumed; TV energy concept TBD)
