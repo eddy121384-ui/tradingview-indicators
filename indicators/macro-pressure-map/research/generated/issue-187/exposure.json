@@ -1,0 +1,13 @@
+{
+  "dFULL_pp": 0.09986130374479889,
+  "avgEqA": 41.024216099448964,
+  "avgEqB": 41.124077403193766,
+  "avgEqD": 41.10669074482628,
+  "match_DmB_pp": -0.017386658367485097,
+  "match_tol_pp": 0.01,
+  "exposure_accept": false,
+  "d_short_months": 144,
+  "bias_bound_pp_per_yr": 0.0010431995020491057,
+  "note": "ACCEPTANCE MISS disclosed: D structurally under-deploys in cap/cash-bound months; G6 evaluated on actuals, bias bounded above; see finding",
+  "cost": 0.0002
+}

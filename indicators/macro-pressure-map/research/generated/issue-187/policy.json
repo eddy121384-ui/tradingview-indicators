@@ -1,0 +1,8 @@
+{
+  "entry": "G(t)<-10 & G(t)>G(t-1)>G(t-2) & I(t)<=10 & I(t)-I(t-1)<=5",
+  "exits": "A:struct+5pp B:I-High|>+5 C:G 2x non-positive D:struct -5pp E:6 active months",
+  "once_per_low_episode": true,
+  "cash_floor": 2,
+  "caps": "sleeve+family frozen",
+  "timing": "signal@t -> effective t+1"
+}

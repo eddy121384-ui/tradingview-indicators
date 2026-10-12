@@ -1,0 +1,18 @@
+{
+  "issue": 187,
+  "parents": {
+    "issue-177": "bc652bd615f2c5e9137050d01c666dbcd9528cd3",
+    "issue-178": "10dcdce0ec86b0493d6df6b916b720eba46dcbe6",
+    "issue-180": "ac251ad5149d9f550d82dfb34b3551fe01032367",
+    "issue-183": "411835cc9e3a00d0f5d998df9fb2058d8a917e96",
+    "issue-184": "a3c6dbbdbcdbaf25129caf9bd5008b08947605e3",
+    "issue-186": "a83836ce0453d890c4d00667d50c36767aa9278b"
+  },
+  "cost": 0.0002,
+  "budget_pp": 5,
+  "panels": {
+    "full_n": 721,
+    "etf_n": 240
+  },
+  "production_authorized": false
+}
