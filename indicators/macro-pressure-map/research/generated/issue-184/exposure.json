@@ -1,0 +1,11 @@
+{
+  "method": "weights-only (matrix + overlayW + B-2 states + V6.6 signals; no returns)",
+  "A_avg_equity": 45.677844827586185,
+  "B_avg_equity": 42.62612068965515,
+  "C_avg_equity": 42.62612068965505,
+  "A_avg_cash": 19.09051724137931,
+  "B_avg_cash": 22.142241379310345,
+  "C_avg_cash": 22.14224137931044,
+  "d_pp": 3.051724137931032,
+  "match_CmB_pp": -9.947598300641403e-14
+}

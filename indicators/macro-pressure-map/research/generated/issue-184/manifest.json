@@ -1,0 +1,26 @@
+{
+  "issue": 184,
+  "branch": "research/issue-184-v66-overlay-specificity",
+  "required_base": "411835cc9e3a00d0f5d998df9fb2058d8a917e96",
+  "prereg": "6da9a3611c3b16b8e602711bd9f1e3f3678ceb6a",
+  "parents": {
+    "issue-177": "bc652bd615f2c5e9137050d01c666dbcd9528cd3",
+    "issue-178": "10dcdce0ec86b0493d6df6b916b720eba46dcbe6",
+    "issue-180": "ac251ad5149d9f550d82dfb34b3551fe01032367",
+    "issue-182": "57852112ce95913d48297b35f803a1583cbab314",
+    "issue-183": "411835cc9e3a00d0f5d998df9fb2058d8a917e96"
+  },
+  "panel": {
+    "first": "2007-02-01",
+    "last": "2026-08-01",
+    "n": 232,
+    "risk_on": 35,
+    "risk_off": 163,
+    "neutral": 34
+  },
+  "cost_primary": 0.0002,
+  "budget_pp": 5,
+  "d_pp": 3.051724137931045,
+  "n_placebos": 231,
+  "production_authorized": false
+}
