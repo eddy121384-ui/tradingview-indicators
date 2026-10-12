@@ -1,0 +1,48 @@
+{
+  "issue": 189,
+  "phase": "1C independent GPT-6 correctness audit",
+  "parent_sha": "434ee8e680902b25283baa742719567a7f872dc9",
+  "calculation_basis": "frozen #160 issue_160_deep_history_v01.py, pressure_score / build_roles",
+  "tests_independent_formula_local": {
+    "raw_months_74": {
+      "g3_first_valid": null,
+      "g4_first_valid": null
+    },
+    "raw_months_75": {
+      "g3_first_valid": 74,
+      "g4_first_valid": 74
+    },
+    "raw_months_76": {
+      "g3_first_valid": 74,
+      "g4_first_valid": 74
+    },
+    "local_method": "independent faithful Python formula implementation executed locally, no asset returns"
+  },
+  "tests_frozen_code": "test_issue_189_gpt6_phase1c.py imports original #160 module; committed, repository environment run not yet confirmed",
+  "bound": {
+    "lookback_valid_momentum": 60,
+    "three_month_change_requires": 3,
+    "yoy_raw_warmup_months": 12,
+    "first_valid_index_zero_based": 74,
+    "min_raw_observations": 75,
+    "index_74_from_1960_01": "1966-03",
+    "minimum_if_missing_observation": "at least 75; may be more"
+  },
+  "etf_reference_periods": {
+    "reference_2006_06_oldest_raw": "2000-04",
+    "reference_2006_05_oldest_raw": "2000-03",
+    "reference_2006_04_oldest_raw": "2000-02",
+    "caveat": "reference month is not decision month; depends on published_at/eligible_at and common fully available observation month"
+  },
+  "alfred": {
+    "source": "https://alfred.stlouisfed.org/category?cid=9&ob=pv&od=desc&t=energy",
+    "doc": "https://alfred.stlouisfed.org/help/downloaddata",
+    "summary": "2000-08-01 to 2003-12-22 refers to release/metadata interval; Jan 1959 to Oct 2003 is the observation extent for this interval, not first vintage of 2000-08-01",
+    "first_vintage_2000_08_exact_observation_extent": "UNVERIFIED_NO_RAW_SNAPSHOT",
+    "asof_2006_06_observation_extent": "UNVERIFIED_NO_RAW_SNAPSHOT",
+    "required_api": "FRED API key for reproducible numeric vintage pull; API key not available in this environment",
+    "relevant_official_api": "https://fred.stlouisfed.org/docs/api/fred/series_observations.html"
+  },
+  "verdict": "partially_feasible_unchanged; original Phase1B full warmup verification not demonstrated until actual as-of vintage pull",
+  "production_authorized": false
+}
