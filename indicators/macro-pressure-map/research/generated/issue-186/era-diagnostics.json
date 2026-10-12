@@ -1,0 +1,46 @@
+{
+  "peaks": {
+    "E1": {
+      "n": 2,
+      "matched": 2,
+      "median": 0
+    },
+    "E2": {
+      "n": 4,
+      "matched": 4,
+      "median": -3.5
+    },
+    "E3": {
+      "n": 1,
+      "matched": 0,
+      "median": null
+    },
+    "E4": {
+      "n": 1,
+      "matched": 1,
+      "median": -4
+    }
+  },
+  "troughs": {
+    "E1": {
+      "n": 2,
+      "matched": 2,
+      "median": 2.5
+    },
+    "E2": {
+      "n": 3,
+      "matched": 2,
+      "median": 7
+    },
+    "E3": {
+      "n": 1,
+      "matched": 1,
+      "median": -2
+    },
+    "E4": {
+      "n": 2,
+      "matched": 2,
+      "median": 6
+    }
+  }
+}

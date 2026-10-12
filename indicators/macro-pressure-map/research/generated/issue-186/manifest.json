@@ -1,0 +1,32 @@
+{
+  "issue": 186,
+  "parents": {
+    "issue-177": "bc652bd615f2c5e9137050d01c666dbcd9528cd3",
+    "issue-178": "10dcdce0ec86b0493d6df6b916b720eba46dcbe6",
+    "issue-180": "ac251ad5149d9f550d82dfb34b3551fe01032367",
+    "issue-183": "411835cc9e3a00d0f5d998df9fb2058d8a917e96",
+    "issue-184": "a3c6dbbdbcdbaf25129caf9bd5008b08947605e3"
+  },
+  "price": {
+    "provider": "Yahoo Finance (^GSPC daily, Chicago Options/GIDS)",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&period1=-126230400&period2=1789430400&events=div%7Csplit",
+    "method": "daily closes -> month-end last available daily close (repo NASDAQCOM precedent); unadjusted close = price index",
+    "raw_bytes": 1649332,
+    "raw_sha256": "fe1dbfb6f7bcf8f804ad4217407005a902c346314fafea9fd6dc1858ece14769",
+    "daily_rows": 15275,
+    "daily_first": "1966-01-03",
+    "daily_last": "2026-09-14",
+    "monthly_months": 728,
+    "monthly_first": "1966-01",
+    "monthly_last": "2026-08",
+    "firstTradeDate": -1325583000,
+    "currency": "USD",
+    "exchangeName": "SNP"
+  },
+  "et_months": 721,
+  "et_first": "1966-05-01",
+  "et_last": "2026-08-01",
+  "events20": 8,
+  "events10": 13,
+  "production_authorized": false
+}

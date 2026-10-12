@@ -1,0 +1,23 @@
+[
+  {
+    "k": 1,
+    "peak_lag_median": -3,
+    "trough_lag_median": 4,
+    "peak_n": 7,
+    "trough_n": 7
+  },
+  {
+    "k": 2,
+    "peak_lag_median": -2,
+    "trough_lag_median": 5,
+    "peak_n": 7,
+    "trough_n": 7
+  },
+  {
+    "k": 3,
+    "peak_lag_median": -1,
+    "trough_lag_median": 6,
+    "peak_n": 7,
+    "trough_n": 7
+  }
+]
