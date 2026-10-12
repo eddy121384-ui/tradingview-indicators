@@ -1,0 +1,7 @@
+# Generated research artifacts are byte-compared by CI and by the analyzer's
+# reproducibility check.  Mark them as verbatim so a checkout is never
+# line-ending converted: the analyzer emits LF on every platform, and the gate
+# compares bytes, not lines.  Without this, a Windows checkout with
+# core.autocrlf=true would produce CRLF artifacts that differ from the
+# committed blobs and break the comparison for a reason unrelated to the study.
+indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory/** -text

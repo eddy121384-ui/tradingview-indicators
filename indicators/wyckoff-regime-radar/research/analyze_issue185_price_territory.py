@@ -229,19 +229,21 @@ def main(argv=None) -> int:
             [o.as_row(fixture.name) for o in episode.observations]
         )
         frame.to_csv(traces_dir / f"{fixture.name}.csv", index=False,
-                     float_format="%.6f")
+                     float_format="%.6f", lineterminator="\n")
         frames.append(frame)
 
     combined = pd.concat(frames, ignore_index=True)
     combined.to_csv(out / "issue185_ptm_traces_all.csv", index=False,
-                    float_format="%.6f")
+                    float_format="%.6f", lineterminator="\n")
 
     latency = pd.DataFrame([latency_row(f, bars_by_name[f.name], episodes[f.name])
                             for f in fixtures])
-    latency.to_csv(out / "issue185_ptm_latency.csv", index=False)
+    latency.to_csv(out / "issue185_ptm_latency.csv", index=False,
+                   lineterminator="\n")
 
     repro = pd.DataFrame(reproduction_rows(by_name, episodes))
-    repro.to_csv(out / "issue185_ptm_reproduction.csv", index=False)
+    repro.to_csv(out / "issue185_ptm_reproduction.csv", index=False,
+                 lineterminator="\n")
 
     chart_paths = []
     chart_rel = []
@@ -310,7 +312,7 @@ def main(argv=None) -> int:
         },
     }
     (out / "issue185_ptm_summary.json").write_text(
-        json.dumps(summary, indent=2, default=str), encoding="utf-8"
+        json.dumps(summary, indent=2, default=str), encoding="utf-8", newline="\n"
     )
 
     _write_report(out, latency, repro, summary)
@@ -382,7 +384,9 @@ def _write_report(out: Path, latency: pd.DataFrame, repro: pd.DataFrame,
         "```",
         "",
     ]
-    (out / "issue185_ptm_report.md").write_text("\n".join(lines), encoding="utf-8")
+    (out / "issue185_ptm_report.md").write_text(
+        "\n".join(lines) + "\n", encoding="utf-8", newline="\n"
+    )
 
 
 if __name__ == "__main__":
