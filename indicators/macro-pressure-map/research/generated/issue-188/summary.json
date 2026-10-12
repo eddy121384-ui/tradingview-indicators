@@ -1,0 +1,99 @@
+{
+  "issue": 188,
+  "verdict": "deep_history_macro_information_supported",
+  "gates": {
+    "G1": true,
+    "G2": true,
+    "G3": true,
+    "G4": true,
+    "G5": true,
+    "G6": true,
+    "G7": true,
+    "G8": true
+  },
+  "assessable": true,
+  "g5_common_months": {
+    "dh": {
+      "cagr": 0.06628332428006223,
+      "sharpe": 0.6700273890992501,
+      "maxdd": -0.17051349727090226,
+      "n": 309
+    },
+    "e2": {
+      "cagr": 0.06266585329096297,
+      "sharpe": 0.5678464052300304,
+      "maxdd": -0.26830317939230586,
+      "n": 309
+    }
+  },
+  "shapley": {
+    "A": 8.747432660175747,
+    "B": 8.327916999101447,
+    "C": 8.2137600526067,
+    "Aprime": 8.660063220727942,
+    "PE": 0.43290941459777077,
+    "AE": -0.013393753523470942,
+    "INT": 0.201526385942552,
+    "PE_share": 0.9699895620731233
+  },
+  "incrAC_MAX_pp": 0.5336726075690468,
+  "incrAC_ETF_pp": 0.634572627861063,
+  "bootstrap_MAX": {
+    "lo5": 0.058891548487194356,
+    "hi95": 0.9802462849143767
+  },
+  "looo": [
+    {
+      "episode": "1973-74",
+      "n": 685,
+      "cagr_diff_pp": 0.4616
+    },
+    {
+      "episode": "2007-09",
+      "n": 673,
+      "cagr_diff_pp": 0.4642
+    },
+    {
+      "episode": "2020",
+      "n": 709,
+      "cagr_diff_pp": 0.6532
+    },
+    {
+      "episode": "2022",
+      "n": 685,
+      "cagr_diff_pp": 0.4725
+    }
+  ],
+  "stress": [
+    {
+      "k": 1,
+      "n": 720,
+      "cagr": 0.085597,
+      "maxdd": -0.199619,
+      "sharpe": 0.562,
+      "incr_cagr_pp": 0.3152
+    },
+    {
+      "k": 2,
+      "n": 719,
+      "cagr": 0.086192,
+      "maxdd": -0.176658,
+      "sharpe": 0.5702,
+      "incr_cagr_pp": 0.3558
+    },
+    {
+      "k": 3,
+      "n": 718,
+      "cagr": 0.086103,
+      "maxdd": -0.172179,
+      "sharpe": 0.5693,
+      "incr_cagr_pp": 0.333
+    }
+  ],
+  "panels": {
+    "PMAX": 721,
+    "PFULL": 274,
+    "PETF": 240
+  },
+  "production_authorized": false
+}

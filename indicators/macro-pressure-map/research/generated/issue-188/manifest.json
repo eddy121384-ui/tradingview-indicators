@@ -1,0 +1,35 @@
+{
+  "issue": 188,
+  "parents": {
+    "#177": "bc652bd615f2c5e9137050d01c666dbcd9528cd3",
+    "#178": "10dcdce0ec86b0493d6df6b916b720eba46dcbe6",
+    "#180": "ac251ad5149d9f550d82dfb34b3551fe01032367",
+    "#183": "411835cc9e3a00d0f5d998df9fb2058d8a917e96",
+    "#184": "a3c6dbbdbcdbaf25129caf9bd5008b08947605e3",
+    "#186": "a83836ce0453d890c4d00667d50c36767aa9278b",
+    "#187": "e61b9a31feb08ab757d34d77cc841fda70c77bcc"
+  },
+  "panels": {
+    "PMAX": 721,
+    "PFULL": 274,
+    "PETF": 240,
+    "missing_cal": [
+      "2025-10-01",
+      "2025-11-01",
+      "2026-01-01"
+    ]
+  },
+  "costs": {
+    "primary_bp": 2,
+    "hypo_bp": [
+      10,
+      25
+    ]
+  },
+  "bootstrap": {
+    "block": 24,
+    "reps": 5000,
+    "seed": 188
+  },
+  "production_authorized": false
+}
