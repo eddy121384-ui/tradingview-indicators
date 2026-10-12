@@ -1,0 +1,27 @@
+{
+  "issue": 186,
+  "primary": {
+    "provider": "Yahoo Finance (^GSPC daily, Chicago Options/GIDS)",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&period1=-126230400&period2=1789430400&events=div%7Csplit",
+    "method": "daily closes -> month-end last available daily close (repo NASDAQCOM precedent); unadjusted close = price index",
+    "raw_bytes": 1649332,
+    "raw_sha256": "fe1dbfb6f7bcf8f804ad4217407005a902c346314fafea9fd6dc1858ece14769",
+    "daily_rows": 15275,
+    "daily_first": "1966-01-03",
+    "daily_last": "2026-09-14",
+    "monthly_months": 728,
+    "monthly_first": "1966-01",
+    "monthly_last": "2026-08",
+    "firstTradeDate": -1325583000,
+    "currency": "USD",
+    "exchangeName": "SNP"
+  },
+  "secondary": {
+    "provider": "Robert Shiller / datahub.io core s-and-p-500 (monthly AVERAGES; validation only)",
+    "url": "https://datahub.io/core/s-and-p-500/r/0.csv",
+    "raw_bytes": 123851,
+    "raw_sha256": "3a45dffabc414afc298c12159abc84c2875f88175ff3d4473ef7417e725ecac6",
+    "semantic": "monthly average of daily closes (Shiller P), NOT month-end; level/scale differs pre-1957 (Composite); used only for turning-point cross-check ±1mo"
+  },
+  "fetched_at": "2026-10-12T03:53:06.942Z"
+}
