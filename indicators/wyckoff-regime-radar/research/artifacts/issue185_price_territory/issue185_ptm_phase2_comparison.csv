@@ -1,0 +1,34 @@
+fixture,direction,probe_bar,v02_signal_claim_bar,v02_claim_bars_total,phase2_signal_claim_bar,phase2_claim_bars_total,signal_suppressed_by_phase2,first_recognition_bar,added_delay_bars_vs_v02,breakout_stand_in_bar,model_confirmation_bar,naive_probe_plus_three_bar,naive_baseline_error_bars,ptm_extra_delay_vs_model_bars,ptm_extra_delay_vs_naive_bars,reference_cycle_count,reference_adequacy_ok,scale_state,validity,validity_reasons,validity_reason_count,suppression_class,sustained_escape_refused,final_frontier_progress_w
+wide_box_traversal,1,120,,0,,0,False,,,168.0,171.0,123,48.0,,,6.0,True,SCALE_STABLE,OK,,0,,False,-5.0
+true_trend,1,120,127.0,4,127.0,4,False,127.0,0.0,127.0,130.0,123,7.0,0.0,4.0,6.0,True,SCALE_STABLE,OK,,0,,False,11.25
+fake_breakout,1,120,127.0,1,127.0,1,False,127.0,0.0,127.0,130.0,123,7.0,0.0,4.0,6.0,True,SCALE_STABLE,OK,,0,,False,-5.0
+healthy_retest,1,120,126.0,7,126.0,7,False,126.0,0.0,126.0,129.0,123,6.0,0.0,3.0,6.0,True,SCALE_STABLE,OK,,0,,False,8.75
+one_tick_breakout,1,120,,0,,0,False,,,129.0,132.0,123,9.0,,,6.0,True,SCALE_STABLE,OK,,0,,False,0.024999999999995026
+post_breakout_stall,1,120,126.0,21,126.0,21,False,126.0,0.0,126.0,129.0,123,6.0,0.0,3.0,6.0,True,SCALE_STABLE,OK,,0,,False,5.749999999999993
+creeping_stall,1,120,126.0,21,126.0,21,False,126.0,0.0,126.0,129.0,123,6.0,0.0,3.0,6.0,True,SCALE_STABLE,OK,,0,,False,5.975000000000001
+slow_trend,1,120,161.0,19,161.0,19,False,161.0,0.0,160.0,163.0,123,40.0,0.0,38.0,6.0,True,SCALE_STABLE,OK,,0,,False,12.5
+long_trend_unbounded_novelty,1,120,203.0,167,203.0,167,False,203.0,0.0,200.0,203.0,123,80.0,0.0,80.0,6.0,True,SCALE_STABLE,OK,,0,,False,53.125
+true_trend__short_mirror,-1,120,127.0,4,127.0,4,False,127.0,0.0,127.0,130.0,123,7.0,0.0,4.0,6.0,True,SCALE_STABLE,OK,,0,,False,11.25
+wide_box_traversal__short_mirror,-1,120,,0,,0,False,,,168.0,171.0,123,48.0,,,6.0,True,SCALE_STABLE,OK,,0,,False,-5.0
+missing_reference_bars,1,120,,0,,0,False,,,127.0,130.0,123,7.0,,,6.0,True,SCALE_STABLE,DEGRADED_REFERENCE_COVERAGE,coverage 0.9333 < required 1.0000 (112/120),1,,False,11.25
+adjusted_split,1,120,127.0,4,127.0,4,False,127.0,0.0,127.0,130.0,123,7.0,0.0,4.0,6.0,True,SCALE_STABLE,OK,,0,,False,11.25
+unadjusted_split,1,120,,0,,0,False,,,,,123,,,,6.0,True,SCALE_STABLE,OK,,0,,False,-69.375
+futures_roll,1,120,,0,,0,False,,,120.0,123.0,123,0.0,,,6.0,True,SCALE_STABLE,OK,,0,,False,495.0
+gappy_reference,1,120,120.0,3,,0,True,,,123.0,126.0,123,3.0,,,59.5,False,SCALE_STABLE,DEGRADED_REFERENCE_ADEQUACY,observed envelope fraction 0.0020 < required 0.5000 | largest unobserved price gap 0.9980 of envelope > allowed 0.2500,2,"correct: data-quality guard, sparse download",True,0.9899999999999949
+crossed_but_not_closed,1,120,120.0,1,120.0,1,False,120.0,0.0,124.0,127.0,123,4.0,0.0,0.0,30.0,True,SCALE_STABLE,OK,,0,,False,0.010000000000005116
+degenerate_history,1,120,,0,,0,False,,,121.0,124.0,123,1.0,,,,False,SCALE_UNKNOWN,UNKNOWN_ZERO_BAND_WIDTH,,0,,False,
+degenerate_history_tick_fallback,1,120,,0,,0,False,,,121.0,124.0,123,1.0,,,0.0,False,SCALE_STABLE,DEGRADED_DEGENERATE_REFERENCE,"zero inter-quantile spread; explicit tick fallback w=tick=0.01 used (degenerate reference, claims blocked) | complete round trips 0.0 < required 1.0 (0 confirmed swings over span 0)",2,,False,300.0
+sparse_slow_box,1,120,,0,,0,False,,,,,123,,,,3.0,True,SCALE_STABLE,OK,,0,,False,-2.5
+long_period_box,1,120,120.0,12,,0,True,,,120.0,123.0,123,0.0,,,0.5,False,SCALE_STABLE,DEGRADED_REFERENCE_ADEQUACY,complete round trips 0.5 < required 1.0 (1 confirmed swings over span 10.31),1,correct: the blocking wide-box false release (A1),False,1.9392372333548777
+long_wick,1,120,120.0,5,120.0,5,False,120.0,0.0,,,123,,,0.0,6.0,True,SCALE_STABLE,OK,,0,,False,-18.75
+volatility_regime_shift,1,120,,0,,0,False,,,,,123,,,,0.5,False,SCALE_UNSTABLE,DEGRADED_SCALE_UNSTABLE,"w/scale 0.13423 > allowed 0.05000 (w=14.9, |median close|=111) | complete round trips 0.5 < required 1.0 (1 confirmed swings over span 298) | observed envelope fraction 0.0667 < required 0.5000 | largest unobserved price gap 0.9333 of envelope > allowed 0.2500",4,,False,-18.926174496644293
+one_way_reference_genuine_trend,1,120,120.0,8,,0,True,,,120.0,123.0,123,0.0,,,0.5,False,SCALE_STABLE,DEGRADED_REFERENCE_ADEQUACY,complete round trips 0.5 < required 1.0 (1 confirmed swings over span 14.28),1,COST: a genuine sustained escape refused certification,True,58.823529411764696
+translated_to_zero_scale,1,120,,0,,0,False,,,127.0,130.0,123,7.0,,,6.0,True,SCALE_UNKNOWN,DEGRADED_SCALE_UNSTABLE,"reference scale reference (|median close|) is zero or non-finite; ratio undefined, treated as unstable",1,,False,11.25
+negative_level_series,1,120,127.0,4,127.0,4,False,127.0,0.0,127.0,130.0,123,7.0,0.0,4.0,6.0,True,SCALE_STABLE,OK,,0,,False,11.25
+low_level_scale_break_false_alarm,1,120,127.0,2,127.0,2,False,127.0,0.0,127.0,130.0,123,7.0,0.0,4.0,6.0,True,SCALE_STABLE,OK,,0,,False,11.25
+nondup_ref_box,1,120,,0,,0,False,,,,,123,,,,6.0,True,SCALE_STABLE,OK,,0,,False,-2.5
+nondup_ref_far,1,120,,0,,0,False,,,,,123,,,,0.5,False,SCALE_STABLE,DEGRADED_REFERENCE_ADEQUACY,complete round trips 0.5 < required 1.0 (1 confirmed swings over span 11.9),1,,False,-163.02521008403392
+nondup_path_smooth,1,120,,0,,0,False,,,,,123,,,,6.0,True,SCALE_STABLE,OK,,0,,False,-2.5
+nondup_path_choppy,1,120,,0,,0,False,,,,,123,,,,6.0,True,SCALE_STABLE,OK,,0,,False,-2.5
+envelope_gap_only,1,120,120.0,3,,0,True,,,,,123,,,,59.5,False,SCALE_STABLE,DEGRADED_REFERENCE_ADEQUACY,largest unobserved price gap 0.3200 of envelope > allowed 0.2500,1,"instrumentation: A1 gap-guard isolation, not a scenario",False,-20.0
+envelope_coverage_only,1,120,120.0,3,,0,True,,,,,123,,,,20.0,False,SCALE_STABLE,DEGRADED_REFERENCE_ADEQUACY,observed envelope fraction 0.4000 < required 0.5000,1,"instrumentation: A1 coverage-guard isolation, not a scenario",False,-20.0

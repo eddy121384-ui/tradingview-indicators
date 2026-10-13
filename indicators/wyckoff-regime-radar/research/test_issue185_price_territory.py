@@ -18,13 +18,28 @@ from ptm_territory import (
     ANCHOR_FIRST_PROBE_WINS,
     ANCHOR_REANCHOR_EACH_PROBE,
     Bar,
+    COMPARABILITY_NO_COMPLETE_CYCLE,
+    COMPARABILITY_OK,
+    COMPARABILITY_REFERENCE_UNUSABLE,
+    CYCLE_SWING_FRACTION,
+    MAX_UNOBSERVED_GAP_FRACTION,
+    MAX_W_OVER_SCALE,
+    MIN_ENVELOPE_COVERED_FRACTION,
+    MIN_REFERENCE_CYCLES,
     NOVELTY_CLASS_HEAVILY_REVISITED,
     NOVELTY_CLASS_UNVISITED,
     PTMConfig,
     Probe,
     REFERENCE_BARS,
+    SCALE_STABLE,
+    SCALE_UNKNOWN,
+    SCALE_UNSTABLE,
+    TOUCH_MIN_OVERLAP_FRACTION,
+    TOUCH_RANGE_OVERLAP,
     VALIDITY_DEGRADED_DEGENERATE_REFERENCE,
+    VALIDITY_DEGRADED_REFERENCE_ADEQUACY,
     VALIDITY_DEGRADED_REFERENCE_COVERAGE,
+    VALIDITY_DEGRADED_SCALE_UNSTABLE,
     VALIDITY_OK,
     VALIDITY_UNKNOWN_INSUFFICIENT_HISTORY,
     VALIDITY_UNKNOWN_NONFINITE_QUERY,
@@ -35,8 +50,20 @@ from ptm_territory import (
     evaluate_stream,
     reference_gap_diagnostics,
 )
+from ptm_promotion_clock import (
+    CONFIRMATION_BARS,
+    PROMOTION_CONFIRMATION_FAILED,
+    PROMOTION_ELIGIBLE,
+    PROMOTION_NO_BREAKOUT,
+    PTM_EARLIER,
+    PTM_LATER,
+    PTM_NOT_COMPARABLE,
+    PTM_SAME_BAR,
+    build_promotion_clock,
+)
 from ptm_territory_fixtures import (
     Fixture,
+    PHASE2_SCENARIOS,
     REQUIRED_SCENARIOS,
     adjusted_split,
     all_fixtures,
@@ -45,6 +72,8 @@ from ptm_territory_fixtures import (
     crossed_but_not_closed,
     degenerate_history,
     degenerate_history_tick_fallback,
+    envelope_coverage_only,
+    envelope_gap_only,
     fake_breakout,
     futures_roll,
     gappy_reference,
@@ -52,14 +81,18 @@ from ptm_territory_fixtures import (
     long_period_box,
     long_trend_unbounded_novelty,
     long_wick,
+    low_level_scale_break_false_alarm,
     missing_reference_bars,
+    negative_level_series,
     nonduplication_same_path_different_reference,
     nonduplication_same_reference_different_path,
     one_tick_breakout,
+    one_way_reference_genuine_trend,
     post_breakout_stall,
     short_mirror_of,
     slow_trend,
     sparse_slow_box,
+    translated_to_zero_scale,
     true_trend,
     unadjusted_split,
     volatility_regime_shift,
@@ -775,15 +808,53 @@ def test_revisit_count_depends_on_observation_density():
     assert slow.revisit_episodes == 3
     assert slow.novelty == pytest.approx(0.25)
     assert slow.novelty > fast.novelty  # same box, "more novel" only because slower
+    # A2 adds the speed-invariant view alongside the frozen values.  Raw R and
+    # N differ by ~1.7x here; episodes-per-cycle differs by well under 1.3x.
+    assert fast.comparability_status == COMPARABILITY_OK
+    assert slow.comparability_status == COMPARABILITY_OK
+    assert fast.reference_cycle_count == pytest.approx(6.0)
+    assert slow.reference_cycle_count == pytest.approx(3.0)
+    assert fast.episodes_per_cycle == pytest.approx(1.0)
+    assert slow.episodes_per_cycle == pytest.approx(1.0)
+    ratio_raw = slow.revisit_episodes / fast.revisit_episodes
+    ratio_a2 = slow.episodes_per_cycle / fast.episodes_per_cycle
+    assert abs(math.log(ratio_a2)) < abs(math.log(ratio_raw))
 
 
-def test_120_bar_window_is_insufficient_for_a_long_period_box():
+def test_long_period_box_is_reported_as_insufficient_evidence_not_new_territory():
+    """A1 closes the blocking wide-box false release.
+
+    Before A1 this fixture produced ``R=1, N=0.5, claim=True`` *inside* a
+    long-established box -- exactly the failure the indicator exists to avoid.
+    The frozen 120-bar window is one slow one-way segment 105 -> 118, so it
+    contains no complete round trip.  The honest output is "this window is not
+    evidence of a repeated region", so no claim may be emitted anywhere.
+    """
     ep = run(long_period_box())
+    ref = ep.reference
     o = obs_at_close(ep, 112.0)
+    # The raw v0.2 numbers are untouched and still LOOK novel ...
     assert o.revisit_episodes is not None and o.revisit_episodes <= 1
     assert o.novelty is not None and o.novelty >= 0.5
-    assert o.is_new_territory_claim is True
     assert o.occupancy is not None and o.occupancy < 0.2
+    # ... but the window holds no complete round trip, so A1 fires.
+    assert ref.swing_legs == 1
+    assert ref.reference_cycle_count == pytest.approx(0.5)
+    assert ref.reference_adequacy_ok is False
+    assert ref.validity == VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    assert ref.allows_new_territory_claim is False
+    assert any("complete round trips" in r for r in ref.validity_reasons)
+    # A1 is the ONLY guard that catches this fixture: coverage, envelope
+    # observation and scale are all healthy, which is why the defect survived.
+    assert ref.coverage == pytest.approx(1.0)
+    assert ref.envelope_covered_fraction == pytest.approx(1.0)
+    assert ref.scale_state == SCALE_STABLE
+    # No observation in the whole episode may claim new territory.
+    assert all(not x.is_new_territory_claim for x in ep.observations)
+    # A2 must still report "unmeasurable", never a fabricated number.
+    assert o.comparability_status == COMPARABILITY_NO_COMPLETE_CYCLE
+    assert o.episodes_per_cycle is None
+    assert o.revisit_density is not None
 
 
 def test_long_wick_overstates_occupancy_and_masks_novelty():
@@ -1008,3 +1079,1033 @@ def test_invalid_direction_is_rejected_not_silently_defaulted(bad_direction):
         build_reference(bars, 120, bad_direction)
     with pytest.raises(ValueError):
         evaluate_episode(bars, 120, bad_direction)
+
+
+# ===========================================================================
+# 17. A1 -- reference adequacy (is the window evidence of a repeated region?)
+# ===========================================================================
+
+
+def test_a1_thresholds_are_declared_pre_outcome_and_in_the_fingerprint():
+    """The safety thresholds must be frozen constants, not tuned numbers."""
+    assert CYCLE_SWING_FRACTION == 0.5
+    assert MIN_REFERENCE_CYCLES == 1.0
+    assert MIN_ENVELOPE_COVERED_FRACTION == 0.5
+    assert MAX_UNOBSERVED_GAP_FRACTION == 0.25
+    fp = PTMConfig().fingerprint()
+    for key in ("cycle_swing_fraction", "min_reference_cycles",
+                "min_envelope_covered_fraction", "max_unobserved_gap_fraction",
+                "max_w_over_scale"):
+        assert key in fp, key
+
+
+def test_a1_cycle_count_matches_the_known_box_geometry():
+    # The 6-sweep 100-120 box has 12 confirmed swing legs => 6 round trips; the
+    # 3-sweep box => 3; the one-way long_period_box window => half a leg.
+    assert run(wide_box_traversal()).reference.reference_cycle_count == pytest.approx(6.0)
+    assert run(sparse_slow_box()).reference.reference_cycle_count == pytest.approx(3.0)
+    assert run(long_period_box()).reference.reference_cycle_count == pytest.approx(0.5)
+    assert run(wide_box_traversal()).reference.swing_legs == 12
+
+
+@pytest.mark.parametrize("factory", [long_period_box,
+                                     one_way_reference_genuine_trend,
+                                     nonduplication_same_path_different_reference])
+def test_a1_guards_without_a_complete_round_trip(factory):
+    if factory is nonduplication_same_path_different_reference:
+        _a, fx = factory()
+    else:
+        fx = factory()
+    ref = run(fx).reference
+    assert ref.reference_adequacy_ok is False
+    assert ref.validity == VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    assert ref.allows_new_territory_claim is False
+    assert any("complete round trips" in r for r in ref.validity_reasons)
+
+
+def test_a1_does_not_block_genuine_trends_whose_window_contains_cycles():
+    """The guard must not cost us the real trends (Sophira's core requirement)."""
+    for factory in (true_trend, slow_trend, healthy_retest,
+                    long_trend_unbounded_novelty):
+        ep = run(factory())
+        assert ep.reference.validity == VALIDITY_OK, factory.__name__
+        assert ep.reference.reference_adequacy_ok is True, factory.__name__
+        assert ep.first_new_territory_bar is not None, factory.__name__
+
+
+def test_a1_false_suppression_of_a_real_trend_is_measured_not_hidden():
+    """The honest cost of A1: a genuine trend behind a one-way window is blocked.
+
+    This is a REPORTED limitation, not a bug to be papered over.  The window
+    contains no round trip, so the indicator cannot claim; it returns
+    insufficient evidence instead of guessing.
+    """
+    fx = one_way_reference_genuine_trend()
+    ep = run(fx)
+    assert ep.reference.validity == VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    assert all(not o.is_new_territory_claim for o in ep.observations)
+    # The price path really did escape and keep going; the raw v0.2 numbers
+    # show it, which is exactly why the guard is the only thing stopping a
+    # claim here and why the suppression must be reported.
+    last = ep.observations[-1]
+    assert last.close == pytest.approx(160.0)
+    assert last.frontier_progress is not None and last.frontier_progress > 0
+    assert last.novelty_class == NOVELTY_CLASS_UNVISITED
+
+
+def test_a1_is_the_only_guard_that_catches_the_long_period_box():
+    """Coverage, envelope and scale are all healthy there; cycles are not."""
+    for factory in (long_period_box, one_way_reference_genuine_trend):
+        ref = run(factory()).reference
+        assert ref.coverage == pytest.approx(1.0)
+        assert ref.envelope_covered_fraction == pytest.approx(1.0)
+        assert ref.max_unobserved_gap_fraction == pytest.approx(0.0)
+        assert ref.scale_state == SCALE_STABLE
+        assert ref.reference_adequacy_ok is False
+
+
+def test_a1_is_the_single_point_of_control_for_the_long_period_box_claim():
+    """Lowering ONLY the cycle guard reopens the claim, proving causality."""
+    fx = long_period_box()
+    blocked = run(fx)
+    assert all(not o.is_new_territory_claim for o in blocked.observations)
+    reopened = run(fx, PTMConfig(min_reference_cycles=0.0))
+    assert any(o.is_new_territory_claim for o in reopened.observations)
+    # ... and nothing else about the observation changes.
+    assert reopened.observations[0].revisit_episodes == \
+        blocked.observations[0].revisit_episodes
+
+
+def test_phase2_guard_switch_defaults_on_and_only_lifts_the_gate():
+    """The comparison switch is never the default and must not move R/O/N."""
+    assert PTMConfig().apply_phase2_guards is True
+    assert PTMConfig().fingerprint()["apply_phase2_guards"] is True
+    fx = long_period_box()
+    fixed = run(fx)
+    legacy = run(fx, replace(fx.config, apply_phase2_guards=False))
+    # Diagnostics are unchanged; only the gate is lifted.
+    assert [o.revisit_episodes for o in legacy.observations] == \
+        [o.revisit_episodes for o in fixed.observations]
+    assert [o.novelty for o in legacy.observations] == \
+        [o.novelty for o in fixed.observations]
+    assert [o.comparability_status for o in legacy.observations] == \
+        [o.comparability_status for o in fixed.observations]
+    # The diagnostics stay truthful even when the gate is lifted ...
+    assert legacy.reference.reference_adequacy_ok is False
+    assert legacy.reference.guards_enforced is False
+    # ... and the pre-patch label/behaviour is reproduced exactly.
+    assert legacy.reference.validity == VALIDITY_OK
+    assert legacy.reference.allows_new_territory_claim is True
+    assert any(o.is_new_territory_claim for o in legacy.observations)
+    assert all(not o.is_new_territory_claim for o in fixed.observations)
+
+
+def test_a1_unobserved_gap_guard_catches_a_sparse_download():
+    ref = run(gappy_reference()).reference
+    assert ref.envelope_covered_fraction < MIN_ENVELOPE_COVERED_FRACTION
+    assert ref.max_unobserved_gap_fraction > MAX_UNOBSERVED_GAP_FRACTION
+    assert ref.reference_adequacy_ok is False
+    assert ref.allows_new_territory_claim is False
+
+
+def test_a1_close_to_close_gap_is_a_diagnostic_and_must_not_gate():
+    """A range-spanning reference legitimately has big close jumps.
+
+    ``crossed_but_not_closed`` teleports 100 <-> 120 between closes while its
+    bar ranges cover every price in between, so gating on close gaps would
+    falsely reject a fully observed reference.
+    """
+    ref = run(crossed_but_not_closed()).reference
+    diag = reference_gap_diagnostics(ref)
+    assert diag["max_close_gap_w"] >= 10.0          # big close jumps
+    assert diag["max_unobserved_gap_fraction"] == pytest.approx(0.0)
+    assert ref.envelope_covered_fraction == pytest.approx(1.0)
+    assert ref.reference_adequacy_ok is True        # not falsely rejected
+
+
+def test_a1_gap_diagnostics_agree_with_the_reference_fields():
+    for fx in all_fixtures():
+        ref = run(fx).reference
+        diag = reference_gap_diagnostics(ref)
+        if ref.w is None or ref.n_valid == 0:
+            assert diag["envelope_covered_fraction"] is None, fx.name
+            continue
+        assert diag["envelope_covered_fraction"] == pytest.approx(
+            ref.envelope_covered_fraction), fx.name
+        assert diag["max_unobserved_gap_fraction"] == pytest.approx(
+            ref.max_unobserved_gap_fraction), fx.name
+        assert diag["max_unobserved_gap_w"] == pytest.approx(
+            ref.max_unobserved_gap_w), fx.name
+
+
+def test_a1_invalid_reference_bars_never_create_swing_legs():
+    """Missing bars must not be interpolated into a fake round trip."""
+    fx = missing_reference_bars()
+    ref = run(fx).reference
+    assert ref.validity == VALIDITY_DEGRADED_REFERENCE_COVERAGE
+    assert ref.n_valid == 112
+    # The box geometry is still visible through the gaps, so cycles survive;
+    # the coverage guard is what blocks the claim here.
+    assert ref.reference_cycle_count is not None
+    assert ref.reference_adequacy_ok is True
+    assert ref.allows_new_territory_claim is False
+
+
+def test_a1_cycle_count_is_reflection_invariant():
+    for factory in (true_trend, wide_box_traversal, long_period_box, sparse_slow_box):
+        fx = factory()
+        mirror = short_mirror_of(fx)
+        a = run(fx).reference
+        b = run(mirror).reference
+        assert a.reference_cycle_count == b.reference_cycle_count, factory.__name__
+        assert a.swing_legs == b.swing_legs, factory.__name__
+        assert a.reference_adequacy_ok == b.reference_adequacy_ok, factory.__name__
+
+
+# ===========================================================================
+# 18. A2 -- market-speed-invariant revisit comparability
+# ===========================================================================
+
+
+def test_a2_reports_alongside_and_does_not_replace_r_or_n():
+    for fx in all_fixtures():
+        for o in run(fx).observations:
+            if o.revisit_episodes is None:
+                assert o.episodes_per_cycle is None
+                assert o.revisit_density is None
+                continue
+            assert o.novelty == pytest.approx(1.0 / (1.0 + o.revisit_episodes))
+            if o.comparability_status == COMPARABILITY_OK:
+                cycles = o.reference_cycle_count
+                assert cycles is not None and cycles >= 1.0
+                assert o.episodes_per_cycle == pytest.approx(
+                    o.revisit_episodes / cycles)
+            else:
+                assert o.episodes_per_cycle is None
+
+
+def test_a2_speed_comparability_improves_on_raw_revisit_count():
+    """Same box, 6 fast sweeps vs 3 slow sweeps.
+
+    Raw R differs by 2x and N by 1.67x purely because of market speed.  The
+    per-cycle rate is the speed-invariant view A2 adds.
+    """
+    fast = obs_at_close(run(wide_box_traversal()), 118.0)
+    slow = obs_at_close(run(sparse_slow_box()), 118.0)
+    assert fast.revisit_episodes == 6 and slow.revisit_episodes == 3
+    raw_gap = abs(math.log(slow.revisit_episodes / fast.revisit_episodes))
+    a2_gap = abs(math.log(slow.episodes_per_cycle / fast.episodes_per_cycle))
+    assert a2_gap < raw_gap
+    assert fast.episodes_per_cycle == pytest.approx(1.0)
+    assert slow.episodes_per_cycle == pytest.approx(1.0)
+
+
+def test_a2_zero_revisits_is_a_measured_zero_not_an_unmeasurable_none():
+    """R == 0 is a real observation; only "no cycle" makes A2 unmeasurable."""
+    ep = run(true_trend())
+    first_clean = next(o for o in ep.observations if o.revisit_episodes == 0)
+    assert first_clean.comparability_status == COMPARABILITY_OK
+    assert first_clean.episodes_per_cycle == pytest.approx(0.0)
+    assert first_clean.revisit_density == pytest.approx(0.0)
+
+
+def test_a2_no_complete_cycle_is_explicitly_not_comparable():
+    o = obs_at_close(run(long_period_box()), 112.0)
+    assert o.comparability_status == COMPARABILITY_NO_COMPLETE_CYCLE
+    assert o.episodes_per_cycle is None
+    # The per-bar density is still computable; only the per-cycle rate is not.
+    assert o.revisit_density is not None
+
+
+def test_a2_unusable_reference_is_distinguished_from_no_cycle():
+    ep = run(degenerate_history())
+    o = ep.observations[0]
+    assert o.revisit_episodes is None
+    assert o.comparability_status == COMPARABILITY_REFERENCE_UNUSABLE
+    assert o.episodes_per_cycle is None
+    assert o.revisit_density is None
+
+
+def test_a2_revisit_density_uses_the_valid_reference_bar_count():
+    ref = run(missing_reference_bars()).reference
+    o = run(missing_reference_bars()).observations[0]
+    assert o.revisit_episodes is not None
+    assert o.revisit_density == pytest.approx(
+        o.revisit_episodes / float(ref.n_valid))
+
+
+def test_a2_does_not_change_any_claim_decision():
+    """A2 is descriptive: the claim predicate must be exactly the v0.2 rule."""
+    for fx in all_fixtures():
+        ep = run(fx)
+        for o in ep.observations:
+            expected = bool(
+                o.novelty_class in (NOVELTY_CLASS_UNVISITED,
+                                    "SPARSE")
+                and ep.reference.allows_new_territory_claim
+                and not o.suspect_scale_break
+            )
+            assert o.is_new_territory_claim == expected, (fx.name, o.bar_index)
+
+
+# ===========================================================================
+# 19. A3 -- price-scale stability
+# ===========================================================================
+
+
+def test_a3_threshold_equals_the_one_hundred_percent_interdecile_rule():
+    # w = span / 20, so w/scale <= 0.05  <=>  span <= 100% of the price level.
+    assert MAX_W_OVER_SCALE == 0.05
+    assert MAX_W_OVER_SCALE * 20.0 == pytest.approx(1.0)
+
+
+def test_a3_flags_the_volatility_regime_shift():
+    ref = run(volatility_regime_shift()).reference
+    assert ref.w_over_scale is not None and ref.w_over_scale > MAX_W_OVER_SCALE
+    assert ref.scale_state == SCALE_UNSTABLE
+    assert ref.scale_stable is False
+    assert ref.validity == VALIDITY_DEGRADED_SCALE_UNSTABLE
+    assert ref.allows_new_territory_claim is False
+    assert any("w/scale" in r for r in ref.validity_reasons)
+
+
+def test_a3_healthy_references_are_stable():
+    for factory in (wide_box_traversal, true_trend, slow_trend, sparse_slow_box,
+                    long_period_box, crossed_but_not_closed, long_wick):
+        ref = run(factory()).reference
+        assert ref.scale_state == SCALE_STABLE, factory.__name__
+        assert ref.scale_stable is True, factory.__name__
+
+
+def test_a3_zero_reference_level_fails_closed_without_dividing_by_zero():
+    """Zero price level => no valid denominator => SCALE_UNKNOWN, no claim."""
+    ref = run(translated_to_zero_scale()).reference
+    assert ref.median_close == pytest.approx(0.0)
+    assert ref.scale_reference is None
+    assert ref.w_over_scale is None
+    assert ref.scale_state == SCALE_UNKNOWN
+    assert ref.scale_stable is False
+    assert ref.validity == VALIDITY_DEGRADED_SCALE_UNSTABLE
+    assert ref.allows_new_territory_claim is False
+    assert run(translated_to_zero_scale()).observations[0].scale_state == SCALE_UNKNOWN
+
+
+def test_a3_uses_absolute_median_so_negative_levels_stay_valid():
+    ref = run(negative_level_series()).reference
+    assert ref.median_close is not None and ref.median_close < 0.0
+    assert ref.scale_reference == pytest.approx(abs(ref.median_close))
+    assert ref.w_over_scale is not None and ref.w_over_scale > 0.0
+    assert ref.scale_state == SCALE_STABLE
+    assert ref.allows_new_territory_claim is True
+
+
+def test_a3_negative_level_series_matches_its_positive_twin():
+    """Territory arithmetic is translation invariant; only the ratio moves."""
+    base = run(true_trend())
+    shifted = run(negative_level_series())
+    for a, b in zip(base.observations, shifted.observations):
+        assert a.revisit_episodes == b.revisit_episodes
+        assert a.occupancy == pytest.approx(b.occupancy)
+        assert a.novelty == pytest.approx(b.novelty)
+        assert a.is_new_territory_claim == b.is_new_territory_claim
+    assert base.first_new_territory_bar == shifted.first_new_territory_bar
+
+
+def test_a3_ratio_is_invariant_under_a_multiplicative_rescale():
+    base = run(true_trend()).reference
+    scaled = run(adjusted_split()).reference
+    assert scaled.w_over_scale == pytest.approx(base.w_over_scale)
+    assert scaled.scale_state == base.scale_state
+
+
+def test_a3_ratio_is_not_translation_invariant_and_that_is_documented():
+    """A level-relative ratio cannot be translation invariant.
+
+    It is scale (multiplicative) invariant but not shift invariant: the
+    denominator is the reference price level, so shifting the series towards
+    zero raises the ratio until it fails closed.  Pinned so it cannot change
+    silently.
+    """
+    base = run(true_trend()).reference
+    near_zero = run(translated_to_zero_scale()).reference
+    # true_trend median is 110; shifted by -200 it is exactly -90.
+    negative = run(negative_level_series()).reference
+    assert negative.median_close == pytest.approx(-90.0)
+    assert base.w_over_scale == pytest.approx(base.w / 110.0)
+    assert negative.w_over_scale == pytest.approx(base.w / 90.0)
+    assert negative.w_over_scale != pytest.approx(base.w_over_scale)
+    assert near_zero.w_over_scale is None
+    assert base.scale_state != near_zero.scale_state
+
+
+def test_a3_low_level_false_alarm_of_the_one_bar_screen_is_reported():
+    """D10: the frozen one-bar scale-break screen is level-dependent.
+
+    A fixed absolute 3.0 move is 2.4% at level 123 but 43% at level -7, so the
+    screen latches near zero and suppresses claims whose R/O/N are identical to
+    the positive-level path.  A3 itself is fine here (SCALE_STABLE); the
+    suppression comes from the pre-existing frozen screen, and it is reported
+    rather than hidden behind the negative-level fixture.
+    """
+    positive = run(true_trend())
+    low = run(low_level_scale_break_false_alarm())
+    assert low.reference.scale_state == SCALE_STABLE
+    assert low.reference.allows_new_territory_claim is True
+    # Identical territory arithmetic on both paths ...
+    assert [o.revisit_episodes for o in low.observations] == \
+        [o.revisit_episodes for o in positive.observations]
+    # ... and the same first evidence bar ...
+    assert positive.first_new_territory_bar == low.first_new_territory_bar == 127
+    # ... but the screen latches on the low-level path only, and every bar it
+    # latches on loses the claim the positive-level path keeps.
+    assert any(o.suspect_scale_break for o in low.observations)
+    assert not any(o.suspect_scale_break for o in positive.observations)
+    pos_claims = [o.bar_index for o in positive.observations if o.is_new_territory_claim]
+    low_claims = [o.bar_index for o in low.observations if o.is_new_territory_claim]
+    assert len(low_claims) < len(pos_claims)
+    suppressed = [o.bar_index for o in low.observations
+                  if o.suspect_scale_break and not o.is_new_territory_claim]
+    assert suppressed == [b for b in pos_claims if b not in low_claims]
+
+
+def test_a3_guard_outcome_is_reflection_symmetric():
+    for factory in (true_trend, wide_box_traversal, long_period_box, long_wick):
+        fx = factory()
+        mirror = short_mirror_of(fx)
+        a, b = run(fx).reference, run(mirror).reference
+        assert a.scale_state == b.scale_state, factory.__name__
+        assert a.allows_new_territory_claim == b.allows_new_territory_claim
+
+
+def test_a3_unstable_scale_blocks_every_claim_in_the_episode():
+    ep = run(volatility_regime_shift())
+    assert all(not o.is_new_territory_claim for o in ep.observations)
+
+
+# ===========================================================================
+# 20. Promotion clock -- the corrected timing contract (Sophira review s.1)
+# ===========================================================================
+
+
+def test_breakout_ten_bars_after_the_probe_promotes_at_breakout_plus_three():
+    c = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=130)
+    assert c.b3_break_t == 130
+    assert c.b3_confirmation_t == 133
+    assert c.eligible_promotion_t == 133
+    assert c.probe_to_breakout_bars == 10
+    assert c.promotion_status == PROMOTION_ELIGIBLE
+
+
+def test_probe_plus_three_is_not_the_promotion_time():
+    """The contract error Sophira found, made measurable."""
+    c = build_promotion_clock(probe_t0=120, b3_break_t=130)
+    assert c.probe_plus_three_naive_t == 123
+    assert c.eligible_promotion_t == 133
+    # The old text would have promoted 10 bars too early.
+    assert c.naive_probe_clock_error_bars == 10
+
+
+def test_coincident_breakout_makes_the_naive_error_zero():
+    c = build_promotion_clock(probe_t0=120, b3_break_t=120)
+    assert c.eligible_promotion_t == 123
+    assert c.naive_probe_clock_error_bars == 0
+
+
+def test_no_qualifying_breakout_yields_no_promotion_eligibility():
+    c = build_promotion_clock(probe_t0=120, b3_break_t=None, ptm_observation_t=140)
+    assert c.promotion_status == PROMOTION_NO_BREAKOUT
+    assert c.b3_confirmation_t is None
+    assert c.eligible_promotion_t is None
+    assert c.promotion_next_executable_t is None
+    assert c.ptm_vs_eligibility == PTM_NOT_COMPARABLE
+    assert c.ptm_extra_delay_bars is None
+    # The PTM evidence still exists and is still actionable; there is simply no
+    # promotion to compare it against.
+    assert c.ptm_observation_t == 140
+    assert c.ptm_next_executable_t == 141
+
+
+def test_failed_confirmation_yields_no_promotion_eligibility():
+    c = build_promotion_clock(probe_t0=120, b3_break_t=130,
+                              confirmation_passed=False)
+    assert c.promotion_status == PROMOTION_CONFIRMATION_FAILED
+    assert c.b3_break_t == 130
+    assert c.b3_confirmation_t == 133
+    assert c.eligible_promotion_t is None
+    assert c.ptm_extra_delay_bars is None
+
+
+def test_ptm_earlier_than_eligibility_costs_the_model_zero_bars():
+    c = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=128)
+    assert c.ptm_vs_eligibility == PTM_EARLIER
+    assert c.ptm_extra_delay_bars == 0
+
+
+def test_ptm_on_the_eligibility_bar_costs_zero_bars():
+    c = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=133)
+    assert c.ptm_vs_eligibility == PTM_SAME_BAR
+    assert c.ptm_extra_delay_bars == 0
+
+
+def test_ptm_later_than_eligibility_is_measured_against_real_promotion():
+    """Not against probe+3, which would report a fictional 12-bar delay."""
+    c = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=135)
+    assert c.ptm_vs_eligibility == PTM_LATER
+    assert c.ptm_extra_delay_bars == 2
+    assert c.ptm_observation_t - c.probe_plus_three_naive_t == 12
+
+
+def test_next_executable_is_the_later_of_the_two_independent_clocks():
+    c = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=135)
+    assert c.promotion_next_executable_t == 134
+    assert c.ptm_next_executable_t == 136
+    assert c.next_executable_t == 136
+    early = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=125)
+    assert early.next_executable_t == 134
+
+
+def test_confirmation_window_is_the_frozen_three_bars():
+    assert CONFIRMATION_BARS == 3
+    c = build_promotion_clock(probe_t0=0, b3_break_t=0)
+    assert c.eligible_promotion_t == 3
+
+
+def test_breakout_before_the_probe_is_rejected_not_coerced():
+    with pytest.raises(ValueError):
+        build_promotion_clock(probe_t0=120, b3_break_t=119)
+
+
+@pytest.mark.parametrize("bad_window", [0, -1, -3])
+def test_non_positive_confirmation_window_is_rejected(bad_window):
+    with pytest.raises(ValueError):
+        build_promotion_clock(probe_t0=120, b3_break_t=130,
+                              confirmation_bars=bad_window)
+
+
+def test_promotion_clock_reads_no_market_data_and_is_deterministic():
+    a = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=135)
+    b = build_promotion_clock(probe_t0=120, b3_break_t=130, ptm_observation_t=135)
+    assert a == b
+
+
+# ===========================================================================
+# 21. Re-verification of the standing limits A4-A7
+# ===========================================================================
+
+
+def test_a4_the_secondary_touch_variant_cannot_mitigate_an_enclosing_wick():
+    """A4 remains OPEN: the variant does not fix the long-wick case.
+
+    A bar whose range fully encloses the query band overlaps 100% of it, so no
+    ``min_touch_fraction`` can exclude it.  This is reported, not assumed away.
+    """
+    fx = long_wick()
+    default = obs_at_close(run(fx), 135.0).revisit_episodes
+    assert default == 1
+    for frac in (0.25, 0.5, 0.75, 1.0):
+        cfg = PTMConfig(touch_mode=TOUCH_MIN_OVERLAP_FRACTION,
+                        min_touch_fraction=frac)
+        ep = evaluate_episode(fx.bars, fx.probe_index, fx.direction, cfg)
+        assert obs_at_close(ep, 135.0).revisit_episodes == default, frac
+
+
+def test_a4_secondary_touch_variant_is_monotone_and_has_an_effect():
+    changed = 0
+    for fx in all_fixtures():
+        counts = []
+        for frac in (0.0, 0.25, 0.5, 0.75, 1.0):
+            cfg = PTMConfig(touch_mode=TOUCH_MIN_OVERLAP_FRACTION,
+                            min_touch_fraction=frac)
+            ep = evaluate_episode(fx.bars, fx.probe_index, fx.direction, cfg)
+            counts.append(ep.observations[0].revisit_episodes)
+        present = [c for c in counts if c is not None]
+        for a, b in zip(present, present[1:]):
+            assert a >= b, (fx.name, counts)
+        if len(set(present)) > 1:
+            changed += 1
+    assert changed > 0, "the challenger touch mode never changed any count"
+
+
+def test_a4_zero_overlap_fraction_is_exactly_the_inclusive_default():
+    for factory in (true_trend, wide_box_traversal, long_wick):
+        fx = factory()
+        base = run(fx).observations
+        cfg = PTMConfig(touch_mode=TOUCH_MIN_OVERLAP_FRACTION, min_touch_fraction=0.0)
+        alt = evaluate_episode(fx.bars, fx.probe_index, fx.direction, cfg).observations
+        assert [o.revisit_episodes for o in alt] == \
+            [o.revisit_episodes for o in base]
+
+
+def test_a5_first_probe_wins_freezes_one_reference_for_overlapping_probes():
+    fx = wide_box_traversal()
+    bars = fx.bars
+    probes = [Probe(index=120, direction=1), Probe(index=124, direction=1),
+              Probe(index=128, direction=1)]
+    episodes = evaluate_stream(bars, probes, fx.config, ANCHOR_FIRST_PROBE_WINS)
+    assert len(episodes) == 1
+    assert episodes[0].anchor_index == 120
+    assert episodes[0].reprobe_indices == [124, 128]
+
+
+def test_a5_staleness_cap_opens_a_new_episode_after_the_window_is_stale():
+    fx = wide_box_traversal()
+    bars = fx.bars
+    probes = [Probe(index=120, direction=1), Probe(index=120 + 120, direction=1)]
+    episodes = evaluate_stream(bars, probes, fx.config, ANCHOR_FIRST_PROBE_WINS)
+    assert len(episodes) == 2
+    assert [e.anchor_index for e in episodes] == [120, 240]
+
+
+def test_a5_anchor_policy_is_in_the_frozen_fingerprint():
+    """A5: the anchor policy must be part of the frozen fingerprint.
+
+    Regression found in phase 2: it was previously only a bare argument to
+    ``evaluate_stream``, so a caller could switch to the defective re-anchor
+    policy without the frozen fingerprint changing at all.
+    """
+    fp = PTMConfig().fingerprint()
+    assert fp["anchor_policy"] == ANCHOR_FIRST_PROBE_WINS
+    assert fp["anchor_policy"] == PTMConfig().anchor_policy
+    changed = replace(PTMConfig(), anchor_policy=ANCHOR_REANCHOR_EACH_PROBE)
+    assert changed.fingerprint()["anchor_policy"] == ANCHOR_REANCHOR_EACH_PROBE
+    assert changed.fingerprint() != PTMConfig().fingerprint()
+
+    fx = wide_box_traversal()
+    probes = [Probe(index=120, direction=1), Probe(index=124, direction=1)]
+    # No explicit argument means "use the config".
+    assert len(evaluate_stream(fx.bars, probes, fx.config)) == 1
+    assert len(evaluate_stream(fx.bars, probes, fx.config,
+                               ANCHOR_FIRST_PROBE_WINS)) == 1
+    assert len(evaluate_stream(fx.bars, probes, fx.config,
+                               ANCHOR_REANCHOR_EACH_PROBE)) == 2
+    # The defective policy is expressible for the counterexample, and recorded.
+    from_config = evaluate_stream(
+        fx.bars, probes,
+        replace(fx.config, anchor_policy=ANCHOR_REANCHOR_EACH_PROBE))
+    assert len(from_config) == 2
+
+
+@pytest.mark.parametrize("bad", ["", "reanchor", "FIRST_PROBE_WINS", "x"])
+def test_a5_unknown_anchor_policy_is_rejected(bad):
+    fx = wide_box_traversal()
+    with pytest.raises(ValueError):
+        evaluate_stream(fx.bars, [Probe(index=120, direction=1)], fx.config, bad)
+
+
+def test_a5_reanchor_each_probe_is_the_documented_defect_not_the_default():
+    fx = wide_box_traversal()
+    probes = [Probe(index=120, direction=1), Probe(index=124, direction=1)]
+    default = evaluate_stream(fx.bars, probes, fx.config, ANCHOR_FIRST_PROBE_WINS)
+    naive = evaluate_stream(fx.bars, probes, fx.config, ANCHOR_REANCHOR_EACH_PROBE)
+    assert len(default) == 1
+    assert len(naive) == 2  # re-anchoring resets evidence maturity
+    assert PTMConfig().fingerprint()  # default config is first_probe_wins
+
+
+def test_a6_stagnation_is_independent_and_never_enters_the_claim():
+    for fx in all_fixtures():
+        ep = run(fx)
+        for o in ep.observations:
+            recomputed = bool(
+                o.novelty_class in (NOVELTY_CLASS_UNVISITED, "SPARSE")
+                and ep.reference.allows_new_territory_claim
+                and not o.suspect_scale_break
+            )
+            assert o.is_new_territory_claim == recomputed, (fx.name, o.bar_index)
+    # A stall can coexist with a claim and a claim can coexist without a stall,
+    # so the two are demonstrably not fused.
+    stall = run(post_breakout_stall())
+    assert any(o.stall_flag for o in stall.observations)
+    assert any(o.is_new_territory_claim for o in stall.observations)
+
+
+def test_a7_inclusive_band_edges_and_scale_break_can_never_create_a_claim():
+    for fx in all_fixtures():
+        ep = run(fx)
+        for o in ep.observations:
+            if o.suspect_scale_break:
+                assert o.is_new_territory_claim is False, (fx.name, o.bar_index)
+    for factory in (unadjusted_split, futures_roll):
+        ep = run(factory())
+        assert all(not o.is_new_territory_claim for o in ep.observations)
+        assert any(o.suspect_scale_break for o in ep.observations)
+
+
+def test_a7_unadjusted_split_and_roll_never_claim_new_territory():
+    for factory in (unadjusted_split, futures_roll):
+        ep = run(factory())
+        assert all(not o.is_new_territory_claim for o in ep.observations), \
+            factory.__name__
+
+
+def test_a7_signal_is_same_close_observable_and_next_bar_actionable():
+    """No fixed waiting period may be introduced by the phase-2 guards."""
+    for fx in all_fixtures():
+        for o in run(fx).observations:
+            assert o.observable_at_bar == o.bar_index, fx.name
+            assert o.actionable_at_bar == o.bar_index + 1, fx.name
+
+
+def test_a7_no_phase2_guard_changed_the_causality_of_any_observation():
+    for factory in (true_trend, long_period_box, gappy_reference,
+                    volatility_regime_shift, missing_reference_bars):
+        fx = factory()
+        full = run(fx)
+        for cut in range(fx.probe_index + 1, len(fx.bars)):
+            part = evaluate_episode(fx.bars[:cut], fx.probe_index,
+                                    fx.direction, fx.config)
+            assert part.observations == full.observations[: cut - fx.probe_index], \
+                (fx.name, cut)
+
+
+def test_a7_all_phase2_guards_are_reflection_symmetric():
+    for factory in (true_trend, wide_box_traversal, long_period_box,
+                    sparse_slow_box, one_way_reference_genuine_trend,
+                    volatility_regime_shift, long_wick):
+        fx = factory()
+        a = run(fx)
+        b = run(short_mirror_of(fx))
+        ra, rb = a.reference, b.reference
+        assert ra.reference_cycle_count == rb.reference_cycle_count, factory.__name__
+        assert ra.reference_adequacy_ok == rb.reference_adequacy_ok, factory.__name__
+        assert ra.scale_state == rb.scale_state, factory.__name__
+        assert ra.allows_new_territory_claim == rb.allows_new_territory_claim, \
+            factory.__name__
+        for x, y in zip(a.observations, b.observations):
+            assert x.revisit_episodes == y.revisit_episodes, factory.__name__
+            assert x.occupancy == pytest.approx(y.occupancy), factory.__name__
+            assert x.novelty == pytest.approx(y.novelty), factory.__name__
+            assert x.is_new_territory_claim == y.is_new_territory_claim, \
+                factory.__name__
+
+
+# ===========================================================================
+# 22. Phase-2 scenario matrix (Sophira review s.2 and the issue's item 6)
+# ===========================================================================
+
+
+def test_phase2_comparison_numbers_are_pinned():
+    """Pin the v0.2-vs-fixed claim counts quoted in the finding doc §6.E.
+
+    These are the numbers the review reports. If the guards or the fixtures
+    change, the documentation must be updated deliberately, not silently.
+    """
+    expected = {
+        "wide_box_traversal": (0, 0),
+        "long_period_box": (12, 0),
+        "sparse_slow_box": (0, 0),
+        "true_trend": (4, 4),
+        "slow_trend": (19, 19),
+        "long_trend_unbounded_novelty": (167, 167),
+        "healthy_retest": (7, 7),
+        "fake_breakout": (1, 1),
+        "volatility_regime_shift": (0, 0),
+        "gappy_reference": (3, 0),
+        "one_way_reference_genuine_trend": (8, 0),
+        "unadjusted_split": (0, 0),
+        "futures_roll": (0, 0),
+        "translated_to_zero_scale": (0, 0),
+        "negative_level_series": (4, 4),
+        "low_level_scale_break_false_alarm": (2, 2),
+        "long_wick": (5, 5),
+        "crossed_but_not_closed": (1, 1),
+    }
+    by_name = {f.name: f for f in all_fixtures()}
+    for name, (v02, fixed) in sorted(expected.items()):
+        fx = by_name[name]
+        legacy = run(fx, replace(fx.config, apply_phase2_guards=False))
+        now = run(fx)
+        got = (sum(1 for o in legacy.observations if o.is_new_territory_claim),
+               sum(1 for o in now.observations if o.is_new_territory_claim))
+        assert got == (v02, fixed), (name, got)
+
+
+def test_phase2_scenario_names_are_all_implemented():
+    names = {fx.name for fx in all_fixtures()}
+    for name in PHASE2_SCENARIOS:
+        assert name in names, name
+    assert len(REQUIRED_SCENARIOS) == 10
+    assert len(PHASE2_SCENARIOS) >= 8
+
+
+def test_phase2_scenario_1_no_false_new_territory_inside_a_large_box():
+    for factory in (wide_box_traversal, long_period_box):
+        ep = run(factory())
+        assert all(not o.is_new_territory_claim for o in ep.observations), \
+            factory.__name__
+
+
+def test_phase2_scenario_2_long_period_box_is_insufficient_evidence():
+    ref = run(long_period_box()).reference
+    assert ref.validity == VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    assert "insufficient" not in ref.validity  # stated as DEGRADED, not disguised
+    assert ref.n_valid == 120  # usable numbers, no claim
+
+
+def test_phase2_scenario_3_genuine_trends_are_not_wholly_blocked():
+    for factory in (true_trend, slow_trend, healthy_retest):
+        ep = run(factory())
+        assert ep.first_new_territory_bar is not None, factory.__name__
+        assert ep.reference.validity == VALIDITY_OK, factory.__name__
+
+
+def test_phase2_scenario_4_slow_trend_is_identified_promptly():
+    """Latency is measured from the structural escape, not from the anchor."""
+    fx = slow_trend()
+    ep = run(fx)
+    escape = structural_escape_bar(fx, ep)
+    assert escape is not None
+    assert ep.first_new_territory_bar is not None
+    assert ep.first_new_territory_bar - escape <= 1
+
+
+def test_phase2_scenario_5_a_fake_breakout_is_reflected_immediately():
+    ep = run(fake_breakout())
+    # It may claim on the escape close (it cannot know the future), but the
+    # moment price is back inside the visited region the claim must be gone.
+    back_inside = obs_at_close(ep, 116.0)
+    assert back_inside.revisit_episodes is not None and back_inside.revisit_episodes > 1
+    assert back_inside.is_new_territory_claim is False
+
+
+def test_phase2_scenario_6_a_healthy_retest_does_not_kill_the_signal():
+    ep = run(healthy_retest())
+    claims = [o.bar_index for o in ep.observations if o.is_new_territory_claim]
+    assert claims
+    retest = obs_at_close(ep, 118.0)
+    assert retest.is_new_territory_claim is False  # back in old territory
+    later = [o for o in ep.observations if o.bar_index > retest.bar_index
+             and o.is_new_territory_claim]
+    assert later, "the signal never returned after the retest"
+
+
+def test_phase2_scenario_7_long_and_short_are_symmetric():
+    for factory in (true_trend, wide_box_traversal, long_period_box):
+        fx = factory()
+        a, b = run(fx), run(short_mirror_of(fx))
+        assert a.first_new_territory_bar == b.first_new_territory_bar, \
+            factory.__name__
+
+
+def test_phase2_scenario_8_no_extra_fixed_waiting_period_was_introduced():
+    """Every guard is a reference-level gate, never a time delay."""
+    for fx in all_fixtures():
+        ep = run(fx)
+        first = ep.first_new_territory_bar
+        if first is None:
+            continue
+        base = ep.observations[0]
+        assert base.observable_at_bar == base.bar_index
+        # The earliest possible claim bar is the first observable bar, so a
+        # guard cannot have inserted a fixed number of waiting bars.
+        assert first >= ep.anchor_index
+        assert all(o.actionable_at_bar == o.bar_index + 1 for o in ep.observations)
+
+
+# ---------------------------------------------------------------------------
+# 23. Phase-2 adversarial-audit hardening
+# ---------------------------------------------------------------------------
+#
+# An independent phase-2 audit mutated the guards to find which ones were not
+# actually pinned by the suite.  Four mutants survived the 151-test suite:
+#     M1  drop ``reference_adequacy_ok`` from the claim gate
+#     M9  drop ``scale_stable`` from the claim gate
+#     M10 disable the A1 largest-unobserved-gap reason
+#     M11 disable the A1 envelope-coverage reason
+# and it found a P1 FAIL-OPEN: a bar with ``low=-1e308, high=+1e308`` made the
+# derived envelope non-finite, ``inf/inf`` became NaN, ``nan < 0.5`` is False,
+# and a claim was emitted with a NaN coverage diagnostic.  The tests below pin
+# every one of those findings.
+
+
+def test_audit_a1_gap_guard_blocks_in_isolation():
+    """Only the gap reason may block ``envelope_gap_only``; cycles/coverage pass."""
+    ep = run(envelope_gap_only())
+    ref = ep.reference
+    assert ref.reference_cycle_count >= MIN_REFERENCE_CYCLES
+    assert ref.envelope_covered_fraction >= MIN_ENVELOPE_COVERED_FRACTION
+    assert ref.max_unobserved_gap_fraction > MAX_UNOBSERVED_GAP_FRACTION
+    assert ref.reference_adequacy_ok is False
+    assert ref.validity == VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    assert len(ref.validity_reasons) == 1
+    assert "unobserved price gap" in ref.validity_reasons[0]
+    assert ep.first_new_territory_bar is None
+
+
+def test_audit_a1_coverage_guard_blocks_in_isolation():
+    """Only the coverage reason may block ``envelope_coverage_only``."""
+    ep = run(envelope_coverage_only())
+    ref = ep.reference
+    assert ref.reference_cycle_count >= MIN_REFERENCE_CYCLES
+    assert ref.max_unobserved_gap_fraction <= MAX_UNOBSERVED_GAP_FRACTION
+    assert ref.envelope_covered_fraction < MIN_ENVELOPE_COVERED_FRACTION
+    assert ref.reference_adequacy_ok is False
+    assert ref.validity == VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    assert len(ref.validity_reasons) == 1
+    assert "envelope fraction" in ref.validity_reasons[0]
+    assert ep.first_new_territory_bar is None
+
+
+def test_audit_a1_gap_reason_is_load_bearing():
+    """Mutant M10: removing only the gap threshold must reopen the claim."""
+    fx = envelope_gap_only()
+    lifted = replace(fx.config, max_unobserved_gap_fraction=1.0)
+    ep = run(fx, lifted)
+    assert ep.reference.max_unobserved_gap_fraction > MAX_UNOBSERVED_GAP_FRACTION
+    assert ep.reference.reference_adequacy_ok is True
+    assert ep.reference.validity == VALIDITY_OK
+    assert ep.first_new_territory_bar is not None
+
+
+def test_audit_a1_coverage_reason_is_load_bearing():
+    """Mutant M11: removing only the coverage threshold must reopen the claim."""
+    fx = envelope_coverage_only()
+    lifted = replace(fx.config, min_envelope_covered_fraction=0.0)
+    ep = run(fx, lifted)
+    assert ep.reference.envelope_covered_fraction < MIN_ENVELOPE_COVERED_FRACTION
+    assert ep.reference.reference_adequacy_ok is True
+    assert ep.reference.validity == VALIDITY_OK
+    assert ep.first_new_territory_bar is not None
+
+
+def test_audit_non_finite_bar_range_fails_closed_not_open():
+    """P1: a non-finite derived envelope must block, never emit a NaN claim.
+
+    ``low=-1e308, high=+1e308`` are both FINITE, so the reference-level
+    finiteness check passes, but the span overflows to ``inf``.  ``inf/inf`` is
+    NaN and ``nan < 0.5`` is ``False``, so before the fix both A1 envelope
+    sub-guards silently passed and a claim was emitted carrying
+    ``envelope_covered_fraction = nan``.
+    """
+    base = wide_box_traversal()
+    poisoned = replace(base.reference[0], low=-1e308, high=1e308)
+    fx = replace(base, reference=[poisoned] + list(base.reference[1:]))
+    ep = run(fx)
+    ref = ep.reference
+    assert ref.reference_adequacy_ok is False
+    assert ref.validity == VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    assert ep.first_new_territory_bar is None
+    assert math.isfinite(ref.envelope_covered_fraction)
+    assert math.isfinite(ref.max_unobserved_gap_fraction)
+    assert ref.envelope_covered_fraction == 0.0
+    assert ref.max_unobserved_gap_fraction == 1.0
+    diag = reference_gap_diagnostics(ref)
+    for key, value in diag.items():
+        assert value is None or math.isfinite(value), key
+    # The poisoned bar must never produce a NaN claim anywhere in the stream.
+    for o in ep.observations:
+        assert not o.is_new_territory_claim
+        if o.envelope_covered_fraction is not None:
+            assert math.isfinite(o.envelope_covered_fraction)
+        if o.max_unobserved_gap_fraction is not None:
+            assert math.isfinite(o.max_unobserved_gap_fraction)
+
+
+def test_audit_inverted_bar_range_fails_closed():
+    """``high < low`` is a data error: it must not be silently ignorable."""
+    base = wide_box_traversal()
+    poisoned = replace(base.reference[0], low=130.0, high=120.0)
+    fx = replace(base, reference=[poisoned] + list(base.reference[1:]))
+    ep = run(fx)
+    assert ep.reference.reference_adequacy_ok is False
+    assert ep.first_new_territory_bar is None
+
+
+def test_audit_claim_gate_requires_adequacy_and_scale_even_at_validity_ok():
+    """Pin mutants M1/M9: the belt-and-braces conjuncts must stay load-bearing.
+
+    Under the current validity mapping ``validity == OK`` cannot coexist with a
+    failed guard, so no fixture reaches these conjuncts.  That makes them easy
+    to delete without any test noticing, so their behaviour is pinned directly
+    on the predicate.
+    """
+    base = run(true_trend()).reference
+    assert base.allows_new_territory_claim is True
+    assert replace(
+        base, guards_enforced=True, validity=VALIDITY_OK,
+        reference_adequacy_ok=False,
+    ).allows_new_territory_claim is False
+    assert replace(
+        base, guards_enforced=True, validity=VALIDITY_OK, scale_stable=False,
+    ).allows_new_territory_claim is False
+    # With the comparison switch off both must yield to the v0.2 gate, which is
+    # the whole point of the switch existing.
+    assert replace(
+        base, guards_enforced=False, validity=VALIDITY_OK,
+        reference_adequacy_ok=False, scale_stable=False,
+    ).allows_new_territory_claim is True
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"radius_divisor": 0.0},
+    {"radius_divisor": -1.0},
+    {"radius_divisor": float("nan")},
+    {"radius_divisor": float("inf")},
+    {"acceptance_window": 0},
+    {"acceptance_window": -1},
+    {"acceptance_window": 2.5},
+    {"reference_bars": 0},
+    {"max_episode_bars": 0},
+    {"outer_multiplier": 0.0},
+    {"quantile_low": 0.5, "quantile_high": 0.5},
+    {"quantile_low": 0.9, "quantile_high": 0.1},
+    {"quantile_low": -0.1},
+    {"quantile_high": 1.1},
+    {"min_reference_coverage": 1.5},
+    {"min_envelope_covered_fraction": -0.1},
+    {"max_unobserved_gap_fraction": 2.0},
+    {"min_touch_fraction": 1.5},
+    {"min_reference_cycles": -0.5},
+    {"min_reference_cycles": float("nan")},
+    {"cycle_swing_fraction": 0.0},
+    {"max_w_over_scale": 0.0},
+    {"max_w_over_scale": float("inf")},
+    {"suspect_scale_break_factor": 1.0},
+    {"suspect_scale_break_factor": 0.5},
+    {"tick": 0.0},
+    {"tick": -1.0},
+    {"touch_mode": "nonsense"},
+    {"zero_width_policy": "nonsense"},
+    {"anchor_policy": "nonsense"},
+])
+def test_audit_config_rejects_values_that_crash_or_redefine(kwargs):
+    with pytest.raises(ValueError):
+        PTMConfig(**kwargs)
+
+
+def test_audit_acceptance_window_one_uses_only_the_current_close():
+    """``[-(1-1):]`` is ``[-0:]``, i.e. the whole history -- a real bug.
+
+    An acceptance window of one bar must mean "the current close only", not
+    "the average of every close seen so far".  The non-vacuity assertion at the
+    end matters: the buggy slice would have averaged the whole history, which
+    can only differ from the current close if the novelty actually varies.
+    """
+    fx = true_trend()
+    ep = run(fx, replace(fx.config, acceptance_window=1))
+    novelties = [o.novelty for o in ep.observations if o.novelty is not None]
+    assert len(novelties) > 2, "fixture must yield a real novelty history"
+    assert len(set(novelties)) > 1, "novelty must vary, or the test is vacuous"
+    checked = 0
+    for o in ep.observations:
+        if o.novelty is None:
+            assert o.acceptance_trace is None
+            continue
+        checked += 1
+        assert math.isclose(o.acceptance_trace, o.novelty, rel_tol=1e-12), (
+            o.bar_index, o.acceptance_trace, o.novelty)
+    assert checked == len(novelties)
+
+
+def test_audit_default_config_is_valid_and_unchanged():
+    """The hardening must not move any frozen default."""
+    cfg = PTMConfig()
+    assert cfg.radius_divisor > 0
+    assert cfg.acceptance_window == ACCEPTANCE_WINDOW == 3
+    assert cfg.reference_bars == REFERENCE_BARS
+    assert cfg.cycle_swing_fraction == CYCLE_SWING_FRACTION
+    assert cfg.min_reference_cycles == MIN_REFERENCE_CYCLES
+    assert cfg.min_envelope_covered_fraction == MIN_ENVELOPE_COVERED_FRACTION
+    assert cfg.max_unobserved_gap_fraction == MAX_UNOBSERVED_GAP_FRACTION
+    assert cfg.max_w_over_scale == MAX_W_OVER_SCALE
+    assert cfg.apply_phase2_guards is True

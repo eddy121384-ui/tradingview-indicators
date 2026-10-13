@@ -64,6 +64,47 @@ STALL_MIN_BARS = 10
 # documented false positive and false negative.
 SUSPECT_SCALE_BREAK_FACTOR = 1.5
 
+# ---------------------------------------------------------------------------
+# A1 -- reference adequacy guards (pre-outcome fixed safety thresholds)
+# ---------------------------------------------------------------------------
+#
+# These are SAFETY thresholds, not trading thresholds.  They answer one
+# question only: "does the frozen 120-bar window actually contain evidence of
+# a repeated price region, or could it be one leg of a much longer structure
+# that this window cannot see?"  They were fixed BEFORE any market-outcome
+# work, and they are NOT selected on returns.  Derivation basis (synthetic
+# geometry only, see the finding doc section 6.F):
+#
+# * A confirmed swing must traverse at least half of the inter-decile close
+#   span, so 1-cent noise cannot manufacture a "round trip".
+# * At least one complete out-and-back (two confirmed swings) must be present.
+# * At least half of the envelope must have been observed as occupied, and no
+#   single unobserved hole may exceed a quarter of the envelope.  A sparse
+#   download and a rolled/teleporting series both fail here.
+#
+# NOTE the standing limitation: 120 bars cannot reveal what happened before
+# bar 0 of the window.  These guards can only report "insufficient evidence";
+# they never claim that the longer history WAS a box.
+CYCLE_SWING_FRACTION = 0.5
+MIN_REFERENCE_CYCLES = 1.0
+MIN_ENVELOPE_COVERED_FRACTION = 0.5
+MAX_UNOBSERVED_GAP_FRACTION = 0.25
+
+# ---------------------------------------------------------------------------
+# A3 -- price-scale stability guard (pre-outcome fixed safety threshold)
+# ---------------------------------------------------------------------------
+#
+# ``w`` is measured in price units, so a reference window that mixes price
+# scales (a regime spike, an unadjusted split, a contract roll, a unit change)
+# can produce a band far wider than the instrument's real price quantum.
+# ``w / |reference scale|`` makes that ratio dimensionless and comparable
+# across instruments quoting in different units.
+#
+# MAX_W_OVER_SCALE = 0.05 is exactly equivalent to "the inter-decile close
+# range must not exceed 100% of the reference price level", because
+# ``w = span / RADIUS_DIVISOR`` and ``20 * 0.05 = 1.0``.
+MAX_W_OVER_SCALE = 0.05
+
 # Descriptive novelty taxonomy.  Purely a reporting label; no trading meaning.
 NOVELTY_CLASS_UNVISITED = "UNVISITED"
 NOVELTY_CLASS_SPARSE = "SPARSE"
@@ -78,6 +119,20 @@ VALIDITY_UNKNOWN_NONFINITE_REFERENCE = "UNKNOWN_NONFINITE_REFERENCE"
 VALIDITY_UNKNOWN_NONFINITE_QUERY = "UNKNOWN_NONFINITE_QUERY"
 VALIDITY_DEGRADED_REFERENCE_COVERAGE = "DEGRADED_REFERENCE_COVERAGE"
 VALIDITY_DEGRADED_DEGENERATE_REFERENCE = "DEGRADED_DEGENERATE_REFERENCE"
+VALIDITY_DEGRADED_REFERENCE_ADEQUACY = "DEGRADED_REFERENCE_ADEQUACY"
+VALIDITY_DEGRADED_SCALE_UNSTABLE = "DEGRADED_SCALE_UNSTABLE"
+
+# A3 scale state, surfaced as its own named state (not only via ``validity``).
+SCALE_STABLE = "SCALE_STABLE"
+SCALE_UNSTABLE = "SCALE_UNSTABLE"
+SCALE_UNKNOWN = "SCALE_UNKNOWN"
+
+# A2 comparability status.  This exists so "zero complete round trips" and
+# "reference unusable" can never be silently confused with the legitimate
+# observation "the band was revisited zero times".
+COMPARABILITY_OK = "COMPARABLE"
+COMPARABILITY_NO_COMPLETE_CYCLE = "NO_COMPLETE_CYCLE"
+COMPARABILITY_REFERENCE_UNUSABLE = "REFERENCE_UNUSABLE"
 
 # Touch semantics.
 TOUCH_RANGE_OVERLAP = "range_overlap"          # v0.2 default
@@ -132,6 +187,92 @@ class PTMConfig:
     min_reference_coverage: float = 1.0
     max_episode_bars: int = REFERENCE_BARS
     suspect_scale_break_factor: float = SUSPECT_SCALE_BREAK_FACTOR
+    # A1 reference-adequacy safety guards (pre-outcome fixed; see constants).
+    cycle_swing_fraction: float = CYCLE_SWING_FRACTION
+    min_reference_cycles: float = MIN_REFERENCE_CYCLES
+    min_envelope_covered_fraction: float = MIN_ENVELOPE_COVERED_FRACTION
+    max_unobserved_gap_fraction: float = MAX_UNOBSERVED_GAP_FRACTION
+    # A5 anchor policy.  Frozen, in the fingerprint, and validated by
+    # ``evaluate_stream``; re-anchoring every probe is the documented defect.
+    anchor_policy: str = ANCHOR_FIRST_PROBE_WINS
+    # A3 scale-stability safety guard (pre-outcome fixed).
+    max_w_over_scale: float = MAX_W_OVER_SCALE
+    # COMPARISON SWITCH, not a tuning parameter.  ``True`` (the only value any
+    # real observation may use) applies the A1/A3 guards to the claim gate.
+    # ``False`` reconstructs the pre-patch v0.2 claim behaviour so the runner
+    # can print an old-vs-fixed table per fixture.  All diagnostics are still
+    # computed and reported when it is False; only the gate is lifted.  A test
+    # pins this default and pins that lifting it reproduces the old defect.
+    apply_phase2_guards: bool = True
+
+    def __post_init__(self) -> None:
+        """Reject configurations that can only crash or change the definition.
+
+        These are caller errors, not market conditions, so they fail loudly at
+        construction rather than deep inside the geometry.  Two real ones found
+        by the phase-2 adversarial audit: ``radius_divisor=0`` raised a bare
+        ``ZeroDivisionError``, and ``acceptance_window=0`` silently redefined
+        the acceptance trace (``[-(0-1):]`` is ``[-0:]``, the whole history).
+        A guard that fails open because its knob was mistyped is worse than a
+        crash.
+        """
+        def _positive(name: str, value) -> None:
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                raise ValueError(f"{name} must be a number, got {value!r}")
+            if not math.isfinite(float(value)) or float(value) <= 0.0:
+                raise ValueError(
+                    f"{name} must be a positive finite number, got {value!r}")
+
+        def _unit(name: str, value) -> None:
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                raise ValueError(f"{name} must be a number, got {value!r}")
+            if not math.isfinite(float(value)) or not 0.0 <= float(value) <= 1.0:
+                raise ValueError(f"{name} must be within [0, 1], got {value!r}")
+
+        def _positive_int(name: str, value) -> None:
+            if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+                raise ValueError(f"{name} must be a positive integer, got {value!r}")
+
+        _positive_int("reference_bars", self.reference_bars)
+        _positive_int("acceptance_window", self.acceptance_window)
+        _positive_int("max_episode_bars", self.max_episode_bars)
+        _positive("radius_divisor", self.radius_divisor)
+        _positive("outer_multiplier", self.outer_multiplier)
+        _positive("cycle_swing_fraction", self.cycle_swing_fraction)
+        _positive("max_w_over_scale", self.max_w_over_scale)
+        if self.tick is not None:
+            _positive("tick", self.tick)
+        _positive("suspect_scale_break_factor", self.suspect_scale_break_factor)
+        if float(self.suspect_scale_break_factor) <= 1.0:
+            raise ValueError(
+                "suspect_scale_break_factor must exceed 1.0, got "
+                f"{self.suspect_scale_break_factor!r}")
+        _unit("quantile_low", self.quantile_low)
+        _unit("quantile_high", self.quantile_high)
+        if not float(self.quantile_low) < float(self.quantile_high):
+            raise ValueError(
+                f"quantile_low ({self.quantile_low!r}) must be below "
+                f"quantile_high ({self.quantile_high!r})")
+        for name in ("min_touch_fraction", "min_reference_coverage",
+                     "min_envelope_covered_fraction",
+                     "max_unobserved_gap_fraction"):
+            _unit(name, getattr(self, name))
+        if not (isinstance(self.min_reference_cycles, (int, float))
+                and not isinstance(self.min_reference_cycles, bool)
+                and math.isfinite(float(self.min_reference_cycles))
+                and float(self.min_reference_cycles) >= 0.0):
+            raise ValueError(
+                f"min_reference_cycles must be a non-negative number, got "
+                f"{self.min_reference_cycles!r}")
+        for name, allowed in (
+            ("touch_mode", (TOUCH_RANGE_OVERLAP, TOUCH_MIN_OVERLAP_FRACTION)),
+            ("zero_width_policy", (ZERO_WIDTH_FAIL_CLOSED,
+                                   ZERO_WIDTH_TICK_FALLBACK)),
+            ("anchor_policy", (ANCHOR_FIRST_PROBE_WINS,
+                               ANCHOR_REANCHOR_EACH_PROBE)),
+        ):
+            if getattr(self, name) not in allowed:
+                raise ValueError(f"unknown {name}: {getattr(self, name)!r}")
 
     def fingerprint(self) -> dict:
         return {
@@ -148,6 +289,13 @@ class PTMConfig:
             "min_reference_coverage": self.min_reference_coverage,
             "max_episode_bars": self.max_episode_bars,
             "suspect_scale_break_factor": self.suspect_scale_break_factor,
+            "cycle_swing_fraction": self.cycle_swing_fraction,
+            "min_reference_cycles": self.min_reference_cycles,
+            "min_envelope_covered_fraction": self.min_envelope_covered_fraction,
+            "max_unobserved_gap_fraction": self.max_unobserved_gap_fraction,
+            "max_w_over_scale": self.max_w_over_scale,
+            "anchor_policy": self.anchor_policy,
+            "apply_phase2_guards": self.apply_phase2_guards,
         }
 
 
@@ -182,6 +330,22 @@ class FrozenReference:
     degenerate: bool
     validity: str
     validity_detail: str
+    # A1 reference-adequacy diagnostics (None when the window has no numerics).
+    swing_legs: int | None = None
+    reference_cycle_count: float | None = None
+    envelope_covered_fraction: float | None = None
+    max_unobserved_gap_fraction: float | None = None
+    max_unobserved_gap_w: float | None = None
+    # A3 scale-stability diagnostics.
+    scale_reference: float | None = None
+    w_over_scale: float | None = None
+    scale_state: str = SCALE_UNKNOWN
+    # Guard outcomes, kept separate from ``validity`` so the claim gate can be
+    # asserted directly instead of inferred from a string mapping.
+    reference_adequacy_ok: bool = False
+    scale_stable: bool = False
+    guards_enforced: bool = True
+    validity_reasons: tuple = ()
     closes: tuple = field(repr=False, default=())
     highs: tuple = field(repr=False, default=())
     lows: tuple = field(repr=False, default=())
@@ -195,17 +359,212 @@ class FrozenReference:
             VALIDITY_OK,
             VALIDITY_DEGRADED_REFERENCE_COVERAGE,
             VALIDITY_DEGRADED_DEGENERATE_REFERENCE,
+            VALIDITY_DEGRADED_REFERENCE_ADEQUACY,
+            VALIDITY_DEGRADED_SCALE_UNSTABLE,
         )
 
     @property
     def allows_new_territory_claim(self) -> bool:
-        """Fail closed: only a fully valid, complete reference may claim.
+        """Fail closed: only a fully adequate, stable, complete reference claims.
 
         ``coverage >= 1.0`` is required independently of
         ``min_reference_coverage`` so that lowering that knob cannot reopen a
-        claim on a partial reference window.
+        claim on a partial reference window.  ``reference_adequacy_ok`` and
+        ``scale_stable`` are asserted here as well as through ``validity`` so
+        that a future change to the validity mapping cannot silently reopen a
+        claim on a reference that failed an A1/A3 guard.
+
+        ``guards_enforced`` is False only in the runner's documented
+        old-vs-fixed comparison mode; every real observation has it True.
         """
-        return self.validity == VALIDITY_OK and self.coverage >= 1.0
+        gate = self.validity == VALIDITY_OK and self.coverage >= 1.0
+        if self.guards_enforced:
+            gate = gate and self.reference_adequacy_ok and self.scale_stable
+        return gate
+
+
+def _swing_legs(closes: Sequence[float], valid_mask: Sequence[bool],
+                threshold: float) -> int:
+    """Count confirmed swing legs on the valid closes; each leg ends at a
+    confirmed reversal.
+
+    A leg is confirmed only when price retraces at least ``threshold`` from the
+    running extreme, so sub-quantum noise cannot manufacture a "round trip".
+    The count is the number of confirmed REVERSALS, which is also the number of
+    completed legs -- a monotone window with no reversal returns 0, not 1.  It
+    is a deliberately conservative *lower* bound, and because
+    ``reference_cycle_count = legs / 2.0`` a single confirmed leg is only half a
+    round trip, which is why ``MIN_REFERENCE_CYCLES = 1.0`` requires two.
+    """
+    pts = [float(c) for c, ok in zip(closes, valid_mask) if ok]
+    if len(pts) < 2 or not (threshold > 0.0):
+        return 0
+    legs = 0
+    hi = lo = pts[0]
+    direction = 0  # 0 unknown, +1 rising, -1 falling
+    for c in pts[1:]:
+        if c > hi:
+            hi = c
+        if c < lo:
+            lo = c
+        if direction >= 0 and (hi - c) >= threshold:
+            legs += 1
+            direction = -1
+            lo = hi = c
+        elif direction <= 0 and (c - lo) >= threshold:
+            legs += 1
+            direction = 1
+            lo = hi = c
+    return legs
+
+
+def _envelope_geometry(lows: Sequence[float], highs: Sequence[float],
+                       valid_mask: Sequence[bool]) -> tuple[float, float, float, bool]:
+    """Return ``(envelope, covered, largest_unobserved_gap, unusable)`` in price units.
+
+    Bars are treated as their observed ``[low, high]`` range only.  The
+    unobserved gap is measured between *merged observed ranges*, never between
+    consecutive closes: a reference whose bars span whole legs legitimately has
+    large close-to-close jumps while observing every price in between, so a
+    close-gap test would falsely reject it.
+
+    ``unusable`` is ``True`` when the geometry cannot be trusted, and the caller
+    must then fail CLOSED.  This is not hypothetical: two finite bounds of
+    opposite sign at the double limit (``low = -1e308``, ``high = +1e308``)
+    produce a non-finite span, and ``inf / inf`` is ``nan`` -- and ``nan < 0.5``
+    is ``False``, so a naive coverage test silently PASSES.  A NaN diagnostic
+    must never be able to open a claim gate, so non-finite or inverted bar
+    ranges, and any non-finite derived quantity, are rejected outright.  A bar
+    whose range cannot be represented could have covered any price at all, so
+    the envelope is genuinely unknown, not merely large.
+    """
+    intervals: list[tuple[float, float]] = []
+    unusable = False
+    for i in range(len(valid_mask)):
+        if not valid_mask[i]:
+            continue
+        lo, hi = float(lows[i]), float(highs[i])
+        if not (math.isfinite(lo) and math.isfinite(hi)) or hi < lo:
+            unusable = True
+            continue
+        intervals.append((lo, hi))
+    intervals.sort()
+    merged: list[list[float]] = []
+    for lo, hi in intervals:
+        if merged and lo <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], hi)
+        else:
+            merged.append([lo, hi])
+    if not merged:
+        return 0.0, 0.0, 0.0, True
+    envelope = merged[-1][1] - merged[0][0]
+    covered = sum(hi - lo for lo, hi in merged)
+    gaps = [merged[i + 1][0] - merged[i][1] for i in range(len(merged) - 1)]
+    biggest_gap = max(gaps) if gaps else 0.0
+    if not (math.isfinite(envelope) and math.isfinite(covered)
+            and math.isfinite(biggest_gap)):
+        return 0.0, 0.0, 0.0, True
+    return envelope, covered, biggest_gap, unusable
+
+
+def _adequacy_diagnostics(
+    closes: Sequence[float],
+    lows: Sequence[float],
+    highs: Sequence[float],
+    valid_mask: Sequence[bool],
+    span: float,
+    w: float,
+    config: PTMConfig,
+) -> dict:
+    """A1: does this window contain evidence of a repeated price region?"""
+    legs = _swing_legs(closes, valid_mask, config.cycle_swing_fraction * span)
+    cycles = legs / 2.0
+    envelope, covered, biggest_gap, unusable = _envelope_geometry(
+        lows, highs, valid_mask)
+    if unusable:
+        # Fail closed and report zeros rather than a NaN that no comparison
+        # can fail on.  The explicit reason below blocks the claim.
+        envc, gap_fraction, gap_w = 0.0, 1.0, 0.0
+    else:
+        envc = (covered / envelope) if envelope > 0 else 1.0
+        gap_w = (biggest_gap / w) if w > 0 else None
+        gap_fraction = (biggest_gap / envelope) if envelope > 0 else 0.0
+
+    reasons: list[str] = []
+    if cycles < config.min_reference_cycles:
+        reasons.append(
+            f"complete round trips {cycles:.1f} < required "
+            f"{config.min_reference_cycles:.1f} "
+            f"({legs} confirmed swings over span {span:.4g})"
+        )
+    if unusable:
+        reasons.append(
+            "reference bar ranges are non-finite or inverted, so the observed "
+            "price envelope is unmeasurable; coverage treated as 0"
+        )
+    if envc < config.min_envelope_covered_fraction:
+        reasons.append(
+            f"observed envelope fraction {envc:.4f} < required "
+            f"{config.min_envelope_covered_fraction:.4f}"
+        )
+    if gap_fraction > config.max_unobserved_gap_fraction:
+        reasons.append(
+            f"largest unobserved price gap {gap_fraction:.4f} of envelope > "
+            f"allowed {config.max_unobserved_gap_fraction:.4f}"
+        )
+    return {
+        "swing_legs": legs,
+        "reference_cycle_count": cycles,
+        "envelope_covered_fraction": envc,
+        "max_unobserved_gap_fraction": gap_fraction,
+        "max_unobserved_gap_w": gap_w,
+        "reference_adequacy_ok": not reasons,
+        "reasons": reasons,
+    }
+
+
+def _scale_diagnostics(median_close: float | None, w: float,
+                       config: PTMConfig) -> dict:
+    """A3: is ``w`` a plausible price quantum for this instrument's scale?
+
+    The denominator is ``|median reference close|``.  ``abs`` keeps the ratio
+    meaningful for series quoted on a negative level (negative yields) and
+    makes it identical for a short-side mirror.  A zero or non-finite
+    denominator yields ``w_over_scale = None`` and is treated as NOT stable:
+    an unmeasurable scale must never be reported as a stable one, and it must
+    never be divided by.
+    """
+    scale = None
+    if median_close is not None and math.isfinite(float(median_close)):
+        candidate = abs(float(median_close))
+        if candidate > 0.0:
+            scale = candidate
+    if scale is None:
+        return {
+            "scale_reference": None,
+            "w_over_scale": None,
+            "scale_state": SCALE_UNKNOWN,
+            "scale_stable": False,
+            "reasons": [
+                "reference scale reference (|median close|) is zero or "
+                "non-finite; ratio undefined, treated as unstable"
+            ],
+        }
+    ratio = w / scale
+    stable = math.isfinite(ratio) and ratio <= config.max_w_over_scale
+    reasons: list[str] = []
+    if not stable:
+        reasons.append(
+            f"w/scale {ratio:.5f} > allowed {config.max_w_over_scale:.5f} "
+            f"(w={w:.6g}, |median close|={scale:.6g})"
+        )
+    return {
+        "scale_reference": scale,
+        "w_over_scale": ratio,
+        "scale_state": SCALE_STABLE if stable else SCALE_UNSTABLE,
+        "scale_stable": stable,
+        "reasons": reasons,
+    }
 
 
 def build_reference(
@@ -299,6 +658,7 @@ def build_reference(
     w = spread / float(config.radius_divisor)
 
     degenerate = False
+    tick_fallback = False
     validity = VALIDITY_OK
     detail = f"{n_valid}/{k} valid reference bars"
 
@@ -310,32 +670,10 @@ def build_reference(
         ):
             w = float(config.tick)
             degenerate = True
+            tick_fallback = True
             detail = (
                 f"zero inter-quantile spread; explicit tick fallback "
                 f"w=tick={config.tick} used (degenerate reference, claims blocked)"
-            )
-            return FrozenReference(
-                anchor_index=anchor_index,
-                direction=int(np.sign(direction)) or 1,
-                n_bars=len(window),
-                n_valid=n_valid,
-                coverage=coverage,
-                q_low=q_low,
-                q_high=q_high,
-                w=w,
-                max_high=float(np.max(highs)),
-                min_low=float(np.min(lows)),
-                max_close=float(np.max(closes)),
-                min_close=float(np.min(closes)),
-                median_close=float(np.median(closes)),
-                degenerate=True,
-                validity=VALIDITY_DEGRADED_DEGENERATE_REFERENCE,
-                validity_detail=detail,
-                closes=tuple(float(x) for x in all_closes),
-                highs=tuple(float(x) for x in all_highs),
-                lows=tuple(float(x) for x in all_lows),
-                opens=tuple(float(x) for x in all_opens),
-                valid_mask=tuple(bool(x) for x in valid_mask),
             )
         else:
             return FrozenReference(
@@ -388,12 +726,48 @@ def build_reference(
             ),
         )
 
+    # ------------------------------------------------------------------
+    # A1 / A3 guards and validity precedence.
+    #
+    # Precedence (documented; ``validity_reasons`` lists EVERY triggered reason
+    # so nothing is hidden behind the winning label):
+    #   1 DEGRADED_DEGENERATE_REFERENCE   explicit tick fallback
+    #   2 DEGRADED_SCALE_UNSTABLE         A3
+    #   3 DEGRADED_REFERENCE_ADEQUACY     A1
+    #   4 DEGRADED_REFERENCE_COVERAGE
+    #   5 OK
+    # Every DEGRADED state still reports the numeric diagnostics but cannot
+    # emit a new-territory claim.
+    # ------------------------------------------------------------------
+    median_close = float(np.median(closes))
+    adequacy = _adequacy_diagnostics(
+        all_closes, all_lows, all_highs, valid_mask, spread, float(w), config
+    )
+    scale = _scale_diagnostics(median_close, float(w), config)
+
+    validity_reasons: list[str] = []
+    if tick_fallback:
+        validity_reasons.append(detail)
+    if not scale["scale_stable"]:
+        validity_reasons.extend(scale["reasons"])
+    if not adequacy["reference_adequacy_ok"]:
+        validity_reasons.extend(adequacy["reasons"])
     if coverage < config.min_reference_coverage:
-        validity = VALIDITY_DEGRADED_REFERENCE_COVERAGE
-        detail = (
+        validity_reasons.append(
             f"coverage {coverage:.4f} < required "
             f"{config.min_reference_coverage:.4f} ({n_valid}/{k})"
         )
+
+    if tick_fallback:
+        validity = VALIDITY_DEGRADED_DEGENERATE_REFERENCE
+    elif config.apply_phase2_guards and not scale["scale_stable"]:
+        validity = VALIDITY_DEGRADED_SCALE_UNSTABLE
+    elif config.apply_phase2_guards and not adequacy["reference_adequacy_ok"]:
+        validity = VALIDITY_DEGRADED_REFERENCE_ADEQUACY
+    elif coverage < config.min_reference_coverage:
+        validity = VALIDITY_DEGRADED_REFERENCE_COVERAGE
+    else:
+        validity = VALIDITY_OK
 
     return FrozenReference(
         anchor_index=anchor_index,
@@ -408,10 +782,24 @@ def build_reference(
         min_low=float(np.min(lows)),
         max_close=float(np.max(closes)),
         min_close=float(np.min(closes)),
-        median_close=float(np.median(closes)),
+        median_close=median_close,
         degenerate=degenerate,
         validity=validity,
-        validity_detail=detail,
+        validity_detail=(
+            "; ".join(validity_reasons) if validity_reasons else detail
+        ),
+        swing_legs=adequacy["swing_legs"],
+        reference_cycle_count=adequacy["reference_cycle_count"],
+        envelope_covered_fraction=adequacy["envelope_covered_fraction"],
+        max_unobserved_gap_fraction=adequacy["max_unobserved_gap_fraction"],
+        max_unobserved_gap_w=adequacy["max_unobserved_gap_w"],
+        scale_reference=scale["scale_reference"],
+        w_over_scale=scale["w_over_scale"],
+        scale_state=scale["scale_state"],
+        reference_adequacy_ok=adequacy["reference_adequacy_ok"],
+        scale_stable=scale["scale_stable"],
+        guards_enforced=bool(config.apply_phase2_guards),
+        validity_reasons=tuple(validity_reasons),
         closes=tuple(float(x) for x in all_closes),
         highs=tuple(float(x) for x in all_highs),
         lows=tuple(float(x) for x in all_lows),
@@ -433,40 +821,58 @@ def reference_gap_diagnostics(ref: FrozenReference) -> dict:
     ``N`` overstate novelty while every published v0.2 formula still evaluates
     exactly as specified.  A gappy daily download therefore cannot be caught by
     the frozen v0.2 math alone; it has to be surfaced separately.
+
+    Two different gap notions are reported on purpose:
+
+    * ``max_close_gap_w`` -- close-to-close jump.  DIAGNOSTIC ONLY.  A
+      reference whose bars span whole legs (e.g. ``crossed_but_not_closed``)
+      has large close jumps while observing every price in between, so this
+      must never gate a claim.
+    * ``max_unobserved_gap_w`` / ``max_unobserved_gap_fraction`` -- the
+      largest price interval inside the envelope that NO bar range covers.
+      This is the quantity the A1 guard gates on.
     """
     if ref.w is None or ref.n_valid == 0:
         return {
             "max_close_gap_w": None,
             "median_close_gap_w": None,
             "envelope_covered_fraction": None,
+            "max_unobserved_gap_w": None,
+            "max_unobserved_gap_fraction": None,
         }
 
     w = float(ref.w)
     gaps: list[float] = []
     prev: float | None = None
-    intervals: list[list[float]] = []
     for i, ok in enumerate(ref.valid_mask):
         if not ok:
             continue
         if prev is not None:
             gaps.append(abs(ref.closes[i] - prev))
         prev = ref.closes[i]
-        intervals.append([ref.lows[i], ref.highs[i]])
 
-    intervals.sort()
-    merged: list[list[float]] = []
-    for lo, hi in intervals:
-        if merged and lo <= merged[-1][1]:
-            merged[-1][1] = max(merged[-1][1], hi)
-        else:
-            merged.append([lo, hi])
-    covered = sum(hi - lo for lo, hi in merged)
-    envelope = merged[-1][1] - merged[0][0] if merged else 0.0
+    envelope, covered, biggest_gap, unusable = _envelope_geometry(
+        ref.lows, ref.highs, ref.valid_mask
+    )
+    if unusable:
+        # Never report a NaN here: it must be impossible for a NaN diagnostic
+        # to be read as "passes the threshold".  See _envelope_geometry.
+        return {
+            "max_close_gap_w": (max(gaps) / w) if gaps else 0.0,
+            "median_close_gap_w": (float(np.median(gaps)) / w) if gaps else 0.0,
+            "envelope_covered_fraction": 0.0,
+            "max_unobserved_gap_w": 0.0,
+            "max_unobserved_gap_fraction": 1.0,
+        }
 
     return {
         "max_close_gap_w": (max(gaps) / w) if gaps else 0.0,
         "median_close_gap_w": (float(np.median(gaps)) / w) if gaps else 0.0,
         "envelope_covered_fraction": (covered / envelope) if envelope > 0 else 1.0,
+        "max_unobserved_gap_w": (biggest_gap / w) if w > 0 else None,
+        "max_unobserved_gap_fraction": (
+            (biggest_gap / envelope) if envelope > 0 else 0.0
+        ),
     }
 
 
@@ -513,6 +919,22 @@ class TerritoryObservation:
     degenerate_reference: bool
     validity: str
     validity_detail: str
+    # --- A1: reference adequacy (is the window evidence of a repeated region?) ---
+    swing_legs: int | None
+    reference_cycle_count: float | None
+    envelope_covered_fraction: float | None
+    max_unobserved_gap_fraction: float | None
+    max_unobserved_gap_w: float | None
+    reference_adequacy_ok: bool
+    # --- A2: scale comparability (speed-invariant revisit description) ---
+    episodes_per_cycle: float | None
+    revisit_density: float | None
+    comparability_status: str
+    # --- A3: scale stability (is w a plausible price quantum?) ---
+    scale_reference: float | None
+    w_over_scale: float | None
+    scale_state: str
+    scale_stable: bool
     observable_at_bar: int
     actionable_at_bar: int
 
@@ -669,6 +1091,19 @@ def observe(
         degenerate_reference=ref.degenerate,
         validity=ref.validity,
         validity_detail=ref.validity_detail,
+        swing_legs=ref.swing_legs,
+        reference_cycle_count=ref.reference_cycle_count,
+        envelope_covered_fraction=ref.envelope_covered_fraction,
+        max_unobserved_gap_fraction=ref.max_unobserved_gap_fraction,
+        max_unobserved_gap_w=ref.max_unobserved_gap_w,
+        reference_adequacy_ok=ref.reference_adequacy_ok,
+        episodes_per_cycle=None,
+        revisit_density=None,
+        comparability_status=COMPARABILITY_REFERENCE_UNUSABLE,
+        scale_reference=ref.scale_reference,
+        w_over_scale=ref.w_over_scale,
+        scale_state=ref.scale_state,
+        scale_stable=ref.scale_stable,
         observable_at_bar=t,
         actionable_at_bar=t + 1,
     )
@@ -701,6 +1136,26 @@ def observe(
     occupancy = (sum(touch) / float(ref.n_valid)) if ref.n_valid else None
     novelty = 1.0 / (1.0 + episodes)
     nclass = _novelty_class(episodes)
+
+    # --- A2: market-speed-invariant revisit comparability ------------------
+    # ``revisit_density`` is revisits per valid reference bar: a real rate, so
+    # "revisited zero times" is the legitimate value 0.0, never None.
+    # ``episodes_per_cycle`` divides by the number of complete round trips the
+    # window actually contains, which is the quantity that removes the raw
+    # market-speed dependence of R.  Neither number replaces R or N, and
+    # neither is used to change the claim: they are reported alongside the
+    # frozen v0.2 values so a later frozen research run can compare like with
+    # like.  A window with no complete round trip yields None (unmeasurable),
+    # which is deliberately distinct from 0.0 (measured zero).
+    cycles = ref.reference_cycle_count
+    if ref.n_valid > 0:
+        base["revisit_density"] = episodes / float(ref.n_valid)
+    if cycles is not None and cycles >= 1.0:
+        base["episodes_per_cycle"] = episodes / cycles
+        base["comparability_status"] = COMPARABILITY_OK
+    else:
+        base["episodes_per_cycle"] = None
+        base["comparability_status"] = COMPARABILITY_NO_COMPLETE_CYCLE
 
     if direction > 0:
         frontier = (p - ref.max_high) / w
@@ -762,8 +1217,12 @@ def observe(
     if novelty_history is not None:
         # The trace must include the CURRENT completed close: the design
         # requires a signal on the first close, not after three or five bars.
-        hist = list(novelty_history)[-(config.acceptance_window - 1):]
-        trace = hist + [novelty]
+        # Guard the slice: ``[-(1-1):]`` is ``[-0:]``, i.e. the WHOLE history,
+        # which would silently average the entire episode instead of taking
+        # just the current close.
+        prior = (list(novelty_history)[-(config.acceptance_window - 1):]
+                 if config.acceptance_window > 1 else [])
+        trace = prior + [novelty]
         acceptance = float(sum(trace) / len(trace))
     else:
         acceptance = novelty
@@ -774,7 +1233,8 @@ def observe(
         longest_inner_run=longest,
         novelty=novelty,
         novelty_class=nclass,
-        acceptance_trace=acceptance if acceptance is not None else novelty,        frontier_progress=frontier,
+        acceptance_trace=acceptance if acceptance is not None else novelty,
+        frontier_progress=frontier,
         frontier_progress_close=frontier_close,
         days_since_best_frontier=days_since,
         frontier_change_3=(frontier - _frontier_at(bars, ref, max(ref.anchor_index, t - 3), config)),
@@ -783,6 +1243,9 @@ def observe(
         range_3_w=range_3,
         bars_since_significant_progress=bars_since_progress,
         stall_flag=stall,
+        # Fail-closed claim gate.  ``allows_new_territory_claim`` now requires a
+        # complete (coverage 1.0), ADEQUATE (A1) and SCALE-STABLE (A3)
+        # reference as well as a validity of OK; ``suspect`` still suppresses.
         is_new_territory_claim=bool(
             novelty_fresh and ref.allows_new_territory_claim and not suspect
         ),
@@ -883,7 +1346,7 @@ def evaluate_stream(
     bars: Sequence[Bar],
     probes: Iterable[Probe],
     config: PTMConfig | None = None,
-    anchor_policy: str = ANCHOR_FIRST_PROBE_WINS,
+    anchor_policy: str | None = None,
 ) -> list[Episode]:
     """Group a probe stream into anchored episodes.
 
@@ -896,8 +1359,17 @@ def evaluate_stream(
 
     ``reanchor_each_probe`` is kept only so the counterexample in the tests can
     demonstrate why naive re-anchoring is wrong.  It is NOT the default.
+
+    ``anchor_policy`` defaults to ``None``, which means "use
+    ``config.anchor_policy``".  Passing it explicitly is retained for the
+    counterexample tests; the value is part of the config fingerprint, so a
+    real run cannot change it without changing the frozen fingerprint.
     """
     config = config or PTMConfig()
+    if anchor_policy is None:
+        anchor_policy = config.anchor_policy
+    if anchor_policy not in (ANCHOR_FIRST_PROBE_WINS, ANCHOR_REANCHOR_EACH_PROBE):
+        raise ValueError(f"unknown anchor policy: {anchor_policy!r}")
     ordered = sorted(probes, key=lambda p: p.index)
     episodes: list[Episode] = []
     open_episode: Episode | None = None

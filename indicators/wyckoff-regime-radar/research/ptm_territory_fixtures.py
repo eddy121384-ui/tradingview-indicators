@@ -518,9 +518,114 @@ def volatility_regime_shift() -> Fixture:
 
 
 # ---------------------------------------------------------------------------
-# Construct-level non-duplication pairs
+# Phase-2 prereg-readiness fixtures (A1 adequacy, A2 comparability, A3 scale)
 # ---------------------------------------------------------------------------
 
+
+def shift_bars(bars: Sequence[Bar], delta: float) -> list[Bar]:
+    """Translate every price level by a constant.
+
+    Used to probe A3's scale reference.  The territory arithmetic is
+    translation invariant, so R/O/N must not move; only the dimensionless
+    ``w / |median close|`` ratio is allowed to change.
+    """
+    return [
+        Bar(open=b.open + delta, high=b.high + delta, low=b.low + delta,
+            close=b.close + delta, valid=b.valid, label=b.label)
+        for b in bars
+    ]
+
+
+def one_way_reference_genuine_trend() -> Fixture:
+    """A1 false-suppression case: a real trend behind a one-way reference.
+
+    The frozen 120 bars are a single monotone advance 100 -> 118, so the window
+    contains no complete round trip.  The post path is a genuine, sustained
+    breakout to 160.  A1 cannot confirm a repeated region, so it reports
+    insufficient evidence and suppresses a REAL trend.
+
+    This fixture exists to make that cost measurable and reportable rather than
+    hidden; it is the price paid for closing the wide-box false release.
+    """
+    ref = make_bars(ramp(100.0, 118.0, 120), start_open=100.0, label_prefix="b")
+    ref = relabel(ref, "b")
+    return _fixture(
+        "one_way_reference_genuine_trend",
+        "One-way 100->118 reference (no round trip) then a genuine sustained "
+        "breakout to 160. A1 reports insufficient evidence: a REPORTED false "
+        "suppression of a real trend.",
+        [120.0, 122.0, 125.0, 130.0, 136.0, 143.0, 151.0, 160.0],
+        reference=ref,
+    )
+
+
+def translated_to_zero_scale() -> Fixture:
+    """true_trend translated so the reference median close is exactly 0.0."""
+    fx = true_trend()
+    delta = -110.0
+    return Fixture(
+        name="translated_to_zero_scale",
+        description="true_trend shifted by -110 so the reference median close "
+                    "is exactly 0.0. The A3 ratio then has no valid "
+                    "denominator, so it reports SCALE_UNKNOWN and fails closed "
+                    "instead of dividing by zero.",
+        reference=shift_bars(fx.reference, delta),
+        post=shift_bars(fx.post, delta),
+        probe_index=fx.probe_index,
+        direction=fx.direction,
+        config=fx.config,
+    )
+
+
+def negative_level_series() -> Fixture:
+    """true_trend translated to negative levels (the negative-yield shape)."""
+    fx = true_trend()
+    delta = -200.0
+    return Fixture(
+        name="negative_level_series",
+        description="true_trend shifted to roughly -100..-71 so the levels are "
+                    "negative like a negative-yield series while the one-bar "
+                    "moves stay proportionally small. R/O/N AND the claim must "
+                    "be identical to true_trend, and A3 must use |median|.",
+        reference=shift_bars(fx.reference, delta),
+        post=shift_bars(fx.post, delta),
+        probe_index=fx.probe_index,
+        direction=fx.direction,
+        config=fx.config,
+    )
+
+
+def low_level_scale_break_false_alarm() -> Fixture:
+    """D10: the frozen one-bar scale-break screen is LEVEL-dependent.
+
+    Shifting true_trend by -130 puts the levels at roughly -30..+29, so the
+    SAME absolute 3.0 one-bar move that is a 2.4% change at level 123 becomes a
+    43% change at level -7.  ``scale_ratio_break`` then latches and suppresses
+    claims that the identical positive-level path is allowed to make.
+
+    Territory arithmetic (R/O/N) stays exactly translation invariant; only the
+    frozen screen is not.  This fixture pins that defect so it cannot be
+    mistaken for a correct negative-level treatment.
+    """
+    fx = true_trend()
+    delta = -130.0
+    return Fixture(
+        name="low_level_scale_break_false_alarm",
+        description="true_trend shifted by -130: the same absolute 3.0 move "
+                    "becomes a 43% relative move near level -7, so the frozen "
+                    "one-bar scale-break screen latches and suppresses claims. "
+                    "REPORTED DEFECT D10, not a correct negative-level result.",
+        reference=shift_bars(fx.reference, delta),
+        post=shift_bars(fx.post, delta),
+        probe_index=fx.probe_index,
+        direction=fx.direction,
+        config=fx.config,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Construct-level non-duplication pairs
+# ---------------------------------------------------------------------------
 
 def nonduplication_same_path_different_reference() -> tuple[Fixture, Fixture]:
     """Identical post-anchor path, different frozen references.
@@ -562,6 +667,93 @@ def nonduplication_same_reference_different_path() -> tuple[Fixture, Fixture]:
 # ---------------------------------------------------------------------------
 
 
+def _band_reference(
+    bands: Sequence[tuple[float, float, int]],
+    order: Sequence[int] | None = None,
+) -> list[Bar]:
+    """Build a reference where every bar in a band has exactly that range.
+
+    ``bands`` is ``(low, high, count)``.  Closes alternate between the band's
+    ends so the swing detector sees real reversals, and each bar's high/low is
+    forced to the band so the OBSERVED ENVELOPE is exactly what the caller
+    declared.  ``order`` optionally gives the band index of each successive bar,
+    so the close path can sweep up and back down -- which the swing detector
+    needs -- while the union of observed ranges (and therefore coverage and gap)
+    is unchanged.
+
+    This exists so the two A1 envelope sub-guards can be tested in ISOLATION:
+    each fixture below trips exactly one of them, so mutating either one must
+    fail the suite.
+    """
+    if order is None:
+        order = [i for i, (_, _, count) in enumerate(bands)
+                 for _ in range(count)]
+    bars: list[Bar] = []
+    for idx in order:
+        lo, hi, _ = bands[idx]
+        if len(bars) % 2 == 0:
+            o, c = lo, hi
+        else:
+            o, c = hi, lo
+        bars.append(Bar(open=o, high=hi, low=lo, close=c, valid=True,
+                        label=f"b{len(bars)}"))
+    return bars
+
+
+def envelope_gap_only() -> Fixture:
+    """A1 gap guard in isolation: envelope coverage PASSES, the gap FAILS.
+
+    Observed ranges are ``[100,110]`` x110 and ``[118,125]`` x10, so the merged
+    envelope is 25 wide and covered 17 wide: coverage 0.68 clears the 0.50
+    threshold, while the single unobserved hole of 8 is 0.32 of the envelope and
+    fails the 0.25 threshold.  The swing count is healthy, so A1's cycle
+    sub-guard also passes.  The probe sits in the never-observed hole, so if the
+    gap reason alone is removed the claim flips from blocked to allowed.
+    """
+    reference = _band_reference([(100.0, 110.0, 110), (118.0, 125.0, 10)])
+    return Fixture(
+        name="envelope_gap_only",
+        description="A1 gap guard isolated: coverage 0.68 passes, largest "
+                    "unobserved gap 0.32 fails; probe at 115.0 sits inside the "
+                    "hole that no reference bar ever observed.",
+        reference=reference,
+        post=make_bars([115.0, 116.0, 115.0], start_open=118.0,
+                       label_offset=120),
+        probe_index=120,
+        direction=1,
+        config=PTMConfig(),
+    )
+
+
+def envelope_coverage_only() -> Fixture:
+    """A1 coverage guard in isolation: the gap PASSES, coverage FAILS.
+
+    Observed ranges are four 10-wide bands at 100/130/160/190, so the envelope
+    is 100 wide, the covered fraction is 0.40 (below the 0.50 threshold) and the
+    largest unobserved gap is 20, i.e. exactly 0.20 of the envelope (inside the
+    0.25 threshold).  The close path sweeps 100 -> 190 -> 100, which is a swing
+    of 90 against a 45 threshold, so A1's cycle sub-guard PASSES as well; only
+    the coverage sub-guard may block.  The probe at 120.0 sits in a gap, so
+    removing the coverage reason alone would allow a claim on a window that
+    observed 40% of its envelope.
+    """
+    reference = _band_reference([(100.0, 110.0, 0), (130.0, 140.0, 0),
+                                 (160.0, 170.0, 0), (190.0, 200.0, 0)],
+                                order=[0, 1, 2, 3, 2, 1] * 20)
+    return Fixture(
+        name="envelope_coverage_only",
+        description="A1 coverage guard isolated: largest unobserved gap 0.20 "
+                    "passes, envelope coverage 0.40 fails, cycles pass; probe "
+                    "at 120.0 sits in a gap.",
+        reference=reference,
+        post=make_bars([120.0, 121.0, 120.0], start_open=190.0,
+                       label_offset=120),
+        probe_index=120,
+        direction=1,
+        config=PTMConfig(),
+    )
+
+
 def all_fixtures() -> list[Fixture]:
     fx: list[Fixture] = [
         wide_box_traversal(),
@@ -587,10 +779,18 @@ def all_fixtures() -> list[Fixture]:
         long_period_box(),
         long_wick(),
         volatility_regime_shift(),
+        one_way_reference_genuine_trend(),
+        translated_to_zero_scale(),
+        negative_level_series(),
+        low_level_scale_break_false_alarm(),
         nonduplication_same_path_different_reference()[0],
         nonduplication_same_path_different_reference()[1],
         nonduplication_same_reference_different_path()[0],
         nonduplication_same_reference_different_path()[1],
+        # Phase-2 audit isolation fixtures: each trips exactly ONE A1 envelope
+        # sub-guard, so removing either one must fail the suite.
+        envelope_gap_only(),
+        envelope_coverage_only(),
     ]
     return fx
 
@@ -606,4 +806,17 @@ REQUIRED_SCENARIOS = [
     "short_mirror_of_true_trend",
     "missing_reference_bars",
     "future_append_invariance",
+]
+
+# Scenarios required by the phase-2 prereg-readiness patch (A1/A2/A3).
+PHASE2_SCENARIOS = [
+    "long_period_box",
+    "sparse_slow_box",
+    "volatility_regime_shift",
+    "gappy_reference",
+    "crossed_but_not_closed",
+    "one_way_reference_genuine_trend",
+    "translated_to_zero_scale",
+    "negative_level_series",
+    "low_level_scale_break_false_alarm",
 ]

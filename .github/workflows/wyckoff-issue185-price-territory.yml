@@ -9,6 +9,7 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
@@ -18,6 +19,7 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
@@ -40,6 +42,7 @@ jobs:
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_charts.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py
           python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py
 
@@ -71,6 +74,69 @@ jobs:
               with Image.open(p) as im:
                   assert im.size == (1180, 980) or im.size == (1180, 650), (p.name, im.size)
           print(f"chart artifacts ok: {len(charts)}")
+          PY
+
+      - name: Phase-2 evidence artifacts present and self-consistent
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python - <<'PY'
+          import csv, json
+          from pathlib import Path
+
+          out = Path("/tmp/issue185_out")
+          # The two artifacts that carry the phase-2 evidence must exist.
+          for name in ("issue185_ptm_phase2_comparison.csv",
+                       "issue185_ptm_promotion_clock.csv"):
+              assert (out / name).is_file(), f"missing {name}"
+
+          summary = json.loads((out / "issue185_ptm_summary.json").read_text("utf-8"))
+
+          # The published v0.2 readouts must still be reproduced exactly.
+          assert summary["reproduction"]["all_episodes_match"] is True
+          assert summary["reproduction"]["all_novelty_match"] is True
+
+          # The phase-2 guards must be ON by default in the frozen configuration.
+          assert summary["config_fingerprint"]["apply_phase2_guards"] is True
+
+          # The blocking wide-box false release must be closed ...
+          po = summary["phase2_outcomes"]
+          assert po["long_period_box_v02_claim_bars"] > 0
+          assert po["long_period_box_phase2_claim_bars"] == 0
+
+          # ... the genuine-trend cost must still be reported, not silently dropped.
+          assert po["genuine_trends_refused_certification"], "cost must be reported"
+
+          # A guard must never add waiting bars, and PTM must not be charged a
+          # delay against the corrected B3 baseline.
+          assert po["max_added_delay_vs_v02_bars"] == 0
+          assert po["max_ptm_extra_delay_vs_corrected_model_baseline_bars"] == 0
+          # ... and that headline is scoped to fixtures that still claim, because
+          # a suppressed fixture has no fixed-signal first claim at all.
+          assert "unbounded" in po["max_added_delay_vs_v02_bars_scope"]
+
+          # Audit hardening: each A1 ENVELOPE sub-guard must be pinned by a
+          # fixture that trips ONLY that sub-guard. Without these two fixtures
+          # either envelope guard can be deleted with the whole suite still
+          # green (the phase-2 audit demonstrated exactly that with mutants).
+          with (out / "issue185_ptm_phase2_comparison.csv").open(newline="") as fh:
+              cmp_rows = {r["fixture"]: r for r in csv.DictReader(fh)}
+          for name, needle in (("envelope_gap_only", "unobserved price gap"),
+                               ("envelope_coverage_only", "envelope fraction")):
+              row = cmp_rows[name]
+              assert row["validity"] == "DEGRADED_REFERENCE_ADEQUACY", (name, row)
+              assert int(row["validity_reason_count"]) == 1, (name, row)
+              assert needle in row["validity_reasons"], (name, row)
+              assert int(row["phase2_claim_bars_total"]) == 0, (name, row)
+              assert int(row["v02_claim_bars_total"]) > 0, (name, row)
+
+          # The old probe+3 baseline must be shown to be wrong.
+          with (out / "issue185_ptm_promotion_clock.csv").open(newline="") as fh:
+              rows = {r["scenario"]: r for r in csv.DictReader(fh)}
+          r = rows["breakout_10_bars_after_probe"]
+          assert float(r["eligible_promotion_t"]) == 133.0, r
+          assert float(r["naive_probe_plus_three_t"]) == 123.0, r
+          assert float(r["naive_baseline_error_bars"]) == 10.0, r
+          print("phase-2 evidence artifacts ok")
           PY
 
       - uses: actions/upload-artifact@v4
