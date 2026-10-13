@@ -72,7 +72,10 @@ const SNAPS = [];
         }
         ptr[r]++;
       }
-      snap[r] = cum[r];
+      // SNAPSHOT ISOLATION (Phase 2 correction): deep-copy the cumulative map
+      // so later decisions never mutate earlier snapshots. Aliasing here leaked
+      // future vintages into past decisions (2420/2430 records violated).
+      snap[r] = Object.fromEntries(Object.entries(cum[r]).map(([m, [vd, v]]) => [m, [vd, v]]));
     }
     SNAPS.push(snap);
   }

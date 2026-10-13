@@ -112,4 +112,34 @@ function pressureScore(xs) {
   }
   console.log("T12 Phase-2 no-return scan PASS");
 }
+// T13 snapshot isolation unit: mutating later state must not leak into earlier snaps
+{
+  const cum = { G1: { "2000-01": ["2000-08-31", 1.0] } };
+  const snap0 = { G1: Object.fromEntries(Object.entries(cum.G1).map(([m, p]) => [m, [...p]])) };
+  cum.G1["2000-01"] = ["2001-08-31", 9.9];
+  cum.G1["2005-01"] = ["2005-02-28", 5.0];
+  assert.strictEqual(snap0.G1["2000-01"][1], 1.0);
+  assert.ok(!("2005-01" in snap0.G1));
+  console.log("T13 snapshot isolation PASS");
+}
+// T14 ledger taxonomy + pairing recompute matches summary
+{
+  const D = path.join(RES, "generated/issue-189/phase2");
+  const L = JSON.parse(fs.readFileSync(path.join(D, "asof-ledger.json"), "utf8"));
+  assert.strictEqual(L.length, 243);
+  const st = {};
+  for (const e of L) {
+    assert.ok(["scored", "partial", "gap-no-common-month", "gap-warmup", "gap-month-grid", "gap-insufficient"].includes(e.status), e.status);
+    st[e.status] = (st[e.status] || 0) + 1;
+    if (e.status === "partial") assert.ok(Array.isArray(e.missing_roles) && e.missing_roles.length > 0);
+    assert.strictEqual(e.nine_state, null);
+  }
+  const paired = L.filter((e) => Number.isFinite(e.I_asof) && e.I_band_revised);
+  const ag = paired.filter((e) => e.I_state === e.I_band_revised).length;
+  const S = JSON.parse(fs.readFileSync(path.join(D, "summary.json"), "utf8"));
+  assert.strictEqual(S.pairing, paired.length);
+  assert.strictEqual(S.agree, ag);
+  assert.ok(Math.abs(S.agree / S.pairing - ag / paired.length) < 1e-12);
+  console.log(`T14 taxonomy+pairing PASS (status=${JSON.stringify(st)}, agree=${ag}/${paired.length})`);
+}
 console.log("Phase 2 Node mirror PASS");

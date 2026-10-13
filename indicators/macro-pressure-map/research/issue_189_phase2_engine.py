@@ -111,11 +111,18 @@ def main():
         if not any(is_fin(v) for v in Ivals) and not any(is_fin(v) for v in Gvals):
             ledger.append({"decision": D, "common_obs": common, "status": "gap-insufficient"})
             continue
-        # nine-state refused: G5 missing (fail-closed, always in Phase 2)
-        r = rev.get(common)
+        # Status taxonomy (Phase 2 correction): scored = all 9 non-G5 roles
+        # finite at common (full component audit); partial = warmup/count OK
+        # but >=1 role non-finite (shutdown gaps etc., roles listed); nine-state
+        # is refused in both cases (G5 fail-closed, always in Phase 2).
         rf = {"G1": is_fin(gscores[0][li]), "G2": is_fin(gscores[1][li]), "G3": is_fin(gscores[2][li]), "G4": is_fin(gscores[3][li]), "G5": False}
+        i_fin = [is_fin(v) for v in Ivals]
+        status = "scored" if (g_ok and all(i_fin)) else "partial"
+        missing = [g for g, ok in list(rf.items()) if not ok] + [f"I{k+1}" for k, ok in enumerate(i_fin) if not ok]
+        r = rev.get(common)
         ledger.append({
-            "decision": D, "common_obs": common, "status": "scored-partial",
+            "decision": D, "common_obs": common, "status": status,
+            "missing_roles": missing,
             "roles_finite": rf,
             "I_asof": I, "I_state": infl_state,
             "I_revised": r[1] if r else None,
@@ -134,8 +141,10 @@ def main():
             return [clean(v) for v in x]
         return x
     (GEN2 / "asof-ledger.json").write_text(json.dumps(clean(ledger), indent=1) + "\n", encoding="utf-8")
-    n_ok = sum(1 for e in ledger if e["status"] == "scored-partial")
-    print(f"ledger: {len(ledger)} decisions, {n_ok} scored-partial")
+    n_sc = sum(1 for e in ledger if e["status"] == "scored")
+    n_pa = sum(1 for e in ledger if e["status"] == "partial")
+    n_gp = len(ledger) - n_sc - n_pa
+    print(f"ledger: {len(ledger)} decisions, {n_sc} scored, {n_pa} partial, {n_gp} gaps")
 
 
 if __name__ == "__main__":

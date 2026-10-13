@@ -2,8 +2,13 @@
  "issue": 189,
  "phase": 2,
  "decisions": 243,
- "scored_partial": 243,
- "gaps": 0,
+ "status": {
+  "scored": 241,
+  "partial": 2
+ },
+ "pairing": 241,
+ "agree": 184,
+ "agree_pct": 76.3,
  "nine_state_months": 0,
  "production_authorized": false
 }
