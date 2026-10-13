@@ -115,7 +115,7 @@ claim through `allows_new_territory_claim`, never by suppressing output.
 
 | output | meaning |
 |---|---|
-| `swing_legs`, `reference_cycle_count` | confirmed swing legs and round trips in the frozen window; `legs / 2.0`, a trailing unpaired leg counts 0.5 |
+| `swing_legs`, `reference_cycle_count` | confirmed swing legs and round trips in the frozen window; `legs / 2.0`, a trailing unpaired leg counts 0.5. A leg needs a reversal of the running extreme by `CYCLE_SWING_FRACTION` (`0.5`) × `(Q90 − Q10)` = `10 × w`, so a monotone window yields 0 legs |
 | `reference_adequacy_ok` | `False` when the window has no complete round trip or leaves an unobserved envelope gap |
 | `envelope_covered_fraction`, `max_unobserved_gap_fraction`, `max_unobserved_gap_w` | how much of the reference price envelope is actually observed, and the largest hole in it |
 | `episodes_per_cycle` | `R / reference_cycle_count` — the **market-speed-comparable** revisit rate; `None` when no complete cycle exists |

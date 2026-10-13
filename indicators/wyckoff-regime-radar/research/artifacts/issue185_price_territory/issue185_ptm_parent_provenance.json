@@ -1,0 +1,56 @@
+{
+  "parent_issue": 78,
+  "event_source_marker": "ISSUE76|schema=1",
+  "event_source_module": "analyze_issue78_retest_path_stage1.py",
+  "policy_module": "analyze_issue78_second_entry_economic_policy.py",
+  "export_glob": "/mnt/data/pine-logs-#76 Forward Logger*.csv",
+  "export_note": "The Issue #76 Pine forward-logger export is NOT committed to this repository, so the parity rehearsal below was run locally against an operator-supplied copy and is recorded here as a contract, not as a CI-checkable step.",
+  "event_chain": "Breakout -> Acceptance -> Retest -> Resume",
+  "probe_fraction": 0.25,
+  "full_exposure": 1.0,
+  "confirmation_bars": 3,
+  "box_lookback_bars": 5,
+  "baseline_policy": "R0_Immediate",
+  "baseline_rule": "add immediately at t+3",
+  "parent_paths": [
+    "P0_NoTouch",
+    "P1_WickHold",
+    "P2_Reclaim",
+    "P3_FailedAcceptance"
+  ],
+  "parent_paths_that_add_at_t3": [
+    "P0_NoTouch",
+    "P1_WickHold",
+    "P2_Reclaim"
+  ],
+  "parent_path_that_never_adds": "P3_FailedAcceptance",
+  "no_usable_b3_outcome": "remains at Probe",
+  "parity_constants": {
+    "EXPECTED_EVENTS": 68118,
+    "EXPECTED_EPISODES": 1624,
+    "EXPECTED_B3_EVENTS": 997,
+    "EXPECTED_P12": 236
+  },
+  "parity_assertions_source": "analyze_issue78_second_entry_economic_policy.py lines 741-757 (event count, episode count, B3 event count, P1/P2 count)",
+  "rehearsal": {
+    "run_against": "operator-supplied Issue #76 forward-logger export",
+    "export_files": 9,
+    "events": 68118,
+    "episodes": 1624,
+    "b3_events": 997,
+    "p1_p2": 236,
+    "reconstruction_error": 5.595524044110789e-14,
+    "all_four_constants_match": true
+  },
+  "rehearsal_note": "Counts-only rehearsal of the frozen assertions against a real export. No return, PnL or forward performance quantity was computed: the rehearsal stops before build_state_map and all economics, and scipy's rankdata (used only by the parent's conditional/outcome helpers) was stubbed to raise.",
+  "path_composition_from_rehearsal": {
+    "P0_NoTouch": 411,
+    "P1_WickHold": 110,
+    "P2_Reclaim": 126,
+    "P3_FailedAcceptance": 350,
+    "adds_at_t3": 647,
+    "never_adds": 350
+  },
+  "addon_eligibility_rule": "P0/P1/P2 add at B3_break_t + CONFIRMATION_BARS; P3 never adds; an episode without a usable B3 stays at Probe",
+  "freeze_status": "PENDING_SOPHIRA_APPROVAL"
+}

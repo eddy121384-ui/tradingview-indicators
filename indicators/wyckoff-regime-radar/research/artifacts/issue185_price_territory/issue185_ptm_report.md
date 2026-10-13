@@ -203,6 +203,114 @@ The synthetic fixtures contain no markup/markdown/B3 event, so `breakout_stand_i
 
 Two different delay baselines exist and must not be confused. This table compares against the CORRECTED baseline, `eligible_promotion_t = B3_break_t + 3`, so `PTM extra delay` is measured against the promotion the frozen #78 mechanics actually allow. The comparison CSV additionally carries `ptm_extra_delay_vs_naive_bars`, measured against the NAIVE `probe_t0 + 3` baseline; that column is large and non-zero (up to 80 bars) precisely because the naive baseline is wrong. Only the corrected figure answers 'does PTM delay a legitimate add-on'.
 
+## C1/C2 add-on policy (prereg clarification)
+
+The policy layer decides only whether the 75% add-on the frozen parent has already earned is RELEASED or WITHHELD. It never accelerates a promotion, never reduces exposure and never sizes.
+
+| fixture | parent earns add-on | eligible bar | claims at/after eligibility | C1 status | C1 release | C1 executable | C1 delay | C1 censored | C2 status | C2 delay |
+|---|---|---:|---:|---|---:|---:|---:|---|---|---:|
+| wide_box_traversal | True | 171.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| true_trend | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
+| fake_breakout | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| healthy_retest | True | 129.0 | 4 | PROMOTE | 129.0 | 130.0 | 0.0 | False | PROMOTE | 0.0 |
+| one_tick_breakout | True | 132.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| post_breakout_stall | True | 129.0 | 18 | PROMOTE | 129.0 | 130.0 | 0.0 | False | PROMOTE | 0.0 |
+| creeping_stall | True | 129.0 | 18 | PROMOTE | 129.0 | 130.0 | 0.0 | False | PROMOTE | 0.0 |
+| slow_trend | True | 163.0 | 17 | PROMOTE | 163.0 | 164.0 | 0.0 | False | PROMOTE | 0.0 |
+| long_trend_unbounded_novelty | True | 203.0 | 167 | PROMOTE | 203.0 | 204.0 | 0.0 | False | PROMOTE | 2.0 |
+| true_trend__short_mirror | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
+| wide_box_traversal__short_mirror | True | 171.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| missing_reference_bars | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| adjusted_split | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
+| unadjusted_split | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| futures_roll | True | 123.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| gappy_reference | True | 126.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| crossed_but_not_closed | True | 127.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| degenerate_history | True | 124.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| degenerate_history_tick_fallback | True | 124.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| sparse_slow_box | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| long_period_box | True | 123.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| long_wick | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| volatility_regime_shift | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| one_way_reference_genuine_trend | True | 123.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| translated_to_zero_scale | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| negative_level_series | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
+| low_level_scale_break_false_alarm | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
+| nondup_ref_box | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| nondup_ref_far | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| nondup_path_smooth | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| nondup_path_choppy | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| envelope_gap_only | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+| envelope_coverage_only | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+
+* fixtures with a parent add-on entitlement: **23** of 33; released **9**, censored **14** (60.9%)
+* newly-introduced suppressions by C1: **0** (fixtures where a claim existed at/after the eligibility bar and C1 still withheld)
+* censored genuine sustained escapes: **['one_tick_breakout', 'one_way_reference_genuine_trend']**
+* C2 differs from C1 on **1** fixture(s)
+
+**A censored add-on never happened.** Its extra delay is unbounded, so it is reported as censored and excluded from every mean/max delay figure; it is never rendered as `0` additional bars.
+
+max/mean are over fixtures whose add-on was actually RELEASED; censored fixtures are unbounded and are excluded from both, and are reported separately as c1_censored_share_of_entitled
+
+### `o_min` sensitivity for C2 (synthetic only, no outcomes consulted)
+
+| o_min | = parent CONFIRMATION_BARS | released | censored | mean delay (released) | max delay (released) | differs from C1 | degenerate (=C1) |
+|---:|---|---:|---:|---:|---:|---:|---|
+| 1 | False | 9 | 14 | 0.00 | 0 | 0 | True |
+| 2 | False | 9 | 14 | 0.11 | 1 | 1 | False |
+| 3 | True | 9 | 14 | 0.22 | 2 | 1 | False |
+| 4 | False | 4 | 19 | 1.50 | 3 | 9 | False |
+| 5 | False | 4 | 19 | 2.50 | 4 | 9 | False |
+| 6 | False | 4 | 19 | 3.50 | 5 | 9 | False |
+
+`o_min = 1` is degenerate: C2 becomes exactly C1. At `o_min = 4` and above the released count collapses (9 -> 4), so the horizon stops being free. `o_min = 3` is the parent's own frozen confirmation window and is the largest value before that cliff. This is a design disclosure, not a parameter search: no market outcome is consulted.
+
+
+### Declared outcome statuses and the abstain branch
+
+C1 status distribution: `{'WITHHOLD_CENSORED': 14, 'PROMOTE': 9, 'NOT_ELIGIBLE': 10}`
+
+C2 status distribution: `{'WITHHOLD_CENSORED': 14, 'PROMOTE': 9, 'NOT_ELIGIBLE': 10}`
+
+Declared outcomes never observed under C1: `['WITHHOLD_PENDING', 'BASELINE_HANDLES', 'DE_RISK_BASELINE', 'ALREADY_FULL']`
+
+A declared outcome with no observation is disclosed rather than left implicit. ADDON_BASELINE_HANDLES is additionally PROVABLY unreachable -- see abstain_branch; ADDON_DE_RISK and ADDON_ALREADY_FULL are unreachable on the synthetic set only because no fixture declares a deterioration or a pre-existing full position, and both are exercised by the unit tests.
+
+The abstain outcome (`BASELINE_HANDLES`) was scanned for counterexamples over **640** trusted-reference observations and found **0**. the abstain outcome is provably unreachable: a trusted reference at R<=1 always claims, because reference_is_valid() is a superset of the frozen claim gate's non-novelty conjuncts.
+
+**Prereg consequence:** 'abstain / baseline handles' and 'conservative hold' are NOT distinct behaviours on the frozen instrument, so the choice the review asked for cannot be exercised as a policy parameter. Genuine abstain semantics would require weakening this gate below the claim gate, which is an instrument change and is out of scope PENDING_SOPHIRA_APPROVAL.
+
+
+## Parent (#78) event provenance and parity contract
+
+| field | value |
+|---|---|
+| event source marker | `ISSUE76|schema=1` |
+| event source module | `analyze_issue78_retest_path_stage1.py` |
+| policy module | `analyze_issue78_second_entry_economic_policy.py` |
+| export glob | `/mnt/data/pine-logs-#76 Forward Logger*.csv` |
+| event chain | Breakout -> Acceptance -> Retest -> Resume |
+| probe fraction | 0.25 |
+| baseline policy | `R0_Immediate` (add immediately at t+3) |
+| paths that add at t+3 | ['P0_NoTouch', 'P1_WickHold', 'P2_Reclaim'] |
+| path that never adds | `P3_FailedAcceptance` |
+| no usable B3 | remains at Probe |
+
+Frozen parity constants and the counts-only rehearsal:
+
+| constant | expected | rehearsed | match |
+|---|---:|---:|---|
+| events | 68118 | 68118 | yes |
+| episodes | 1624 | 1624 | yes |
+| B3 events | 997 | 997 | yes |
+| P1/P2 | 236 | 236 | yes |
+
+Rehearsed against 9 export file(s) with reconstruction error 5.6e-14; all four frozen constants reproduce. Causal path composition of the 997 B3 events: `P0_NoTouch` 411, `P1_WickHold` 110, `P2_Reclaim` 126 -- i.e. 647 add at t+3 -- and `P3_FailedAcceptance` 350 never add.
+
+Counts-only rehearsal of the frozen assertions against a real export. No return, PnL or forward performance quantity was computed: the rehearsal stops before build_state_map and all economics, and scipy's rankdata (used only by the parent's conditional/outcome helpers) was stubbed to raise.
+
+The Issue #76 Pine forward-logger export is NOT committed to this repository, so the parity rehearsal below was run locally against an operator-supplied copy and is recorded here as a contract, not as a CI-checkable step. Freeze status: `PENDING_SOPHIRA_APPROVAL`.
+
 ## Boundaries
 
 ```json

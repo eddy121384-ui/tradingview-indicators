@@ -340,8 +340,18 @@ synthetic geometry **before** the patch was written, with no outcome inspected.
 | A1 cycles | `reference_cycle_count ≥ 1.0` | `MIN_REFERENCE_CYCLES` |
 | A1 coverage | `envelope_covered_fraction ≥ 0.5` | `MIN_ENVELOPE_COVERED_FRACTION` |
 | A1 gap | `max_unobserved_gap_fraction ≤ 0.25` | `MAX_UNOBSERVED_GAP_FRACTION` |
-| swing leg | `0.5 × w` reversal of the running extreme | `CYCLE_SWING_FRACTION` |
+| swing leg | `0.5 × (Q90 − Q10)` reversal of the running extreme, i.e. `10 × w` | `CYCLE_SWING_FRACTION` |
 | A3 | `w / abs(median close_ref) ≤ 0.05` | `MAX_W_OVER_SCALE` |
+
+**Correction (P0.1 of the prereg review):** the swing-leg threshold in this
+table previously read `0.5 × w`, which is **20× smaller** than the implemented
+`0.5 × (Q90 − Q10) = 10 × w` and is the *fail-open* direction. The
+implementation was verified correct against the tests and the synthetic
+geometry before the prose was changed, so this is a **documentation-only**
+correction; no threshold moved. `volatility_regime_shift` is the separating
+fixture: the implemented threshold credits 0.5 cycles, the old prose reading
+would credit 5.5 and let the cycle sub-guard pass. Pinned by
+`test_d1_cycle_threshold_is_half_the_inter_decile_span_not_half_w`.
 
 **Correction to §7's A1 wording:** the gap guard keys on the largest unobserved
 hole **between merged reference bar ranges**, not on close-to-close jumps. A

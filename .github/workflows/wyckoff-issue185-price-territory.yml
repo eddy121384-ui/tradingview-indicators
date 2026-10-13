@@ -10,8 +10,10 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
   pull_request:
     paths:
@@ -20,8 +22,10 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
 
 jobs:
@@ -43,12 +47,16 @@ jobs:
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_fixtures.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_charts.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/ptm_addon_policy.py
           python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py
 
       - name: PTM engineering review tests
         working-directory: indicators/wyckoff-regime-radar/research
-        run: python -m pytest -q test_issue185_price_territory.py
+        run: |
+          python -m pytest -q test_issue185_price_territory.py
+          python -m pytest -q test_issue185_addon_policy.py
 
       - name: Artifact reproducibility (text artifacts, byte-for-byte)
         working-directory: indicators/wyckoff-regime-radar/research
@@ -137,6 +145,73 @@ jobs:
           assert float(r["naive_probe_plus_three_t"]) == 123.0, r
           assert float(r["naive_baseline_error_bars"]) == 10.0, r
           print("phase-2 evidence artifacts ok")
+          PY
+
+      - name: Prereg-clarification evidence present and self-consistent
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python - <<'PY'
+          import csv, json
+          from pathlib import Path
+
+          out = Path("/tmp/issue185_out")
+          for name in ("issue185_ptm_addon_policy.csv",
+                       "issue185_ptm_omin_sensitivity.csv",
+                       "issue185_ptm_parent_provenance.json"):
+              assert (out / name).is_file(), f"missing {name}"
+
+          summary = json.loads((out / "issue185_ptm_summary.json").read_text("utf-8"))
+          addon = summary["addon_policy"]
+
+          # C1 must never withhold an add-on that the phase-2 signal itself
+          # endorsed with a claim at or after the eligibility bar.
+          assert addon["c1_newly_introduced_suppression_count"] == 0, addon[
+              "c1_newly_introduced_suppressions"]
+
+          # The central honesty invariant: a withheld add-on is CENSORED.  Its
+          # delay is unbounded and must never be rendered as 0 bars.
+          assert addon["censored_never_reported_as_zero"] is True
+          with (out / "issue185_ptm_addon_policy.csv").open(newline="") as fh:
+              rows = {r["fixture"]: r for r in csv.DictReader(fh)}
+          for row in rows.values():
+              for tag in ("c1", "c2"):
+                  if row[f"{tag}_censored"] == "True":
+                      assert row[f"{tag}_extra_delay_bars"] == "", (row["fixture"], tag)
+                      assert row[f"{tag}_first_executable_bar"] == "", (row["fixture"], tag)
+
+          # The blocking wide-box false release must also lose its ADD-ON, not
+          # merely its informational NEW claim.
+          assert rows["long_period_box"]["c1_status"] == "WITHHOLD_CENSORED", rows["long_period_box"]
+
+          # The declared genuine-trend cost must stay visible and censored.
+          assert "one_way_reference_genuine_trend" in addon[
+              "c1_censored_genuine_sustained_escapes"]
+          assert rows["one_way_reference_genuine_trend"]["c1_extra_delay_bars"] == ""
+
+          # o_min must not be degenerate, and must sit before the cliff.
+          sens = {int(r["o_min"]): r for r in summary["omin_sensitivity"]}
+          assert sens[1]["is_degenerate_equals_c1"] is True
+          assert sens[3]["equals_parent_confirmation_bars"] is True
+          assert sens[3]["is_degenerate_equals_c1"] is False
+          assert sens[3]["released"] == sens[2]["released"], sens
+          assert sens[4]["released"] < sens[3]["released"], sens
+
+          # Parent (#78) provenance: the frozen parity constants and the causal
+          # path composition must be internally consistent.
+          prov = summary["parent_event_provenance"]
+          assert prov["event_source_marker"] == "ISSUE76|schema=1"
+          assert prov["baseline_policy"] == "R0_Immediate"
+          assert prov["parity_constants"] == {
+              "EXPECTED_EVENTS": 68118, "EXPECTED_EPISODES": 1624,
+              "EXPECTED_B3_EVENTS": 997, "EXPECTED_P12": 236}
+          assert prov["rehearsal"]["all_four_constants_match"] is True
+          comp = prov["path_composition_from_rehearsal"]
+          assert comp["adds_at_t3"] + comp["never_adds"] == 997, comp
+          assert comp["P1_WickHold"] + comp["P2_Reclaim"] == 236, comp
+          assert (comp["P0_NoTouch"] + comp["P1_WickHold"] + comp["P2_Reclaim"]
+                  == comp["adds_at_t3"]), comp
+          assert prov["freeze_status"] == "PENDING_SOPHIRA_APPROVAL"
+          print("prereg-clarification evidence ok")
           PY
 
       - uses: actions/upload-artifact@v4
