@@ -1,0 +1,16 @@
+{
+ "roles": {
+  "I3": "UNVERIFIED",
+  "I4": "UNVERIFIED",
+  "I5": "CONFIRMED"
+ },
+ "tv_extremes": {
+  "I3_SOP_1974_11": 19.57,
+  "I3_FD_2009_07": -6.86,
+  "I4_2020_04": -5.89,
+  "I4_2021_04": 15.28,
+  "I5_1980_03": 47.13,
+  "I5_2009_07": -28.09
+ },
+ "production_authorized": false
+}

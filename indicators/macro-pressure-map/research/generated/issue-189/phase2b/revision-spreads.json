@@ -1,0 +1,18 @@
+{
+ "I3_SOP": {
+  "median_spread_pp": null,
+  "max_spread_pp": null
+ },
+ "I3_FD": {
+  "median_spread_pp": 0.145,
+  "max_spread_pp": 0.45
+ },
+ "I4_PAY": {
+  "median_spread_pp": 1.233,
+  "max_spread_pp": 2.354
+ },
+ "I5_NSA": {
+  "median_spread_pp": 0,
+  "max_spread_pp": 0
+ }
+}
