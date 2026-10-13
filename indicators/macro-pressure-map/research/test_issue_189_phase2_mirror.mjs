@@ -85,4 +85,31 @@ function pressureScore(xs) {
   }
   console.log("T9 no-return-import scan PASS");
 }
+// T11 phase2 artifacts: schema + fail-closed invariants (structural, not value-pinned)
+{
+  const D = path.join(RES, "generated/issue-189/phase2");
+  for (const f of ["vintage-manifest.json", "staleness.json", "revision-impact.json", "revision-yoy.json", "definition-checks.json", "coverage.json", "asof-ledger.json", "g5-spots.json", "summary.json"]) {
+    assert.ok(fs.existsSync(path.join(D, f)), "missing artifact: " + f);
+  }
+  const L = JSON.parse(fs.readFileSync(path.join(D, "asof-ledger.json"), "utf8"));
+  assert.strictEqual(L.length, 243);
+  assert.ok(L.every((e) => e.nine_state === null && e.nine_state_reason === "G5-unavailable-fail-closed"), "nine-state must be refused everywhere");
+  assert.ok(L.every((e) => e.roles_finite && e.roles_finite.G5 === false), "G5 finite flag must be false");
+  const S = JSON.parse(fs.readFileSync(path.join(D, "summary.json"), "utf8"));
+  assert.strictEqual(S.nine_state_months, 0);
+  assert.strictEqual(S.production_authorized, false);
+  const C = JSON.parse(fs.readFileSync(path.join(D, "coverage.json"), "utf8"));
+  assert.strictEqual(C.decisions.length, 243);
+  console.log("T11 phase2 artifact invariants PASS");
+}
+// T12 no-return-import scan over ALL Phase 2 sources (incl. analyzer/engine/finding)
+{
+  const ban = ["monthly" + "-returns", "port" + "_ret", "impl" + "_pre", "backtest" + "-monthly", "spx" + "-monthly", "spx" + "-daily"];
+  const files = ["issue_189_phase2_pull.mjs", "issue_189_phase2_analyze.mjs", "issue_189_phase2_engine.py", "issue_189_phase2_asof.py", "issue_189_phase2_revyoy.mjs", "test_issue_189_phase2.py", "test_issue_189_phase2_mirror.mjs", "decisions/issue-189-phase2-finding.md"];
+  for (const f of files) {
+    const c = fs.readFileSync(path.join(RES, f), "utf8");
+    for (const b of ban) assert.ok(!c.includes(b), `${f}: ${b}`);
+  }
+  console.log("T12 Phase-2 no-return scan PASS");
+}
 console.log("Phase 2 Node mirror PASS");

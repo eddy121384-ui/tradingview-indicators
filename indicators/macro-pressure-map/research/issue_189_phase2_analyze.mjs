@@ -52,50 +52,65 @@ function loadCols(sid) {
 const COLS = {};
 for (const r of ROLES) COLS[r] = loadCols(FEEDS[r].sid);
 console.log("columns loaded:", ROLES.map((r) => `${r}:${COLS[r].length}`).join(" "));
-// latest-wins per role at decision date D (vintage vd <= D)
-function asofAt(role, D) {
-  const best = {};
-  for (const { vd, obs } of COLS[role]) {
-    if (vd > D) continue;
-    for (const [m, v] of Object.entries(obs)) {
-      if (!(m in best) || vd >= best[m][0]) best[m] = [vd, v];
+// latest-wins per role at decision date D (vintage vd <= D) — incremental over
+// sorted decisions (cumulative maps; vintages only added as D advances)
+const COLS_SORTED = {};
+for (const r of ROLES) COLS_SORTED[r] = [...COLS[r]].sort((a, b) => (a.vd < b.vd ? -1 : 1));
+const DEC_SORTED = [...DECISIONS].sort();
+const SNAPS = [];
+{
+  const cum = {}, ptr = {};
+  for (const r of ROLES) { cum[r] = {}; ptr[r] = 0; }
+  for (const D of DEC_SORTED) {
+    const snap = {};
+    for (const r of ROLES) {
+      const cols = COLS_SORTED[r];
+      while (ptr[r] < cols.length && cols[ptr[r]].vd <= D) {
+        const { vd, obs } = cols[ptr[r]];
+        for (const [m, v] of Object.entries(obs)) {
+          if (!(m in cum[r]) || vd >= cum[r][m][0]) cum[r][m] = [vd, v];
+        }
+        ptr[r]++;
+      }
+      snap[r] = cum[r];
     }
+    SNAPS.push(snap);
   }
-  return best; // obsYM -> [vintageDate, value]
 }
 // eligible latest obs per role at decision D under conservative clock:
 // latest obs m with month_end(m)+lag <= D AND vintage-covered by D
-function eligibleAt(role, D) {
-  const seen = asofAt(role, D);
+function eligibleAt(role, snap, D) {
   const lag = FEEDS[role].lag;
   let bestM = null;
-  for (const m of Object.keys(seen).sort()) {
+  for (const m of Object.keys(snap).sort()) {
     if (addDays(lastDay(m), lag) <= D) bestM = m;
   }
-  return bestM ? { obs: bestM, vintage: seen[bestM][0], value: seen[bestM][1], age_mo: (Date.parse(D) - Date.parse(lastDay(bestM))) / 2592000000 } : null;
+  if (!bestM) return null;
+  return { obs: bestM, vintage: snap[bestM][0], value: snap[bestM][1], age_mo: (Date.parse(D) - Date.parse(lastDay(bestM))) / 2592000000 };
 }
 // ---- R2 staleness + common month, all decisions
 const stale = [];
-for (const D of DECISIONS) {
+DEC_SORTED.forEach((D, di) => {
+  const snap = SNAPS[di];
   const legs = {};
-  for (const r of ROLES) legs[r] = eligibleAt(r, D);
+  for (const r of ROLES) legs[r] = eligibleAt(r, snap[r], D);
   const avail = ROLES.filter((r) => legs[r] !== null);
   const common = avail.length ? avail.map((r) => legs[r].obs).sort()[0] : null;
   stale.push({ decision: D, common_obs: common, roles_covered: avail.length, legs: Object.fromEntries(ROLES.map((r) => [r, legs[r] ? { obs: legs[r].obs, vintage: legs[r].vintage, age_mo: +legs[r].age_mo.toFixed(2) } : null])) });
-}
+});
 // naive clock diagnostic (obs month <= D-1mo regardless of lag) for BEA effect sizing
 const staleNaive = [];
-for (const D of DECISIONS) {
+DEC_SORTED.forEach((D, di) => {
+  const snap = SNAPS[di];
   const prevM = new Date(Date.parse(D) - 27 * 86400000).toISOString().slice(0, 7);
   const legs = {};
   for (const r of ROLES) {
-    const seen = asofAt(r, D);
-    const cand = Object.keys(seen).filter((m) => m <= prevM).sort();
+    const cand = Object.keys(snap[r]).filter((m) => m <= prevM).sort();
     legs[r] = cand.length ? cand[cand.length - 1] : null;
   }
   const vals = ROLES.map((r) => legs[r]);
   staleNaive.push({ decision: D, common_obs: vals.some((v) => v === null) ? null : vals.sort()[0] });
-}
+});
 // ---- R1 revision impact: benchmark obs across vintages
 const BENCH = [];
 { let y = 2000, m = 1; while (y < 2026 || (y === 2026 && m <= 6)) { BENCH.push(`${y}-${String(m).padStart(2, "0")}`); m += 6; if (m > 12) { m -= 12; y++; } } }

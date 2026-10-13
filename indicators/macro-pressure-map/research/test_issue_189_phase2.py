@@ -109,6 +109,19 @@ class TestAsofLogic(unittest.TestCase):
         self.assertFalse(refuse_nine_state(["G1", "G2", "G3", "G4"]))
         self.assertTrue(refuse_nine_state(["G1", "G2", "G3", "G4", "G5"]))
 
+    def test_nan_g5_keeps_others_intact(self):
+        import issue_160_deep_history_v01 as F
+        from issue_189_phase2_asof import asof_raw_10
+        feed = {}
+        for j, r in enumerate(["G1", "G2", "G3", "G4n", "G4d", "I1", "I2", "I3", "I4", "I5"]):
+            feed[r] = {f"{2000 + k // 12:04d}-{k % 12 + 1:02d}": 100.0 + j + 0.1 * k for k in range(80)}
+        raw = asof_raw_10(feed)
+        months, roles = F.build_roles(raw)
+        g5s = F.pressure_score(roles["G5"])
+        self.assertTrue(all(not is_fin(v) for v in g5s))
+        g1s = F.pressure_score(roles["G1"])
+        self.assertTrue(any(is_fin(v) for v in g1s))
+
     def test_no_return_imports(self):
         frags = ["monthly", "returns", "port", "ret", "impl", "pre", "backtest",
                  "spx", "sharpe", "cagr", "maxdd"]

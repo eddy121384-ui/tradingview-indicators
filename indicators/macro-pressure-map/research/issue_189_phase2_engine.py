@@ -72,37 +72,27 @@ def main():
         if common is None:
             ledger.append({"decision": D, "status": "gap-no-common-month"})
             continue
-        # warmup: 75 raw obs ending at common, all vintage-covered by D
+        # warmup: >=75 vintage-covered raw obs at/below common per role.
+        # Isolated gaps do NOT fail here: frozen last_valid skips missing
+        # months (verified: single-gap warmup extends, never fills). The
+        # finiteness check at the common month below is authoritative.
         ok = True
         raw_by_role = {}
         for r in TICK:
             asof = latest_wins(cols[r], D)
-            # need 75 obs ending at common
-            y, m = int(common[:4]), int(common[5:7])
-            need = []
-            for _ in range(75):
-                need.append(f"{y:04d}-{m:02d}")
-                m -= 1
-                if m < 1:
-                    m = 12
-                    y -= 1
-            need = need[::-1]
-            if any(x not in asof or x > common for x in need):
+            have = sorted(m for m in asof if m <= common)
+            if len(have) < 75:
                 ok = False
                 break
-            raw_by_role[r] = {x: asof[x] for x in need}
+            raw_by_role[r] = {x: asof[x] for x in have}
         if not ok:
             ledger.append({"decision": D, "common_obs": common, "status": "gap-warmup"})
             continue
-        # frozen transforms on as-of levels (G3/G4 YoY inside build_roles via raw dict)
-        raw = {}
-        for r, tic in TICK.items():
-            lv = raw_by_role[r]
-            if r in ("G1", "I1", "I2", "I3", "I4", "I5"):
-                vals = yoy12(lv)
-            else:
-                vals = lv
-            raw[tic] = {"data": ",".join(f"{m}-01:{vals[m]:.10f}" for m in sorted(vals) if is_fin(vals[m]))}
+        # frozen transforms via the single shared helper (incl. present-but-empty
+        # G5 key so frozen build_roles runs unmodified and fail-closes Growth)
+        from issue_189_phase2_asof import asof_raw_10
+        feed_levels = {r: raw_by_role[r] for r in TICK}
+        raw = asof_raw_10(feed_levels)
         months, roles = build_roles(raw)
         gscores = [pressure_score(roles[g]) for g in ("G1", "G2", "G3", "G4")]
         iscores = [pressure_score(roles[i]) for i in ("I1", "I2", "I3", "I4", "I5")]
@@ -118,6 +108,9 @@ def main():
             I, infl_state = float("nan"), None
         Gvals = [s[li] for s in gscores]
         g_ok = all(is_fin(v) for v in Gvals)
+        if not any(is_fin(v) for v in Ivals) and not any(is_fin(v) for v in Gvals):
+            ledger.append({"decision": D, "common_obs": common, "status": "gap-insufficient"})
+            continue
         # nine-state refused: G5 missing (fail-closed, always in Phase 2)
         r = rev.get(common)
         rf = {"G1": is_fin(gscores[0][li]), "G2": is_fin(gscores[1][li]), "G3": is_fin(gscores[2][li]), "G4": is_fin(gscores[3][li]), "G5": False}
@@ -132,7 +125,15 @@ def main():
             "nine_state": None, "nine_state_reason": "G5-unavailable-fail-closed",
         })
     GEN2.mkdir(parents=True, exist_ok=True)
-    (GEN2 / "asof-ledger.json").write_text(json.dumps(ledger, indent=1) + "\n", encoding="utf-8")
+    def clean(x):
+        if isinstance(x, float) and not math.isfinite(x):
+            return None
+        if isinstance(x, dict):
+            return {k: clean(v) for k, v in x.items()}
+        if isinstance(x, list):
+            return [clean(v) for v in x]
+        return x
+    (GEN2 / "asof-ledger.json").write_text(json.dumps(clean(ledger), indent=1) + "\n", encoding="utf-8")
     n_ok = sum(1 for e in ledger if e["status"] == "scored-partial")
     print(f"ledger: {len(ledger)} decisions, {n_ok} scored-partial")
 

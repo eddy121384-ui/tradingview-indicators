@@ -19,9 +19,11 @@ MIN_OBS = 75
 # Feed -> role input kind. Levels need 12m% computed (documented substitution
 # for native-YoY roles); G3/G4 compute YoY exactly as frozen #160 does.
 ROLE_KIND = {
-    "G1": "yoy12", "G2": "level", "G3": "level12",
+    "G1": "yoy12", "G2": "level", "G3": "level",
     "I1": "yoy12", "I2": "yoy12", "I3": "yoy12", "I4": "yoy12", "I5": "yoy12",
-}  # G4n/G4d pass through as levels (frozen build_roles real-orders them itself)
+}  # G4n/G4d pass through as levels (frozen build_roles real-orders them itself).
+   # G3 passes through as LEVELS too: frozen build_roles computes its 12m% YoY
+   # itself — pre-computing YoY here would double-transform (found + fixed).
 
 
 def yoy12(levels):
@@ -54,30 +56,31 @@ def latest_wins(columns, decision_ym):
     return {m: v for m, (_, v) in best.items()}
 
 
-def asof_raw_10(feed_levels, decision_ym):
-    """feed_levels: {role: {obs_ym: level}}. Returns TV-ticker-keyed raw dict
-    for frozen build_roles, WITHOUT G5 (G5 key absent -> build_roles yields
-    no complete Growth composite; callers must refuse nine-state output)."""
+def asof_raw_10(feed_levels):
+    """feed_levels: {role: {obs_ym: level}} for the 10 vintage-sourced roles.
+    Returns TV-ticker-keyed raw dict for frozen build_roles. Roles with no
+    finite values (always G5 in Phase 2; any role in a debug fixture) get NaN
+    placeholders over the shared month grid: parse_compact rejects empty
+    strings, while NaN IS the parser's missing-value language (is_fin guards
+    everywhere). Zero information added; five-finite composites stay refused.
+    Fail-closed by data, not by a code branch."""
     from issue_160_deep_history_v01 import (
-        T_G1, T_BP, T_DPI, T_PCEPI, T_G2, T_I1, T_I2, T_I3, T_I4, T_I5,
+        T_G1, T_BP, T_DPI, T_PCEPI, T_G2, T_I1, T_I2, T_I3, T_I4, T_I5, T_G5,
     )
     tickers = {
         "G1": T_G1, "G2": T_G2, "G3": T_BP, "G4n": T_DPI, "G4d": T_PCEPI,
         "I1": T_I1, "I2": T_I2, "I3": T_I3, "I4": T_I4, "I5": T_I5,
     }
+    grid = sorted({m for lv in feed_levels.values() for m in lv})
     raw = {}
     for role, tic in tickers.items():
         lv = feed_levels.get(role, {})
         base = role[:-1] if role in ("G4n", "G4d") else role  # G4 legs pass through as levels
         kind = ROLE_KIND.get(base, "level")
-        if kind == "level":
-            vals = lv
-        elif kind in ("yoy12", "level12"):
-            vals = yoy12(lv)
-        else:
-            vals = lv
-        raw[tic] = {"data": ",".join(
-            f"{m}-01:{vals[m]:.10f}" for m in sorted(vals) if is_fin(vals[m]))}
+        vals = yoy12(lv) if kind == "yoy12" else lv
+        parts = [f"{m}-01:{vals[m]:.10f}" if is_fin(vals.get(m)) else f"{m}-01:nan" for m in grid]
+        raw[tic] = {"data": ",".join(parts)}
+    raw[T_G5] = {"data": ",".join(f"{m}-01:nan" for m in grid)}
     return raw
 
 

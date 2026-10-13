@@ -1,0 +1,42 @@
+{
+ "G1": {
+  "verdict": "match",
+  "basis": "INDPRO monthly SA index; computed-12m% substitution for TV native YoY (documented; rounding-level)"
+ },
+ "G2": {
+  "verdict": "match",
+  "basis": "UNRATE monthly SA U-3 rate, inverted per frozen code"
+ },
+ "G3": {
+  "verdict": "match",
+  "basis": "PERMIT SAAR levels; 12m% invariant to SAAR scaling; frozen code computes YoY from levels itself"
+ },
+ "G4": {
+  "verdict": "match",
+  "basis": "DSPI nominal SAAR + PCEPI chain SA; frozen real-order (ratio then YoY) reproduced exactly"
+ },
+ "I1": {
+  "verdict": "match",
+  "basis": "CPIAUCSL monthly SA index; computed-12m% substitution (documented)"
+ },
+ "I2": {
+  "verdict": "match",
+  "basis": "PCEPILFE monthly SA chain index; computed-12m% substitution (documented)"
+ },
+ "I3": {
+  "verdict": "TBD-stays-partial",
+  "basis": "PPIACO is NSA all-commodities; TV USPPIYY index concept unverified; FD-ID break 2014 unmapped to TV series"
+ },
+ "I4": {
+  "verdict": "TBD-stays-partial",
+  "basis": "AHETPI is production-worker concept from 1964; TV USWG concept unverified; 1960-63 gap"
+ },
+ "I5": {
+  "verdict": "TBD-stays-partial",
+  "basis": "CPIENGSL broad-energy SA assumed; TV USEI concept unverified"
+ },
+ "G5": {
+  "verdict": "unavailable",
+  "basis": "no public vintage archive (Phase 1B spots only)"
+ }
+}

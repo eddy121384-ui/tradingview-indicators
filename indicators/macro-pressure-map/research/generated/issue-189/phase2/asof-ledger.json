@@ -1,0 +1,4862 @@
+[
+ {
+  "decision": "2006-06",
+  "common_obs": "2006-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 30.73236906853799,
+  "I_state": "High",
+  "I_revised": 30.796244127304295,
+  "I_band_revised": "High",
+  "G_partial_mean": -20.802281646390956,
+  "G_revised": -2.604488835648801,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2006-07",
+  "common_obs": "2006-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 38.67154335880773,
+  "I_state": "High",
+  "I_revised": 38.72093130668458,
+  "I_band_revised": "High",
+  "G_partial_mean": -26.39063648673813,
+  "G_revised": -2.9349584238402975,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2006-08",
+  "common_obs": "2006-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 44.72889506612862,
+  "I_state": "High",
+  "I_revised": 40.81834748608394,
+  "I_band_revised": "High",
+  "G_partial_mean": -24.231372671362728,
+  "G_revised": -6.431749262874325,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2006-09",
+  "common_obs": "2006-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 33.25409959664627,
+  "I_state": "High",
+  "I_revised": 21.661746730053473,
+  "I_band_revised": "High",
+  "G_partial_mean": -15.288362192069144,
+  "G_revised": -7.277655159306439,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2006-10",
+  "common_obs": "2006-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 27.219956881334717,
+  "I_state": "High",
+  "I_revised": 18.346405258614496,
+  "I_band_revised": "High",
+  "G_partial_mean": -7.916068688167229,
+  "G_revised": -8.314434957365798,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2006-11",
+  "common_obs": "2006-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -19.41918210907102,
+  "I_state": "Low",
+  "I_revised": -27.34480687483304,
+  "I_band_revised": "Low",
+  "G_partial_mean": -19.41712114196295,
+  "G_revised": 10.962187916949812,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2006-12",
+  "common_obs": "2006-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -26.61308688420281,
+  "I_state": "Low",
+  "I_revised": -30.448308341605735,
+  "I_band_revised": "Low",
+  "G_partial_mean": -25.974627794190198,
+  "G_revised": -4.393860001421553,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-01",
+  "common_obs": "2006-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 2.8360252182346173,
+  "I_state": "Neutral",
+  "I_revised": -4.398307681289197,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -28.602929719489307,
+  "G_revised": -18.69947734914289,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-02",
+  "common_obs": "2006-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 10.970168039474682,
+  "I_state": "High",
+  "I_revised": 9.082892606706682,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -23.014754868002054,
+  "G_revised": 0.21373434343400816,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-03",
+  "common_obs": "2007-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -11.047117465804753,
+  "I_state": "Low",
+  "I_revised": -12.113369105859075,
+  "I_band_revised": "Low",
+  "G_partial_mean": -24.20366052610182,
+  "G_revised": -19.562384592252016,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-04",
+  "common_obs": "2007-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 13.896930707771144,
+  "I_state": "High",
+  "I_revised": 9.832162032247945,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -22.405908227781214,
+  "G_revised": 6.403418163499689,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-05",
+  "common_obs": "2007-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 5.384640096843883,
+  "I_state": "Neutral",
+  "I_revised": 7.871955313529304,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -29.172219578893134,
+  "G_revised": -4.411309146620882,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-06",
+  "common_obs": "2007-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.42023851564439,
+  "I_state": "Neutral",
+  "I_revised": -6.39958186982592,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -24.036563257438537,
+  "G_revised": -0.6045311039932335,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-07",
+  "common_obs": "2007-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 4.976329799420158,
+  "I_state": "Neutral",
+  "I_revised": 3.7680147291344257,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -16.737654595562695,
+  "G_revised": 7.498507641238336,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-08",
+  "common_obs": "2007-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -3.996583144885213,
+  "I_state": "Neutral",
+  "I_revised": -6.381942501688902,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -26.958515519356617,
+  "G_revised": -8.06194820704189,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-09",
+  "common_obs": "2007-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -7.4432662154487925,
+  "I_state": "Neutral",
+  "I_revised": -5.509856299120492,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -6.460222030584438,
+  "G_revised": -5.351295230510702,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-10",
+  "common_obs": "2007-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -26.6981989930518,
+  "I_state": "Low",
+  "I_revised": -28.671138364602836,
+  "I_band_revised": "Low",
+  "G_partial_mean": -13.428848553604213,
+  "G_revised": -6.104165796718801,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-11",
+  "common_obs": "2007-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 11.157108896464363,
+  "I_state": "High",
+  "I_revised": 16.041901383108897,
+  "I_band_revised": "High",
+  "G_partial_mean": -5.794339194467092,
+  "G_revised": -1.2504828393016851,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2007-12",
+  "common_obs": "2007-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 23.99296868586304,
+  "I_state": "High",
+  "I_revised": 27.645825075287565,
+  "I_band_revised": "High",
+  "G_partial_mean": -24.90967824182838,
+  "G_revised": -14.285549445360946,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-01",
+  "common_obs": "2007-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 47.295539010760635,
+  "I_state": "High",
+  "I_revised": 45.16171413174711,
+  "I_band_revised": "High",
+  "G_partial_mean": -17.26887957283461,
+  "G_revised": -9.482969857944529,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-02",
+  "common_obs": "2007-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 26.53124183490575,
+  "I_state": "High",
+  "I_revised": 21.37375536219251,
+  "I_band_revised": "High",
+  "G_partial_mean": -22.20113278192065,
+  "G_revised": -43.36369825714372,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-03",
+  "common_obs": "2008-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 31.516104970497043,
+  "I_state": "High",
+  "I_revised": 16.814331634895506,
+  "I_band_revised": "High",
+  "G_partial_mean": -17.86820654260388,
+  "G_revised": -26.600619745987768,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-04",
+  "common_obs": "2008-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 19.323166881464534,
+  "I_state": "High",
+  "I_revised": 1.1042084062794835,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -41.348282917031085,
+  "G_revised": -37.839826505731054,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-05",
+  "common_obs": "2008-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 27.32665177821474,
+  "I_state": "High",
+  "I_revised": 11.782941964960957,
+  "I_band_revised": "High",
+  "G_partial_mean": -21.021044998481393,
+  "G_revised": -47.68866550332277,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-06",
+  "common_obs": "2008-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 19.539678068993958,
+  "I_state": "High",
+  "I_revised": -1.4376033616087045,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -30.55674506490912,
+  "G_revised": -42.37488781010821,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-07",
+  "common_obs": "2008-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 30.353611962695574,
+  "I_state": "High",
+  "I_revised": 16.591533955124564,
+  "I_band_revised": "High",
+  "G_partial_mean": 15.076633374206653,
+  "G_revised": -29.017941190727136,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-08",
+  "common_obs": "2008-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 43.464367671008326,
+  "I_state": "High",
+  "I_revised": 29.942431441326182,
+  "I_band_revised": "High",
+  "G_partial_mean": 1.791550594267619,
+  "G_revised": -29.40931214146,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-09",
+  "common_obs": "2008-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 55.416072296430386,
+  "I_state": "High",
+  "I_revised": 32.282114491087164,
+  "I_band_revised": "High",
+  "G_partial_mean": -21.262931379968194,
+  "G_revised": -56.52230589230976,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-10",
+  "common_obs": "2008-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 46.46138871698394,
+  "I_state": "High",
+  "I_revised": 24.727144826940208,
+  "I_band_revised": "High",
+  "G_partial_mean": -26.076390006536357,
+  "G_revised": -59.3763503784666,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-11",
+  "common_obs": "2008-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 18.707885856342905,
+  "I_state": "High",
+  "I_revised": -0.5059144673649584,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -34.01790065315719,
+  "G_revised": -63.07919573470607,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2008-12",
+  "common_obs": "2008-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -26.85172579005884,
+  "I_state": "Low",
+  "I_revised": -44.51310755310097,
+  "I_band_revised": "Low",
+  "G_partial_mean": -15.839324315714645,
+  "G_revised": -62.862094659779835,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-01",
+  "common_obs": "2008-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -58.349247634011746,
+  "I_state": "Low",
+  "I_revised": -84.21478512008476,
+  "I_band_revised": "Low",
+  "G_partial_mean": -20.15340175294981,
+  "G_revised": -59.77353833306391,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-02",
+  "common_obs": "2008-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -60.17670554372654,
+  "I_state": "Low",
+  "I_revised": -84.21482486685542,
+  "I_band_revised": "Low",
+  "G_partial_mean": -19.16998943289812,
+  "G_revised": -71.09688385318532,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-03",
+  "common_obs": "2009-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -58.982949394155426,
+  "I_state": "Low",
+  "I_revised": -78.29175960063296,
+  "I_band_revised": "Low",
+  "G_partial_mean": -6.50478671863411,
+  "G_revised": -55.43022036147001,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-04",
+  "common_obs": "2009-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -52.979663106009085,
+  "I_state": "Low",
+  "I_revised": -70.75491441033948,
+  "I_band_revised": "Low",
+  "G_partial_mean": -3.020324692433585,
+  "G_revised": -59.9479916923807,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-05",
+  "common_obs": "2009-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -61.822497865456796,
+  "I_state": "Low",
+  "I_revised": -76.89154308426153,
+  "I_band_revised": "Low",
+  "G_partial_mean": -7.443555388833719,
+  "G_revised": -47.67689439277511,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-06",
+  "common_obs": "2009-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -51.63750315855445,
+  "I_state": "Low",
+  "I_revised": -62.5897460950073,
+  "I_band_revised": "Low",
+  "G_partial_mean": 1.9745375256346982,
+  "G_revised": -38.1134978961145,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-07",
+  "common_obs": "2009-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -61.29855803130806,
+  "I_state": "Low",
+  "I_revised": -67.95225352171266,
+  "I_band_revised": "Low",
+  "G_partial_mean": -18.781794790329073,
+  "G_revised": -45.28617755402743,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-08",
+  "common_obs": "2009-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -63.98017353155783,
+  "I_state": "Low",
+  "I_revised": -60.73050550036421,
+  "I_band_revised": "Low",
+  "G_partial_mean": -18.294928007295688,
+  "G_revised": -47.07126091792171,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-09",
+  "common_obs": "2009-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -67.17972361125206,
+  "I_state": "Low",
+  "I_revised": -68.34907580815775,
+  "I_band_revised": "Low",
+  "G_partial_mean": 3.8393337718971683,
+  "G_revised": -13.683335793775521,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-10",
+  "common_obs": "2009-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -51.01972674622356,
+  "I_state": "Low",
+  "I_revised": -48.296563582815295,
+  "I_band_revised": "Low",
+  "G_partial_mean": 17.820809052205117,
+  "G_revised": -2.562669876308098,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-11",
+  "common_obs": "2009-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -52.10430454049349,
+  "I_state": "Low",
+  "I_revised": -48.988467377083715,
+  "I_band_revised": "Low",
+  "G_partial_mean": 32.79678756554897,
+  "G_revised": 5.558467266715871,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2009-12",
+  "common_obs": "2009-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -24.60143708314209,
+  "I_state": "Low",
+  "I_revised": -10.354021197225038,
+  "I_band_revised": "Low",
+  "G_partial_mean": 21.371774458498134,
+  "G_revised": -20.33200459635446,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-01",
+  "common_obs": "2009-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 1.403008400773001,
+  "I_state": "Neutral",
+  "I_revised": 20.672267560578376,
+  "I_band_revised": "High",
+  "G_partial_mean": 30.48402910012658,
+  "G_revised": 7.318499176962478,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-02",
+  "common_obs": "2009-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 6.283810114031364,
+  "I_state": "Neutral",
+  "I_revised": 29.07394300669811,
+  "I_band_revised": "High",
+  "G_partial_mean": 40.917470484086614,
+  "G_revised": 15.522875861927698,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-03",
+  "common_obs": "2010-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -0.322674482363567,
+  "I_state": "Neutral",
+  "I_revised": 24.453702132611827,
+  "I_band_revised": "High",
+  "G_partial_mean": 26.370117684202008,
+  "G_revised": 9.328541092790026,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-04",
+  "common_obs": "2010-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -14.754503624740739,
+  "I_state": "Low",
+  "I_revised": 9.050648929110547,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 33.75504732044597,
+  "G_revised": 11.031628596521198,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-05",
+  "common_obs": "2010-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.5795213337339,
+  "I_state": "Neutral",
+  "I_revised": 22.217219642417668,
+  "I_band_revised": "High",
+  "G_partial_mean": 42.491814156338016,
+  "G_revised": 21.61077463084526,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-06",
+  "common_obs": "2010-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.981038360226647,
+  "I_state": "Low",
+  "I_revised": 7.28252052026915,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 28.933539236561053,
+  "G_revised": 18.65324460583496,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-07",
+  "common_obs": "2010-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.941033100418625,
+  "I_state": "Neutral",
+  "I_revised": 8.777050483717275,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 14.963031058991044,
+  "G_revised": 8.120983372758227,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-08",
+  "common_obs": "2010-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -29.89606758703435,
+  "I_state": "Low",
+  "I_revised": -16.611957587452594,
+  "I_band_revised": "Low",
+  "G_partial_mean": 17.82151283988015,
+  "G_revised": 16.470588070612937,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-09",
+  "common_obs": "2010-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -18.05913059295479,
+  "I_state": "Low",
+  "I_revised": 0.4346694127880279,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 16.5681458486099,
+  "G_revised": 7.99326343720996,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-10",
+  "common_obs": "2010-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -26.067845955342893,
+  "I_state": "Low",
+  "I_revised": -9.390646724623885,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 18.679323449526628,
+  "G_revised": 7.308261093666658,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-11",
+  "common_obs": "2010-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -24.317712694693977,
+  "I_state": "Low",
+  "I_revised": -5.997446829606685,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 14.257263053031062,
+  "G_revised": 1.8350171710449956,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2010-12",
+  "common_obs": "2010-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -24.88249789480984,
+  "I_state": "Low",
+  "I_revised": -8.455036434411396,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 22.29819226251232,
+  "G_revised": 16.946641058541964,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-01",
+  "common_obs": "2010-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -27.1074921471533,
+  "I_state": "Low",
+  "I_revised": -15.195094440472237,
+  "I_band_revised": "Low",
+  "G_partial_mean": 14.897262628829015,
+  "G_revised": 2.3811246697762867,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-02",
+  "common_obs": "2010-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -22.222908116950208,
+  "I_state": "Low",
+  "I_revised": -3.583688161395604,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 13.348455450280923,
+  "G_revised": 23.50649223710304,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-03",
+  "common_obs": "2011-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -15.203198521091972,
+  "I_state": "Low",
+  "I_revised": 1.1969918583159185,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 9.775419288463812,
+  "G_revised": 19.11394709211872,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-04",
+  "common_obs": "2011-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -6.031188834418665,
+  "I_state": "Neutral",
+  "I_revised": 14.114680148073191,
+  "I_band_revised": "High",
+  "G_partial_mean": 6.963574067730455,
+  "G_revised": 14.793775658962574,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-05",
+  "common_obs": "2011-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -2.7470099820373752,
+  "I_state": "Neutral",
+  "I_revised": 14.633407485783163,
+  "I_band_revised": "High",
+  "G_partial_mean": 5.010217671232795,
+  "G_revised": 9.523961659666867,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-06",
+  "common_obs": "2011-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 7.314594596049311,
+  "I_state": "Neutral",
+  "I_revised": 17.533274569088075,
+  "I_band_revised": "High",
+  "G_partial_mean": 6.802762428918443,
+  "G_revised": 4.304897368260297,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-07",
+  "common_obs": "2011-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 10.52733909968497,
+  "I_state": "High",
+  "I_revised": 16.977620374660773,
+  "I_band_revised": "High",
+  "G_partial_mean": 10.740603549544328,
+  "G_revised": -0.37267851986287254,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-08",
+  "common_obs": "2011-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 9.953538629966717,
+  "I_state": "Neutral",
+  "I_revised": 19.179674636355916,
+  "I_band_revised": "High",
+  "G_partial_mean": 17.9570185420458,
+  "G_revised": 4.062403090372485,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-09",
+  "common_obs": "2011-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 16.616086075009264,
+  "I_state": "High",
+  "I_revised": 23.001695978358146,
+  "I_band_revised": "High",
+  "G_partial_mean": 10.509482747680458,
+  "G_revised": 10.605607887492974,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-10",
+  "common_obs": "2011-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 6.508801365744803,
+  "I_state": "Neutral",
+  "I_revised": 20.170957870647946,
+  "I_band_revised": "High",
+  "G_partial_mean": 10.06284373900044,
+  "G_revised": 3.8650228172114987,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-11",
+  "common_obs": "2011-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 10.840469644901367,
+  "I_state": "High",
+  "I_revised": 19.63988442932727,
+  "I_band_revised": "High",
+  "G_partial_mean": 6.006722438830377,
+  "G_revised": 0.6257516407656958,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2011-12",
+  "common_obs": "2011-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.757716731409875,
+  "I_state": "Neutral",
+  "I_revised": 1.171635506869022,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 16.50764532306883,
+  "G_revised": 13.692197938663432,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-01",
+  "common_obs": "2011-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -2.430149204168134,
+  "I_state": "Neutral",
+  "I_revised": 6.44427079380845,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 9.38348743251241,
+  "G_revised": 15.889524141757443,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-02",
+  "common_obs": "2011-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -5.0802143647714235,
+  "I_state": "Neutral",
+  "I_revised": 3.638542274987194,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -0.7572030884885863,
+  "G_revised": 7.53181137082729,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-03",
+  "common_obs": "2012-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -13.25332676286995,
+  "I_state": "Low",
+  "I_revised": 9.882038484972892,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 12.501767324936857,
+  "G_revised": 26.586599003643602,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-04",
+  "common_obs": "2012-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -4.933110054016142,
+  "I_state": "Neutral",
+  "I_revised": 8.904425014970531,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 18.29850150397335,
+  "G_revised": 23.90119160186271,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-05",
+  "common_obs": "2012-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -5.929438619522575,
+  "I_state": "Neutral",
+  "I_revised": 6.558446722567231,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 9.38424877702665,
+  "G_revised": 22.30486600841066,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-06",
+  "common_obs": "2012-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -16.63238016363205,
+  "I_state": "Low",
+  "I_revised": -1.3390054019833844,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 13.786825591315012,
+  "G_revised": 24.11823442557905,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-07",
+  "common_obs": "2012-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -31.830927333528876,
+  "I_state": "Low",
+  "I_revised": -12.455267320849595,
+  "I_band_revised": "Low",
+  "G_partial_mean": 16.872039861890435,
+  "G_revised": 22.98621471630372,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-08",
+  "common_obs": "2012-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -18.204407356223495,
+  "I_state": "Low",
+  "I_revised": -8.018736931974825,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 12.611515835242063,
+  "G_revised": 2.8693727485861245,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-09",
+  "common_obs": "2012-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -32.32321241211584,
+  "I_state": "Low",
+  "I_revised": -16.315396526292005,
+  "I_band_revised": "Low",
+  "G_partial_mean": 20.91579799361232,
+  "G_revised": 6.446378424829571,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-10",
+  "common_obs": "2012-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -15.355743002023683,
+  "I_state": "Low",
+  "I_revised": -4.615281784805723,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 3.9166617602348333,
+  "G_revised": -3.795861031259031,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-11",
+  "common_obs": "2012-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.966686350662751,
+  "I_state": "Neutral",
+  "I_revised": 7.221313243760854,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 15.417354382497946,
+  "G_revised": 28.161156903547816,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2012-12",
+  "common_obs": "2012-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.653635896062225,
+  "I_state": "Low",
+  "I_revised": 17.336567801739722,
+  "I_band_revised": "High",
+  "G_partial_mean": 0.26861053090417264,
+  "G_revised": 10.445751121960152,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-01",
+  "common_obs": "2012-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -16.638361622110402,
+  "I_state": "Low",
+  "I_revised": 8.080177861568925,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 16.58660983144125,
+  "G_revised": 20.77892868060755,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-02",
+  "common_obs": "2012-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.43364203426503,
+  "I_state": "Neutral",
+  "I_revised": 7.441940929672638,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 23.251444985769517,
+  "G_revised": 20.575642750133028,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-03",
+  "common_obs": "2013-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -11.347624209388659,
+  "I_state": "Low",
+  "I_revised": -12.9003866164964,
+  "I_band_revised": "Low",
+  "G_partial_mean": -3.7255131139321023,
+  "G_revised": -5.30018239243385,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-04",
+  "common_obs": "2013-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -2.2912272711038075,
+  "I_state": "Neutral",
+  "I_revised": -2.465216748517901,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 5.06019218520083,
+  "G_revised": 7.2349395159324486,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-05",
+  "common_obs": "2013-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -23.38675587814308,
+  "I_state": "Low",
+  "I_revised": -14.014892974150873,
+  "I_band_revised": "Low",
+  "G_partial_mean": -10.162105731757823,
+  "G_revised": -7.377610293685197,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-06",
+  "common_obs": "2013-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -23.760168207369322,
+  "I_state": "Low",
+  "I_revised": -13.190180696139725,
+  "I_band_revised": "Low",
+  "G_partial_mean": 3.870917671725258,
+  "G_revised": 5.494425551642665,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-07",
+  "common_obs": "2013-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -8.037378180226483,
+  "I_state": "Neutral",
+  "I_revised": -1.154440796104533,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -4.5144292281155955,
+  "G_revised": -1.311976313188293,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-08",
+  "common_obs": "2013-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 0.7685266269517543,
+  "I_state": "Neutral",
+  "I_revised": 8.116998552901293,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -9.104811339718198,
+  "G_revised": -0.49556045629830014,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-09",
+  "common_obs": "2013-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -1.7493400686832594,
+  "I_state": "Neutral",
+  "I_revised": 8.690145800395417,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -12.545573682878171,
+  "G_revised": 9.55239840100755,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-10",
+  "common_obs": "2013-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -1.1783716095580299,
+  "I_state": "Neutral",
+  "I_revised": 0.2570716056660718,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -3.782065567220975,
+  "G_revised": 13.480714470572693,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-11",
+  "common_obs": "2013-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -11.329808558388601,
+  "I_state": "Low",
+  "I_revised": -9.47453535368067,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -7.533715928484238,
+  "G_revised": 10.692330536912594,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2013-12",
+  "common_obs": "2013-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -13.646189004204013,
+  "I_state": "Low",
+  "I_revised": -10.70760403474076,
+  "I_band_revised": "Low",
+  "G_partial_mean": 0.5565916190178775,
+  "G_revised": 4.914503623927281,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-01",
+  "common_obs": "2013-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -8.42006750259748,
+  "I_state": "Neutral",
+  "I_revised": -5.659221235957061,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -21.223906215576687,
+  "G_revised": 4.794691687305567,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-02",
+  "common_obs": "2013-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -1.5964768550274804,
+  "I_state": "Neutral",
+  "I_revised": -2.209409837255322,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -37.232507766833294,
+  "G_revised": 3.750918936357877,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-03",
+  "common_obs": "2014-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -3.4418117204409358,
+  "I_state": "Neutral",
+  "I_revised": 7.51355872512967,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -2.757004040283295,
+  "G_revised": 13.817829760993003,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-04",
+  "common_obs": "2014-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -5.776836009041168,
+  "I_state": "Neutral",
+  "I_revised": -6.6180479372748096,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -7.476078266370891,
+  "G_revised": 20.545769130164633,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-05",
+  "common_obs": "2014-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 0.5747812186399208,
+  "I_state": "Neutral",
+  "I_revised": 8.927794970141292,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -1.792815069905207,
+  "G_revised": 23.421104646301163,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-06",
+  "common_obs": "2014-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 17.543084408377684,
+  "I_state": "High",
+  "I_revised": 11.371635757881148,
+  "I_band_revised": "High",
+  "G_partial_mean": -18.052186842764666,
+  "G_revised": 20.364933292110376,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-07",
+  "common_obs": "2014-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 14.19742746783495,
+  "I_state": "High",
+  "I_revised": 9.613647887554762,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -12.244149171782004,
+  "G_revised": 12.641523432345322,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-08",
+  "common_obs": "2014-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 2.473633008099683,
+  "I_state": "Neutral",
+  "I_revised": 2.827076580270977,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -11.085690198830818,
+  "G_revised": 18.467268708328156,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-09",
+  "common_obs": "2014-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 3.101539141960049,
+  "I_state": "Neutral",
+  "I_revised": 7.070949108894654,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 0.6891163244613354,
+  "G_revised": 16.03562398189247,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-10",
+  "common_obs": "2014-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -2.002912933406898,
+  "I_state": "Neutral",
+  "I_revised": -3.90582292632825,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -10.96821220862703,
+  "G_revised": 21.316478502478027,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-11",
+  "common_obs": "2014-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -11.457851667511651,
+  "I_state": "Low",
+  "I_revised": -4.1255713509214,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -14.638543831434072,
+  "G_revised": 16.105302672961756,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2014-12",
+  "common_obs": "2014-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.874853633496596,
+  "I_state": "Low",
+  "I_revised": -10.306760509238723,
+  "I_band_revised": "Low",
+  "G_partial_mean": -11.923497185895114,
+  "G_revised": 22.35561660599836,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-01",
+  "common_obs": "2014-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -28.121863525821812,
+  "I_state": "Low",
+  "I_revised": -21.92350254858515,
+  "I_band_revised": "Low",
+  "G_partial_mean": -1.3082594265270222,
+  "G_revised": 20.897865558205307,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-02",
+  "common_obs": "2014-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -51.65846718336619,
+  "I_state": "Low",
+  "I_revised": -32.90948630839472,
+  "I_band_revised": "Low",
+  "G_partial_mean": -5.92987907715583,
+  "G_revised": 19.391008521369944,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-03",
+  "common_obs": "2015-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -54.681047498745464,
+  "I_state": "Low",
+  "I_revised": -52.440205383242684,
+  "I_band_revised": "Low",
+  "G_partial_mean": 5.474133996210788,
+  "G_revised": 5.4535709424419725,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-04",
+  "common_obs": "2015-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -53.814688613443,
+  "I_state": "Low",
+  "I_revised": -39.76638374428089,
+  "I_band_revised": "Low",
+  "G_partial_mean": -12.561599624769565,
+  "G_revised": 3.125195463359527,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-05",
+  "common_obs": "2015-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -39.29717423966996,
+  "I_state": "Low",
+  "I_revised": -42.88136283065533,
+  "I_band_revised": "Low",
+  "G_partial_mean": -27.908332921715015,
+  "G_revised": -12.789016230852315,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-06",
+  "common_obs": "2015-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -43.79144713789135,
+  "I_state": "Low",
+  "I_revised": -35.87423166786648,
+  "I_band_revised": "Low",
+  "G_partial_mean": -17.76519360075821,
+  "G_revised": -4.321980211268906,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-07",
+  "common_obs": "2015-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -27.86428923169741,
+  "I_state": "Low",
+  "I_revised": -26.14536811212106,
+  "I_band_revised": "Low",
+  "G_partial_mean": -0.9937914307117692,
+  "G_revised": -4.036989666306401,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-08",
+  "common_obs": "2015-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -31.56902562448788,
+  "I_state": "Low",
+  "I_revised": -23.407535438624034,
+  "I_band_revised": "Low",
+  "G_partial_mean": -10.317461020533273,
+  "G_revised": 8.168587196105397,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-09",
+  "common_obs": "2015-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -32.31398968738726,
+  "I_state": "Low",
+  "I_revised": -27.666323848029446,
+  "I_band_revised": "Low",
+  "G_partial_mean": -19.475555544335034,
+  "G_revised": -14.51093563453963,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-10",
+  "common_obs": "2015-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -28.744918123005412,
+  "I_state": "Low",
+  "I_revised": -28.814151061672618,
+  "I_band_revised": "Low",
+  "G_partial_mean": -20.14039195197448,
+  "G_revised": -7.015851953903171,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-11",
+  "common_obs": "2015-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -34.389209063724834,
+  "I_state": "Low",
+  "I_revised": -35.62368930413517,
+  "I_band_revised": "Low",
+  "G_partial_mean": -25.54093519533252,
+  "G_revised": -16.821683855071953,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2015-12",
+  "common_obs": "2015-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -19.151215664940413,
+  "I_state": "Low",
+  "I_revised": -32.311937162358866,
+  "I_band_revised": "Low",
+  "G_partial_mean": -27.112104515335798,
+  "G_revised": -13.391468250548465,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-01",
+  "common_obs": "2015-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -16.859090735621034,
+  "I_state": "Low",
+  "I_revised": -26.458616323022664,
+  "I_band_revised": "Low",
+  "G_partial_mean": -18.996648973062005,
+  "G_revised": -16.642728786799044,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-02",
+  "common_obs": "2015-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 6.812963557790409,
+  "I_state": "Neutral",
+  "I_revised": -21.882728327022505,
+  "I_band_revised": "Low",
+  "G_partial_mean": -30.976230345620205,
+  "G_revised": -18.077566202279115,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-03",
+  "common_obs": "2016-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 26.59570209463933,
+  "I_state": "High",
+  "I_revised": 13.207941098881125,
+  "I_band_revised": "High",
+  "G_partial_mean": -19.872578080179046,
+  "G_revised": -7.790412914140207,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-04",
+  "common_obs": "2016-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -2.021350612111548,
+  "I_state": "Neutral",
+  "I_revised": -17.595981705148656,
+  "I_band_revised": "Low",
+  "G_partial_mean": -30.42701742762601,
+  "G_revised": -14.820588864284819,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-05",
+  "common_obs": "2016-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -3.9039988605053737,
+  "I_state": "Neutral",
+  "I_revised": -15.019249886911647,
+  "I_band_revised": "Low",
+  "G_partial_mean": -24.823851829203072,
+  "G_revised": -8.528456045831522,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-06",
+  "common_obs": "2016-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 9.861251702406973,
+  "I_state": "Neutral",
+  "I_revised": -3.3275832678269452,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -24.58442176361324,
+  "G_revised": -13.019035987506038,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-07",
+  "common_obs": "2016-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -5.032262522391726,
+  "I_state": "Neutral",
+  "I_revised": -14.64505903918056,
+  "I_band_revised": "Low",
+  "G_partial_mean": -38.408785126481,
+  "G_revised": -5.824653056865861,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-08",
+  "common_obs": "2016-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 5.108281456336718,
+  "I_state": "Neutral",
+  "I_revised": -7.220430329080299,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -22.089779506625288,
+  "G_revised": -6.969320322367866,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-09",
+  "common_obs": "2016-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 2.640407394584224,
+  "I_state": "Neutral",
+  "I_revised": -13.831101794099766,
+  "I_band_revised": "Low",
+  "G_partial_mean": -16.157026902468427,
+  "G_revised": 0.14494428036445067,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-10",
+  "common_obs": "2016-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 12.85149685435204,
+  "I_state": "High",
+  "I_revised": -0.35813348885805907,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -25.817945696263518,
+  "G_revised": -17.72625979220702,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-11",
+  "common_obs": "2016-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 31.466493490985307,
+  "I_state": "High",
+  "I_revised": 18.710641270260886,
+  "I_band_revised": "High",
+  "G_partial_mean": -8.235742683879742,
+  "G_revised": -0.23207241511752413,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2016-12",
+  "common_obs": "2016-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 25.97442063369318,
+  "I_state": "High",
+  "I_revised": 25.570269999460173,
+  "I_band_revised": "High",
+  "G_partial_mean": -16.539326017791115,
+  "G_revised": -1.0740382716847474,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-01",
+  "common_obs": "2016-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 19.95405035103467,
+  "I_state": "High",
+  "I_revised": 20.53428689390244,
+  "I_band_revised": "High",
+  "G_partial_mean": -31.08357305589303,
+  "G_revised": 3.385854130211625,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-02",
+  "common_obs": "2016-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 43.15950136748278,
+  "I_state": "High",
+  "I_revised": 36.656713982631494,
+  "I_band_revised": "High",
+  "G_partial_mean": -3.858857623789711,
+  "G_revised": 14.874563183462147,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-03",
+  "common_obs": "2017-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 43.89625272093391,
+  "I_state": "High",
+  "I_revised": 43.899073593233155,
+  "I_band_revised": "High",
+  "G_partial_mean": -7.880348786990993,
+  "G_revised": 11.573014385836377,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-04",
+  "common_obs": "2017-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 52.739751105322476,
+  "I_state": "High",
+  "I_revised": 49.27457452253935,
+  "I_band_revised": "High",
+  "G_partial_mean": -10.156636221268986,
+  "G_revised": 17.343887805506995,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-05",
+  "common_obs": "2017-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 16.779014380104414,
+  "I_state": "High",
+  "I_revised": 24.94762198348721,
+  "I_band_revised": "High",
+  "G_partial_mean": 2.469438397796641,
+  "G_revised": 30.874444109164365,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-06",
+  "common_obs": "2017-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 19.62363758443586,
+  "I_state": "High",
+  "I_revised": 28.176571450869016,
+  "I_band_revised": "High",
+  "G_partial_mean": -7.635426581598071,
+  "G_revised": 14.436644461373831,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-07",
+  "common_obs": "2017-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -1.036434114268339,
+  "I_state": "Neutral",
+  "I_revised": 9.900765298795989,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -11.496915160668122,
+  "G_revised": 23.120571833238532,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-08",
+  "common_obs": "2017-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 2.7775323679380173,
+  "I_state": "Neutral",
+  "I_revised": 7.157118795100649,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -1.5092906821744352,
+  "G_revised": 23.456364225872104,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-09",
+  "common_obs": "2017-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 0.17032868809479923,
+  "I_state": "Neutral",
+  "I_revised": 10.024908794041938,
+  "I_band_revised": "High",
+  "G_partial_mean": -7.903564535157001,
+  "G_revised": 15.804763837337813,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-10",
+  "common_obs": "2017-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 11.652004435109074,
+  "I_state": "High",
+  "I_revised": 19.95313494633953,
+  "I_band_revised": "High",
+  "G_partial_mean": -9.256175115949272,
+  "G_revised": 13.921014477669093,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-11",
+  "common_obs": "2017-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 26.98028751560072,
+  "I_state": "High",
+  "I_revised": 28.26825929668621,
+  "I_band_revised": "High",
+  "G_partial_mean": -18.21849461164394,
+  "G_revised": 14.955474137357935,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2017-12",
+  "common_obs": "2017-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 5.66577086662261,
+  "I_state": "Neutral",
+  "I_revised": 26.665306017068293,
+  "I_band_revised": "High",
+  "G_partial_mean": 0.25464830754633017,
+  "G_revised": 31.595151743291183,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-01",
+  "common_obs": "2017-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 24.753763669655076,
+  "I_state": "High",
+  "I_revised": 36.90541298376579,
+  "I_band_revised": "High",
+  "G_partial_mean": -0.011594671367481268,
+  "G_revised": 24.390057692409435,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-02",
+  "common_obs": "2017-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 17.42594111859811,
+  "I_state": "High",
+  "I_revised": 22.638810502207797,
+  "I_band_revised": "High",
+  "G_partial_mean": 0.6238054677618914,
+  "G_revised": 24.077781933383687,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-03",
+  "common_obs": "2018-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 18.336870392114974,
+  "I_state": "High",
+  "I_revised": 28.81166332557219,
+  "I_band_revised": "High",
+  "G_partial_mean": 4.175825286269496,
+  "G_revised": 22.23725960734481,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-04",
+  "common_obs": "2018-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 26.733363834760326,
+  "I_state": "High",
+  "I_revised": 30.79247506433719,
+  "I_band_revised": "High",
+  "G_partial_mean": 11.622700897226931,
+  "G_revised": 22.270452974922115,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-05",
+  "common_obs": "2018-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 41.255733202190314,
+  "I_state": "High",
+  "I_revised": 43.027041058287104,
+  "I_band_revised": "High",
+  "G_partial_mean": 2.581816204668711,
+  "G_revised": 18.658463063678507,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-06",
+  "common_obs": "2018-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 37.021295999674045,
+  "I_state": "High",
+  "I_revised": 34.44501633522837,
+  "I_band_revised": "High",
+  "G_partial_mean": -0.8014822059216447,
+  "G_revised": 24.073078068884058,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-07",
+  "common_obs": "2018-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 54.71952022903105,
+  "I_state": "High",
+  "I_revised": 49.33025426168916,
+  "I_band_revised": "High",
+  "G_partial_mean": -6.442842993844009,
+  "G_revised": 18.256509579427295,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-08",
+  "common_obs": "2018-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 44.07544261244531,
+  "I_state": "High",
+  "I_revised": 41.243966622151255,
+  "I_band_revised": "High",
+  "G_partial_mean": 0.7909900601566502,
+  "G_revised": 8.043422447917903,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-09",
+  "common_obs": "2018-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 48.060658748583265,
+  "I_state": "High",
+  "I_revised": 43.892175534086064,
+  "I_band_revised": "High",
+  "G_partial_mean": -0.4679395596544449,
+  "G_revised": 16.342362537815553,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-10",
+  "common_obs": "2018-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 35.17430077728782,
+  "I_state": "High",
+  "I_revised": 26.297308039296972,
+  "I_band_revised": "High",
+  "G_partial_mean": -4.197747691352745,
+  "G_revised": 19.270433188145283,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-11",
+  "common_obs": "2018-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 18.847915594532324,
+  "I_state": "High",
+  "I_revised": 11.34658004243894,
+  "I_band_revised": "High",
+  "G_partial_mean": -3.9722051689279496,
+  "G_revised": 19.581724570560162,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2018-12",
+  "common_obs": "2018-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 36.43871066185891,
+  "I_state": "High",
+  "I_revised": 20.8114845625228,
+  "I_band_revised": "High",
+  "G_partial_mean": -23.29310298357896,
+  "G_revised": -9.078633082019127,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-01",
+  "common_obs": "2018-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 16.621954699845666,
+  "I_state": "High",
+  "I_revised": 1.9548123755243267,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -8.029014756793059,
+  "G_revised": 12.908139796584072,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-02",
+  "common_obs": "2018-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": false,
+   "G5": false
+  },
+  "I_asof": null,
+  "I_state": null,
+  "I_revised": 6.0477112017719765,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": null,
+  "G_revised": -6.044204090640361,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-03",
+  "common_obs": "2019-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -12.713457832363602,
+  "I_state": "Low",
+  "I_revised": -13.325558597854087,
+  "I_band_revised": "Low",
+  "G_partial_mean": -10.035083325781585,
+  "G_revised": -4.439879757668363,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-04",
+  "common_obs": "2019-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -1.8797978780137634,
+  "I_state": "Neutral",
+  "I_revised": -2.7724509850354813,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -16.23929884555036,
+  "G_revised": -3.706352278936509,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-05",
+  "common_obs": "2019-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 6.708585333658226,
+  "I_state": "Neutral",
+  "I_revised": 10.933011579675336,
+  "I_band_revised": "High",
+  "G_partial_mean": -32.48936399734674,
+  "G_revised": -7.202211132604911,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-06",
+  "common_obs": "2019-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 16.182106893669964,
+  "I_state": "High",
+  "I_revised": 13.267081008811266,
+  "I_band_revised": "High",
+  "G_partial_mean": -37.2513012770382,
+  "G_revised": -21.70622033791385,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-07",
+  "common_obs": "2019-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -1.3176243423444658,
+  "I_state": "Neutral",
+  "I_revised": -6.790806203455037,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -10.150433377305095,
+  "G_revised": -6.179940519360112,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-08",
+  "common_obs": "2019-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -1.9707693308316692,
+  "I_state": "Neutral",
+  "I_revised": -9.103132692915057,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -20.926427299979252,
+  "G_revised": -22.103608807741548,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-09",
+  "common_obs": "2019-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 9.685484801666435,
+  "I_state": "Neutral",
+  "I_revised": -7.170839632459509,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -17.75161604541176,
+  "G_revised": -18.830173118749606,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-10",
+  "common_obs": "2019-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 9.964463101327429,
+  "I_state": "Neutral",
+  "I_revised": 0.5876764792961311,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 1.2559680683496812,
+  "G_revised": -2.430230964919312,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-11",
+  "common_obs": "2019-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 1.426047260418007,
+  "I_state": "Neutral",
+  "I_revised": -8.795092878445983,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -12.716409664658938,
+  "G_revised": 0.2908651223075623,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2019-12",
+  "common_obs": "2019-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 10.117870363736191,
+  "I_state": "High",
+  "I_revised": 3.595883822452399,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -10.144071280611278,
+  "G_revised": -3.3953201922912273,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-01",
+  "common_obs": "2019-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 7.84715225143143,
+  "I_state": "Neutral",
+  "I_revised": 6.402779387171583,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -10.485393421988295,
+  "G_revised": -3.703207181721312,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-02",
+  "common_obs": "2019-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 13.46258389045272,
+  "I_state": "High",
+  "I_revised": 11.117173883912459,
+  "I_band_revised": "High",
+  "G_partial_mean": -31.411190519553493,
+  "G_revised": -23.156473533945345,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-03",
+  "common_obs": "2020-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 29.670962622163707,
+  "I_state": "High",
+  "I_revised": 29.63610928516165,
+  "I_band_revised": "High",
+  "G_partial_mean": 1.0658091596819355,
+  "G_revised": 12.81065789894816,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-04",
+  "common_obs": "2020-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 11.994869471150714,
+  "I_state": "High",
+  "I_revised": 9.604546180268901,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -10.721749255219965,
+  "G_revised": -1.9584055936734877,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-05",
+  "common_obs": "2020-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -20.85782457893843,
+  "I_state": "Low",
+  "I_revised": -53.56904326647824,
+  "I_band_revised": "Low",
+  "G_partial_mean": -31.972280128524037,
+  "G_revised": -64.79274061745676,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-06",
+  "common_obs": "2020-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -45.13280960699675,
+  "I_state": "Low",
+  "I_revised": -86.74611548962545,
+  "I_band_revised": "Low",
+  "G_partial_mean": 4.018791620901123,
+  "G_revised": -55.46311254088029,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-07",
+  "common_obs": "2020-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -30.738600044691253,
+  "I_state": "Low",
+  "I_revised": -64.39970896328037,
+  "I_band_revised": "Low",
+  "G_partial_mean": 5.982333764766064,
+  "G_revised": -41.96642375370733,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-08",
+  "common_obs": "2020-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -16.598302659307375,
+  "I_state": "Low",
+  "I_revised": -42.85138336093183,
+  "I_band_revised": "Low",
+  "G_partial_mean": 15.554784135519666,
+  "G_revised": 3.9409909035755604,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-09",
+  "common_obs": "2020-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -11.334777232136082,
+  "I_state": "Low",
+  "I_revised": -20.949470546572297,
+  "I_band_revised": "Low",
+  "G_partial_mean": 28.066179133632268,
+  "G_revised": 21.508028570411604,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-10",
+  "common_obs": "2020-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 4.311094044013506,
+  "I_state": "Neutral",
+  "I_revised": -14.977470979759119,
+  "I_band_revised": "Low",
+  "G_partial_mean": -10.112913406528381,
+  "G_revised": -1.9747707340519667,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-11",
+  "common_obs": "2020-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 1.842119292870939,
+  "I_state": "Neutral",
+  "I_revised": -8.771739598344135,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 12.512998492494077,
+  "G_revised": 4.223561140910277,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2020-12",
+  "common_obs": "2020-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -13.451536840953128,
+  "I_state": "Low",
+  "I_revised": -16.210475992443794,
+  "I_band_revised": "Low",
+  "G_partial_mean": -5.0744161008076984,
+  "G_revised": 7.871170321344422,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-01",
+  "common_obs": "2020-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.206834936830443,
+  "I_state": "Low",
+  "I_revised": -10.22936502608015,
+  "I_band_revised": "Low",
+  "G_partial_mean": -2.1928254967338465,
+  "G_revised": 5.865955228147091,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-02",
+  "common_obs": "2020-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 6.505741718158733,
+  "I_state": "Neutral",
+  "I_revised": 0.15470823098249475,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 14.817878062408363,
+  "G_revised": 20.94329865469665,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-03",
+  "common_obs": "2021-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 12.961008068645807,
+  "I_state": "High",
+  "I_revised": 8.801939104584836,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 42.75855861555098,
+  "G_revised": 33.013998935098954,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-04",
+  "common_obs": "2021-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 25.41011482227381,
+  "I_state": "High",
+  "I_revised": 22.148618820451993,
+  "I_band_revised": "High",
+  "G_partial_mean": -4.757012281750883,
+  "G_revised": -0.9005049060030614,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-05",
+  "common_obs": "2021-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 60.09497530826138,
+  "I_state": "High",
+  "I_revised": 68.09783476350736,
+  "I_band_revised": "High",
+  "G_partial_mean": 55.35416638591717,
+  "G_revised": 52.77219042729272,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-06",
+  "common_obs": "2021-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 56.10219490625794,
+  "I_state": "High",
+  "I_revised": 92.58082742215522,
+  "I_band_revised": "High",
+  "G_partial_mean": 27.79697613199202,
+  "G_revised": 24.11294185600648,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-07",
+  "common_obs": "2021-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 63.99421502383983,
+  "I_state": "High",
+  "I_revised": 83.06576148153135,
+  "I_band_revised": "High",
+  "G_partial_mean": 18.537444303767057,
+  "G_revised": 22.91899928482379,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-08",
+  "common_obs": "2021-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 65.19091682021525,
+  "I_state": "High",
+  "I_revised": 74.4673193196879,
+  "I_band_revised": "High",
+  "G_partial_mean": 2.167655757556483,
+  "G_revised": 4.784234911877593,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-09",
+  "common_obs": "2021-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 64.21633724226244,
+  "I_state": "High",
+  "I_revised": 68.04895621643841,
+  "I_band_revised": "High",
+  "G_partial_mean": -18.13620294438958,
+  "G_revised": -7.952711206910967,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-10",
+  "common_obs": "2021-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 58.198469110779044,
+  "I_state": "High",
+  "I_revised": 63.853862399293575,
+  "I_band_revised": "High",
+  "G_partial_mean": 1.0896947795904124,
+  "G_revised": 10.844313772543956,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-11",
+  "common_obs": "2021-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 61.93841179204021,
+  "I_state": "High",
+  "I_revised": 61.213195896422484,
+  "I_band_revised": "High",
+  "G_partial_mean": -19.829621460835682,
+  "G_revised": -6.318417055738249,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2021-12",
+  "common_obs": "2021-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 71.14642102365575,
+  "I_state": "High",
+  "I_revised": 66.46307727853062,
+  "I_band_revised": "High",
+  "G_partial_mean": -7.513021611446221,
+  "G_revised": -2.5970200242304102,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-01",
+  "common_obs": "2021-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 69.80845515122026,
+  "I_state": "High",
+  "I_revised": 68.5219654215796,
+  "I_band_revised": "High",
+  "G_partial_mean": -12.554971239682022,
+  "G_revised": -0.1798984400034131,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-02",
+  "common_obs": "2021-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 56.9724009050477,
+  "I_state": "High",
+  "I_revised": 60.154246872062416,
+  "I_band_revised": "High",
+  "G_partial_mean": -9.361112121475264,
+  "G_revised": 0.41478308475825043,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-03",
+  "common_obs": "2022-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 58.17216510974542,
+  "I_state": "High",
+  "I_revised": 56.1044089670007,
+  "I_band_revised": "High",
+  "G_partial_mean": -27.952877177712327,
+  "G_revised": -21.666020239123846,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-04",
+  "common_obs": "2022-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 53.84215194519127,
+  "I_state": "High",
+  "I_revised": 56.503205304872836,
+  "I_band_revised": "High",
+  "G_partial_mean": 3.6011168445683697,
+  "G_revised": 10.481832289793704,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-05",
+  "common_obs": "2022-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 58.09019979907462,
+  "I_state": "High",
+  "I_revised": 60.8413973579526,
+  "I_band_revised": "High",
+  "G_partial_mean": -28.62866201926788,
+  "G_revised": -21.59127281360902,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-06",
+  "common_obs": "2022-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 45.43795773132105,
+  "I_state": "High",
+  "I_revised": 40.4552271163179,
+  "I_band_revised": "High",
+  "G_partial_mean": -4.901218208477397,
+  "G_revised": -3.5412095260858556,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-07",
+  "common_obs": "2022-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 46.09880689275811,
+  "I_state": "High",
+  "I_revised": 43.31064238189765,
+  "I_band_revised": "High",
+  "G_partial_mean": -13.875657300454169,
+  "G_revised": -8.594951025365464,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-08",
+  "common_obs": "2022-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 52.62849192016402,
+  "I_state": "High",
+  "I_revised": 45.85512131463473,
+  "I_band_revised": "High",
+  "G_partial_mean": -8.401435298820674,
+  "G_revised": -9.39005322669821,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-09",
+  "common_obs": "2022-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 19.754473873383542,
+  "I_state": "High",
+  "I_revised": 20.966660626564455,
+  "I_band_revised": "High",
+  "G_partial_mean": -12.268118412094836,
+  "G_revised": -9.825129751919045,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-10",
+  "common_obs": "2022-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 20.805491379939376,
+  "I_state": "High",
+  "I_revised": 20.9140191939634,
+  "I_band_revised": "High",
+  "G_partial_mean": -20.58809247111063,
+  "G_revised": -15.252899495293011,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-11",
+  "common_obs": "2022-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 17.45628145857727,
+  "I_state": "High",
+  "I_revised": 21.229181742874786,
+  "I_band_revised": "High",
+  "G_partial_mean": -6.302518434746538,
+  "G_revised": -4.945876956054034,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2022-12",
+  "common_obs": "2022-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 7.084316604715932,
+  "I_state": "Neutral",
+  "I_revised": 9.479077238171731,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -18.20943804685213,
+  "G_revised": -12.6334340511197,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-01",
+  "common_obs": "2022-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -2.6339977100135434,
+  "I_state": "Neutral",
+  "I_revised": -1.828812177747651,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -22.785308329905142,
+  "G_revised": -19.355504097204175,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-02",
+  "common_obs": "2022-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.458316342134493,
+  "I_state": "Neutral",
+  "I_revised": -12.003404640057255,
+  "I_band_revised": "Low",
+  "G_partial_mean": -24.419011731937783,
+  "G_revised": -21.555089503729477,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-03",
+  "common_obs": "2023-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -0.6510632551186267,
+  "I_state": "Neutral",
+  "I_revised": 2.730780491283016,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -14.89756311928232,
+  "G_revised": -13.11517347624746,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-04",
+  "common_obs": "2023-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -8.163700100670159,
+  "I_state": "Neutral",
+  "I_revised": -7.081760291451748,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -7.630928167583112,
+  "G_revised": -3.77527166751189,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-05",
+  "common_obs": "2023-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -22.919471224329477,
+  "I_state": "Low",
+  "I_revised": -21.96082521352751,
+  "I_band_revised": "Low",
+  "G_partial_mean": -15.186369299348833,
+  "G_revised": -12.724821160756838,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-06",
+  "common_obs": "2023-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -12.875447025148976,
+  "I_state": "Low",
+  "I_revised": -9.651562528548391,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -11.293824425816046,
+  "G_revised": -6.852627150850748,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-07",
+  "common_obs": "2023-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -27.349105451228798,
+  "I_state": "Low",
+  "I_revised": -22.68808595970253,
+  "I_band_revised": "Low",
+  "G_partial_mean": -4.364531524318715,
+  "G_revised": -7.10620645773488,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-08",
+  "common_obs": "2023-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -35.29414579480332,
+  "I_state": "Low",
+  "I_revised": -29.315680950629336,
+  "I_band_revised": "Low",
+  "G_partial_mean": -9.436611099028754,
+  "G_revised": -5.405631265972604,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-09",
+  "common_obs": "2023-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -14.754160359689966,
+  "I_state": "Low",
+  "I_revised": -14.09066763732182,
+  "I_band_revised": "Low",
+  "G_partial_mean": -6.569056611204308,
+  "G_revised": -2.322214829420054,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-10",
+  "common_obs": "2023-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.87423719800223,
+  "I_state": "Low",
+  "I_revised": -6.999204160360736,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 1.2573099402122407,
+  "G_revised": 3.6668730244125953,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-11",
+  "common_obs": "2023-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -8.628717931560441,
+  "I_state": "Neutral",
+  "I_revised": -7.825582614884465,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -5.25742323033132,
+  "G_revised": -1.2476065257480673,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2023-12",
+  "common_obs": "2023-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -20.237632116782216,
+  "I_state": "Low",
+  "I_revised": -18.129481960413816,
+  "I_band_revised": "Low",
+  "G_partial_mean": -2.079075835090583,
+  "G_revised": -2.910077909503008,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-01",
+  "common_obs": "2023-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -19.313659055541816,
+  "I_state": "Low",
+  "I_revised": -15.675830304820161,
+  "I_band_revised": "Low",
+  "G_partial_mean": 3.3256398465631527,
+  "G_revised": 7.6825083117118185,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-02",
+  "common_obs": "2023-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -13.259988231001731,
+  "I_state": "Low",
+  "I_revised": -8.735871970539119,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 5.7938972717893815,
+  "G_revised": 6.383639593546845,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-03",
+  "common_obs": "2024-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -16.659747909481077,
+  "I_state": "Low",
+  "I_revised": -17.643446480954175,
+  "I_band_revised": "Low",
+  "G_partial_mean": 0.20074929038037403,
+  "G_revised": 3.470978092755986,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-04",
+  "common_obs": "2024-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -9.351829688522717,
+  "I_state": "Neutral",
+  "I_revised": -7.778271560588824,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -5.046764782952353,
+  "G_revised": -5.694516001812195,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-05",
+  "common_obs": "2024-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -7.9520944351208085,
+  "I_state": "Neutral",
+  "I_revised": -6.349815119111762,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -5.945298845797698,
+  "G_revised": 1.105003098670145,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-06",
+  "common_obs": "2024-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.345465592968178,
+  "I_state": "Low",
+  "I_revised": -6.036482677770444,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -8.903801976310445,
+  "G_revised": -7.220802490006429,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-07",
+  "common_obs": "2024-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -11.886546081042265,
+  "I_state": "Low",
+  "I_revised": -9.201990594890958,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -9.803302210261885,
+  "G_revised": -10.892001307517495,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-08",
+  "common_obs": "2024-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -16.936182977916424,
+  "I_state": "Low",
+  "I_revised": -12.871900516809585,
+  "I_band_revised": "Low",
+  "G_partial_mean": -2.104579002995124,
+  "G_revised": 0.10177182920449664,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-09",
+  "common_obs": "2024-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -14.615141013024566,
+  "I_state": "Low",
+  "I_revised": -8.974805152525937,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -8.883499184933394,
+  "G_revised": -7.1697178731070155,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-10",
+  "common_obs": "2024-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -23.432313930483552,
+  "I_state": "Low",
+  "I_revised": -16.23739064011944,
+  "I_band_revised": "Low",
+  "G_partial_mean": -5.991011256131365,
+  "G_revised": -5.806558941229127,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-11",
+  "common_obs": "2024-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -25.011312483224348,
+  "I_state": "Low",
+  "I_revised": -18.70656767632122,
+  "I_band_revised": "Low",
+  "G_partial_mean": -8.620400680306465,
+  "G_revised": -3.9816276445370717,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2024-12",
+  "common_obs": "2024-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -14.377660145784267,
+  "I_state": "Low",
+  "I_revised": -8.127263412873301,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -7.529946245624029,
+  "G_revised": -3.7305571779433238,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-01",
+  "common_obs": "2024-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -14.480773146535645,
+  "I_state": "Low",
+  "I_revised": -7.792695842668566,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -2.4378467310663123,
+  "G_revised": 3.7193041945457113,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-02",
+  "common_obs": "2024-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -8.243976200102635,
+  "I_state": "Neutral",
+  "I_revised": -3.264730001497734,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -4.005359638141673,
+  "G_revised": 3.5484507216506977,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-03",
+  "common_obs": "2025-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -11.95952944259486,
+  "I_state": "Low",
+  "I_revised": -9.851576534940026,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -1.2952449675135043,
+  "G_revised": 10.762024082995584,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-04",
+  "common_obs": "2025-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.624760766098522,
+  "I_state": "Low",
+  "I_revised": -12.027447404409694,
+  "I_band_revised": "Low",
+  "G_partial_mean": -6.354161671763954,
+  "G_revised": -3.5782298083961726,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-05",
+  "common_obs": "2025-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -24.675727285303207,
+  "I_state": "Low",
+  "I_revised": -20.449040262758835,
+  "I_band_revised": "Low",
+  "G_partial_mean": 1.8202981899767465,
+  "G_revised": 0.22670842877066305,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-06",
+  "common_obs": "2025-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -21.859860273225895,
+  "I_state": "Low",
+  "I_revised": -22.170135022421682,
+  "I_band_revised": "Low",
+  "G_partial_mean": -0.42272444265290265,
+  "G_revised": -0.5915383948774775,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-07",
+  "common_obs": "2025-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -18.284169120996772,
+  "I_state": "Low",
+  "I_revised": -15.509396256111945,
+  "I_band_revised": "Low",
+  "G_partial_mean": -1.7973882588418393,
+  "G_revised": -3.040387186562675,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-08",
+  "common_obs": "2025-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -12.584965019317456,
+  "I_state": "Low",
+  "I_revised": -14.177612982442833,
+  "I_band_revised": "Low",
+  "G_partial_mean": -6.198430271453058,
+  "G_revised": -5.249088989746785,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-09",
+  "common_obs": "2025-07",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -15.800360167342546,
+  "I_state": "Low",
+  "I_revised": -10.785894904941891,
+  "I_band_revised": "Low",
+  "G_partial_mean": -2.012976138497225,
+  "G_revised": -5.5007165586668,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-10",
+  "common_obs": "2025-08",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -10.716170633211373,
+  "I_state": "Low",
+  "I_revised": -12.640943912120779,
+  "I_band_revised": "Low",
+  "G_partial_mean": -6.074211273583156,
+  "G_revised": -6.291040191956447,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-11",
+  "common_obs": "2025-09",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": false,
+   "G2": true,
+   "G3": false,
+   "G4": false,
+   "G5": false
+  },
+  "I_asof": null,
+  "I_state": null,
+  "I_revised": -12.49739178571083,
+  "I_band_revised": "Low",
+  "G_partial_mean": null,
+  "G_revised": -4.610785450250346,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2025-12",
+  "common_obs": "2025-10",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": false,
+   "G3": false,
+   "G4": false,
+   "G5": false
+  },
+  "I_asof": null,
+  "I_state": null,
+  "I_revised": null,
+  "I_band_revised": null,
+  "G_partial_mean": null,
+  "G_revised": null,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-01",
+  "common_obs": "2025-11",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": false,
+   "G3": false,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": null,
+  "I_state": null,
+  "I_revised": null,
+  "I_band_revised": null,
+  "G_partial_mean": null,
+  "G_revised": null,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-02",
+  "common_obs": "2025-12",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -17.538598411731563,
+  "I_state": "Low",
+  "I_revised": -15.201711622156642,
+  "I_band_revised": "Low",
+  "G_partial_mean": 0.719214885785064,
+  "G_revised": -5.255766061243197,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-03",
+  "common_obs": "2026-01",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": false,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": null,
+  "I_state": null,
+  "I_revised": null,
+  "I_band_revised": null,
+  "G_partial_mean": null,
+  "G_revised": null,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-04",
+  "common_obs": "2026-02",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -17.772300939695718,
+  "I_state": "Low",
+  "I_revised": -17.87725310474387,
+  "I_band_revised": "Low",
+  "G_partial_mean": 11.225254258981513,
+  "G_revised": 4.28832085779141,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-05",
+  "common_obs": "2026-03",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 7.139854463312686,
+  "I_state": "Neutral",
+  "I_revised": 3.6741337484087877,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": -12.304680043218081,
+  "G_revised": -7.414184421384254,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-06",
+  "common_obs": "2026-04",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 10.266046364414356,
+  "I_state": "High",
+  "I_revised": 11.24740370381941,
+  "I_band_revised": "High",
+  "G_partial_mean": 5.515195755868837,
+  "G_revised": 2.5195489289030553,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-07",
+  "common_obs": "2026-05",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": 15.386095845204025,
+  "I_state": "High",
+  "I_revised": 15.915742563408505,
+  "I_band_revised": "High",
+  "G_partial_mean": 7.282929292196708,
+  "G_revised": 8.169047722236122,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ },
+ {
+  "decision": "2026-08",
+  "common_obs": "2026-06",
+  "status": "scored-partial",
+  "roles_finite": {
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G4": true,
+   "G5": false
+  },
+  "I_asof": -14.741233916378167,
+  "I_state": "Low",
+  "I_revised": -8.139857440089289,
+  "I_band_revised": "Neutral",
+  "G_partial_mean": 3.5259589712033983,
+  "G_revised": 5.429603547722844,
+  "nine_state": null,
+  "nine_state_reason": "G5-unavailable-fail-closed"
+ }
+]
