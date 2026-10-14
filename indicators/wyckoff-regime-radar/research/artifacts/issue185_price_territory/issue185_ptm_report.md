@@ -207,52 +207,78 @@ Two different delay baselines exist and must not be confused. This table compare
 
 The policy layer decides only whether the 75% add-on the frozen parent has already earned is RELEASED or WITHHELD. It never accelerates a promotion, never reduces exposure and never sizes.
 
-| fixture | parent earns add-on | eligible bar | claims at/after eligibility | C1 status | C1 release | C1 executable | C1 delay | C1 censored | C2 status | C2 delay |
-|---|---|---:|---:|---|---:|---:|---:|---|---|---:|
-| wide_box_traversal | True | 171.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| true_trend | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
-| fake_breakout | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| healthy_retest | True | 129.0 | 4 | PROMOTE | 129.0 | 130.0 | 0.0 | False | PROMOTE | 0.0 |
-| one_tick_breakout | True | 132.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| post_breakout_stall | True | 129.0 | 18 | PROMOTE | 129.0 | 130.0 | 0.0 | False | PROMOTE | 0.0 |
-| creeping_stall | True | 129.0 | 18 | PROMOTE | 129.0 | 130.0 | 0.0 | False | PROMOTE | 0.0 |
-| slow_trend | True | 163.0 | 17 | PROMOTE | 163.0 | 164.0 | 0.0 | False | PROMOTE | 0.0 |
-| long_trend_unbounded_novelty | True | 203.0 | 167 | PROMOTE | 203.0 | 204.0 | 0.0 | False | PROMOTE | 2.0 |
-| true_trend__short_mirror | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
-| wide_box_traversal__short_mirror | True | 171.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| missing_reference_bars | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| adjusted_split | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
-| unadjusted_split | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| futures_roll | True | 123.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| gappy_reference | True | 126.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| crossed_but_not_closed | True | 127.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| degenerate_history | True | 124.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| degenerate_history_tick_fallback | True | 124.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| sparse_slow_box | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| long_period_box | True | 123.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| long_wick | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| volatility_regime_shift | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| one_way_reference_genuine_trend | True | 123.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| translated_to_zero_scale | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| negative_level_series | True | 130.0 | 1 | PROMOTE | 130.0 | 131.0 | 0.0 | False | PROMOTE | 0.0 |
-| low_level_scale_break_false_alarm | True | 130.0 | 0 | WITHHOLD_CENSORED | nan | nan | nan | True | WITHHOLD_CENSORED | nan |
-| nondup_ref_box | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| nondup_ref_far | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| nondup_path_smooth | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| nondup_path_choppy | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| envelope_gap_only | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
-| envelope_coverage_only | False | nan | 0 | NOT_ELIGIBLE | nan | nan | nan | False | NOT_ELIGIBLE | nan |
+**One active challenger: C1.** C2 is retained historical evidence only and is excluded from the comparison and decision surface.
 
-* fixtures with a parent add-on entitlement: **23** of 33; released **9**, censored **14** (60.9%)
-* newly-introduced suppressions by C1: **0** (fixtures where a claim existed at/after the eligibility bar and C1 still withheld)
-* censored genuine sustained escapes: **['one_tick_breakout', 'one_way_reference_genuine_trend']**
-* C2 differs from C1 on **1** fixture(s)
+| fixture | parent earns add-on | eligible bar | last bar | claims at/after eligibility | C1 disposition | C1 release | C1 executable | C1 delay | follow-up complete | withheld definite | open hold | width/ATR | width bin |
+|---|---|---:|---:|---:|---|---:|---:|---:|---|---|---|---:|---|
+| wide_box_traversal | True | 171 | 172 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 8.00 | MID |
+| true_trend | True | 130 | 130 | 1 | PROMOTED | 130 | 131 | 0 | True | False | False | 8.00 | MID |
+| fake_breakout | True | 130 | 130 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 8.00 | MID |
+| healthy_retest | True | 129 | 135 | 4 | PROMOTED | 129 | 130 | 0 | True | False | False | 8.00 | MID |
+| one_tick_breakout | True | 132 | 130 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | False | 8.00 | MID |
+| post_breakout_stall | True | 129 | 146 | 18 | PROMOTED | 129 | 130 | 0 | True | False | False | 8.00 | MID |
+| creeping_stall | True | 129 | 146 | 18 | PROMOTED | 129 | 130 | 0 | True | False | False | 8.00 | MID |
+| slow_trend | True | 163 | 179 | 17 | PROMOTED | 163 | 164 | 0 | True | False | False | 8.00 | MID |
+| long_trend_unbounded_novelty | True | 203 | 369 | 167 | PROMOTED | 203 | 204 | 0 | True | False | False | 8.00 | MID |
+| true_trend__short_mirror | True | 130 | 130 | 1 | PROMOTED | 130 | 131 | 0 | True | False | False | 8.00 | MID |
+| wide_box_traversal__short_mirror | True | 171 | 172 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 8.00 | MID |
+| missing_reference_bars | True | 130 | 130 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 8.00 | MID |
+| adjusted_split | True | 130 | 130 | 1 | PROMOTED | 130 | 131 | 0 | True | False | False | 8.00 | MID |
+| unadjusted_split | False | - | 130 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 8.00 | MID |
+| futures_roll | True | 123 | 130 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 8.00 | MID |
+| gappy_reference | True | 126 | 123 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | False | 1.00 | NARROW |
+| crossed_but_not_closed | True | 127 | 124 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | False | 2.00 | NARROW |
+| degenerate_history | True | 124 | 123 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | False | - | - |
+| degenerate_history_tick_fallback | True | 124 | 123 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | False | - | - |
+| sparse_slow_box | False | - | 128 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 16.00 | WIDE |
+| long_period_box | True | 123 | 131 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 95.20 | WIDE |
+| long_wick | False | - | 124 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 8.00 | MID |
+| volatility_regime_shift | False | - | 128 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | - | - |
+| one_way_reference_genuine_trend | True | 123 | 127 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 95.20 | WIDE |
+| translated_to_zero_scale | True | 130 | 130 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 8.00 | MID |
+| negative_level_series | True | 130 | 130 | 1 | PROMOTED | 130 | 131 | 0 | True | False | False | 8.00 | MID |
+| low_level_scale_break_false_alarm | True | 130 | 130 | 0 | OBSERVATION_RIGHT_CENSORED | - | - | - | False | False | True | 8.00 | MID |
+| nondup_ref_box | False | - | 139 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 8.00 | MID |
+| nondup_ref_far | False | - | 139 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 95.20 | WIDE |
+| nondup_path_smooth | False | - | 139 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 8.00 | MID |
+| nondup_path_choppy | False | - | 139 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 8.00 | MID |
+| envelope_gap_only | False | - | 122 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 1.09 | NARROW |
+| envelope_coverage_only | False | - | 122 | 0 | PARENT_NOT_ELIGIBLE | - | - | - | False | False | False | 2.38 | NARROW |
 
-**A censored add-on never happened.** Its extra delay is unbounded, so it is reported as censored and excluded from every mean/max delay figure; it is never rendered as `0` additional bars.
+### C1 add-on disposition, separating policy from follow-up completeness
 
-max/mean are over fixtures whose add-on was actually RELEASED; censored fixtures are unbounded and are excluded from both, and are reported separately as c1_censored_share_of_entitled
+| disposition | count | meaning |
+|---|---:|---|
+| `PARENT_NOT_ELIGIBLE` | 10 | the parent never earned an add-on (P3 or no usable B3); not a PTM cost |
+| `OBSERVATION_RIGHT_CENSORED` | 14 | follow-up incomplete; a future release is UNKNOWN and this is not evidence of permanent loss |
+| `POLICY_WITHHELD_THROUGH_EXPIRY` | 0 | withheld through the COMPLETE decision horizon; the only definite add-on loss |
+| `BASELINE_DE_RISK_BEFORE_RELEASE` | 0 | baseline de-risked/exited before any release |
+| `PROMOTED` | 9 | released and executed at an observed finite delay |
 
-### `o_min` sensitivity for C2 (synthetic only, no outcomes consulted)
+* fixtures with a parent add-on entitlement: **23** of 33
+* right-censored **14** (60.9% of entitled) of which **5** end BEFORE the eligible decision bar, so no decision bar was ever observed: `['one_tick_breakout', 'gappy_reference', 'crossed_but_not_closed', 'degenerate_history', 'degenerate_history_tick_fallback']`
+* open hold still unresolved at the last observed bar: **9**
+* fully evaluable episodes (parent-eligible AND complete horizon): **9**
+* fixtures that even REACH the expiry bar (`eligible + 120`): **1**
+* definite withholding estimable from the synthetic set: **False**
+* withheld share of evaluable: **0.0%**
+* delay over released episodes only — mean 0.00, max 0
+
+**Horizon adequacy — the key correction this round.** Only 1 of 23 entitled synthetic fixtures reach the 120-bar post-eligible decision horizon at all, and none of those establishes a definite withholding. The rest are administratively right-censored. The synthetic set therefore CANNOT estimate the permanent-withholding rate or C1's opportunity cost: that measurement requires the real B3 cohort, whose events are followed for the full horizon. Quoting a synthetic percentage as a withholding probability would be unsupported.
+
+**Denominator rule.** c1_withheld_share_of_evaluable = numerator / denominator, where the numerator is the count of POLICY_WITHHELD_THROUGH_EXPIRY episodes and the denominator is the count of parent-eligible episodes whose predeclared decision horizon was fully observed. Episodes that were released, or that the baseline de-risked, count in the denominator with a zero numerator; right-censored episodes are excluded from BOTH because their future is unknown. Including them in the numerator is what produced the earlier uninterpretable 14/23 = 60.9% figure. That figure is WITHDRAWN and must not be quoted as a withholding probability, a market estimate or a basis for any cutoff.
+
+**Superseded figure.** `14/23 = 60.9%` is **WITHDRAWN**: summed right-censored episodes (including fixtures that end before the eligible decision bar) into a permanent-withholding count.
+
+**Invariant, not evidence.** `c1_signal_gate_invariant_holds = True`. INVARIANT, NOT EVIDENCE. Because reference_is_valid is a superset of the frozen claim gate's non-novelty conjuncts, a claim implies a valid reference, so a policy that withholds only on an invalid reference can never withhold a claiming bar. A zero count here is a tautology of the gate and must NOT be reported as empirical protection or as evidence that C1 is safe.
+
+Definitely-withheld genuine sustained escapes: **[]**. Definitely-withheld fixtures whose path left the envelope and never returned (parameter-free test), EXCLUDING fixtures that are deliberately broken or built only to instrument a guard. 'Sustained escape' is an OUTCOME label (it reads the future path), never an ex-ante stratum input, and it is not a claim that the trend was worth adding to: one_tick_breakout clears the frozen high by 0.02, where withholding is arguably correct.
+
+Conservative hold is an explicit POLICY CHOICE with all opportunity cost charged, and it is reported with its full cost. Whether the resulting opportunity cost is acceptable is a joint loss-protection / MFE>=8 ATR harvest-retention decision reserved for Sophira; it is NOT derived from these synthetic fixtures.
+
+C2 differs from C1 on **1** fixture(s) — retained as HISTORICAL EVIDENCE ONLY.
+
+### `o_min` sensitivity — RETIRED, historical record only
 
 | o_min | = parent CONFIRMATION_BARS | released | censored | mean delay (released) | max delay (released) | differs from C1 | degenerate (=C1) |
 |---:|---|---:|---:|---:|---:|---:|---|
@@ -263,22 +289,46 @@ max/mean are over fixtures whose add-on was actually RELEASED; censored fixtures
 | 5 | False | 4 | 19 | 2.50 | 4 | 9 | False |
 | 6 | False | 4 | 19 | 3.50 | 5 | 9 | False |
 
-`o_min = 1` is degenerate: C2 becomes exactly C1. At `o_min = 4` and above the released count collapses (9 -> 4), so the horizon stops being free. `o_min = 3` is the parent's own frozen confirmation window and is the largest value before that cliff. This is a design disclosure, not a parameter search: no market outcome is consulted.
+**RETIRED — historical record only.** C2 is not an active challenger, so this table is kept only so the historical evidence stays reproducible. Its `o_min` must not be tuned further, promoted to a prereg parameter, or described as a measure of historical territory dwelling: it counts consecutive claiming bars (claim PERSISTENCE), not touch occupancy. The `o_min = 3` recommendation from the previous round is WITHDRAWN and is not part of the active study.
 
 
-### Declared outcome statuses and the abstain branch
+### Declared dispositions and the trusted-reference abstain branch
 
-C1 status distribution: `{'WITHHOLD_CENSORED': 14, 'PROMOTE': 9, 'NOT_ELIGIBLE': 10}`
+**Active challengers:** `['C1_PTM_GUARD']` (count 1). **Retired:** `['C2_PTM_GUARD_DWELL']`. C2 is retained as historical audit evidence only. It is not an active candidate, is excluded from the comparison and decision surface, and its o_min is not tuned further. It was retired because the implemented 'three consecutive claims' is a claim-PERSISTENCE measure, not the approved historical touch-occupancy O, and it reversed the role of the secondary evidence from hold to release. The dwell count must never be described as occupancy.
 
-C2 status distribution: `{'WITHHOLD_CENSORED': 14, 'PROMOTE': 9, 'NOT_ELIGIBLE': 10}`
+C1 disposition distribution: `{'PARENT_NOT_ELIGIBLE': 10, 'OBSERVATION_RIGHT_CENSORED': 14, 'POLICY_WITHHELD_THROUGH_EXPIRY': 0, 'BASELINE_DE_RISK_BEFORE_RELEASE': 0, 'PROMOTED': 9, 'ALREADY_FULL': 0, 'BASELINE_HANDLES': 0}`
 
-Declared outcomes never observed under C1: `['WITHHOLD_PENDING', 'BASELINE_HANDLES', 'DE_RISK_BASELINE', 'ALREADY_FULL']`
+Declared dispositions never observed under C1: `['POLICY_WITHHELD_THROUGH_EXPIRY', 'BASELINE_DE_RISK_BEFORE_RELEASE', 'ALREADY_FULL', 'BASELINE_HANDLES']`
 
-A declared outcome with no observation is disclosed rather than left implicit. ADDON_BASELINE_HANDLES is additionally PROVABLY unreachable -- see abstain_branch; ADDON_DE_RISK and ADDON_ALREADY_FULL are unreachable on the synthetic set only because no fixture declares a deterioration or a pre-existing full position, and both are exercised by the unit tests.
+A declared disposition with no observation is disclosed rather than left implicit. BASELINE_HANDLES is additionally PROVABLY unreachable in the trusted-R<=1 no-claim state -- see abstain_branch, and note the scope correction recorded there: this does not make conservative hold a mathematical necessity. BASELINE_DE_RISK_BEFORE_RELEASE and ALREADY_FULL are unreachable on the synthetic set only because no fixture declares a deterioration or a pre-existing full position, and both are exercised by the unit tests.
 
 The abstain outcome (`BASELINE_HANDLES`) was scanned for counterexamples over **640** trusted-reference observations and found **0**. the abstain outcome is provably unreachable: a trusted reference at R<=1 always claims, because reference_is_valid() is a superset of the frozen claim gate's non-novelty conjuncts.
 
-**Prereg consequence:** 'abstain / baseline handles' and 'conservative hold' are NOT distinct behaviours on the frozen instrument, so the choice the review asked for cannot be exercised as a policy parameter. Genuine abstain semantics would require weakening this gate below the claim gate, which is an instrument change and is out of scope PENDING_SOPHIRA_APPROVAL.
+**Scope correction (this round).** An earlier revision of this report claimed the abstain-vs-hold choice 'cannot be exercised as a policy parameter' and cited this scan as proof. That inference was WRONG and is withdrawn: this scan concerns the trusted-R<=1 no-claim state only. C1 chooses conservative hold for DEGRADED/UNKNOWN as an explicit POLICY PREFERENCE about which error to prefer (Sophira approved), with all opportunity cost charged, and NOT because mathematics forces it.
+
+
+## Ex-ante wide-vs-narrow range stratum (replaces two invalid criteria)
+
+* **Feature:** `width_atr` = (Q90 - Q10) of the pre-probe reference closes divided by the mean true range over the last ATR_WINDOW_BARS pre-probe bars
+* **Secondary:** confirmed reference reversals (pre-probe)
+* **Windows:** ATR = 14 bars, reference = 120 bars, all strictly PRE-probe
+* **Frozen tertile edges:** `[7.3677, 11.9931]` (feature-only tertiles of the REAL Issue #76 B3 cohort, computed by analyze_issue185_real_cohort.py with no return, PnL or MFE input)
+* **Bin rule:** NARROW: width_atr < edge0; WIDE: width_atr >= edge1; MID: between. Reversal bins are the predeclared integer bins 0 / 1 / 2+.
+* **Zero-data rule:** UNAVAILABLE (never silently binned) when fewer than ATR_WINDOW_BARS+1 pre-probe bars exist, when the window spans a coordinate reset so its closes share no price coordinate, when the pre-probe ATR is not strictly positive, or when the reference span is not strictly positive.
+* **Causality:** range_regime_at slices bars[anchor - reference_bars:anchor] and never reads bars[anchor] or later; appending future bars cannot change the result, and the test suite asserts that.
+* **`sustained_escape` is OUTCOME-ONLY:** sustained_escape() scans every bar after the probe and asks whether price ever returned to the old envelope. It is retained ONLY as an outcome label and is never an input to the stratum.
+
+Superseded criteria:
+
+* `spread_over_w` — IDENTITY, not a classifier: spread/w == RADIUS_DIVISOR for every valid reference
+* `R_le_1_plus_claim` — selects sparse CLAIMED TERRITORY, not a wide trading range
+* `sustained_escape_stratum` — reads the future path; outcome-only
+
+Discrimination on the 33 synthetic fixtures: **7** distinct `width_atr` values (a tautology would be 1); bins `{'NARROW': 4, 'MID': 22, 'WIDE': 4}`. A tautological criterion would produce exactly 1 distinct value across all episodes. The reported distinct-value count is the falsification test for that failure mode.
+
+Real cohort: usable **661** of **997** B3 events at frozen edges `[7.3677, 11.9931]`. Unavailable breakdown: `{'insufficient pre-probe history: 0 bar(s), need at least 15': 2, 'insufficient pre-probe history: 1 bar(s), need at least 15': 1, 'insufficient pre-probe history: 12 bar(s), need at least 15': 1, 'insufficient pre-probe history: 13 bar(s), need at least 15': 1, 'insufficient pre-probe history: 9 bar(s), need at least 15': 1, 'pre-probe window spans 1 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required': 243, 'pre-probe window spans 2 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required': 81, 'pre-probe window spans 3 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required': 6}`
+
+Computed from the operator-side Issue #76 export, which is NOT committed to this repository (private market data). The raw files are identified by SHA-256 in the committed manifest; the numbers are NOT reproducible in CI and are never presented as if they were.
 
 
 ## Parent (#78) event provenance and parity contract
@@ -309,7 +359,7 @@ Rehearsed against 9 export file(s) with reconstruction error 5.6e-14; all four f
 
 Counts-only rehearsal of the frozen assertions against a real export. No return, PnL or forward performance quantity was computed: the rehearsal stops before build_state_map and all economics, and scipy's rankdata (used only by the parent's conditional/outcome helpers) was stubbed to raise.
 
-The Issue #76 Pine forward-logger export is NOT committed to this repository, so the parity rehearsal below was run locally against an operator-supplied copy and is recorded here as a contract, not as a CI-checkable step. Freeze status: `PENDING_SOPHIRA_APPROVAL`.
+The Issue #76 Pine forward-logger export is PRIVATE market data and is NOT committed to this repository. The parity rehearsal below was run locally against an operator-supplied copy and is recorded as a contract with provenance, not as a CI-checkable step. The exact input files are identified in the committed real-cohort manifest by name, size and SHA-256. Freeze status: `PENDING_SOPHIRA_APPROVAL`.
 
 ## Boundaries
 

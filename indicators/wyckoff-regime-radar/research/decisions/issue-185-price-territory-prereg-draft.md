@@ -24,9 +24,12 @@ addresses the four P0 freeze blockers raised in review of v0.2.2:
   replaces the band-only rule with the full frozen claim gate, and §4.2 fixes an
   explicit causal pre-outcome state table covering `OK + HEAVILY_REVISITED`,
   `OK + REVISITED (R = 2..4)`, `OK + SPARSE/UNVISITED (R <= 1)`,
-  `DEGRADED/UNKNOWN` and the 120-bar episode expiry. The **abstain option is
-  shown to be provably unreachable**, so conservative hold is forced rather than
-  chosen — see the pending item below.
+  `DEGRADED/UNKNOWN` and the 120-bar episode expiry. The **abstain option was
+  shown to be unreachable in this state**, and the round concluded that
+  conservative hold was therefore forced. ⚠️ **SUPERSEDED by v0.2.4.** The
+  unreachability holds, but the inference did not: conservative hold is C1's
+  explicit **policy choice**, and the distinct alternative of routing the
+  degraded branch to the unmodified baseline remains available (§4.2.1).
 * **P0.3 — deterioration must never mechanically promote.** §4.4 removes "or on
   benchmark deterioration, whichever comes first" as a *release* trigger;
   deterioration now yields `DE_RISK` and never promotes. §4.3 and §6.6 make
@@ -34,25 +37,57 @@ addresses the four P0 freeze blockers raised in review of v0.2.2:
   **missed big-trend harvest**, never as `0` bars.
 * **P0.4 — real R0/B3 event integration and missing constants.** §4.8 pins the
   frozen parent event source (the Issue #76 forward-logger export consumed by
-  the #78 modules), its parity check and the exact eligibility rule; §4.6 pins
-  `o_min`; §5 freezes the exposure-policy decision; §6.5 fixes the objective
-  pre-outcome wide-box stratum and the cohort manifest. All frozen **without
-  reading any forward return outcome**.
+  the #78 modules), its parity check and the exact eligibility rule; §4.6 pinned
+  `o_min` (⚠️ **retired in v0.2.4** with C2); §5 freezes the exposure-policy
+  decision; §6.5 fixed the wide-box stratum (⚠️ **replaced in v0.2.4** — the
+  criteria there were not classifiers). All frozen **without reading any forward
+  return outcome**.
 
-It remains a **draft**: no outcome has been read, nothing is frozen, and no run
-is authorised. **`PREREG DRAFT — NOT AUTHORISED.`**
+**Revision note (v0.2.4, C1-only convergence round).** This revision converges the
+empirical programme to **C1 alone** and repairs three defects raised in review of
+v0.2.3. It reads no forward outcome and changes no PTM mathematics.
+
+* **S1 — C2 silently changed its hypothesis.** The approved C2 was "PTM Guard plus
+  a historical **touch-occupancy** `O >= o_min` **hold** condition"; what was
+  implemented required three consecutive claiming bars before **release**. The
+  unit (occupancy proportion → bar count), the direction (hold → release
+  precondition) and the quantity (occupancy → claim persistence) all changed.
+  `o_min = 3` was **not** approved. **Resolution: C2 is `RETIRED` from the active
+  plan** (§4.6); its code and evidence remain reproducible, marked
+  `RETIRED_NOT_AN_ACTIVE_CHALLENGER`, and its parameters are not tuned. The
+  prereg now specifies **C1 only**, which introduces no new parameter.
+* **S2 — the wide-box stratum was not a classifier.** `spread / w = 20` is an
+  **algebraic identity** (true for every valid reference); `R <= 1` plus an
+  unfixed claim selects *sparse claimed territory* — the treatment itself; and
+  `sustained_escape()` reads the post-probe path, making it a valid retrospective
+  **outcome** label rather than an ex-ante feature. §6.5 replaces all three with
+  the frozen pre-probe **`width_atr`** descriptor (reference inter-decile span ÷
+  pre-probe ATR), causal by construction and binned by pre-frozen feature-only
+  tertiles. `sustained_escape` is retained for outcome-side reporting only.
+* **S3 — the permanent-no-add-on statistic conflated censoring with suppression.**
+  `evaluate_addon` returned `WITHHOLD_CENSORED` / `missed_addon` even when the
+  fixture ended **before** the parent's eligibility bar (e.g. `gappy_reference`
+  eligible 126 vs last bar 123). The `14/23 = 60.9% permanently censored` figure
+  is **withdrawn**. §4.3 defines a five-category disposition taxonomy separating
+  *what the policy decided* from *whether the horizon was observed*, and
+  §4.3.3 reclassifies the zero "signal contradiction" count as an **invariant,
+  not evidence**.
+
+**It remains a draft: no outcome has been read, nothing is frozen, and no run is
+authorised. `PREREG DRAFT — NOT AUTHORISED.`**
 
 **Pending Sophira rulings (not decidable from design alone).** Each is stated
 with a primary recommendation and rationale in the referenced section:
 
 | # | item | primary recommendation | section |
 |---|---|---|---|
-| 1 | exposure-policy semantics for `DEGRADED/UNKNOWN` | conservative hold (forced: abstain is provably unreachable) | §4.2 |
-| 2 | `o_min` value for C2 | `o_min = 3` (largest before the synthetic cliff; equals the parent's `CONFIRMATION_BARS`) | §4.6 |
-| 3 | acceptable censored share of add-on entitlements | no number fixed — a risk-appetite decision, not an engineering fact | §7 rule 11 |
-| 4 | whether C2's thin synthetic separation (1 of 33) disqualifies it | keep exactly two challengers; make C2 harsher rather than adding a third | §4.6 |
+| 1 | exposure-policy semantics for `DEGRADED/UNKNOWN` | conservative hold — **an explicit, approved policy choice**, whose full opportunity cost is charged to C1. The earlier claim that abstain and conservative hold are "not distinct behaviours" is **withdrawn**: routing the degraded branch to the unmodified baseline is a distinct, documented, unimplemented alternative (`BASELINE_ON_DEGRADED_ALTERNATIVE`). | §4.2.1 |
+| 2 | `o_min` for C2 | **`o_min = 3` is NOT approved and is not needed: C2 is retired.** Not an active challenger. | §4.6 |
+| 3 | acceptable **genuine** full-horizon suppression share | no number fixed; preferred form is a **joint** constraint (max false-trend loss *given* min retained `MFE >= 8 ATR` harvest). Must be separated from administrative right-censoring first, and **must not** be derived from the synthetic `0/9` (vacuous) or the withdrawn `60.9%`. | §7 rule 11 |
+| 4 | whether C2's thin separation (1 of 33) disqualifies it | **resolved by ruling: YES — retire C2, preregister C1 alone.** Implemented. | §4.6 |
 
-Status of each: **`PENDING_SOPHIRA_APPROVAL`**. Nothing above is frozen by this
+Status of each: **`PENDING_SOPHIRA_APPROVAL`** (items 1 and 3) or
+**`RESOLVED_BY_RULING`** (items 2 and 4). Nothing above is frozen by this
 document.
 
 Companion documents:
@@ -174,8 +209,9 @@ All of the following are frozen before outcomes:
      spec, and the scale-break screen may suppress a claim but may never create
      one. Both are implemented and pinned by tests (see the finding doc §6.C
      `C1`, `C2`).
-8. **Candidate count: 2 challenger policies.** No additional variants may be
-   added after any outcome is seen. Any further variant is a new prereg.
+8. **Active candidate count: 1 challenger policy (C1).** No additional variants
+   may be added after any outcome is seen, and no retired variant may be revived
+   as a candidate. Any further variant is a new prereg.
 
 ### 2.2 Accepted cost of A1, declared before outcomes
 
@@ -256,25 +292,46 @@ Core-2 `Structure × Extension` supplies context only. The optional A9
 volatility percentile is a risk overlay / control variable, not a second alpha
 claim; A9 itself was rejected as an independent dimension.
 
-## 4. Challenger policies (exactly 2, minimal and interpretable)
+## 4. Challenger policy (exactly one active: C1)
 
-Both challengers stay at the benchmark's 25% probe instead of promoting the
-earned 75%. **The policy layer can only withhold or release an add-on the parent
-has already earned. It never accelerates a promotion, never reduces exposure,
-never sizes, and never alters B1's Warning-First or any other risk constraint.**
+The challenge stays at the benchmark's 25% probe instead of promoting the earned
+75%. **The policy layer can only withhold or release an add-on the parent has
+already earned. It never accelerates a promotion, never reduces exposure, never
+sizes, and never alters B1's Warning-First or any other risk constraint.**
 
-* **C1 — PTM Guard.** Withhold the earned 75% while the completed close at the
-  decision bar does not carry a valid new-territory claim; release on the first
-  completed close that does. Never a fixed delay.
-* **C2 — PTM Guard with dwell condition.** As C1, but the release additionally
-  requires a run of `o_min` consecutive claiming bars inside the parent's own
-  three-bar acceptance window.
+* **C1 — PTM Guard (the only active challenger).** Withhold the earned 75% while
+  the completed close at the decision bar does not carry a valid new-territory
+  claim; release on the first completed close that does. Never a fixed delay.
+* **C2 — PTM Guard with dwell condition. `RETIRED`.** Retained as historical
+  evidence only; excluded from the comparison and from the decision surface.
+  See §4.6.
 
-Both challengers consume the *same* frozen instrument.
+C1 consumes the *same* frozen instrument as the baselines.
 
-**No third challenger is added, and no new parameter is searched.** Exactly one
-new number enters the freeze — C2's `o_min` (§4.6) — and it is disclosed with
-its full synthetic sensitivity.
+**No new number enters the freeze for the active challenger.** C1 introduces no
+parameter: its rule is the frozen claim gate and nothing else. The only number
+C2 ever added (`o_min`) is retired with C2 and **must not be tuned**. §4.6 records
+why.
+
+### 4.0 Scope of the convergence (what this revision did and did not do)
+
+This revision converges the empirical programme to **C1 only**, in line with the
+review ruling that C2 be dropped from the active plan. It makes three corrections
+and keeps everything else frozen:
+
+1. **C2 is retired from the active plan, not deleted.** Its code and its
+   measurements remain reproducible as historical record (`CHALLENGER_POLICIES`
+   contains both; `ACTIVE_CHALLENGERS` contains only C1). Nothing about C2's
+   parameters is optimised, and its recorded weakness is not repaired.
+2. **The wide-box stratum is redefined as an ex-ante observable** (§6.5). The
+   previous criteria were not classifiers.
+3. **The add-on cost accounting is repaired** so that *administrative
+   right-censoring* is separated from *definite withholding* (§4.3). The earlier
+   `14/23 = 60.9% permanently censored` figure is **withdrawn**.
+
+**Unchanged by this revision:** A1–A7, the PTM mathematics (`w`, `R`, `O`, `N`,
+all thresholds), the parent B3 clock and eligibility rule, the parent event source
+and parity contract, all baseline policies, and the 190 phase-2 tests.
 
 ### 4.1 The gate is the full claim gate, not the revisit band
 
@@ -287,7 +344,7 @@ promoted its 75% even though its reference is
 about how often a level has been touched; it is not by itself an exposure
 decision.
 
-Both challengers therefore gate on the **frozen claim rule**:
+C1 therefore gates on the **frozen claim rule**:
 
 ```
 release_eligible(t)  =  is_new_territory_claim(t)
@@ -311,19 +368,19 @@ decide whether a degraded reference is trusted.
 `eligible = B3_break_t + 3`. Every state is read from the **completed** bar at
 or after `eligible`; a decision taken on bar `t` is executable at `t + 1`.
 
-| # | state of the completed bar `t` | C1 at `t` | C2 at `t` | releaseable later in this episode? | reported as |
-|---|---|---|---|---|---|
-| S1 | `OK`, `R <= 0` (`UNVISITED`) | release | release iff `dwell_run >= o_min` | yes | `PROMOTE` |
-| S2 | `OK`, `R = 1` (`SPARSE`) | release | release iff `dwell_run >= o_min` | yes | `PROMOTE` |
-| S3 | `OK`, `R = 2..4` (`REVISITED`) | withhold | withhold | only if `R` returns to `<= 1`, which the frozen rule cannot guarantee | `WITHHOLD_PENDING` → `WITHHOLD_CENSORED` |
-| S4 | `OK`, `R >= 5` (`HEAVILY_REVISITED`) | withhold | withhold | as S3 | as S3 |
-| S5 | any `DEGRADED_*` or `UNKNOWN`, any band | withhold (**conservative hold**) | withhold | only via S1/S2 | `WITHHOLD_PENDING` → `WITHHOLD_CENSORED` |
-| S6 | observation absent at `t` | withhold | withhold | absent is not evidence | `WITHHOLD_PENDING` |
-| S7 | benchmark deterioration at any `t` | `DE_RISK`, never promotes | same | no | `DE_RISK_BASELINE` |
-| S8 | `t >= eligible + 120` | censored, never auto-promotes | same | no | `WITHHOLD_CENSORED` |
-| S9 | parent path `P3`, or no usable B3 | `NOT_ELIGIBLE` | same | n/a | `NOT_ELIGIBLE` |
-| S10 | already at 100% before `eligible` | neutral | same | n/a | `ALREADY_FULL` |
-| S11 | `OK`, `R <= 1`, but no claim | abstain / baseline handles | same | n/a | `BASELINE_HANDLES` |
+| # | state of the completed bar `t` | C1 at `t` | releaseable later in this episode? | reported as |
+|---|---|---|---|---|
+| S1 | `OK`, `R <= 0` (`UNVISITED`) | release | yes | `PROMOTED` |
+| S2 | `OK`, `R = 1` (`SPARSE`) | release | yes | `PROMOTED` |
+| S3 | `OK`, `R = 2..4` (`REVISITED`) | withhold | only if `R` returns to `<= 1`, which the frozen rule cannot guarantee | `POLICY_WITHHELD_THROUGH_EXPIRY` if the horizon completes; else `OBSERVATION_RIGHT_CENSORED` |
+| S4 | `OK`, `R >= 5` (`HEAVILY_REVISITED`) | withhold | as S3 | as S3 |
+| S5 | any `DEGRADED_*` or `UNKNOWN`, any band | withhold (**conservative hold — an explicit policy choice**, §4.2.1) | only via S1/S2 | as S3 |
+| S6 | observation absent at `t` | withhold | absent is not evidence | as S3 |
+| S7 | benchmark deterioration at any `t` | `BASELINE_DE_RISK_BEFORE_RELEASE`, never promotes | no | `BASELINE_DE_RISK_BEFORE_RELEASE` |
+| S8 | `t >= eligible + 120` while still withheld | **definite withholding**; never auto-promotes | no | `POLICY_WITHHELD_THROUGH_EXPIRY` |
+| S9 | parent path `P3`, or no usable B3 | `PARENT_NOT_ELIGIBLE` | n/a | `PARENT_NOT_ELIGIBLE` |
+| S10 | already at 100% before `eligible` | neutral | n/a | `ALREADY_FULL` |
+| S11 | `OK`, `R <= 1`, but no claim | (unreachable — see below) | n/a | `BASELINE_HANDLES` |
 
 A hold, once taken, is **retained** while the state is S3/S4/S5/S6 and is
 released only by reaching S1/S2. A degraded or unknown state never counts as
@@ -332,20 +389,37 @@ novel and never counts as benign.
 **An existing hold is never released by a later degraded state**, and a degraded
 state never releases a hold that was already taken.
 
-**S11 is provably unreachable, and that is reported rather than hidden.** Its
-precondition needs a *trusted* reference at `R <= 1` that makes no claim, but
-`reference_is_valid` conjoins exactly the claim gate's non-novelty conjuncts, so
-at `R <= 1` the claim must be true. The analyzer scans every trusted-reference
-observation for a counterexample (0 found) and
-`test_c8_abstain_branch_is_provably_unreachable` pins the implication.
+**An episode that simply runs out of data is none of these.** If the last
+available bar is before `eligible + 120` and no release occurred, the disposition
+is `OBSERVATION_RIGHT_CENSORED`: the future is **unknown**, not lost. The full
+rule is in §4.3.
 
-**Consequence — the honest answer to the review's request to choose between
-"abstain / baseline handles" and "conservative hold":** on the frozen instrument
-the two are **not distinct behaviours**, so the choice cannot be exercised as a
-policy parameter. C1 and C2 necessarily implement **conservative hold**. Genuine
-abstain semantics would require weakening the policy gate *below* the claim
-gate, which is an **instrument change** and therefore out of scope for this
-freeze round. **`PENDING_SOPHIRA_APPROVAL`.**
+#### 4.2.1 S11 is unreachable — but conservative hold is still a choice
+
+Its precondition needs a *trusted* reference at `R <= 1` that makes no claim.
+`reference_is_valid` conjoins exactly the claim gate's non-novelty conjuncts, so
+at `R <= 1` the claim must be true; the analyzer scans every trusted-reference
+observation for a counterexample (**0 found**) and
+`test_c8_trusted_abstain_branch_is_unreachable_and_the_old_claim_is_withdrawn`
+pins the implication.
+
+**This finding is narrower than an earlier version of this document claimed, and
+that earlier claim is withdrawn.** The scan shows only that the *trusted `R <= 1`
+no-claim state* never occurs. It does **not** show that "abstain" and
+"conservative hold" are the same behaviour, and it does **not** make conservative
+hold a mathematical necessity. A policy could still route `DEGRADED`/`UNKNOWN`
+states to the **unmodified baseline** — i.e. release the add-on exactly as `R0`
+would — which is a *different design* that changes no A1–A7 threshold, no PTM
+mathematics and no B3 clock. That alternative is named in the code as
+`BASELINE_ON_DEGRADED_ALTERNATIVE`, is **documented but not implemented**, and is
+**not** counted among the challengers.
+
+**Consequence.** C1 implements a **conservative hold on insufficient evidence**.
+That is Sophira's approved research choice for this challenger, and it is recorded
+here as a **deliberate policy preference whose full opportunity cost is charged
+against C1** — not as a forced outcome. Genuine abstain semantics on the degraded
+branch would be a *second* design, and this revision does not evaluate it.
+**`PENDING_SOPHIRA_APPROVAL`.**
 
 ### 4.3 Why a withhold can become permanent, and how it must be reported
 
@@ -360,8 +434,8 @@ The reporting consequence is explicit and non-negotiable:
 * A withheld add-on is **censored**: its extra delay is **unbounded**, not zero.
 * A censored add-on is **excluded** from every mean and max delay figure. It is
   **never** rendered as `0` additional bars.
-* Permanent suppression is charged as **censored / unbounded extra delay** plus
-  **missed big-trend harvest** — never as 0 bars.
+* A **definite** withholding (state S8) is charged as **unbounded extra delay**
+  plus **forgone large-trend harvest** — never as 0 bars.
 * A fixture whose add-on disappears entirely is **not** a zero-cost outcome.
 * `max_added_delay_vs_v02_bars = 0` must **never** be quoted as the empirical
   confirmation cost of this policy. It applies only to synthetic observations
@@ -369,15 +443,80 @@ The reporting consequence is explicit and non-negotiable:
   entirely and the constructed `true_trend` B3 clock yields **4 bars** of extra
   delay. Neither is zero.
 
-Measured on the 33 synthetic fixtures, C1 releases **9** and censors **14** of
-the **23** fixtures that have a parent add-on entitlement (60.9% censored). Of
-those 14, **0** had a claim at or after the eligibility bar — C1 never
-contradicts the signal it is built on. Most censored fixtures are deliberately
-broken or guard-instrumentation cases; the **declared** genuine sustained
-escapes are `one_tick_breakout` and `one_way_reference_genuine_trend`, and only
-the latter is a clear opportunity cost. This share is the dominant honest cost
-of the policy and is a **policy decision, not a bug** —
-**`PENDING_SOPHIRA_APPROVAL`**.
+#### 4.3.1 Disposition taxonomy — policy outcome vs follow-up completeness
+
+**資料不足不是永久不加碼，也不能把未來未知的機會成本當作已實現損失。**
+("Insufficient data is not a permanent no-add-on, and the opportunity cost of an
+unknown future must not be booked as a realized loss.")
+
+Every episode terminates in exactly one declared disposition. The distinction
+that matters is between *what the policy decided* and *whether we were able to
+watch long enough to see the decision resolve*:
+
+| disposition | count (33 synthetic fixtures) | meaning | charged to C1? |
+|---|---:|---|---|
+| `PARENT_NOT_ELIGIBLE` | 10 | the parent never earned an add-on (path `P3`, or no usable B3). Not a PTM cost at all. | no |
+| `OBSERVATION_RIGHT_CENSORED` | 14 | follow-up **incomplete**: the data ended before the predeclared decision horizon. A later release is **UNKNOWN**. | **no** — not evidence of loss |
+| `POLICY_WITHHELD_THROUGH_EXPIRY` | 0 | withheld through the **complete** `eligible + 120` horizon. The only *definite* add-on loss. | yes |
+| `BASELINE_DE_RISK_BEFORE_RELEASE` | 0 | the baseline itself de-risked/exited before any release; PTM withheld nothing. | no |
+| `PROMOTED` | 9 | released and executed at an observed finite delay (here all `0` bars). | n/a |
+| `BASELINE_HANDLES` | 0 | declared, **provably unreachable** (§4.2.1) | n/a |
+| `ALREADY_FULL` | 0 | already at 100% before eligibility | n/a |
+
+`OBSERVATION_RIGHT_CENSORED` is itself split, because the two halves mean
+different things:
+
+* **14 right-censored, of which 5 end *before* the eligible decision bar** —
+  `one_tick_breakout` (eligible 132, last bar 130), `gappy_reference` (126 / 123),
+  `crossed_but_not_closed` (127 / 124), `degenerate_history` (124 / 123),
+  `degenerate_history_tick_fallback` (124 / 123). No decision bar was ever
+  observed, so these fixtures carry **no information about C1's behaviour at
+  all**. An earlier version of this document counted them as permanent
+  suppressions; that was wrong.
+* **9 right-censored with an open hold at the last bar** — a hold was genuinely
+  in force when the data stopped, but the future is unknown.
+
+#### 4.3.2 The `14/23 = 60.9%` figure is WITHDRAWN
+
+The earlier figure summed *right-censored* episodes (including the five fixtures
+that never reached a decision bar) into a *permanent-withholding* count. It is
+**withdrawn** and must not be quoted as a withholding probability, as a market
+estimate, or as the basis for any cutoff.
+
+**The only valid withholding denominator** is parent-eligible episodes whose
+predeclared decision horizon was **fully observed**:
+
+```
+withheld_share = |POLICY_WITHHELD_THROUGH_EXPIRY|
+               / |{parent-eligible AND follow-up complete}|
+```
+
+On the synthetic set that denominator is **9**, and the numerator is **0** — so
+the synthetic withheld share is **0.0%**, and it is a *vacuous* 0% rather than
+evidence of safety. Only **1 of 23** entitled fixtures reaches the 120-bar
+post-eligible horizon at all (and it is promoted). **The synthetic fixtures are
+far too short, relative to the predeclared horizon, to estimate the
+permanent-withholding rate or C1's opportunity cost.** That measurement requires
+the real B3 cohort. Reporting a synthetic percentage as if it were a withholding
+probability would be unsupported.
+
+#### 4.3.3 The zero "signal contradiction" count is an invariant, not evidence
+
+The previous revision reported `newly-introduced suppressions = 0` as a success.
+It is not. A withheld add-on can only be counted as a contradiction if a claim
+exists at or after eligibility, but a claim *implies* `reference_is_valid`, so
+this quantity is a **tautology of the gate itself**. It is now reported as
+`c1_signal_gate_invariant_holds` and explicitly labelled
+**INVARIANT, NOT EVIDENCE**. It establishes nothing about how often C1 removes
+false-trend loss, and nothing about how much real trend it forgoes.
+
+#### 4.3.4 What remains a genuine policy question
+
+Whether C1's conservative hold is *acceptable* is a risk-appetite decision that
+the synthetic set cannot answer, because the synthetic set cannot measure the
+cost. Sophira has approved the conservative hold as C1's deliberate challenger
+semantics; the **acceptable genuine full-horizon suppression share** is still
+**`PENDING_SOPHIRA_APPROVAL`** (§7 rule 11).
 
 ### 4.4 Deterioration never mechanically promotes (P0.3)
 
@@ -389,24 +528,35 @@ contrary to the inherited risk management: it lets a *deteriorating* benchmark
 The frozen transition is:
 
 ```
-deterioration at any bar  ->  ADDON_DE_RISK
+deterioration at any bar  ->  BASELINE_DE_RISK_BEFORE_RELEASE
                               released          = False
                               first_executable  = None
-                              extra_delay_bars  = None    (censored)
-                              missed_addon      = True
+                              extra_delay_bars  = None   (no observable delay)
+                              followup_complete = True
+                              withheld_definite = False  (PTM withheld nothing)
                               promotes          = never
 ```
 
+**`BASELINE_DE_RISK_BEFORE_RELEASE` is deliberately *not* counted as a PTM
+loss.** The position was closed by the baseline's own risk path; C1 did not
+withhold it, and it is therefore neither observed nor censored — it is excluded
+from the withholding numerator *and* from the evaluable denominator. Counting it
+as a PTM cost would double-charge a decision the baseline made independently.
+
 Deterioration is handled by the baseline's own de-risk / exit path. PTM never
-adds on it. Pinned by `test_b2_deterioration_while_withheld_never_promotes`.
+adds on it. Pinned by `test_b2_deterioration_while_withheld_never_promotes` and
+`test_b2b_de_risk_is_not_a_ptm_withholding`.
 
 **Intermediate `R = 2..4`.** A bar in S3 neither promotes nor resets: the hold
 continues and can only be released by returning to S1/S2. Because the frozen
-rule cannot claim at `R >= 2`, a path that leaves `R <= 1` and never returns is
-reported permanently censored (`extra_delay_bars = None`, `censored = True`,
-`missed_addon = True`). It is never reported as a fixed 0-bar or n-bar delay.
-Pinned by `test_b4_middle_band_r2_to_r4_is_withheld_and_named_in_the_reason` and
-`test_b5_permanent_absence_of_release_evidence_is_censored_not_zero`.
+rule cannot claim at `R >= 2`, a path that leaves `R <= 1` and never returns
+becomes a definite withholding **only if the full post-eligible horizon is
+observed**; otherwise it is `OBSERVATION_RIGHT_CENSORED`. Either way
+`extra_delay_bars = None` and it is never reported as a fixed 0-bar or n-bar
+delay. Pinned by
+`test_b4_middle_band_r2_to_r4_is_withheld_and_named_in_the_reason`,
+`test_b5_withholding_through_complete_expiry_is_definite_not_zero` and
+`test_c7_long_period_box_addon_is_never_released`.
 
 ### 4.5 Next-bar execution contract
 
@@ -428,45 +578,46 @@ bar the parent itself would have filled". No release may be placed at or before
 `test_b9_no_future_leak_release_bar_is_prefix_stable` (a release already earned
 by a prefix is unchanged by any later bar).
 
-### 4.6 `o_min` for C2 — candidate values, declared before outcomes
+### 4.6 C2 is retired (`RETIRED`, historical record only)
 
-`o_min` is the number of consecutive claiming bars required inside the parent's
-own acceptance window `B3_break + 1 .. B3_break + 3`.
+**C2 is not an empirical candidate in this preregistration, and `o_min = 3` is
+not approved.** The reason is a silent change of hypothesis, recorded here so it
+cannot be re-adopted by accident.
 
-Counting the dwell over the parent's acceptance window is deliberate: counting
-only from the eligibility bar makes C2 censor an ordinary genuine trend whose
-claim run *is* the acceptance window. That variant was implemented, observed to
-censor `true_trend`, and rejected — it is recorded in the module as a REJECTED
-alternative.
+The originally approved C2 was *"PTM Guard plus a historical **touch-occupancy**
+`O`, with `O >= o_min` as an additional **hold** condition"* — a condition on a
+*dwelling proportion*. What was implemented required **three consecutive
+claiming bars** inside the parent's acceptance window before **release**. Three
+things changed at once, none of them announced:
 
-**This is a design disclosure, not a parameter search: no market outcome is
-consulted and the challenger count stays at two.** Sweeping `o_min` over the 33
-synthetic fixtures:
+1. **The unit changed**: occupancy *proportion* → *bar count*.
+2. **The direction changed**: an additional **hold** condition (which would make
+   C2 stricter than C1) became an additional **release** precondition (making C2
+   a *different* rule, not a strictly harsher one).
+3. **The quantity changed**: `O` is occupancy of the territory; the dwell run is
+   *claim persistence*, which is a different measurement on the same bars.
 
-| `o_min` | = parent `CONFIRMATION_BARS` | released | censored | mean delay (released) | max delay (released) | differs from C1 |
-|---:|---|---:|---:|---:|---:|---:|
-| 1 | no | 9 | 14 | 0.00 | 0 | **0 — degenerate, equals C1** |
-| 2 | no | 9 | 14 | 0.11 | 1 | 1 |
-| **3** | **yes** | **9** | **14** | **0.22** | **2** | **1** |
-| 4 | no | 4 | 19 | 1.50 | 3 | 9 |
-| 5 | no | 4 | 19 | 2.50 | 4 | 9 |
-| 6 | no | 4 | 19 | 3.50 | 5 | 9 |
+`o_min = 3` was never approved, and it must not be tuned now. The five-value
+sensitivity sweep that appeared in the previous revision is retained in the
+artifacts as historical evidence, explicitly marked
+`RETIRED_NOT_AN_ACTIVE_CHALLENGER`, and is not a basis for any decision.
 
-* `o_min = 1` is **degenerate**: C2 becomes exactly C1 and adds nothing.
-* `o_min = 4` and above crosses a cliff: the released count collapses `9 → 4`
-  and nine fixtures diverge from C1.
-* **Primary recommendation: `o_min = 3`** — the largest value before the cliff,
-  equal to the parent's own frozen `CONFIRMATION_BARS`, and the only candidate
-  that reuses an already-frozen horizon instead of introducing a new number.
-  **`PENDING_SOPHIRA_APPROVAL`.**
-* Disclosed weakness: C2 differs from C1 on only **1 of 33** synthetic fixtures
-  (`long_trend_unbounded_novelty`, release at 203 vs 205), so C2's
-  distinguishing power on synthetics is thin. Its value must be judged on the
-  real cohort, not here. If Sophira judges that thinness disqualifying, the
-  correct response is to keep exactly two challengers and make C2 harsher, not
-  to add a third.
+**What is retained.** C2 remains callable (`CHALLENGER_POLICIES` includes it,
+`evaluate_addon` still runs it) so that the previously recorded evidence stays
+reproducible and auditable. Tests
+`test_c1_only_one_active_challenger_and_c2_is_retired` and
+`test_c5_dwell_counts_the_parents_own_acceptance_window` pin both facts: C2 runs,
+C1 is the only *active* challenger. **Acceptance is not endorsement.**
 
-### 4.7 The delay C1/C2 must be charged against (corrected contract)
+**Why C1 alone is sufficient.** C2 separated from C1 on only **1 of 33**
+synthetic fixtures (`long_trend_unbounded_novelty`, release at 203 vs 205). A
+challenger that cannot be distinguished from C1 on the available design evidence
+adds a decision surface without adding information, and it adds a parameter
+(`o_min`) with no sound basis for a value. Dropping it is the conservative choice
+for the *programme*, not merely for the policy. Sophira's ruling on this point is
+already **NO — retire C2, preregister C1 alone**; this section implements it.
+
+### 4.7 The delay C1 must be charged against (corrected contract)
 
 The PTM extra delay is measured **relative to the real
 `eligible_promotion_t = B3_break_t + 3`**, never against `probe_t0 + 3`. Measured
@@ -520,12 +671,28 @@ the parent's frozen reference policies (`ProbeOnly` / `FormalHold`); there is
 **no literal `B1` symbol in the parent repository**, and this prereg says so
 rather than inventing one.
 
+**Every real raw file is identified explicitly.** The operator-side rehearsal
+consumed a **9-file, 50,459,542-byte** export. Because the data is private and
+must not be committed (AGENTS.md rule 8), the committed record is
+`artifacts/issue185_price_territory/issue185_real_cohort_manifest.json`
+(schema `issue185-real-cohort-v1`), which carries per file: **name, byte size,
+row count and SHA-256**, plus the parity observed values, the parent contract,
+the count of feature-unavailable windows and the frozen width tertile edges. Its
+flags are `feature_only: true`, `outcomes_computed: false`,
+`raw_data_committed: false`. The manifest is **frozen provenance, not a
+reproduction recipe**: CI cannot re-derive these numbers and must never present
+them as if it could.
+
+**Date and hashes.** Rehearsal date is recorded in the manifest; SHA-256 digests
+are full 64-hex-character values per file. No aggregate or truncated digest is
+used as an identifier.
+
 **Parity check, frozen and pre-outcome.** The parent already asserts four
-constants (`analyze_issue78_second_entry_economic_policy.py` L741–757):
-`EXPECTED_EVENTS = 68118`, `EXPECTED_EPISODES = 1624`,
+constants (`analyze_issue78_second_entry_economic_policy.py` L36–42 and its
+assertion block): `EXPECTED_EVENTS = 68118`, `EXPECTED_EPISODES = 1624`,
 `EXPECTED_B3_EVENTS = 997`, `EXPECTED_P12 = 236`. A **counts-only rehearsal**
-against a real export reproduced all four (reconstruction error
-`5.6e-14`) and established the causal path composition of the 997 B3 events:
+against the real export reproduced all four (reconstruction error `5.6e-14`)
+and established the causal path composition of the 997 B3 events:
 `P0_NoTouch` 411, `P1_WickHold` 110, `P2_Reclaim` 126 → **647 add at t+3**;
 `P3_FailedAcceptance` 350 never add. The rehearsal stops **before** any return,
 PnL or performance quantity is computed, and `scipy.stats.rankdata` — used only
@@ -537,7 +704,23 @@ Therefore CI asserts the parity **contract** (constants and path composition via
 `ast`, without importing the scipy-dependent parent modules), and the
 **rehearsal counts are recorded as a local contract with provenance**, not as a
 CI-checkable step. Tokens: `test_e1_parity_constants_in_the_parent_source_match_the_contract`,
-`test_e2_provenance_names_the_real_parent_contract`.
+`test_e2_provenance_names_the_real_parent_contract`,
+`test_e3_real_cohort_manifest_is_optional_and_never_fabricated` (which passes
+whether or not the manifest is present, and cross-checks the frozen tertile
+edges against the code).
+
+**The private export must never become a required CI step.** The real-cohort
+script `analyze_issue185_real_cohort.py` exits non-zero when it *is* pointed at
+data and the parity constants disagree, but exits `2` with an explanatory message
+when no export is present — so CI stays green without the private data.
+
+**Feature availability on the real cohort (disclosed reduced power).** The
+ex-ante range descriptor (§6.5) is unavailable for **336 of the 997** B3 events,
+overwhelmingly because the 120-bar pre-probe window spans a coordinate reset
+(243 windows with one reset, 81 with two, 6 with three = 330) and 6 more have
+insufficient pre-probe history. The usable stratum is therefore **661 of 997
+(66%)**. That is a real reduction in power and it is disclosed here rather than
+smoothed over.
 
 **Freeze rule for this section:** every constant above is pinned **without
 reading any forward return outcome**. No outcome column, no `OUTCOMES` function
@@ -546,15 +729,19 @@ freeze.
 
 ### 4.9 Predeclared decision the run must answer
 
-The phase-2 patch proves only that the guards are **consistent, causal and
-non-delaying on synthetic paths**. It does **not** establish that they are
-beneficial on a market population. Three questions remain open and are the
-actual content of this prereg:
+This patch proves only that the guard is **consistent, causal, discriminating and
+non-delaying on synthetic paths**. It does **not** establish that it is
+beneficial on a market population, and — because the synthetic fixtures cannot
+reach the decision horizon — it does **not** measure the guard's cost either.
+Three questions remain open and are the actual content of this prereg:
 
 1. Does the A1 false-suppression cost (§2.2) stay near zero on real cohorts, or
    does it block a material share of genuine emerging trends?
-2. Does C1/C2's measured extra delay, on the corrected baseline, remain an
-   acceptable distribution?
+2. **Does C1 remove false-trend add-ons without forgoing real large-trend
+   harvest?** This must be answered on the real cohort as a *joint* comparison:
+   the reduction in wide-box false-trend loss against the retention of real
+   `MFE >= 8 ATR` harvest, plus the opportunity cost of waiting and the definite
+   full-horizon suppression share (§6.5, §6.6).
 3. Does PTM add separation **beyond** the non-duplication comparators in §7?
 
 If question 1 or 3 fails, the correct verdict is rejection, not redesign.
@@ -568,29 +755,39 @@ If question 1 or 3 fails, the correct verdict is rejection, not redesign.
 * **the swing-leg threshold formula, `CYCLE_SWING_FRACTION × (Q90 − Q10) = 10 ×
   w`** — the prose correction of §2 (P0.1). The formula is frozen *as
   implemented*; no threshold was re-chosen;
-* **the C1/C2 gate** as the full frozen claim rule and the **state table of
-  §4.2**, including S7 (`DE_RISK`, deterioration never promotes) and S8 (episode
-  expiry never auto-promotes);
-* **the abstain-branch finding of §4.2** — `BASELINE_HANDLES` is provably
-  unreachable, so "conservative hold" is forced and is *not* a free parameter;
-* **the challenger parameter `o_min` (declared here, before outcomes, and added
-  to the fingerprint when C2 is instantiated)** with its recommended value 3 and
-  the sensitivity table of §4.6;
+* **the C1 gate** as the full frozen claim rule and the **state table of §4.2**,
+  including S7 (`BASELINE_DE_RISK_BEFORE_RELEASE`, deterioration never promotes)
+  and S8 (episode expiry never auto-promotes);
+* **the disposition taxonomy of §4.3.1** — the five canonical dispositions plus
+  the two declared supplementary states, and the rule that
+  `OBSERVATION_RIGHT_CENSORED` is never counted as a permanent no-add-on;
+* **the abstain-branch scope correction of §4.2.1** — `BASELINE_HANDLES` is
+  unreachable *in the trusted `R <= 1` no-claim state only*; conservative hold is
+  recorded as C1's **explicit policy choice**, and the distinct
+  `BASELINE_ON_DEGRADED_ALTERNATIVE` design is documented but **not** implemented
+  and **not** counted as a challenger;
+* **C2 is retired** (§4.6). Its historical parameter `o_min = 3` is
+  **RETIRED and must not be tuned**, and it is **not** frozen as a run parameter.
+  `ACTIVE_CHALLENGERS = (C1_PTM_GUARD,)`;
 * **the next-bar execution contract of §4.5**, including that
   `extra_delay_bars = (t* + 1) − (eligible + 1)`;
-* **the censoring rules of §4.3 and §6.6**: a censored add-on is unbounded,
-  excluded from delay statistics, and never reported as 0 bars;
+* **the censoring rules of §4.3 and §6.6**: a withheld add-on is unbounded,
+  excluded from delay statistics, and never reported as 0 bars; an
+  insufficient-observation episode is never reported as a loss;
 * **the parent event provenance and parity contract of §4.8**, including the
   four frozen constants, the export glob, the `P0/P1/P2`-adds / `P3`-never-adds
-  rule and the statement that no literal `B1` symbol exists in the parent repo;
-* **the objective pre-outcome wide-box stratum definition of §6.5**,
-  parameter-free and computed without any forward return;
+  rule, the statement that no literal `B1` symbol exists in the parent repo, and
+  the committed real-cohort manifest (files, sizes, row counts, SHA-256);
+* **the ex-ante wide-box stratum definition of §6.5** — `width_atr` over the 120
+  completed pre-probe bars with the feature-only tertile edges
+  `WIDTH_ATR_EDGES = (7.3677, 11.9931)`, the `sustained_escape` exclusion, and
+  the `distinct_values > 1` falsification test;
 * the exact code commit SHA of the analyzer;
 * the exact cohort manifest, FIGI-set hash and bar-date range — inherited
   unchanged from the Issue #76 export and the #78 studies;
 * the metric definitions below, including every threshold used to *stratify*
   (which must be backward-looking only), and the policy cost metrics of §6.6;
-* the candidate count (2) and the rejection rules in §7;
+* the **active candidate count (1: C1)** and the rejection rules in §7;
 * the artifact paths and the hashing method.
 
 **Freeze discipline.** Every item above is frozen **without reading any forward
@@ -603,7 +800,7 @@ inspected, and no parent outcome function may be executed while freezing.
 
 * All decisions use completed closes; earliest executable action is `t+1`.
 * Entry, promotion and reduction timestamps are the benchmark's own; PTM may
-  only move the *promotion* timestamp within C1/C2.
+  only move the *promotion* timestamp within C1.
 * **All six timestamps must be recorded per opportunity**: `probe_t0`,
   `B3_break_t`, `B3_confirmation_t`, `eligible_promotion_t`, `PTM_observation_t`
   and `next_executable_t`. `eligible_promotion_t = B3_break_t + 3`, never
@@ -649,38 +846,96 @@ accuracy/AUC headline is explicitly not an acceptable primary result.
 * the **level-dependence rate** of the frozen one-bar scale-break screen (§2.4),
   stratified by price level, so that D10 cannot hide.
 
-### 6.5 Stratification (definitions frozen before outcomes, backward-looking)
+### 6.5 Stratification: the ex-ante range descriptor (definitions frozen before outcomes)
 
 Every stratum below is defined on **backward-looking** quantities only, computed
 from data available at or before the decision bar. No stratum may reference a
 forward return, and the classification is frozen **before** any outcome is read.
 
-**Objective pre-outcome wide-box stratum (the D1 cohort).** The wide-box
-stratum is the population on which the D1 defect must be eliminated, so its
-definition cannot be hand-picked per fixture. It is defined by the
-**parameter-free** classifier already in the analyzer:
+#### 6.5.1 Why the earlier wide-box criteria were withdrawn
+
+The previous revision defined the wide-box stratum with three conditions, none of
+which is a classifier. All three are **withdrawn**:
+
+| superseded criterion | why it fails |
+|---|---|
+| `spread / w = RADIUS_DIVISOR` | This is an **algebraic identity**, not a test. `w = (Q90 − Q10) / RADIUS_DIVISOR`, so `spread / w ≡ RADIUS_DIVISOR = 20` for *every* valid reference. The condition is identically true and **discriminates nothing**. |
+| `R <= 1` **plus** an unfixed claim | This selects *sparse claimed territory*, not a wide box. It is a **signal state**, and it is the very thing C1 gates on — using it as a stratum would stratify on the treatment. |
+| `sustained_escape()` | A **valid retrospective outcome label, but not ex-ante**. It scans every bar after the probe and asks whether the path left the envelope *and never returned*; the answer is only known after the fact. Using it to *decide* classification is a look-ahead and would let the stratum be chosen with knowledge of the outcome. |
+
+`sustained_escape` is retained for **outcome-side reporting only** (as a forward
+label of which trends were real). It is **excluded from the classifier**.
+
+#### 6.5.2 The frozen ex-ante descriptor: reference width in ATR units
+
+The stratum is the **`width_atr`** of the frozen pre-probe reference:
 
 ```
-sustained_escape(episode) = the completed path leaves the frozen reference
-                            envelope (bar high > ref.max_high for a long /
-                            bar low  < ref.min_low for a short) from the probe
-                            onward AND never returns inside it
+width_atr = (Q90(close_ref) − Q10(close_ref)) / mean_true_range(last 14 pre-probe bars)
 ```
 
-`sustained_escape` takes **no threshold parameter**, so it cannot be tuned to
-the result. The stratum is then the set of opportunities whose pre-outcome
-reference state is the wide-box regime, frozen as:
+computed by `ptm_range_regime.range_regime_at(bars, anchor)`, which slices
+`bars[anchor − 120 : anchor]` and **never reads the anchor bar or any later bar**.
+It is therefore causal by construction: appending arbitrary future bars cannot
+change it (pinned by `test_f1_range_regime_is_causal_no_future_influence` and
+`test_f2_range_regime_ignores_the_anchor_bar_and_reads_only_the_past`).
 
-* `spread / w = RADIUS_DIVISOR` (the reference's inter-decile span is 20 × w),
-  i.e. the reference box is wide relative to its own quantile width; **and**
-* the armed-gated revisit count at the decision bar is `R <= 1`; **and**
-* the episode produced a claim under **v0.2** (the unfixed signal).
+This is the "frozen reference's width scaled by a pre-probe ATR" formulation the
+review asked for. It is:
+* **ex-ante** — a function of the 120 completed pre-probe bars only;
+* **parameter-light** — one window length (14 bars), not a fitted threshold;
+* **discriminating** — unlike `spread / w`, it takes many distinct values.
 
-Membership is computed from the frozen reference and the v0.2 readout **only**;
-whether the trade then worked is an outcome and is never an input.
+A secondary descriptor, `reversals` (the frozen reference's confirmed cycle
+count, binned `REV_0` / `REV_1` / `REV_2PLUS`) records **reference traversals**.
+Its bins are integer counts, so it introduces no tuned boundary.
 
-* wide range versus narrow range, using the backward-looking objective
-  definition frozen above;
+#### 6.5.3 Bins are frozen feature-only, before any outcome
+
+```
+WIDTH_ATR_EDGES = (7.3677, 11.9931)      # tertiles of width_atr
+NARROW : width_atr <  edge0
+MID    : edge0 <= width_atr < edge1
+WIDE   : width_atr >= edge1
+```
+
+These edges are the **tertiles of the feature itself** over the real B3 cohort
+(`n = 661` usable events; min 1.5081, q33 7.3677, q50 9.4442, q67 11.9931,
+max 61.5838). They are computed from the **feature only** — no return, no PnL, no
+MFE enters their derivation. They are frozen in `ptm_range_regime.WIDTH_ATR_EDGES`
+and cross-checked against the committed manifest by
+`test_e3_real_cohort_manifest_is_optional_and_never_fabricated`.
+
+Because a tertile split is a property of the cohort, **any cohort change
+recomputes the edges before measurement and re-freezes them**. The edges must
+never be adjusted after seeing outcomes.
+
+#### 6.5.4 Falsification test for the tautology failure mode
+
+The failure that invalidated the earlier stratum was a criterion that was
+identically true. The operational guard against repeating it:
+
+> **`synthetic_distinct_width_atr_values` and the real distinct-value count must
+> both be `> 1`.** A tautological criterion produces exactly `1`.
+
+The analyzer computes this and reports it as `discriminates: true/false`. On the
+33 synthetic fixtures the descriptor takes **7** distinct values (the fixtures
+mostly share one boxed reference construction, so spread there is weak **by
+design** and the count is a *sanity check*, not a claim about power). On the real
+cohort it takes **661**.
+
+#### 6.5.5 Disclosed reduced power
+
+The descriptor is **unavailable for 336 of 997 real B3 events (34%)**: 330
+windows span a coordinate reset (one to three resets) and 6 have fewer than 15
+pre-probe bars. Such episodes are reported as `UNAVAILABLE` with an explicit
+reason and are **excluded from the width stratum**; they are never silently
+binned. The usable stratum is **661 of 997 (66%)**. This materially reduces the
+power of the wide-vs-narrow comparison and is disclosed here rather than smoothed
+over.
+
+Other inherited strata (unchanged):
+
 * temporal blocks (eras) and the sleeves already used by issue-78 studies. The
   **Issue #76 forward-logger export is the existing cohort manifest** and its time
   blocks are inherited unchanged from the #78 studies — the prereg does **not**
@@ -692,27 +947,72 @@ export (`ISSUE76|schema=1`), the same population behind `EXPECTED_EVENTS =
 68118` / `EXPECTED_EPISODES = 1624`. Its per-instrument coverage, era blocks and
 sleeve assignment are the ones the #78 modules already use. Any cohort whose
 counts fail the §4.8 parity check is **rejected before measurement**, not
-adjusted afterwards.
+adjusted afterwards. The committed real-cohort manifest (§4.8) records the exact
+files, sizes, row counts and SHA-256 digests.
 
-### 6.6 Policy cost metrics (mandatory, and censoring-aware)
+### 6.6 Policy cost metrics for C1 (mandatory, censoring-aware)
 
-The C1/C2 evaluation must report:
+**The comparison the study exists to make.** Two things must be measured *jointly*
+and reported together, never separately:
 
-* **censored share** of the add-on entitlements, alongside its complement;
-* **extra delay distribution over released add-ons only**, never a single mean;
-  censored add-ons are **excluded** and reported separately as unbounded;
-* **exposure-days at 25% instead of 100%** while a hold is in force, i.e. the
-  capital actually forgone;
-* **missed big-trend harvest**: for every censored add-on, the subsequent
-  `MFE ≥ 8 ATR` region the 75% did not participate in;
-* **newly-introduced suppression count**: opportunities where the phase-2 signal
-  emitted a claim at or after `eligible` and the policy still withheld. This must
-  be **0**; a non-zero value means the policy contradicts the signal it is built
-  on;
-* an explicit **non-report**: a censored add-on is never entered into a mean,
-  never rendered as `0` additional bars, and
-  `max_added_delay_vs_v02_bars = 0` is never quoted as the confirmation cost
-  (§4.3).
+1. **False-trend loss reduction** — how much wide-box / failed-trend damage
+   (§6.2) C1 removes relative to `R0_Immediate` and to Warning-First, **within
+   the wide (`width_atr`) stratum**.
+2. **Real large-trend harvest retained** — how much of the real large-trend
+   harvest (`MFE >= 8 ATR`) survives the withholding, again within the stratum.
+
+Reporting (1) without (2) is exactly the error the review warned about: it would
+let a guard that suppresses almost all genuine trends look like a success. The
+primary result is the **Pareto pair**, not either number alone (§6.4).
+
+Mandatory C1 outputs:
+
+* **The five-category disposition accounting, with every category's count**, using
+  the taxonomy of §4.3.1:
+  `PARENT_NOT_ELIGIBLE`, `OBSERVATION_RIGHT_CENSORED`,
+  `POLICY_WITHHELD_THROUGH_EXPIRY`, `BASELINE_DE_RISK_BEFORE_RELEASE`,
+  `PROMOTED` — plus the two supplementary, declared states `BASELINE_HANDLES`
+  and `ALREADY_FULL`. The counts must **sum to the episode total**; the analyzer
+  zero-fills and asserts this.
+* **Permanent-no-add-on share** = `POLICY_WITHHELD_THROUGH_EXPIRY` divided by
+  **parent-eligible episodes with a complete observed horizon** (§4.3.2). The
+  denominator must be stated with the numerator. `OBSERVATION_RIGHT_CENSORED`
+  episodes are **excluded** from this denominator and reported separately, because
+  their future is unknown.
+* **Insufficient-observation share** = `OBSERVATION_RIGHT_CENSORED` divided by
+  parent-eligible episodes, **split into** (a) episodes that never reached the
+  eligible decision bar and (b) episodes with an open hold at the last bar. Only
+  (b) carries any information favourable or unfavourable to C1, and even (b) is
+  not evidence of loss.
+* **Extra delay distribution over `PROMOTED` add-ons only** — reported as a
+  distribution (median, quantiles, max), never as a single mean. Held add-ons are
+  excluded and reported separately as unbounded (§4.3).
+* **Exposure days at 25% instead of 100%** while a hold is in force, i.e. the
+  capital actually forgone, and the same measure inside the wide stratum.
+* **Trading cost and turnover** saved/incurred by the withheld add-ons.
+* **Tail risk** — downside tail behaviour at 25% versus 100% exposure while held,
+  since the guard's whole purpose is to avoid adding into failed trends.
+* **Opportunity cost of add-on waiting** — for `PROMOTED` add-ons, the
+  forgone `MFE` between `eligible` and `first_executable`, in ATR.
+* **Forgone real-trend harvest** — for `POLICY_WITHHELD_THROUGH_EXPIRY` add-ons,
+  the subsequent `MFE >= 8 ATR` region the 75% did not participate in.
+* **Incrementality** — whether PTM adds separation **beyond** Core-2
+  `Structure x Extension`, A9 and a plain 120-day Donchian gate, computed on the
+  same cohort with the same clock and the same eligibility rule.
+* **Cohort provenance** — the exact raw files, byte sizes, row counts and
+  SHA-256 digests from the committed manifest (§4.8), plus the parity observed
+  values and the count of feature-unavailable episodes.
+
+**Invariant, not evidence.** The signal-gate consistency check (no
+`POLICY_WITHHELD_THROUGH_EXPIRY` episode has a claim at or after `eligible`) must
+be reported as `c1_signal_gate_invariant_holds` and labelled **INVARIANT, NOT
+EVIDENCE**. It is a tautology of the gate (§4.3.3) and must never be presented as
+a measure of protection or as a result.
+
+**Explicit non-reports.** A withheld add-on is never entered into a mean delay,
+never rendered as `0` additional bars, and `max_added_delay_vs_v02_bars = 0` is
+never quoted as the confirmation cost (§4.3). A right-censored episode is never
+counted as a permanent no-add-on.
 
 ## 7. Rejection / stop rules (predeclared)
 
@@ -760,22 +1060,36 @@ Reject PTM, or stop the programme, if any of the following holds:
 10. **Censoring dishonesty.** A withheld add-on is reported as a finite delay —
     in particular any headline that quotes
     `max_added_delay_vs_v02_bars = 0` as the policy's confirmation cost, or
-    averages censored add-ons in as if they were `0` bars. A censored add-on is
-    unbounded and must be reported as censored plus missed harvest (§4.3, §6.6).
-11. **Permanent-suppression cost too high.** If, on the cohort, the censored
-    share of add-on entitlements is material **and** the missed big-trend
-    harvest is large, the conservative hold is rejected as an exposure policy.
-    The exact cut is not fixed here because it is a risk-appetite decision, not
-    an engineering fact — **`PENDING_SOPHIRA_APPROVAL`**. On the synthetic set
-    the censored share is **14 of 23 (60.9%)** with **0** newly-introduced
-    suppressions and **2** declared genuine sustained escapes (§4.3); that is a
-    disclosure, not a result.
+    averages censored add-ons in as if they were `0` bars. A withheld add-on is
+    unbounded and must be reported as withheld plus forgone harvest (§4.3, §6.6).
+    Symmetrically, an **unobserved** add-on must not be reported as a **loss**:
+    summing `OBSERVATION_RIGHT_CENSORED` episodes into a permanent-suppression
+    count is the same error in the opposite direction, and it is what produced
+    the withdrawn `14/23 = 60.9%` figure (§4.3.2).
+11. **Permanent-suppression cost too high.** If, on the cohort, the
+    **`POLICY_WITHHELD_THROUGH_EXPIRY` share of fully-observed parent-eligible
+    episodes** is material **and** the forgone `MFE >= 8 ATR` harvest is large,
+    the conservative hold is rejected as an exposure policy. The exact cut is not
+    fixed here because it is a risk-appetite decision, not an engineering fact —
+    **`PENDING_SOPHIRA_APPROVAL`**. The preferred form of the criterion is a
+    **joint constraint** — maximum acceptable false-trend loss *given* a minimum
+    retained `MFE >= 8 ATR` harvest — rather than a single number on either side.
+    **No cut may be derived from the synthetic set**, whose withheld share is a
+    vacuous `0/9` because the fixtures cannot reach the horizon (§4.3.2). The
+    `14/23 = 60.9%` figure is **withdrawn** and must not appear in any cutoff.
 12. **Deterioration used as a promotion trigger.** Any release triggered by
     benchmark deterioration rather than by an affirmative claim, anywhere in the
     implementation or the analysis, invalidates the run (§4.4).
-13. **Signal contradiction.** A non-zero newly-introduced suppression count —
-    i.e. the policy withholds an add-on for which the phase-2 signal emitted a
-    claim at or after `eligible`. This must be `0` and is asserted in CI.
+13. **Invariant reported as evidence.** The signal-gate consistency check is a
+    tautology of the claim gate (§4.3.3). Presenting it as evidence of protection
+    — for example quoting "newly-introduced suppressions = 0" as a result — is a
+    reporting failure. It must be labelled **INVARIANT, NOT EVIDENCE**, and it may
+    not substitute for the joint false-trend-loss / harvest-retention comparison
+    of §6.6. The check is asserted in CI as an invariant, not as a headline.
+14. **Stratum tautology.** A wide-box stratum criterion that is identically true
+    (or constant) across the cohort. `spread / w ≡ 20` was exactly this failure
+    and is withdrawn (§6.5.1). The stratum must report its distinct-value count
+    and satisfy `distinct_values > 1` on both the synthetic and the real set.
 
 Falsification is a valid and predeclared outcome. No outcome-driven rescue, no
 post-hoc threshold shopping, no re-labelling of discovery data as fresh OOS.
@@ -797,3 +1111,11 @@ stating which §7 rule fired, if any.
 This draft does not authorise: historical outcome research, any parameter
 change, any production or Pine change, any strategy or sizing change, any merge,
 or any contact with OOS5. It is a specification for review, nothing more.
+
+The v0.2.4 convergence round performed **no** forward outcome, PnL or MFE
+computation. It repaired the disposition accounting, replaced the invalid
+wide-box classifier and retired C2 from the active plan. It touched no A1–A7
+threshold and no PTM mathematics. `PREREG DRAFT — NOT AUTHORISED` remains in
+force, and the next step is a design ruling on the two `PENDING_SOPHIRA_APPROVAL`
+items (§4.2.1 conservative-hold semantics and §7 rule 11's joint cutoff), not a
+research run.

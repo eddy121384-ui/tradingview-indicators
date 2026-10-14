@@ -1,0 +1,109 @@
+{
+  "atr_window_bars": 14,
+  "export_glob": "C:\\Users\\EDDY\\Downloads\\pine-logs-#76 Forward Logger*.csv",
+  "feature_only": true,
+  "feature_unavailable": {
+    "insufficient pre-probe history: 0 bar(s), need at least 15": 2,
+    "insufficient pre-probe history: 1 bar(s), need at least 15": 1,
+    "insufficient pre-probe history: 12 bar(s), need at least 15": 1,
+    "insufficient pre-probe history: 13 bar(s), need at least 15": 1,
+    "insufficient pre-probe history: 9 bar(s), need at least 15": 1,
+    "pre-probe window spans 1 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 243,
+    "pre-probe window spans 2 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 81,
+    "pre-probe window spans 3 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 6
+  },
+  "manifest": [
+    {
+      "bytes": 7217497,
+      "name": "pine-logs-#76 Forward Logger (1).csv",
+      "rows": 10001,
+      "sha256": "29a790a2e9e45187a4494ac82dbe72c189f78efd69e19ea772245b615afc2f2d"
+    },
+    {
+      "bytes": 7171153,
+      "name": "pine-logs-#76 Forward Logger (2).csv",
+      "rows": 9833,
+      "sha256": "ae75d40f907943830f127aad8884831dd9a471e9e29c7e1c24300dd07bef1320"
+    },
+    {
+      "bytes": 7058817,
+      "name": "pine-logs-#76 Forward Logger (3).csv",
+      "rows": 9723,
+      "sha256": "1f8b91e954c417cf2f0fe0a92afe2aff3e4184fbddf254f9aa9b234139783c74"
+    },
+    {
+      "bytes": 7230784,
+      "name": "pine-logs-#76 Forward Logger (4).csv",
+      "rows": 9958,
+      "sha256": "103337eb3c50aac15877fda3f59ec6d277db35d1d7828ce6de60cc1a8e96171c"
+    },
+    {
+      "bytes": 2894156,
+      "name": "pine-logs-#76 Forward Logger (5).csv",
+      "rows": 4149,
+      "sha256": "210d40bf8ca3d715c68867a2a1c012feba57263f2178aa2448b8245935a0f7a8"
+    },
+    {
+      "bytes": 4297836,
+      "name": "pine-logs-#76 Forward Logger (6).csv",
+      "rows": 5398,
+      "sha256": "503356c54debb03332f228666cc6af294286258054e5379ea333b0501c0fab6e"
+    },
+    {
+      "bytes": 4344515,
+      "name": "pine-logs-#76 Forward Logger (7).csv",
+      "rows": 5455,
+      "sha256": "589e6986bb47e6b720e0aa2e056dc4cf69d8e1b27049f5373d2eddfb3e1c7de6"
+    },
+    {
+      "bytes": 4221990,
+      "name": "pine-logs-#76 Forward Logger (8).csv",
+      "rows": 5306,
+      "sha256": "115d618ad2ae55e8614fb0cec6732ac60060658c95eee0934eadf29bb56d01fa"
+    },
+    {
+      "bytes": 6022794,
+      "name": "pine-logs-#76 Forward Logger.csv",
+      "rows": 8304,
+      "sha256": "b2e626b61495133718a690746abe70aff14ca3b59e9e75d8dc54fae8828900fc"
+    }
+  ],
+  "outcomes_computed": false,
+  "parent_contract": {
+    "full": 1.0,
+    "lookback": 5,
+    "marker": "ISSUE76|schema=1",
+    "policy_module": "analyze_issue78_second_entry_economic_policy.py",
+    "probe": 0.25,
+    "stage1_module": "analyze_issue78_retest_path_stage1.py"
+  },
+  "parity": {
+    "expected": {
+      "P12": 236,
+      "b3_events": 997,
+      "episodes": 1624,
+      "events": 68118
+    },
+    "observed": {
+      "P12": 236,
+      "b3_events": 997,
+      "b3_ineligible": 31,
+      "episodes": 1624,
+      "events": 68118
+    },
+    "path_composition": {
+      "P0_NoTouch": 411,
+      "P1_WickHold": 110,
+      "P2_Reclaim": 126,
+      "P3_FailedAcceptance": 350
+    },
+    "reconstruction_error": 5.595524044110789e-14
+  },
+  "raw_data_committed": false,
+  "reference_bars": 120,
+  "schema": "issue185-real-cohort-v1",
+  "width_atr_tertile_edges": [
+    7.3677,
+    11.9931
+  ]
+}

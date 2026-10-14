@@ -11,7 +11,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_range_regime.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue185_real_cohort.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
@@ -23,7 +25,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_range_regime.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
+      - 'indicators/wyckoff-regime-radar/research/analyze_issue185_real_cohort.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
@@ -48,7 +52,9 @@ jobs:
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_charts.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_addon_policy.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/ptm_range_regime.py
           python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue185_real_cohort.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py
 
@@ -63,7 +69,13 @@ jobs:
         run: |
           python analyze_issue185_price_territory.py --outdir /tmp/issue185_out
           python analyze_issue185_price_territory.py --outdir /tmp/issue185_out2
-          diff -r --exclude=charts artifacts/issue185_price_territory /tmp/issue185_out
+          # issue185_real_cohort_manifest.json is OPERATOR-SIDE provenance: it is
+          # produced by analyze_issue185_real_cohort.py against private market
+          # data that CI does not have, so it is committed but never regenerated
+          # here. Everything else must reproduce byte-for-byte.
+          diff -r --exclude=charts \
+                  --exclude=issue185_real_cohort_manifest.json \
+                  artifacts/issue185_price_territory /tmp/issue185_out
           echo "text artifacts reproduce byte-for-byte"
 
       - name: Chart determinism and structural sanity
@@ -147,7 +159,7 @@ jobs:
           print("phase-2 evidence artifacts ok")
           PY
 
-      - name: Prereg-clarification evidence present and self-consistent
+      - name: C1-only convergence evidence (dispositions, stratum, retirement)
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
           python - <<'PY'
@@ -163,41 +175,127 @@ jobs:
           summary = json.loads((out / "issue185_ptm_summary.json").read_text("utf-8"))
           addon = summary["addon_policy"]
 
-          # C1 must never withhold an add-on that the phase-2 signal itself
-          # endorsed with a claim at or after the eligibility bar.
-          assert addon["c1_newly_introduced_suppression_count"] == 0, addon[
-              "c1_newly_introduced_suppressions"]
+          # ---- 1. Exactly one ACTIVE challenger: C1. C2 is retired. ----------
+          assert addon["active_challengers"] == ["C1_PTM_GUARD"], addon["active_challengers"]
+          assert addon["active_challenger_count"] == 1
+          assert addon["retired_challengers"] == ["C2_PTM_GUARD_DWELL"]
+          assert addon["dwell_bars_omin_historical"] == 3
+          assert "claim-PERSISTENCE" in addon["retired_note"], addon["retired_note"]
+          assert "never be described as occupancy" in addon["retired_note"], \
+              addon["retired_note"]
+          assert "not an active candidate" in addon["retired_note"], addon["retired_note"]
 
-          # The central honesty invariant: a withheld add-on is CENSORED.  Its
-          # delay is unbounded and must never be rendered as 0 bars.
-          assert addon["censored_never_reported_as_zero"] is True
+          # ---- 2. Disposition taxonomy: every category declared & enumerated.
+          assert len(addon["declared_dispositions"]) == 7, addon["declared_dispositions"]
+          dist = addon["c1_disposition_distribution"]
+          assert set(addon["declared_dispositions"]) <= set(dist), dist
+          entitled = addon["fixtures_with_parent_addon_entitlement"]
+          not_eligible = addon["fixtures_without_parent_entitlement"]
+          counted = sum(v for k, v in dist.items() if not k.startswith("_"))
+          assert counted == addon["fixtures_evaluated"] == entitled + not_eligible, \
+              (counted, addon["fixtures_evaluated"], entitled, not_eligible)
+          assert addon["c1_parent_not_eligible"] == not_eligible
+          # The entitled episodes must split exactly into the four outcomes.
+          assert (addon["c1_promoted"] + addon["c1_observation_right_censored"]
+                  + addon["c1_policy_withheld_through_expiry"]
+                  + addon["c1_baseline_de_risk_before_release"]) == entitled, addon
+
+          # ---- 3. THE central correction: censoring != permanent withholding.
+          #      The synthetic set cannot establish a definite withholding, so
+          #      60.9% is withdrawn and the withheld share is a vacuous 0.
+          assert addon["c1_superseded_figure"]["status"] == "WITHDRAWN"
+          assert "60.9%" in addon["c1_superseded_figure"]["value"]
+          assert addon["c1_definite_withholding_estimable_from_synthetics"] is False
+          assert addon["c1_policy_withheld_through_expiry"] == 0
+          assert addon["c1_fixtures_reaching_expiry"] >= 1
+          assert addon["c1_fixtures_reaching_expiry"] < entitled
+          assert addon["c1_evaluable_episodes"] == (
+              addon["c1_promoted"] + addon["c1_policy_withheld_through_expiry"]
+              + addon["c1_baseline_de_risk_before_release"]), addon
+          assert addon["c1_withheld_share_of_evaluable"] == 0.0, addon[
+              "c1_withheld_share_of_evaluable"]
+          assert "CANNOT estimate" in addon["c1_horizon_adequacy_note"]
+          assert "right-censored" in addon["c1_horizon_adequacy_note"]
+          # The denominator rule must name BOTH the numerator and the denominator.
+          denom = addon["c1_denominator_note"].lower()
+          assert "numerator" in denom and "denominator" in denom, denom
+          assert "60.9%" in addon["c1_denominator_note"]
+          assert "withdrawn" in denom
+
+          # The zero "signal contradiction" count is an INVARIANT, not evidence.
+          assert addon["c1_signal_gate_invariant_holds"] is True
+          assert addon["c1_signal_gate_invariant_violations"] == []
+          note = addon["c1_signal_gate_invariant_note"].lower()
+          assert "invariant, not evidence" in note and "tautology" in note
+
+          # ---- 4. The three fixtures the review named by hand ----------------
           with (out / "issue185_ptm_addon_policy.csv").open(newline="") as fh:
               rows = {r["fixture"]: r for r in csv.DictReader(fh)}
+          for name in ("gappy_reference", "one_tick_breakout",
+                       "crossed_but_not_closed"):
+              row = rows[name]
+              assert row["c1_disposition"] == "OBSERVATION_RIGHT_CENSORED", (name, row)
+              assert row["c1_followup_complete"] == "False", (name, row)
+              assert row["c1_withheld_definite"] == "False", (name, row)
+              assert float(row["last_observed_bar"]) < float(row["eligible_promotion_bar"]), \
+                  (name, row)
+
+          # ---- 5. Censoring-aware invariants over every row -------------------
           for row in rows.values():
-              for tag in ("c1", "c2"):
-                  if row[f"{tag}_censored"] == "True":
-                      assert row[f"{tag}_extra_delay_bars"] == "", (row["fixture"], tag)
-                      assert row[f"{tag}_first_executable_bar"] == "", (row["fixture"], tag)
+              # A withheld add-on is never rendered as 0 bars of delay.
+              if row["c1_censored"] == "True":
+                  assert row["c1_extra_delay_bars"] == "", (row["fixture"])
+                  assert row["c1_first_executable_bar"] == "", (row["fixture"])
+              # A definite withholding requires a complete follow-up horizon.
+              if row["c1_withheld_definite"] == "True":
+                  assert row["c1_followup_complete"] == "True", (row["fixture"])
+                  assert row["c1_disposition"] == "POLICY_WITHHELD_THROUGH_EXPIRY"
+              # PARENT_NOT_ELIGIBLE is never counted as a PTM cost.
+              if row["parent_earns_addon"] == "False":
+                  assert row["c1_withheld_definite"] == "False", (row["fixture"])
+                  assert row["c1_censored"] == "False", (row["fixture"])
 
-          # The blocking wide-box false release must also lose its ADD-ON, not
-          # merely its informational NEW claim.
-          assert rows["long_period_box"]["c1_status"] == "WITHHOLD_CENSORED", rows["long_period_box"]
+          # The blocking wide-box false release must also lose its ADD-ON.
+          lpb = rows["long_period_box"]
+          assert lpb["c1_disposition"] in ("POLICY_WITHHELD_THROUGH_EXPIRY",
+                                           "OBSERVATION_RIGHT_CENSORED"), lpb
+          assert lpb["c1_extra_delay_bars"] == "", lpb
 
-          # The declared genuine-trend cost must stay visible and censored.
-          assert "one_way_reference_genuine_trend" in addon[
-              "c1_censored_genuine_sustained_escapes"]
-          assert rows["one_way_reference_genuine_trend"]["c1_extra_delay_bars"] == ""
+          # ---- 6. The ex-ante stratum (Sophira S2) ---------------------------
+          w = addon["wide_box_stratum"]
+          assert w["feature"] == "width_atr", w
+          # A tautological criterion yields exactly 1 distinct value.
+          assert w["synthetic_distinct_width_atr_values"] > 1, w
+          assert w["discriminates"] is True, w
+          assert w["sustained_escape_is_outcome_only"] is True, w
+          assert w["width_atr_edges_frozen"] == [7.3677, 11.9931], w
+          assert w["atr_window_bars"] == 14 and w["reference_bars"] == 120, w
+          # The three superseded criteria must be named as superseded.
+          sup = w["superseded_criteria"]
+          assert "IDENTITY" in sup["spread_over_w"], sup
+          assert "sparse" in sup["R_le_1_plus_claim"].lower(), sup
+          assert "outcome-only" in sup["sustained_escape_stratum"], sup
+          for row in rows.values():
+              assert row["range_status"] in ("OK", "UNAVAILABLE"), row
+              if row["range_status"] == "UNAVAILABLE":
+                  assert row["width_bin"] == "" and row["range_reason"], row
+              else:
+                  assert row["width_bin"] in ("NARROW", "MID", "WIDE"), row
 
-          # o_min must not be degenerate, and must sit before the cliff.
+          # ---- 7. The trusted-abstain scope correction ----------------------
+          ab = addon["abstain_branch"]
+          assert ab["reachable"] is False, ab["counterexamples"]
+          assert ab["counterexamples"] == []
+          assert "WRONG" in ab["scope_correction"], ab
+          assert "BASELINE_ON_DEGRADED_ALTERNATIVE" in ab["prereg_consequence"], ab
+          assert "cannot be exercised" not in ab["prereg_consequence"]
+
+          # ---- 8. Retired o_min sensitivity is not a decision surface --------
           sens = {int(r["o_min"]): r for r in summary["omin_sensitivity"]}
-          assert sens[1]["is_degenerate_equals_c1"] is True
-          assert sens[3]["equals_parent_confirmation_bars"] is True
-          assert sens[3]["is_degenerate_equals_c1"] is False
-          assert sens[3]["released"] == sens[2]["released"], sens
-          assert sens[4]["released"] < sens[3]["released"], sens
+          for row in sens.values():
+              assert row["status"] == "RETIRED_NOT_AN_ACTIVE_CHALLENGER", row
 
-          # Parent (#78) provenance: the frozen parity constants and the causal
-          # path composition must be internally consistent.
+          # ---- 9. Parent (#78) provenance ------------------------------------
           prov = summary["parent_event_provenance"]
           assert prov["event_source_marker"] == "ISSUE76|schema=1"
           assert prov["baseline_policy"] == "R0_Immediate"
@@ -211,7 +309,43 @@ jobs:
           assert (comp["P0_NoTouch"] + comp["P1_WickHold"] + comp["P2_Reclaim"]
                   == comp["adds_at_t3"]), comp
           assert prov["freeze_status"] == "PENDING_SOPHIRA_APPROVAL"
-          print("prereg-clarification evidence ok")
+          assert "NOT committed" in prov["export_note"]
+          # The private manifest is OPTIONAL: CI has no private export. If it is
+          # present it must be internally consistent; if absent, nothing is
+          # fabricated. Either way this step must not require the raw data.
+          m = prov.get("real_input_manifest")
+          if m is not None:
+              assert m["feature_only"] is True and m["outcomes_computed"] is False
+              assert m["raw_data_committed"] is False
+              assert m["parity"]["observed"]["b3_events"] == 997
+              assert m["width_atr_tertile_edges"] == [7.3677, 11.9931], m[
+                  "width_atr_tertile_edges"]
+          print("C1-only convergence evidence ok")
+          PY
+
+      - name: Private export is never a CI requirement
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          # The real-cohort script must fail loudly when pointed at data whose
+          # parity disagrees, and must exit 2 (not crash) when no export exists,
+          # so CI stays green without the private market data.
+          python - <<'PY'
+          import subprocess, sys, tempfile
+          from pathlib import Path
+
+          empty = Path(tempfile.mkdtemp())
+          r = subprocess.run(
+              [sys.executable, "analyze_issue185_real_cohort.py",
+               "--export-glob", str(empty / "definitely-not-here-*.csv"),
+               "--outdir", str(empty / "out")],
+              capture_output=True, text=True, encoding="utf-8", errors="replace")
+          assert r.returncode == 2, (r.returncode, r.stdout[-500:], r.stderr[-800:])
+          combined = (r.stdout + r.stderr).lower()
+          assert "private" in combined or "operator" in combined or "export" in combined, \
+              combined[-800:]
+          assert not (empty / "out").exists() or not any(
+              (empty / "out").iterdir()), "no artifact may be written without data"
+          print("private export correctly optional")
           PY
 
       - uses: actions/upload-artifact@v4
