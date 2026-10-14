@@ -1,3 +1,5 @@
+> **SUPERSEDED HISTORICAL WORKING DRAFT — 2026-10-14.** This document preserves the previous two-challenger/C2 and synthetic-geometry engineering review for audit only. **DO NOT RUN or FREEZE its C2, o_min, wide-box criterion or 14/23 censoring headline.** The sole active study specification is [`issue-185-ptm-c1-only-prereg-draft.md`](issue-185-ptm-c1-only-prereg-draft.md), C1 versus frozen B0/B1. Neither document authorises historical outcomes. See [Issue #185](https://github.com/eddy121384-ui/tradingview-indicators/issues/185).
+
 # Issue #185 — Price Territory Memory: preregistration DRAFT (not authorised)
 
 **Status: DRAFT FOR REVIEW. NOT FROZEN. NOT AUTHORISED TO RUN.** No forward
