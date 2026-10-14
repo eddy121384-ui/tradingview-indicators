@@ -5,7 +5,7 @@
 ## 目前指標
 
 - `shiori-map`：市場狀態地圖／趨勢與風險語氣輔助指標。
-- `macro-pressure-map`：成長、通膨與政策壓力相關的總經壓力圖。
+- `macro-pressure-map`：成長、通膨與金融條件壓力的總經研究；[研究目的與順序](indicators/macro-pressure-map/README.md)。
 - `wyckoff-regime-radar`：威科夫結構、吸籌／派發與 regime 判讀輔助指標。
 
 ## 標準資料夾結構
