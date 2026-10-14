@@ -780,7 +780,7 @@ If question 1 or 3 fails, the correct verdict is rejection, not redesign.
   the committed real-cohort manifest (files, sizes, row counts, SHA-256);
 * **the ex-ante wide-box stratum definition of §6.5** — `width_atr` over the 120
   completed pre-probe bars with the feature-only tertile edges
-  `WIDTH_ATR_EDGES = (7.3677, 11.9931)`, the `sustained_escape` exclusion, and
+  `WIDTH_ATR_EDGES = (7.368, 11.9931)`, the `sustained_escape` exclusion, and
   the `distinct_values > 1` falsification test;
 * the exact code commit SHA of the analyzer;
 * the exact cohort manifest, FIGI-set hash and bar-date range — inherited
@@ -893,14 +893,14 @@ Its bins are integer counts, so it introduces no tuned boundary.
 #### 6.5.3 Bins are frozen feature-only, before any outcome
 
 ```
-WIDTH_ATR_EDGES = (7.3677, 11.9931)      # tertiles of width_atr
+WIDTH_ATR_EDGES = (7.368, 11.9931)      # tertiles of width_atr
 NARROW : width_atr <  edge0
 MID    : edge0 <= width_atr < edge1
 WIDE   : width_atr >= edge1
 ```
 
 These edges are the **tertiles of the feature itself** over the real B3 cohort
-(`n = 661` usable events; min 1.5081, q33 7.3677, q50 9.4442, q67 11.9931,
+(`n = 661` usable events; min 1.5081, q33 7.368, q50 9.4442, q67 11.9931,
 max 61.5838). They are computed from the **feature only** — no return, no PnL, no
 MFE enters their derivation. They are frozen in `ptm_range_regime.WIDTH_ATR_EDGES`
 and cross-checked against the committed manifest by

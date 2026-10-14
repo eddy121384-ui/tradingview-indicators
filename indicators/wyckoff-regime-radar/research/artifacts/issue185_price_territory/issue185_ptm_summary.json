@@ -2495,7 +2495,7 @@
       "atr_window_bars": 14,
       "reference_bars": 120,
       "width_atr_edges_frozen": [
-        7.3677,
+        7.368,
         11.9931
       ],
       "edge_provenance": "feature-only tertiles of the REAL Issue #76 B3 cohort, computed by analyze_issue185_real_cohort.py with no return, PnL or MFE input",
@@ -2511,7 +2511,7 @@
       },
       "synthetic_fixtures_available": 30,
       "synthetic_fixtures_evaluated": 33,
-      "synthetic_distinct_width_atr_values": 7,
+      "synthetic_distinct_width_atr_values": 8,
       "synthetic_bin_counts": {
         "NARROW": 4,
         "MID": 22,
@@ -2535,7 +2535,7 @@
           "pre-probe window spans 3 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 6
         },
         "frozen_edges": [
-          7.3677,
+          7.368,
           11.9931
         ],
         "note": "Computed from the operator-side Issue #76 export, which is NOT committed to this repository (private market data). The raw files are identified by SHA-256 in the committed manifest; the numbers are NOT reproducible in CI and are never presented as if they were."
@@ -3203,9 +3203,9 @@
       "c2_differs_from_c1": false,
       "range_status": "OK",
       "range_reason": "pre-probe range descriptor available",
-      "width_atr": 0.999500249875062,
+      "width_atr": 0.9995,
       "width_bin": "NARROW",
-      "atr_pre": 20.01000000000001,
+      "atr_pre": 20.01,
       "ref_span": 20.0,
       "c1_reason": "data ends at bar 123 BEFORE the parent's eligibility bar 126: no decision bar was ever observed, so the add-on's fate is unknown (administratively right-censored). This is not a permanent withholding and not a missed add-on",
       "c2_reason": "data ends at bar 123 BEFORE the parent's eligibility bar 126: no decision bar was ever observed, so the add-on's fate is unknown (administratively right-censored). This is not a permanent withholding and not a missed add-on"
@@ -3398,10 +3398,10 @@
       "c2_differs_from_c1": false,
       "range_status": "OK",
       "range_reason": "pre-probe range descriptor available",
-      "width_atr": 95.20000000000005,
+      "width_atr": 95.20029,
       "width_bin": "WIDE",
-      "atr_pre": 0.10833333333333327,
-      "ref_span": 10.313333333333333,
+      "atr_pre": 0.108333,
+      "ref_span": 10.313333,
       "c1_reason": "data ends at bar 131, 112 bar(s) before the decision horizon at 243: a hold was still open, so a future release is unobserved (administratively right-censored). This is not a permanent withholding and not a missed add-on",
       "c2_reason": "data ends at bar 131, 112 bar(s) before the decision horizon at 243: a hold was still open, so a future release is unobserved (administratively right-censored). This is not a permanent withholding and not a missed add-on"
     },
@@ -3515,10 +3515,10 @@
       "c2_differs_from_c1": false,
       "range_status": "OK",
       "range_reason": "pre-probe range descriptor available",
-      "width_atr": 95.20000000000026,
+      "width_atr": 95.2,
       "width_bin": "WIDE",
-      "atr_pre": 0.1499999999999996,
-      "ref_span": 14.280000000000001,
+      "atr_pre": 0.15,
+      "ref_span": 14.28,
       "c1_reason": "data ends at bar 127, 116 bar(s) before the decision horizon at 243: a hold was still open, so a future release is unobserved (administratively right-censored). This is not a permanent withholding and not a missed add-on",
       "c2_reason": "data ends at bar 127, 116 bar(s) before the decision horizon at 243: a hold was still open, so a future release is unobserved (administratively right-censored). This is not a permanent withholding and not a missed add-on"
     },
@@ -3710,10 +3710,10 @@
       "c2_differs_from_c1": false,
       "range_status": "OK",
       "range_reason": "pre-probe range descriptor available",
-      "width_atr": 95.20000000000027,
+      "width_atr": 95.2,
       "width_bin": "WIDE",
       "atr_pre": 0.125,
-      "ref_span": 11.900000000000034,
+      "ref_span": 11.9,
       "c1_reason": "parent has no add-on entitlement (path=NO_USABLE_B3)",
       "c2_reason": "parent has no add-on entitlement (path=NO_USABLE_B3)"
     },
@@ -3829,7 +3829,7 @@
       "range_reason": "pre-probe range descriptor available",
       "width_atr": 1.09375,
       "width_bin": "NARROW",
-      "atr_pre": 9.142857142857142,
+      "atr_pre": 9.142857,
       "ref_span": 10.0,
       "c1_reason": "parent has no add-on entitlement (path=NO_USABLE_B3)",
       "c2_reason": "parent has no add-on entitlement (path=NO_USABLE_B3)"
@@ -3866,9 +3866,9 @@
       "c2_differs_from_c1": false,
       "range_status": "OK",
       "range_reason": "pre-probe range descriptor available",
-      "width_atr": 2.3829787234042556,
+      "width_atr": 2.382979,
       "width_bin": "NARROW",
-      "atr_pre": 33.57142857142857,
+      "atr_pre": 33.571429,
       "ref_span": 80.0,
       "c1_reason": "parent has no add-on entitlement (path=NO_USABLE_B3)",
       "c2_reason": "parent has no add-on entitlement (path=NO_USABLE_B3)"
@@ -4054,7 +4054,7 @@
       "reference_bars": 120,
       "schema": "issue185-real-cohort-v1",
       "width_atr_tertile_edges": [
-        7.3677,
+        7.368,
         11.9931
       ]
     },

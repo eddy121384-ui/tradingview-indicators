@@ -730,6 +730,15 @@ def _ramp_bars(n, *, lo=100.0, hi=110.0, atr=1.0, cycle=10):
     return bars
 
 
+def _sweep_bars(closes, tr):
+    """Bars whose closes follow *closes* and whose per-bar range is *tr*."""
+    bars = []
+    for i, c in enumerate(closes):
+        prev = closes[i - 1] if i else c
+        bars.append((max(c, prev) + tr / 2.0, min(c, prev) - tr / 2.0, c))
+    return bars
+
+
 def test_f1_range_regime_is_causal_no_future_influence():
     """Appending arbitrary future bars must not change the descriptor."""
     anchor = 140
@@ -792,18 +801,11 @@ def test_f4_range_regime_discriminates_and_is_not_the_tautological_ratio():
     """`spread / w` was identically RADIUS_DIVISOR; the new feature varies."""
     cfg = PTMConfig()
 
-    def sweep(closes, tr):
-        bars = []
-        for i, c in enumerate(closes):
-            prev = closes[i - 1] if i else c
-            bars.append((max(c, prev) + tr / 2.0, min(c, prev) - tr / 2.0, c))
-        return bars
-
     tight_closes = [10.0 + 0.1 * math.sin(2 * math.pi * i / 10.0)
                     for i in range(60)]
     wide_closes = [10.0 + 0.6 * i for i in range(60)]
-    f_tight = range_regime_pre_bars(sweep(tight_closes, 0.05))
-    f_wide = range_regime_pre_bars(sweep(wide_closes, 0.05))
+    f_tight = range_regime_pre_bars(_sweep_bars(tight_closes, 0.05))
+    f_wide = range_regime_pre_bars(_sweep_bars(wide_closes, 0.05))
     assert f_tight.status == STATUS_OK and f_wide.status == STATUS_OK
     assert f_wide.width_atr > f_tight.width_atr, (
         f_wide.width_atr, f_tight.width_atr)
@@ -900,6 +902,49 @@ def test_f8_true_range_definition_matches_the_standard():
         true_range_bars([1.0], [1.0, 2.0], [1.0])
     with pytest.raises(ValueError):
         range_regime_pre_bars(_ramp_bars(30), atr_window=1)
+
+
+def test_f9_descriptor_is_quantised_for_cross_platform_stability():
+    """Guards the artifact gate against a last-bit, cross-platform difference.
+
+    The committed artifacts are byte-compared against a fresh run on a DIFFERENT
+    operating system.  An unquantised mean of 14 true ranges differed by ~1e-14
+    between the authoring machine and the CI runner, which failed the
+    reproducibility gate for a reason unrelated to the study.  ``math.fsum``
+    plus a fixed-decimal quantisation removes that failure class.
+    """
+    from ptm_range_regime import WIDTH_ATR_DECIMALS, quantise
+
+    assert WIDTH_ATR_DECIMALS == 6
+    # These are the two values that actually differed between Windows and the
+    # Linux CI runner for `gappy_reference`.
+    assert quantise(20.01000000000001) == 20.01
+    assert quantise(20.009999999999998) == 20.01
+    assert quantise(0.999500249875062) == 0.9995
+    assert quantise(0.9995002498750626) == 0.9995
+
+    closes = [10.0 + 0.6 * i for i in range(40)]
+    base = _sweep_bars(closes, 0.05)
+    f0 = range_regime_pre_bars(base)
+    assert f0.status == STATUS_OK
+
+    # Nudge one high by two ULP: far below the quantisation step, so neither
+    # the stored value nor its bin may move.
+    nudged = list(base)
+    h, l, c = nudged[5]
+    nudged[5] = (math.nextafter(math.nextafter(h, math.inf), math.inf), l, c)
+    f1 = range_regime_pre_bars(nudged)
+    assert f1.width_atr == f0.width_atr, (f0.width_atr, f1.width_atr)
+    assert f1.atr_pre == f0.atr_pre, (f0.atr_pre, f1.atr_pre)
+    assert f1.width_bin == f0.width_bin
+
+    # Every stored float is already at the declared precision, and the bin is
+    # derived from the quantised width so the two can never disagree.
+    for f in (f0, f1):
+        assert f.width_atr == round(f.width_atr, WIDTH_ATR_DECIMALS)
+        assert f.atr_pre == round(f.atr_pre, WIDTH_ATR_DECIMALS)
+        assert f.ref_span == round(f.ref_span, WIDTH_ATR_DECIMALS)
+        assert f.width_bin == assign_width_bin(f.width_atr)
 
 
 # ===========================================================================

@@ -268,7 +268,7 @@ jobs:
           assert w["synthetic_distinct_width_atr_values"] > 1, w
           assert w["discriminates"] is True, w
           assert w["sustained_escape_is_outcome_only"] is True, w
-          assert w["width_atr_edges_frozen"] == [7.3677, 11.9931], w
+          assert w["width_atr_edges_frozen"] == [7.368, 11.9931], w
           assert w["atr_window_bars"] == 14 and w["reference_bars"] == 120, w
           # The three superseded criteria must be named as superseded.
           sup = w["superseded_criteria"]
@@ -318,7 +318,7 @@ jobs:
               assert m["feature_only"] is True and m["outcomes_computed"] is False
               assert m["raw_data_committed"] is False
               assert m["parity"]["observed"]["b3_events"] == 997
-              assert m["width_atr_tertile_edges"] == [7.3677, 11.9931], m[
+              assert m["width_atr_tertile_edges"] == [7.368, 11.9931], m[
                   "width_atr_tertile_edges"]
           print("C1-only convergence evidence ok")
           PY

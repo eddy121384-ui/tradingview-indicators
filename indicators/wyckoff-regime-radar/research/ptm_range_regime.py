@@ -97,11 +97,41 @@ ATR_WINDOW_BARS = 14
 REFERENCE_BARS = PTMConfig().reference_bars  # 120
 
 #: FROZEN feature-only tertile edges for ``width_atr``, computed over the real
-#: Issue #76 B3 cohort (661 of 997 events with a valid contiguous pre-probe
-#: reference window) by ``analyze_issue185_real_cohort.py`` with NO outcome
-#: information.  ``NARROW`` = below the first edge, ``WIDE`` = at/above the
-#: second, ``MID`` = between.  Do not re-derive these from outcomes.
-WIDTH_ATR_EDGES = (7.3677, 11.9931)
+#: Frozen ex-ante bin edges -- the feature-only tertiles of ``width_atr`` over
+#: the real Issue #76 B3 cohort (661 of 997 events with a valid contiguous
+#: pre-probe reference window), computed by ``analyze_issue185_real_cohort.py``
+#: with NO outcome information.  ``NARROW`` = below the first edge, ``WIDE`` =
+#: at/above the second, ``MID`` = between.  Do not re-derive these from outcomes.
+#:
+#: These are the tertiles of the QUANTISED feature (see
+#: ``WIDTH_ATR_DECIMALS``), so they are exactly what the committed manifest
+#: records; re-running the real-cohort script must reproduce them.  Quantising
+#: moved the first edge from 7.3677 to 7.368, which reclassified no episode:
+#: the bin counts are unchanged at 221 / 219 / 221.
+WIDTH_ATR_EDGES = (7.368, 11.9931)
+
+
+#: Decimal places to which the descriptor is quantised before it is stored.
+#:
+#: WHY THIS EXISTS.  A mean of 14 true ranges can differ in its last bit
+#: between machines, because the underlying subtraction chain is not the only
+#: input: different CPUs/NumPy builds can produce ULP-level differences in the
+#: accumulated value.  The artifact gate compares committed bytes against a
+#: fresh run on a different OS, so an unquantised `atr_pre` made CI fail on a
+#: difference of 1e-14 that has no bearing on any decision.
+#:
+#: Quantising is the honest fix rather than loosening the gate: this descriptor
+#: is a coarse regime label (its own bin edges are stated to 4 decimals), so
+#: 6 decimals is already far finer than anything the study can act on, and it
+#: makes the artifacts bit-stable across platforms.  The bin is assigned from
+#: the QUANTISED width, so the stored `width_atr` and `width_bin` can never
+#: disagree.  `round()` is correctly-rounded and platform-independent.
+WIDTH_ATR_DECIMALS = 6
+
+
+def quantise(value: float, decimals: int = WIDTH_ATR_DECIMALS) -> float:
+    """Round to a fixed number of decimals, deterministically and portably."""
+    return round(float(value), decimals)
 
 
 @dataclass(frozen=True)
@@ -244,18 +274,21 @@ def range_regime_pre_bars(
             "the ATR is meaningful; a contiguous reference window is required",
             n_pre_bars=n, reversals=reversals)
 
-    span = quantile(closes, 0.9) - quantile(closes, 0.1)
+    span = quantise(quantile(closes, 0.9) - quantile(closes, 0.1))
     if not span > 0.0:
         return _unavailable(
             f"degenerate pre-probe reference span ({span!r} <= 0)",
             n_pre_bars=n, reversals=reversals)
 
-    atr = sum(true_range_bars(highs, lows, closes)[-atr_window:]) / float(atr_window)
+    # fsum, not sum(): exactly rounded, so the accumulated value does not depend
+    # on the summation order or on any platform's SIMD pairing.
+    tr_window = true_range_bars(highs, lows, closes)[-atr_window:]
+    atr = quantise(math.fsum(tr_window) / float(atr_window))
     if not atr > 0.0:
         return _unavailable(f"non-positive pre-probe ATR ({atr!r})",
                             n_pre_bars=n, reversals=reversals)
 
-    width_atr = span / atr
+    width_atr = quantise(span / atr)
     if not math.isfinite(width_atr):
         return _unavailable("non-finite width_atr", n_pre_bars=n,
                             reversals=reversals)
