@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - research/issue-185-price-territory-engineering-review
+      - research/issue-185-c1-prereg-sophira
     paths:
       - '.github/workflows/wyckoff-issue185-price-territory.yml'
       - 'indicators/wyckoff-regime-radar/research/ptm_territory.py'
@@ -11,9 +12,11 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_c1_prereg.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_c1_prereg.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
   pull_request:
     paths:
@@ -23,9 +26,11 @@ on:
       - 'indicators/wyckoff-regime-radar/research/ptm_territory_charts.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py'
       - 'indicators/wyckoff-regime-radar/research/ptm_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/ptm_c1_prereg.py'
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_c1_prereg.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
 
 jobs:
@@ -48,15 +53,18 @@ jobs:
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_territory_charts.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_promotion_clock.py
           python -m py_compile indicators/wyckoff-regime-radar/research/ptm_addon_policy.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/ptm_c1_prereg.py
           python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue185_price_territory.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_c1_prereg.py
 
       - name: PTM engineering review tests
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
           python -m pytest -q test_issue185_price_territory.py
           python -m pytest -q test_issue185_addon_policy.py
+          python -m pytest -q test_issue185_c1_prereg.py
 
       - name: Artifact reproducibility (text artifacts, byte-for-byte)
         working-directory: indicators/wyckoff-regime-radar/research
@@ -214,10 +222,31 @@ jobs:
           print("prereg-clarification evidence ok")
           PY
 
+      - name: C1-only prereg synthetic audit (no outcomes)
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: |
+          python ptm_c1_prereg.py > /tmp/issue185_c1_prereg.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d = json.loads(Path("/tmp/issue185_c1_prereg.json").read_text())
+          assert d["active_challengers"] == ["C1_PTM_GUARD"]
+          assert len(d["rows"]) == 33
+          r = {x["fixture"]: x["disposition"] for x in d["rows"]}
+          for key in ("gappy_reference", "one_tick_breakout", "crossed_but_not_closed"):
+              assert r[key]["status"] == "OBSERVATION_RIGHT_CENSORED", (key, r[key])
+              assert not r[key]["established_policy_missed_addon"], (key, r[key])
+          assert sum(d["disposition_counts"].values()) == 33
+          print("C1-only dispositions (synthetic, not market):", d["disposition_counts"])
+          print("C1-only ex-ante range/censoring audit ok")
+          PY
+
       - uses: actions/upload-artifact@v4
         with:
           name: issue185-price-territory-artifacts
-          path: indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory
+          path: |
+            indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory
+            /tmp/issue185_c1_prereg.json
 
       - name: Diff check
         run: git diff --check
