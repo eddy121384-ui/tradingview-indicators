@@ -16,6 +16,8 @@ NEW_HEADER = 'indicator("Macro Pressure Map V6.7 [Tiered GPI/IPI/FCPI + Shadow A
 
 START = "// ISSUE-129 SHADOW ACTION LAYER BEGIN"
 END = "// ISSUE-129 SHADOW ACTION LAYER END"
+PREVIEW_START = "// ISSUE-190 INFORMATIONAL PREVIEW ROW BEGIN"
+PREVIEW_END = "// ISSUE-190 INFORMATIONAL PREVIEW ROW END"
 
 
 def _source(path: Path) -> str:
@@ -34,7 +36,20 @@ def _strip_v67_delta(v67: str) -> str:
     block_end = v67.index(END + "\n", block_start) + len(END + "\n")
     normalized = v67[:block_start] + v67[block_end:]
     normalized = normalized.replace(NEW_HEADER, OLD_HEADER, 1)
-    return normalized.replace('table.cell(dash, 1, 0, "V6.7"', 'table.cell(dash, 1, 0, "V6.6"', 1)
+    normalized = normalized.replace('table.cell(dash, 1, 0, "V6.7"', 'table.cell(dash, 1, 0, "V6.6"', 1)
+    # Issue #190 preview branch only: strip the single authorized preview row
+    # block + its two dashboard cells (asserted separately by
+    # test_v6_7_preview_row.py). PR #130's copy of this file is untouched.
+    if "\n" + PREVIEW_START in normalized:
+        ps = normalized.index("\n" + PREVIEW_START)
+        pe = normalized.index(PREVIEW_END + "\n", ps) + len(PREVIEW_END + "\n")
+        normalized = normalized[:ps] + normalized[pe:]
+    preview_cells = (
+        '\n\n    table.cell(dash, 0, 20, lblAllocationResearch, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)'
+        '\n    table.cell(dash, 1, 20, allocationResearchView, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)'
+    )
+    normalized = normalized.replace(preview_cells, "")
+    return normalized
 
 
 def _expected_tilt(growth: float, inflation: float, cfg: V66Config) -> tuple[int, int, int, int]:

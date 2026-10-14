@@ -430,6 +430,15 @@ shadowInflationHedgePp = 0.0
 shadowPublishedSignal = shadowActionLayerEnabled and shadowActionSignalActive
 // ISSUE-129 SHADOW ACTION LAYER END
 
+// ISSUE-190 INFORMATIONAL PREVIEW ROW BEGIN
+// One visible research hint reusing the frozen V6.6 regime condition above.
+// Regime 3 shows a relative preference; all other regimes show No View;
+// unavailable GPI/IPI shows Data unavailable (never No View). No percentages,
+// no trade signal, no portfolio action. Shadow block above remains disabled.
+lblAllocationResearch = f_lang("Allocation Research", "配置研究", "配分リサーチ", "배분 리서치")
+allocationResearchView = na(GPI) or na(IPI) ? f_lang("Data unavailable", "資料無法取得", "データ利用不可", "데이터 사용 불가") : shadowActionSignalActive ? f_lang("Research: Equity favored vs Duration", "研究：股票相對長債偏多", "リサーチ：デュレーション対比で株式優位", "리서치: 듀레이션 대비 주식 우위") : f_lang("No View", "無觀點", "見解なし", "의견 없음")
+// ISSUE-190 INFORMATIONAL PREVIEW ROW END
+
 f_gpiState(v) =>
     na(v) ? "n/a" : v >= growthExtremeThreshold ? f_lang("Growth Euphoria", "成長亢奮", "成長過熱", "성장 과열") : v <= -growthExtremeThreshold ? f_lang("Severe Slowdown", "嚴重放緩", "深刻な減速", "심각한 둔화") : v > growthThreshold ? f_lang("Mild Growth", "溫和成長", "緩やかな成長", "완만한 성장") : v < -growthThreshold ? f_lang("Mild Slowdown", "溫和放緩", "緩やかな減速", "완만한 둔화") : f_lang("Growth Neutral", "成長中性", "成長中立", "성장 중립")
 
@@ -791,3 +800,6 @@ if showDashboard and barstate.islast and not showSymbolsGroup
 
     table.cell(dash, 0, 19, lblSentence, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
     table.cell(dash, 1, 19, regimeSentence, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
+
+    table.cell(dash, 0, 20, lblAllocationResearch, text_color=dashboardTextColor, bgcolor=dashboardLabelBg, text_size=dashTextSize)
+    table.cell(dash, 1, 20, allocationResearchView, text_color=dashboardTextColor, bgcolor=dashboardNeutralBg, text_size=dashTextSize)
