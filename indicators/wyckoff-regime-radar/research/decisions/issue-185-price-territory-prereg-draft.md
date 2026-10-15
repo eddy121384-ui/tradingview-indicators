@@ -1,5 +1,21 @@
 # Issue #185 — Price Territory Memory: preregistration DRAFT (not authorised)
 
+**2026-10-15 FREEZE BLOCKER — STRICT FULL-REFERENCE COVERAGE.** The
+pre-probe width/ATR implementation currently accepts a shortened pre-probe
+window with only 15–119 observed bars, while the proposed study feature is
+described as a full 120-bar frozen reference. The earlier real-cohort
+`661/997` availability count and `WIDTH_ATR_EDGES = (7.368, 11.9931)`
+were computed under that **short-window-permissive** implementation; they
+MUST NOT be represented as strictly full-120-bar evidence. Before prereg
+freeze: require all 120 contiguous pre-probe bars, then re-run the
+**feature-only** operator-side source script against the existing private,
+SHA-256-identified nine-file export; update the full-reference availability,
+tertile thresholds, committed manifest and deterministic tests together.
+The private export is not available in this workspace and the values are
+not to be guessed. No forward return, PnL or MFE may be read to set this
+criterion. This gate is **PENDING**, not implemented by the 2026-10-15
+decision-window censoring fix.
+
 **Status: DRAFT FOR REVIEW. NOT FROZEN. NOT AUTHORISED TO RUN.** No forward
 outcome has been inspected by this draft. Writing this document does not
 authorise historical outcome research. A separate explicit instruction is
