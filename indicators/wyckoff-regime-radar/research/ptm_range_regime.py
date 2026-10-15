@@ -36,6 +36,12 @@ UNITS, DENOMINATORS AND ZERO-DATA RULES
   where true range is the usual ``max(h-l, |h-prev_c|, |l-prev_c|)``.
 * ``ATR_WINDOW_BARS = 14`` is a conventional, predeclared window; it is a
   property of the DESCRIPTOR, not a tuned parameter.
+* Formal real-cohort and full-series probes REQUIRE exactly
+  ``REFERENCE_BARS = 120`` completed pre-probe bars. Short or oversized
+  windows are ``UNAVAILABLE``, never silently rescaled or binned.
+* The older synthetic-fixture diagnostics can opt out explicitly via
+  ``require_full_reference=False`` to preserve their originally published
+  mathematical demonstrations; this is NOT an authorised real-cohort path.
 * The descriptor is reported ``UNAVAILABLE`` -- never silently binned -- when:
     - fewer than ``ATR_WINDOW_BARS + 1`` pre-probe bars are available;
     - any input OHLC value is missing or non-finite;
@@ -102,6 +108,13 @@ REFERENCE_BARS = PTMConfig().reference_bars  # 120
 #: pre-probe reference window), computed by ``analyze_issue185_real_cohort.py``
 #: with NO outcome information.  ``NARROW`` = below the first edge, ``WIDE`` =
 #: at/above the second, ``MID`` = between.  Do not re-derive these from outcomes.
+#: NOTE (2026-10-15): these numbers are V1 legacy feature-only tertiles from
+#: the partial-window-permissive cohort (661 usable); they are NOT the
+#: strict-full-120-bar frozen tertiles. Strict reference enforcement is now
+#: on for formal real-cohort generation, but the nine original CSV exports
+#: are private. The old edges are retained strictly for reproducibility of
+#: the old synthetic artifact until feature-only recalibration is rerun.
+#: FORMAL PREREG MUST NOT FREEZE with these legacy edges.
 #:
 #: These are the tertiles of the QUANTISED feature (see
 #: ``WIDTH_ATR_DECIMALS``), so they are exactly what the committed manifest
@@ -231,6 +244,7 @@ def range_regime_pre_bars(
         pre_bars: Sequence[tuple[float, float, float]], *,
         atr_window: int = ATR_WINDOW_BARS,
         reference_cycle_count: int | None = None,
+        require_full_reference: bool = False,
 ) -> RangeRegimeFeatures:
     """Descriptor from a bar window that is ALREADY strictly pre-probe.
 
@@ -244,6 +258,12 @@ def range_regime_pre_bars(
     reversals = reference_cycle_count
     reversal_bin = (assign_reversal_bin(reversals)
                     if reversals is not None else None)
+
+    if require_full_reference and n != REFERENCE_BARS:
+        return _unavailable(
+            f"full pre-probe reference required: {n} bar(s), "
+            f"need exactly {REFERENCE_BARS} completed bars",
+            n_pre_bars=n, reversals=reversals)
 
     if n < atr_window + 1:
         return _unavailable(
@@ -317,6 +337,11 @@ def range_regime_at(
     if reference_bars < 1:
         raise ValueError(f"reference_bars must be >= 1, got {reference_bars}")
     start = max(0, anchor_index - reference_bars)
+    if reference_bars != REFERENCE_BARS:
+        raise ValueError(
+            f"formal pre-probe reference is frozen at {REFERENCE_BARS} bars; "
+            f"got {reference_bars}")
     return range_regime_pre_bars(
         bars[start:anchor_index], atr_window=atr_window,
-        reference_cycle_count=reference_cycle_count)
+        reference_cycle_count=reference_cycle_count,
+        require_full_reference=True)
