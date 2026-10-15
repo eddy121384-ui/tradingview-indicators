@@ -108,13 +108,13 @@ REFERENCE_BARS = PTMConfig().reference_bars  # 120
 #: pre-probe reference window), computed by ``analyze_issue185_real_cohort.py``
 #: with NO outcome information.  ``NARROW`` = below the first edge, ``WIDE`` =
 #: at/above the second, ``MID`` = between.  Do not re-derive these from outcomes.
-#: NOTE (2026-10-15): these numbers are V1 legacy feature-only tertiles from
-#: the partial-window-permissive cohort (661 usable); they are NOT the
-#: strict-full-120-bar frozen tertiles. Strict reference enforcement is now
-#: on for formal real-cohort generation, but the nine original CSV exports
-#: are private. The old edges are retained strictly for reproducibility of
-#: the old synthetic artifact until feature-only recalibration is rerun.
-#: FORMAL PREREG MUST NOT FREEZE with these legacy edges.
+#: STRICT-120 FEATURE-ONLY SOURCE REVALIDATION (2026-10-15):
+#: the identical original nine CSVs (9/9 SHA-256 matches) reproduce the
+#: parent's B3 cohort 997/236 and all 661 usable ex-ante descriptors.
+#: Every previously accepted descriptor ALREADY had all 120 pre-probe bars:
+#: strict-reference enforcement changes 19 short-window failure REASONS,
+#: but no accepted feature or tertile, so these frozen edges remain valid.
+#: This validates only the descriptor, NOT the policy, asset returns or OOS5.
 #:
 #: These are the tertiles of the QUANTISED feature (see
 #: ``WIDTH_ATR_DECIMALS``), so they are exactly what the committed manifest
