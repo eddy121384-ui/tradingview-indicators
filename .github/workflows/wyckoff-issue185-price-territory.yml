@@ -17,6 +17,7 @@ on:
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
+      - 'indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory/**'
   pull_request:
     paths:
       - '.github/workflows/wyckoff-issue185-price-territory.yml'
@@ -31,6 +32,7 @@ on:
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
+      - 'indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory/**'
 
 jobs:
   validate:
