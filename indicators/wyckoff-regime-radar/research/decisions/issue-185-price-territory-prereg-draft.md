@@ -1,26 +1,31 @@
 # Issue #185 — Price Territory Memory: preregistration DRAFT (not authorised)
 
-**2026-10-15 FULL-REFERENCE GATE: CODE COMPLETE / FEATURE-ONLY REFREEZE
-PENDING.** The formal `range_regime_at` path and the real B3 cohort script
-now require **exactly 120 observed pre-probe bars**, with any coordinate
-reset or missing OHLC still classified `UNAVAILABLE`. The short-window
-synthetic diagnostic remains explicitly permitted for historic mathematical
-fixture reproduction; **it is not an authorised formal-cohort path**.
+**2026-10-15 STRICT-120 FEATURE-ONLY SOURCE GATE — RECOMPUTED.**
+All nine uploaded Issue #76 Pine Logger CSVs matched the original committed
+SHA-256 fingerprints **9/9**, with 50,459,542 bytes in total. The complete
+frozen parent parity contract reproduces exactly: **68,118 events, 1,624
+episodes, 997 B3 events, 236 P1/P2**. The formal reference is now explicitly
+required to contain **120 completed pre-probe bars**, and missing/coordinate-reset
+windows are marked `UNAVAILABLE`.
 
-The existing real-cohort count `661/997` and
-`WIDTH_ATR_EDGES = (7.368, 11.9931)` are **V1 legacy values computed
-under a partial-window-permissive contract**; they are NOT revalidated
-strict-120 statistics and MUST NOT be used to freeze the formal stratum.
-Before prereg freeze, rerun `analyze_issue185_real_cohort.py`
-in **feature-only** mode on the *same nine SHA-256-identified source files*,
-update the strict-120 usable-event count, tertile edges and committed
-operator-side provenance manifest, and validate the updated frozen
-artifact/test bindings. The source CSV bytes are currently not accessible
-in this workspace, so the new numbers cannot be inferred.
+The strict-120 recalculation finds **661/997** usable B3 observations,
+**336 unavailable** (**19** due to fewer than 120 prior bars, **317** due to
+coordinate resets), and **zero** incomplete references accepted. All 661
+usable events in the prior V1 permissive run already had full 120-bar
+references, so the original ex-ante *feature-only* tertiles are **unchanged**:
+`WIDTH_ATR_EDGES = (7.368, 11.9931)`; strata sizes
+NARROW/MID/WIDE = **221/219/221**. These are confirmed strict-reference
+statistics, not a guess or an inference from asset returns. The updated
+`issue185_real_cohort_manifest.json` uses
+`schema=issue185-real-cohort-v2-strict120` with explicit full-reference
+coverage and machine-readable summary; the private CSV content remains
+uncommitted.
 
-No return, PnL, MFE/MAE or OOS5 data may enter feature-only
-refreezing. This remaining **DATA/REPRODUCIBILITY GATE IS OPEN**;
-research prereg is still DRAFT, not authorised.
+The original reproduced cohort and tertiles now satisfy the **feature-only
+source recalibration gate**. This does **not** authorize any historical return,
+MFE/MAE, PnL, forward-outcome or OOS5 study. Formal prereg remains **DRAFT**
+until the three pending normative Sophira risk-policy signoffs and final
+current-head CI verification.
 
 **Status: DRAFT FOR REVIEW. NOT FROZEN. NOT AUTHORISED TO RUN.** No forward
 outcome has been inspected by this draft. Writing this document does not
@@ -934,13 +939,14 @@ MID    : edge0 <= width_atr < edge1
 WIDE   : width_atr >= edge1
 ```
 
-**Historical V1 only — strict-reference cohort recalibration pending.** The
-numbers directly below remain here to reproduce the original permissive
-synthetic/real-cohort record, not as authorised strict-120 boundaries.
-On the full-120 data rerun, replace them and update the exact code/manifest
-bindings *before* final prereg freeze and before any outcome analysis.
+**Strict-120 recalibration complete (2026-10-15).** Original V1
+and strict-120 V2 computed the **same** 661 usable events and exact quantised
+tertiles because every V1 accepted event already had a complete 120-bar
+reference. This was verified against the *original nine SHA-256-identical*
+CSV exports, independently reproduced with counts-only parent checks, and
+committed as strict-120 v2 provenance. No performance outcome was read.
 
-These edges were the **tertiles of the feature itself** over the real B3 cohort
+These edges are the **tertiles of the feature itself** over the real B3 cohort
 (`n = 661` usable events; min 1.5081, q33 7.368, q50 9.4442, q67 11.9931,
 max 61.5838). They are computed from the **feature only** — no return, no PnL, no
 MFE enters their derivation. They are frozen in `ptm_range_regime.WIDTH_ATR_EDGES`
