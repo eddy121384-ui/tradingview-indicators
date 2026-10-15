@@ -1152,6 +1152,27 @@ def test_e3_real_cohort_manifest_is_optional_and_never_fabricated():
         assert m["strict_full_reference"] is True
         assert m["reference_bars"] == 120
         assert m["atr_window_bars"] == 14
+        summary = m["feature_summary"]
+        assert summary["b3_events"] == 997
+        assert summary["usable_width_atr"] == 661
+        assert summary["unavailable"] == 336
+        assert summary["short_reference_unavailable"] == 19
+        assert summary["coordinate_reset_unavailable"] == 317
+        assert summary["short_reference_accepted"] == 0
+        assert summary["distinct_width_atr_values"] == 661
+        assert summary["width_atr_tertile_edges"] == list(WIDTH_ATR_EDGES)
+        assert summary["width_atr_bins"] == {
+            "NARROW": 221, "MID": 219, "WIDE": 221}
+        assert summary["usable_width_atr"] + summary["unavailable"] == (
+            summary["b3_events"])
+        assert sum(m["feature_unavailable"].values()) == (
+            summary["unavailable"])
+        assert sum(summary["width_atr_bins"].values()) == (
+            summary["usable_width_atr"])
+        assert len(m["manifest"]) == 9
+        # Provenance: input content stays private; its manifest hashes are
+        # public for replication. These nine fingerprints were matched 9/9.
+        assert all(len(f["sha256"]) == 64 for f in m["manifest"])
     assert len(m["manifest"]) >= 1
     for f in m["manifest"]:
         assert len(f["sha256"]) == 64
