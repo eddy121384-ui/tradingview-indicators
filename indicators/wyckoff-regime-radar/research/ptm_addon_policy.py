@@ -495,8 +495,8 @@ def evaluate_addon(
         ))
 
     def post_eligible_bars(upto: int) -> int:
-        """Completed bars observed at or after the eligibility bar."""
-        return max(0, upto - eligible + 1)
+        """Count ACTUAL observations, never inferred bars between two indexes."""
+        return sum(1 for index in by_bar if eligible <= index <= upto)
 
     # --- Case: the parent never earned the add-on at all -------------------
     # The 75% was never going to be added, so PTM withheld nothing.  This is
@@ -670,6 +670,30 @@ def evaluate_addon(
                        f"(band={band_of(op)})")
 
         if post_eligibility and t >= expiry_bar:
+            # An indexed endpoint is not evidence that every intervening
+            # decision bar was observed. Missing observations are different
+            # from present-but-DEGRADED PTM readings; only the latter prove
+            # that the conservative hold actually operated on that bar.
+            missing = [
+                idx for idx in range(eligible, expiry_bar + 1)
+                if idx not in by_bar
+            ]
+            if missing:
+                reason = (
+                    f"{len(missing)} missing decision-bar observation(s) "
+                    f"between eligibility {eligible} and expiry {expiry_bar}; "
+                    "the horizon is administratively right-censored, not a "
+                    "definite policy withholding"
+                )
+                record(t, ADDON_OBSERVATION_RIGHT_CENSORED, False, op, reason)
+                return _outcome(
+                    policy, DISPOSITION_OBSERVATION_RIGHT_CENSORED, plan,
+                    eligible=eligible, followup_complete=False,
+                    withheld_definite=False,
+                    observed_post_eligible_bars=post_eligible_bars(t),
+                    open_hold_at_last_bar=True,
+                    horizon_bars_required=expiry_bars, final_bar=t,
+                    reason=reason, trail=tuple(trail))
             reason = (
                 f"policy withheld through the complete decision horizon: the "
                 f"episode expired at bar {t} ({expiry_bars} bars after "
