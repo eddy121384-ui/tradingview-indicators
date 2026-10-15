@@ -249,6 +249,7 @@ def main() -> int:
     print("  unavailable:", json.dumps(unavail, sort_keys=True))
 
     edges = None
+    bins = {WIDTH_BIN_NARROW: 0, WIDTH_BIN_MID: 0, WIDTH_BIN_WIDE: 0}
     if feats:
         w = [f["width_atr"] for f in feats]
         edges = tuple(round(quantile(w, q), 4) for q in TERTILE_Q)
@@ -257,11 +258,31 @@ def main() -> int:
         print("  distinct values: %d  (a tautological criterion would be 1)"
               % len(set(round(x, 9) for x in w)))
         print("  FROZEN TERTILE EDGES (feature-only): %r" % (edges,))
-        bins = {WIDTH_BIN_NARROW: 0, WIDTH_BIN_MID: 0, WIDTH_BIN_WIDE: 0}
         for x in w:
             bins[WIDTH_BIN_NARROW if x < edges[0]
                  else (WIDTH_BIN_WIDE if x >= edges[1] else WIDTH_BIN_MID)] += 1
         print("  bin counts:", json.dumps(bins, sort_keys=True))
+
+    # Feature-only guard: the committed v2 manifest must be regenerated from
+    # the same input hashes, not amended by manually chosen cohort figures.
+    short_unavailable = sum(v for k, v in unavail.items()
+                            if k.startswith("full pre-probe reference required"))
+    coordinate_unavailable = sum(v for k, v in unavail.items()
+                                 if "coordinate reset(s)" in k)
+    summary = {
+        "b3_events": len(b3),
+        "usable_width_atr": len(feats),
+        "unavailable": sum(unavail.values()),
+        "short_reference_unavailable": short_unavailable,
+        "coordinate_reset_unavailable": coordinate_unavailable,
+        "short_reference_accepted": 0,  # Strict gate rejects all short inputs.
+        "distinct_width_atr_values":
+            len({f["width_atr"] for f in feats}),
+        "width_atr_bins": bins,
+        "width_atr_tertile_edges": list(edges) if edges else None,
+    }
+    if summary["usable_width_atr"] + summary["unavailable"] != len(b3):
+        raise AssertionError("real-cohort feature accounting does not reconcile")
 
     out = Path(args.outdir)
     out.mkdir(parents=True, exist_ok=True)
@@ -285,6 +306,7 @@ def main() -> int:
                             "policy_module":
                                 "analyze_issue78_second_entry_economic_policy.py"},
         "feature_unavailable": unavail,
+        "feature_summary": summary,
         "width_atr_tertile_edges": list(edges) if edges else None,
     }
     # newline="\n" is required: the artifacts directory is marked `-text` in
