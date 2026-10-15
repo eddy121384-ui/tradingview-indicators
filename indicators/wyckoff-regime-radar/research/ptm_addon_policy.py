@@ -775,15 +775,19 @@ def parent_eligible_outcomes(outcomes: Sequence[AddOnOutcome]) -> list:
 
 
 def evaluable_outcomes(outcomes: Sequence[AddOnOutcome]) -> list:
-    """Parent-eligible outcomes whose decision horizon was fully observed.
+    """Parent-earned add-ons with a complete C1 decision, not baseline exits.
 
-    This is the ONLY denominator on which a permanent-withholding rate is
-    defined.  Right-censored episodes are excluded because their future is
-    unknown, and including them is precisely what produced the earlier
-    uninterpretable 14/23 figure.
+    Release/withholding decisions are resolved; an administratively censored
+    case is not. Baseline de-risk and already-full exposure are competing
+    events where PTM did not decide, so they cannot dilute the withholding
+    denominator. The raw disposition counts still include every category.
     """
+    excluded = {
+        DISPOSITION_BASELINE_DE_RISK_BEFORE_RELEASE,
+        DISPOSITION_ALREADY_FULL,
+    }
     return [o for o in parent_eligible_outcomes(outcomes)
-            if o.followup_complete]
+            if o.followup_complete and o.disposition not in excluded]
 
 
 def withheld_share_of_evaluable(outcomes: Sequence[AddOnOutcome]) -> float | None:
