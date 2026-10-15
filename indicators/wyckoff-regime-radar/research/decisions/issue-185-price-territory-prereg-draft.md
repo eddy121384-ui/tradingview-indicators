@@ -523,13 +523,21 @@ that never reached a decision bar) into a *permanent-withholding* count. It is
 **withdrawn** and must not be quoted as a withholding probability, as a market
 estimate, or as the basis for any cutoff.
 
-**The only valid withholding denominator** is parent-eligible episodes whose
-predeclared decision horizon was **fully observed**:
+**The only valid withholding denominator** is parent-eligible episodes
+whose **C1 add-on decision resolved** with complete observation. In addition
+to `PARENT_NOT_ELIGIBLE` and `OBSERVATION_RIGHT_CENSORED`, exclude
+`BASELINE_DE_RISK_BEFORE_RELEASE` and `ALREADY_FULL`: neither is a
+PTM-controlled add-on decision. A complete 120-bar observation is required
+for a *withheld-through-expiry* result; an actual promotion resolves early.
 
 ```
 withheld_share = |POLICY_WITHHELD_THROUGH_EXPIRY|
-               / |{parent-eligible AND follow-up complete}|
+               / |{parent-eligible AND follow-up complete
+                   AND NOT baseline de-risk/already-full}|
 ```
+The canonical breakdown still reports excluded dispositions separately.
+This excludes competing baseline exits rather than diluting the PTM
+withholding rate (§4.4; `evaluable_outcomes()`).
 
 On the synthetic set that denominator is **9**, and the numerator is **0** — so
 the synthetic withheld share is **0.0%**, and it is a *vacuous* 0% rather than
@@ -1022,10 +1030,11 @@ Mandatory C1 outputs:
   and `ALREADY_FULL`. The counts must **sum to the episode total**; the analyzer
   zero-fills and asserts this.
 * **Permanent-no-add-on share** = `POLICY_WITHHELD_THROUGH_EXPIRY` divided by
-  **parent-eligible episodes with a complete observed horizon** (§4.3.2). The
-  denominator must be stated with the numerator. `OBSERVATION_RIGHT_CENSORED`
-  episodes are **excluded** from this denominator and reported separately, because
-  their future is unknown.
+  **parent-eligible, C1-resolved episodes with complete observation**
+  (§4.3.2): include actual promotions and full-horizon definite withholding;
+  exclude `OBSERVATION_RIGHT_CENSORED`, `BASELINE_DE_RISK_BEFORE_RELEASE`,
+  `ALREADY_FULL` and never-earned `PARENT_NOT_ELIGIBLE`. State numerator,
+  denominator and excluded counts together.
 * **Insufficient-observation share** = `OBSERVATION_RIGHT_CENSORED` divided by
   parent-eligible episodes, **split into** (a) episodes that never reached the
   eligible decision bar and (b) episodes with an open hold at the last bar. Only
@@ -1060,6 +1069,60 @@ a measure of protection or as a result.
 never rendered as `0` additional bars, and `max_added_delay_vs_v02_bars = 0` is
 never quoted as the confirmation cost (§4.3). A right-censored episode is never
 counted as a permanent no-add-on.
+
+### 6.7 Proposed economic success gates — DRAFT, owner approval required
+
+These are **ex-ante risk-appetite proposals**, not statistics estimated from
+the 33 synthetic fixtures or the 661 feature-only cohort. None authorises an
+outcome run. Keep both B0 (R0 Immediate) and B1 (R0 + Warning-First) as frozen
+comparators, with identical eligibility clock, execution and costs. C1 remains
+the **only** challenger; `DEGRADED/UNKNOWN` takes the declared conservative
+hold route, with **all** observed forgone exposure charged to C1.
+
+**Pass requires all three gates together:**
+
+1. **Avoid genuine false-trend losses:** in the pre-registered ex-ante `WIDE`
+   stratum (width_atr ≥ 11.9931), and retrospective `MFE < 4 ATR` *outcome*
+   group, reduce the aggregate **negative net PnL attributable to the 75%
+   add-on** by **at least 20%**, versus each applicable paired benchmark
+   B0 and B1. Define damage as the sum of negative add-on net outcomes'
+   magnitudes, counted as positive costs (0 for non-losses), on the same
+   eligible opportunities; no dropping losers or different clocks. If a
+   benchmark has zero damage, report that comparator `UNDEFINED`, not a
+   spurious 100% reduction. Report realized PnL/tail effects separately from
+   labels based on path MFE.
+2. **Preserve genuine long trends:** on the retrospective `MFE ≥ 8 ATR`
+   opportunity set, retain **≥ 90%** of each applicable paired baseline's
+   *gross favorable add-on harvest* under the same causal entries, exits and
+   75% add-on units. Report the full distribution of withheld/delayed harvest
+   and also realized net PnL; do not call a hypothetical MFE an actual
+   realized gain. A zero or negative baseline aggregate denominator is
+   `UNDEFINED`, never counted as a pass.
+3. **Limit definite long holds:** **≤ 20%**
+   `POLICY_WITHHELD_THROUGH_EXPIRY / evaluable_outcomes` on the
+   parent-eligible resolved C1 add-ons (§4.3.2). Show separately how many
+   observations had insufficient coverage, how many were baseline de-risked
+   or already full, and the observed 25%-instead-of-100% exposure-days even
+   for right-censored holds. Never turn insufficient follow-up into zero cost.
+
+**Sample adequacy and falsification:** each defined primary loss/harvest
+comparison needs at least 30 matched, outcome-observed eligible opportunities
+in the relevant group; the withholding ratio needs at least 30 resolved,
+eligible C1 decisions. Fewer than 30 (or an undefined denominator) gives
+`INCONCLUSIVE`, **not** success or a freely tuned alternative. Report era,
+market and direction breakdowns, confidence intervals, full-cohort behavior,
+matched-latency controls and the existing §7 rejection rules. No success
+based only on one period/sleeve, and do not reuse discovery evidence as
+untouched holdout.
+
+**Why these numbers?** A 20% reduction demands economically meaningful
+protection rather than a cosmetic improvement; 90% retention limits
+missed genuine trends to 10%; the 20% cap prevents a selective improvement
+achieved by frequently refusing the parent's earned add-ons. They are
+provisional **normative preferences**, not empirically optimized cutoffs.
+A pass qualifies only for a **new, separate untouched-holdout study**,
+never direct deployment. The risk owner must explicitly approve or replace
+these values **before any forward outcome, PnL or MFE inspection**.
 
 ## 7. Rejection / stop rules (predeclared)
 
@@ -1114,13 +1177,12 @@ Reject PTM, or stop the programme, if any of the following holds:
     count is the same error in the opposite direction, and it is what produced
     the withdrawn `14/23 = 60.9%` figure (§4.3.2).
 11. **Permanent-suppression cost too high.** If, on the cohort, the
-    **`POLICY_WITHHELD_THROUGH_EXPIRY` share of fully-observed parent-eligible
-    episodes** is material **and** the forgone `MFE >= 8 ATR` harvest is large,
-    the conservative hold is rejected as an exposure policy. The exact cut is not
-    fixed here because it is a risk-appetite decision, not an engineering fact —
-    **`PENDING_SOPHIRA_APPROVAL`**. The preferred form of the criterion is a
-    **joint constraint** — maximum acceptable false-trend loss *given* a minimum
-    retained `MFE >= 8 ATR` harvest — rather than a single number on either side.
+    **`POLICY_WITHHELD_THROUGH_EXPIRY` share of resolved, parent-eligible
+    C1 add-ons** exceeds the allowable cap, reject the conservative hold as an
+    exposure policy. Exclude censoring, baseline de-risk and already-full
+    exposures per §4.3.2. This cap is **joint** with the false-trend damage
+    reduction and large-trend harvest retention gates in §7.1; the numeric
+    proposal remains **`PENDING_USER_SIGNOFF`**.
     **No cut may be derived from the synthetic set**, whose withheld share is a
     vacuous `0/9` because the fixtures cannot reach the horizon (§4.3.2). The
     `14/23 = 60.9%` figure is **withdrawn** and must not appear in any cutoff.
