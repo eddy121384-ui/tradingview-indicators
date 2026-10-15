@@ -367,6 +367,32 @@ def test_b5_withholding_through_complete_expiry_is_definite_not_zero():
     assert withheld_share_of_evaluable([out]) == 1.0
 
 
+def test_b5b_sparse_or_gapped_observations_are_not_complete_withholdings():
+    """An expiry index alone cannot prove 120 completed decision observations."""
+    last = 113 + EPISODE_EXPIRY_BARS
+    p = plan(probe=100, b3=110)
+    complete = withheld_obs(range(111, last + 1))
+    # A single missing interior bar must defeat a "complete" 120-bar claim.
+    gap = [o for o in complete if o.bar_index != 150]
+    out = evaluate_addon(C1_PTM_GUARD, gap, p)
+    assert out.disposition == DISPOSITION_OBSERVATION_RIGHT_CENSORED
+    assert out.followup_complete is False
+    assert out.withheld_definite is False
+    assert out.observed_post_eligible_bars == EPISODE_EXPIRY_BARS
+    assert "1 missing decision-bar" in " ".join(out.reasons)
+    assert withheld_share_of_evaluable([out]) is None
+
+    # Two endpoints never imply that all the bars between were observed.
+    sparse = withheld_obs([111, 113, last])
+    out2 = evaluate_addon(C1_PTM_GUARD, sparse, p)
+    assert out2.disposition == DISPOSITION_OBSERVATION_RIGHT_CENSORED
+    assert out2.observed_post_eligible_bars == 2
+    assert not out2.withheld_definite
+
+    # A present (but untrusted) reading still counts as an observed bar;
+    # the pre-existing complete-horizon test covers the contiguous case.
+
+
 def test_b6_episode_expiry_does_not_auto_promote():
     expiry = EPISODE_EXPIRY_BARS
     last = 113 + expiry
