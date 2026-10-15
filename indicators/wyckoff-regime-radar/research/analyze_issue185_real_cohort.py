@@ -92,6 +92,11 @@ def main() -> int:
     ap.add_argument("--reference-bars", type=int, default=120)
     args = ap.parse_args()
 
+    # Both lengths are the frozen, feature-only research contract.  A
+    # different value would silently change the cohort and its tertile edges.
+    if args.reference_bars != 120 or args.atr_window != 14:
+        ap.error("formal cohort requires --reference-bars=120 and --atr-window=14")
+
     glob = args.export_glob
     paths = sorted(Path(p) for p in __import__("glob").glob(glob))
     if not paths:
@@ -230,7 +235,9 @@ def main() -> int:
         window = recs[lo:start]
         bars = [(float(x["high_coord"]), float(x["low_coord"]),
                  float(x["close_coord"])) for x in window]
-        f = range_regime_pre_bars(bars, atr_window=args.atr_window)
+        f = range_regime_pre_bars(
+            bars, atr_window=args.atr_window,
+            require_full_reference=True)
         if f.status != "OK":
             unavail[f.reason] = unavail.get(f.reason, 0) + 1
             continue
@@ -259,8 +266,9 @@ def main() -> int:
     out = Path(args.outdir)
     out.mkdir(parents=True, exist_ok=True)
     payload = {
-        "schema": "issue185-real-cohort-v1",
+        "schema": "issue185-real-cohort-v2-strict120",
         "feature_only": True,
+        "strict_full_reference": True,
         "outcomes_computed": False,
         "export_glob": glob,
         "raw_data_committed": False,
