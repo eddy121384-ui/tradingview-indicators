@@ -1142,6 +1142,16 @@ def test_e3_real_cohort_manifest_is_optional_and_never_fabricated():
     assert m["feature_only"] is True
     assert m["outcomes_computed"] is False
     assert m["raw_data_committed"] is False
+    # The committed v1 is an archival *partial-window-permissive* result;
+    # a strict-120 re-freeze must advertise the new contract explicitly.
+    assert m["schema"] in (
+        "issue185-real-cohort-v1", "issue185-real-cohort-v2-strict120")
+    if m["schema"] == "issue185-real-cohort-v1":
+        assert m.get("strict_full_reference") is not True
+    else:
+        assert m["strict_full_reference"] is True
+        assert m["reference_bars"] == 120
+        assert m["atr_window_bars"] == 14
     assert len(m["manifest"]) >= 1
     for f in m["manifest"]:
         assert len(f["sha256"]) == 64
