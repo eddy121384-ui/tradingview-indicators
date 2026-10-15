@@ -243,7 +243,8 @@ def main() -> int:
             continue
         feats.append({"ticker": r["ticker"], "path": r["path"],
                       "break_bar": r["break_bar"], "width_atr": f.width_atr,
-                      "atr_pre": f.atr_pre, "ref_span": f.ref_span})
+                      "atr_pre": f.atr_pre, "ref_span": f.ref_span,
+                      "n_pre_bars": f.n_pre_bars})
 
     print("\nex-ante feature: usable %d of %d B3 events" % (len(feats), len(b3)))
     print("  unavailable:", json.dumps(unavail, sort_keys=True))
@@ -275,7 +276,8 @@ def main() -> int:
         "unavailable": sum(unavail.values()),
         "short_reference_unavailable": short_unavailable,
         "coordinate_reset_unavailable": coordinate_unavailable,
-        "short_reference_accepted": 0,  # Strict gate rejects all short inputs.
+        "short_reference_accepted":
+            sum(f["n_pre_bars"] != args.reference_bars for f in feats),
         "distinct_width_atr_values":
             len({f["width_atr"] for f in feats}),
         "width_atr_bins": bins,
@@ -283,6 +285,8 @@ def main() -> int:
     }
     if summary["usable_width_atr"] + summary["unavailable"] != len(b3):
         raise AssertionError("real-cohort feature accounting does not reconcile")
+    if summary["short_reference_accepted"]:
+        raise AssertionError("a partial reference escaped the strict-120 gate")
 
     out = Path(args.outdir)
     out.mkdir(parents=True, exist_ok=True)
