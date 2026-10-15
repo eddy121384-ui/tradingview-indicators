@@ -625,6 +625,8 @@ def test_c4_already_full_is_neutral_and_ptm_never_reduces():
     assert out.extra_delay_bars == 0
     assert not out.censored
     assert out.withheld_definite is False
+    assert out not in evaluable_outcomes([out])
+    assert withheld_share_of_evaluable([out]) is None
 
 
 def test_c5_dwell_counts_the_parents_own_acceptance_window():
