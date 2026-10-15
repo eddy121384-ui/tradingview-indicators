@@ -2525,13 +2525,25 @@
         "usable_b3_events": 661,
         "b3_events": 997,
         "unavailable_breakdown": {
-          "insufficient pre-probe history: 0 bar(s), need at least 15": 2,
-          "insufficient pre-probe history: 1 bar(s), need at least 15": 1,
-          "insufficient pre-probe history: 12 bar(s), need at least 15": 1,
-          "insufficient pre-probe history: 13 bar(s), need at least 15": 1,
-          "insufficient pre-probe history: 9 bar(s), need at least 15": 1,
-          "pre-probe window spans 1 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 243,
-          "pre-probe window spans 2 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 81,
+          "full pre-probe reference required: 0 bar(s), need exactly 120 completed bars": 2,
+          "full pre-probe reference required: 1 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 115 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 12 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 13 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 15 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 18 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 27 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 30 bar(s), need exactly 120 completed bars": 2,
+          "full pre-probe reference required: 52 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 54 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 57 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 60 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 73 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 9 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 95 bar(s), need exactly 120 completed bars": 1,
+          "full pre-probe reference required: 98 bar(s), need exactly 120 completed bars": 1,
+          "pre-probe window spans 1 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 232,
+          "pre-probe window spans 2 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 79,
           "pre-probe window spans 3 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 6
         },
         "frozen_edges": [
@@ -3953,14 +3965,44 @@
       "atr_window_bars": 14,
       "export_glob": "C:\\Users\\EDDY\\Downloads\\pine-logs-#76 Forward Logger*.csv",
       "feature_only": true,
+      "feature_summary": {
+        "b3_events": 997,
+        "coordinate_reset_unavailable": 317,
+        "distinct_width_atr_values": 661,
+        "short_reference_accepted": 0,
+        "short_reference_unavailable": 19,
+        "unavailable": 336,
+        "usable_width_atr": 661,
+        "width_atr_bins": {
+          "MID": 219,
+          "NARROW": 221,
+          "WIDE": 221
+        },
+        "width_atr_tertile_edges": [
+          7.368,
+          11.9931
+        ]
+      },
       "feature_unavailable": {
-        "insufficient pre-probe history: 0 bar(s), need at least 15": 2,
-        "insufficient pre-probe history: 1 bar(s), need at least 15": 1,
-        "insufficient pre-probe history: 12 bar(s), need at least 15": 1,
-        "insufficient pre-probe history: 13 bar(s), need at least 15": 1,
-        "insufficient pre-probe history: 9 bar(s), need at least 15": 1,
-        "pre-probe window spans 1 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 243,
-        "pre-probe window spans 2 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 81,
+        "full pre-probe reference required: 0 bar(s), need exactly 120 completed bars": 2,
+        "full pre-probe reference required: 1 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 115 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 12 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 13 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 15 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 18 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 27 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 30 bar(s), need exactly 120 completed bars": 2,
+        "full pre-probe reference required: 52 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 54 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 57 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 60 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 73 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 9 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 95 bar(s), need exactly 120 completed bars": 1,
+        "full pre-probe reference required: 98 bar(s), need exactly 120 completed bars": 1,
+        "pre-probe window spans 1 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 232,
+        "pre-probe window spans 2 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 79,
         "pre-probe window spans 3 coordinate reset(s): the closes do not share one price coordinate, so neither the reference span nor the ATR is meaningful; a contiguous reference window is required": 6
       },
       "manifest": [
@@ -4021,7 +4063,7 @@
       ],
       "outcomes_computed": false,
       "parent_contract": {
-        "full": 1.0,
+        "full": 1,
         "lookback": 5,
         "marker": "ISSUE76|schema=1",
         "policy_module": "analyze_issue78_second_entry_economic_policy.py",
@@ -4030,17 +4072,17 @@
       },
       "parity": {
         "expected": {
-          "P12": 236,
           "b3_events": 997,
           "episodes": 1624,
-          "events": 68118
+          "events": 68118,
+          "P12": 236
         },
         "observed": {
-          "P12": 236,
           "b3_events": 997,
           "b3_ineligible": 31,
           "episodes": 1624,
-          "events": 68118
+          "events": 68118,
+          "P12": 236
         },
         "path_composition": {
           "P0_NoTouch": 411,
@@ -4052,7 +4094,8 @@
       },
       "raw_data_committed": false,
       "reference_bars": 120,
-      "schema": "issue185-real-cohort-v1",
+      "schema": "issue185-real-cohort-v2-strict120",
+      "strict_full_reference": true,
       "width_atr_tertile_edges": [
         7.368,
         11.9931
