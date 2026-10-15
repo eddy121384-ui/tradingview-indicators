@@ -476,6 +476,19 @@ different things:
 * **9 right-censored with an open hold at the last bar** — a hold was genuinely
   in force when the data stopped, but the future is unknown.
 
+**Interior missing-data boundary (2026-10-15):** reaching an expiry *index*
+alone does not establish a fully observed policy horizon. For
+`POLICY_WITHHELD_THROUGH_EXPIRY`, every decision bar from
+`eligible = B3_break_t + 3` through `eligible + 120` (inclusive) must
+have an actual timestamp/indexed `TerritoryObservation`. Missing observation
+indexes trigger `OBSERVATION_RIGHT_CENSORED` even if the expiry index itself
+exists. A **present** `DEGRADED/UNKNOWN` reading still counts as observed
+and follows C1's declared conservative-hold rule. The
+`observed_post_eligible_bars` counter counts existing observations, not an
+inferred integer range. This rule is locked by the sparse-endpoint and
+interior-gap deterministic regression. It does not authorize new outcomes
+or change the baseline.
+
 #### 4.3.2 The `14/23 = 60.9%` figure is WITHDRAWN
 
 The earlier figure summed *right-censored* episodes (including the five fixtures
