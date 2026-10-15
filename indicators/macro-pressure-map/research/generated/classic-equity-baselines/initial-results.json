@@ -1,0 +1,157 @@
+{
+  "study": "classic-equity-baselines-20261015",
+  "status": "initial_independent_js_calculation_not_original_paper_replication",
+  "prereg_commit": "3445dc46f23a72697d154cc44358295f0719e7a9",
+  "parent": "1fabf0f9c94c391a7c2d302caff6bbdf56062d95",
+  "input_file_blob_shas": {
+    "equity": "2d850320f0f9d7d629d84555ded041975f253353",
+    "cash": "e2fb13ab1333f97330162af1174832584a1598bf"
+  },
+  "sample": {
+    "start": "1967-03",
+    "end": "2026-08",
+    "months": 714
+  },
+  "fee_per_turnover": 0.0002,
+  "fee10bp_cagr_pct": {
+    "SMA10": 10.1476866652,
+    "MOM12": 10.0902108504
+  },
+  "strats": {
+    "BH": {
+      "cagr_pct": 10.9133741551,
+      "vol_pct": 15.6908450745,
+      "max_dd_pct": -50.3117071717,
+      "sharpe_like": 0.456217963,
+      "avg_equity_pct": 100,
+      "switches": 0,
+      "annual_turnover_pct": 0
+    },
+    "CASH": {
+      "cagr_pct": 4.5733444956,
+      "vol_pct": 0.9396568363,
+      "max_dd_pct": 0,
+      "sharpe_like": 0,
+      "avg_equity_pct": 0,
+      "switches": 0,
+      "annual_turnover_pct": 0
+    },
+    "FIX50": {
+      "cagr_pct": 8.0370249294,
+      "vol_pct": 7.8551164774,
+      "max_dd_pct": -27.9267687608,
+      "sharpe_like": 0.4556549479,
+      "avg_equity_pct": 50,
+      "switches": 0,
+      "annual_turnover_pct": 0
+    },
+    "FIX60": {
+      "cagr_pct": 8.661519456,
+      "vol_pct": 9.4185146695,
+      "max_dd_pct": -32.9682712779,
+      "sharpe_like": 0.45602384,
+      "avg_equity_pct": 60,
+      "switches": 0,
+      "annual_turnover_pct": 0
+    },
+    "SMA10": {
+      "cagr_pct": 10.2772725895,
+      "vol_pct": 11.6292414328,
+      "max_dd_pct": -24.2388329999,
+      "sharpe_like": 0.5178448562,
+      "avg_equity_pct": 74.9299719888,
+      "switches": 88,
+      "annual_turnover_pct": 147.8991596639
+    },
+    "MOM12": {
+      "cagr_pct": 10.1616661274,
+      "vol_pct": 11.899588844,
+      "max_dd_pct": -28.3075265286,
+      "sharpe_like": 0.4998160121,
+      "avg_equity_pct": 72.4089635854,
+      "switches": 49,
+      "annual_turnover_pct": 82.3529411765
+    },
+    "MATCH_SMA10": {
+      "cagr_pct": 9.5489675126,
+      "vol_pct": 11.7573156902,
+      "max_dd_pct": -39.9486413374,
+      "sharpe_like": 0.4562113715,
+      "avg_equity_pct": 74.9299719888,
+      "switches": 0,
+      "annual_turnover_pct": 0
+    },
+    "MATCH_MOM12": {
+      "cagr_pct": 9.4029584349,
+      "vol_pct": 11.3621259462,
+      "max_dd_pct": -38.8142674224,
+      "sharpe_like": 0.4561959735,
+      "avg_equity_pct": 72.4089635854,
+      "switches": 0,
+      "annual_turnover_pct": 0
+    }
+  },
+  "eras_cagr_pct": {
+    "E1": {
+      "BH": 6.1277227641,
+      "SMA10": 7.8905130962,
+      "MOM12": 8.5491311317
+    },
+    "E2": {
+      "BH": 17.4309462916,
+      "SMA10": 13.9482038536,
+      "MOM12": 14.1964163425
+    },
+    "E3": {
+      "BH": 6.3809113336,
+      "SMA10": 7.8430240268,
+      "MOM12": 6.8934009648
+    },
+    "E4": {
+      "BH": 15.2980956386,
+      "SMA10": 11.4798307145,
+      "MOM12": 11.3605422156
+    }
+  },
+  "crisis_calendar_window_return_pct": {
+    "2022": {
+      "BH": -19.9167940217,
+      "SMA10": -10.7024739617,
+      "MOM12": -13.0159328001
+    },
+    "1973-74": {
+      "BH": -41.7472729151,
+      "SMA10": -7.8659950041,
+      "MOM12": 6.5553469525
+    },
+    "1987-08:12": {
+      "BH": -21.7944428988,
+      "SMA10": -20.4538628797,
+      "MOM12": -20.4538628797
+    },
+    "2000-03:2002-10": {
+      "BH": -37.1599828581,
+      "SMA10": -6.6826815065,
+      "MOM12": -6.5603580874
+    },
+    "2007-10:2009-03": {
+      "BH": -44.6817587556,
+      "SMA10": -1.4363076808,
+      "MOM12": -7.6991615847
+    },
+    "2020-02:04": {
+      "BH": -9.3654044,
+      "SMA10": -7.9096488755,
+      "MOM12": -20.2127006677
+    }
+  },
+  "limitations": [
+    "not pristine-OOS",
+    "revised CRSP/French returns",
+    "TB3MS cash proxy publication timing",
+    "2bp/10bp assumed trading costs, no spread or tax model",
+    "one equity market only, no paper-exact MOP or Moreira-Muir strategy",
+    "exposure matched fixed controls are full sample known after the fact"
+  ],
+  "production_authorized": false
+}
