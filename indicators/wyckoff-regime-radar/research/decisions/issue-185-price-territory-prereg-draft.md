@@ -1,20 +1,26 @@
 # Issue #185 — Price Territory Memory: preregistration DRAFT (not authorised)
 
-**2026-10-15 FREEZE BLOCKER — STRICT FULL-REFERENCE COVERAGE.** The
-pre-probe width/ATR implementation currently accepts a shortened pre-probe
-window with only 15–119 observed bars, while the proposed study feature is
-described as a full 120-bar frozen reference. The earlier real-cohort
-`661/997` availability count and `WIDTH_ATR_EDGES = (7.368, 11.9931)`
-were computed under that **short-window-permissive** implementation; they
-MUST NOT be represented as strictly full-120-bar evidence. Before prereg
-freeze: require all 120 contiguous pre-probe bars, then re-run the
-**feature-only** operator-side source script against the existing private,
-SHA-256-identified nine-file export; update the full-reference availability,
-tertile thresholds, committed manifest and deterministic tests together.
-The private export is not available in this workspace and the values are
-not to be guessed. No forward return, PnL or MFE may be read to set this
-criterion. This gate is **PENDING**, not implemented by the 2026-10-15
-decision-window censoring fix.
+**2026-10-15 FULL-REFERENCE GATE: CODE COMPLETE / FEATURE-ONLY REFREEZE
+PENDING.** The formal `range_regime_at` path and the real B3 cohort script
+now require **exactly 120 observed pre-probe bars**, with any coordinate
+reset or missing OHLC still classified `UNAVAILABLE`. The short-window
+synthetic diagnostic remains explicitly permitted for historic mathematical
+fixture reproduction; **it is not an authorised formal-cohort path**.
+
+The existing real-cohort count `661/997` and
+`WIDTH_ATR_EDGES = (7.368, 11.9931)` are **V1 legacy values computed
+under a partial-window-permissive contract**; they are NOT revalidated
+strict-120 statistics and MUST NOT be used to freeze the formal stratum.
+Before prereg freeze, rerun `analyze_issue185_real_cohort.py`
+in **feature-only** mode on the *same nine SHA-256-identified source files*,
+update the strict-120 usable-event count, tertile edges and committed
+operator-side provenance manifest, and validate the updated frozen
+artifact/test bindings. The source CSV bytes are currently not accessible
+in this workspace, so the new numbers cannot be inferred.
+
+No return, PnL, MFE/MAE or OOS5 data may enter feature-only
+refreezing. This remaining **DATA/REPRODUCIBILITY GATE IS OPEN**;
+research prereg is still DRAFT, not authorised.
 
 **Status: DRAFT FOR REVIEW. NOT FROZEN. NOT AUTHORISED TO RUN.** No forward
 outcome has been inspected by this draft. Writing this document does not
@@ -928,7 +934,13 @@ MID    : edge0 <= width_atr < edge1
 WIDE   : width_atr >= edge1
 ```
 
-These edges are the **tertiles of the feature itself** over the real B3 cohort
+**Historical V1 only — strict-reference cohort recalibration pending.** The
+numbers directly below remain here to reproduce the original permissive
+synthetic/real-cohort record, not as authorised strict-120 boundaries.
+On the full-120 data rerun, replace them and update the exact code/manifest
+bindings *before* final prereg freeze and before any outcome analysis.
+
+These edges were the **tertiles of the feature itself** over the real B3 cohort
 (`n = 661` usable events; min 1.5081, q33 7.368, q50 9.4442, q67 11.9931,
 max 61.5838). They are computed from the **feature only** — no return, no PnL, no
 MFE enters their derivation. They are frozen in `ptm_range_regime.WIDTH_ATR_EDGES`
