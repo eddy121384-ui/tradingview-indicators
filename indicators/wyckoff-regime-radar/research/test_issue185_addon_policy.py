@@ -289,8 +289,24 @@ def test_b2b_de_risk_is_not_a_ptm_withholding():
     assert out.disposition == ADDON_DE_RISK
     assert out.followup_complete is True
     assert out.withheld_definite is False
-    assert out in evaluable_outcomes([out])
+    assert out not in evaluable_outcomes([out])
+    assert withheld_share_of_evaluable([out]) is None
     assert not out.withheld_definite
+
+
+def test_b2c_competing_baseline_exit_never_dilutes_withholding_rate():
+    """Only an actual PTM resolution enters the definite-hold denominator."""
+    expiry = 113 + EPISODE_EXPIRY_BARS
+    withheld = evaluate_addon(
+        C1_PTM_GUARD, withheld_obs(range(111, expiry + 1)),
+        plan(probe=100, b3=110))
+    exited = evaluate_addon(
+        C1_PTM_GUARD, withheld_obs(range(111, 116)),
+        plan(probe=100, b3=110, deteriorated_at=113))
+    assert withheld.disposition == DISPOSITION_POLICY_WITHHELD_THROUGH_EXPIRY
+    assert exited.disposition == ADDON_DE_RISK
+    assert evaluable_outcomes([withheld, exited]) == [withheld]
+    assert withheld_share_of_evaluable([withheld, exited]) == 1.0
 
 
 def test_b3_data_suddenly_becomes_degraded_and_never_recovers():
