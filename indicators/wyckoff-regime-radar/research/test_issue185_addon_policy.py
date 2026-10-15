@@ -823,6 +823,46 @@ def test_f3_range_regime_zero_data_rules_are_explicit():
         assert f.width_atr is None and f.width_bin is None
 
 
+def test_f3b_full_reference_gate_fails_closed_at_119_bars():
+    """Formal live/historical descriptor must never use a shortened reference.
+
+    Legacy synthetic diagnostics deliberately remain explicit partial-window
+    illustrations, but the formal signal cannot silently use their window.
+    """
+    from ptm_range_regime import REFERENCE_BARS
+
+    assert REFERENCE_BARS == 120
+    for n in (0, 15, 60, 119):
+        bars = _ramp_bars(n)
+        formal = range_regime_pre_bars(bars, require_full_reference=True)
+        assert formal.status == STATUS_UNAVAILABLE, n
+        assert formal.width_atr is None and formal.width_bin is None
+        assert "need exactly 120" in formal.reason
+        assert formal.n_pre_bars == n
+
+        # The real/full-series path must enforce the same rule by default.
+        at_probe = range_regime_at(bars, n)
+        assert at_probe.status == STATUS_UNAVAILABLE, n
+
+    valid = _ramp_bars(REFERENCE_BARS)
+    full = range_regime_pre_bars(valid, require_full_reference=True)
+    assert full.status == STATUS_OK
+    at_probe = range_regime_at(valid, REFERENCE_BARS)
+    assert at_probe == full
+
+    # A caller accidentally passing more than 120 must not silently change
+    # the reference window. The full-series helper slices exactly 120.
+    oversize = range_regime_pre_bars(
+        _ramp_bars(REFERENCE_BARS + 1), require_full_reference=True)
+    assert oversize.status == STATUS_UNAVAILABLE
+    with pytest.raises(ValueError, match="frozen at 120"):
+        range_regime_at(valid, REFERENCE_BARS, reference_bars=119)
+
+    # A probe bar and any future data must not affect the exact past window.
+    future = [(1e6, -1e6, 5e5)] * 20
+    assert range_regime_at(valid + future, REFERENCE_BARS) == full
+
+
 def test_f4_range_regime_discriminates_and_is_not_the_tautological_ratio():
     """`spread / w` was identically RADIUS_DIVISOR; the new feature varies."""
     cfg = PTMConfig()
