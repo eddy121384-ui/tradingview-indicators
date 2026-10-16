@@ -1,0 +1,57 @@
+name: Macro Pressure Map Issue 107 A1 Public Screening
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_107_continuous_policy_reaction.py"
+      - "indicators/macro-pressure-map/research/test_issue_107_continuous_policy_reaction.py"
+      - "indicators/macro-pressure-map/research/decisions/issue-107-*"
+      - ".github/workflows/macro-pressure-map-issue-107-a1.yml"
+permissions:
+  contents: read
+jobs:
+  screening:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install research environment
+        working-directory: indicators/macro-pressure-map
+        run: python -m pip install -r requirements-research.txt "scipy>=1.13"
+      - name: Revalidate prereg
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_107_continuous_policy_prereg.py
+      - name: Unit tests
+        working-directory: indicators/macro-pressure-map/research
+        run: python -m pytest -q test_issue_107_continuous_policy_reaction.py
+      - name: Run A1 public-feed screening
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          rm -rf generated/issue-107-a1
+          python issue_107_continuous_policy_reaction.py --output-dir generated/issue-107-a1
+      - name: Enforce research boundary
+        working-directory: indicators/macro-pressure-map/research
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("generated/issue-107-a1/issue-107-a1-manifest.json")
+          m=json.loads(p.read_text())
+          assert m["data_gate"]=="A1_public_feed_screening"
+          assert m["can_authorize_production"] is False
+          assert m["tradingview_A2_required"] is True
+          assert m["display_formula_created"] is False
+          assert m["asset_outcomes_loaded"] is False
+          assert m["portfolio_metrics_computed"] is False
+          assert m["production_v66_modified"] is False
+          print(m["oos"])
+          print(m["primary_incremental"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-107-a1-public-screening
+          path: indicators/macro-pressure-map/research/generated/issue-107-a1
+          retention-days: 2
