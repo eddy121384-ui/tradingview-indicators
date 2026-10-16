@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "issue": 91,
+  "phase": "0-source-audit",
+  "artifact_role": "durable source freeze before historical regime analogue preregistration",
+  "source_freeze_created_after_phase0_audit": true,
+  "historical_regime_labels_computed": false,
+  "regime_conditioned_asset_results_computed": false,
+  "portfolio_results_computed": false,
+  "etfs_used": false,
+  "production_v66_modified": false,
+  "evidence_run": {
+    "workflow_run": 35303521989,
+    "head_sha": "5c66915f453552d64f9a79737cb05cf6f3bb3baf",
+    "artifact_id": 10530625925,
+    "artifact_digest": "sha256:80db7d1afe0cc1d1caee1fddff731d306e42095a1524cb2d2d68d8908402f711"
+  },
+  "required_live_sources": {
+    "damodaran_us_returns": {
+      "requested_url": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html",
+      "raw_sha256": "127c772f0fea8763391dbf2c1c7d3ecd3a07ca2b23f81ab47af58b529e2b5647",
+      "raw_bytes": 656121,
+      "first_year": 1928,
+      "last_year": 2025,
+      "numeric_year_rows": 98,
+      "required_columns_semantics": [
+        "S&P 500 total return including dividends",
+        "3-month T.Bill return",
+        "10-year U.S. Treasury total return",
+        "underlying gold return"
+      ]
+    },
+    "jst_macrohistory_r6": {
+      "requested_url": "https://www.macrohistory.net/app/download/9834512569/JSTdatasetR6.xlsx",
+      "raw_sha256": "c1bb91fe56ea50d4f27af5c0fc897d481e89ae38ce41eaecab62134c9354981d",
+      "raw_bytes": 1408158,
+      "first_year": 1870,
+      "last_year": 2020,
+      "usa_rows": 151,
+      "license": "CC BY-NC-SA 4.0",
+      "usa_candidate_coverage": {
+        "cpi": {
+          "column": "cpi",
+          "usable_observations": 151,
+          "first_year": 1870,
+          "last_year": 2020
+        },
+        "equity_total_return": {
+          "column": "eq_tr",
+          "usable_observations": 149,
+          "first_year": 1872,
+          "last_year": 2020
+        },
+        "government_bond_total_return": {
+          "column": "bond_tr",
+          "usable_observations": 150,
+          "first_year": 1871,
+          "last_year": 2020
+        },
+        "government_bill_rate": {
+          "column": "bill_rate",
+          "usable_observations": 151,
+          "first_year": 1870,
+          "last_year": 2020
+        },
+        "short_rate": {
+          "column": "stir",
+          "usable_observations": 151,
+          "first_year": 1870,
+          "last_year": 2020
+        },
+        "real_gdp_per_capita_ppp_maddison": {
+          "column": "rgdpmad",
+          "usable_observations": 151,
+          "first_year": 1870,
+          "last_year": 2020
+        },
+        "real_gdp_per_capita_index": {
+          "column": "rgdpbarro",
+          "usable_observations": 151,
+          "first_year": 1870,
+          "last_year": 2020
+        },
+        "long_rate": {
+          "column": "ltrate",
+          "usable_observations": 151,
+          "first_year": 1870,
+          "last_year": 2020
+        }
+      }
+    }
+  },
+  "nonblocking_official_cross_checks": {
+    "fred_indpro": {
+      "live_runner_status": "timeout",
+      "independently_verified_start": "1919-01-01",
+      "frequency": "monthly"
+    },
+    "fred_cpiaucsl": {
+      "live_runner_status": "timeout",
+      "independently_verified_start": "1947-01-01",
+      "frequency": "monthly"
+    },
+    "fred_gdpc1": {
+      "live_runner_status": "timeout",
+      "independently_verified_start": "1947-01-01",
+      "frequency": "quarterly"
+    },
+    "fred_gs10": {
+      "live_runner_status": "timeout",
+      "independently_verified_start": "1953-04-01",
+      "frequency": "monthly",
+      "warning": "yield level only; not bond total return"
+    },
+    "shiller_long_stock_history": {
+      "live_runner_status": "connection_refused",
+      "documented_start": "1871-01",
+      "role": "secondary extension candidate"
+    }
+  },
+  "source_revision_policy": {
+    "exact_raw_sha_change_on_required_source": "fail closed and require explicit new source-freeze version before further outcome analysis",
+    "optional_source_access_change": "record and review; does not silently alter the required long-history backbone",
+    "raw_third_party_files_committed": false
+  },
+  "phase1_gate": {
+    "status": "not_started",
+    "requirement": "Freeze Historical Macro Regime Analogue v0.1 Growth axis, Inflation axis, frequency, observation timing/lag, normalization, thresholds and era definitions before any regime-conditioned asset result is generated.",
+    "explicitly_unresolved": [
+      "Choose between / combine rgdpmad, rgdpbarro, INDPRO or other real-activity candidates for the Growth axis.",
+      "Define the Inflation axis transformation from CPI without viewing conditioned asset outcomes.",
+      "Define annual observation timing so no same-year lookahead enters asset returns."
+    ]
+  }
+}

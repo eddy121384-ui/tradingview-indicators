@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "issue": 91,
+  "phase": "0-source-audit",
+  "artifact_role": "pre-outcome long-history source plan and data-quality gate",
+  "created_before_regime_conditioned_asset_results": true,
+  "exact_v66_reconstructed_pre2007": false,
+  "etf_use_in_primary_long_history_analysis": false,
+  "hard_rules": [
+    "No ETFs are permitted as primary long-history outcome series.",
+    "Underlying index / total-return / macro series only.",
+    "Yield levels are not bond total returns.",
+    "Do not splice ETF history onto older underlying series and call the result homogeneous without a separate preregistered splice method.",
+    "Do not compute regime-conditioned asset performance in Phase 0.",
+    "Do not choose source definitions or sample start dates based on regime-conditioned performance."
+  ],
+  "primary_questions_for_phase0": [
+    "What is the earliest reproducible date for each candidate underlying series?",
+    "Is the series a level, yield, price return, or total return?",
+    "What revisions / splices / monetary-regime limitations affect interpretation?",
+    "Can the source be retrieved reproducibly and hashed without committing third-party raw data?"
+  ],
+  "sources": [
+    {
+      "id": "damodaran_us_returns",
+      "role": "primary U.S. annual underlying asset-return candidate",
+      "required": true,
+      "url": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/histretSP.html",
+      "transport": "html_table",
+      "expected_frequency": "annual",
+      "expected_start_year": 1928,
+      "candidate_fields": [
+        "S&P 500 total return including dividends",
+        "3-month T.Bill return",
+        "10-year U.S. Treasury total return including coupon and price change",
+        "gold return"
+      ],
+      "etf": false,
+      "licensing_note": "Do not commit the third-party raw page or workbook; commit only audit metadata/hashes and later normalized facts as allowed.",
+      "interpretation_notes": [
+        "Treasury bond return is a total-return concept, not the constant-maturity yield itself.",
+        "Gold before the post-Bretton-Woods/free-investability boundary is not economically equivalent to modern GLD."
+      ]
+    },
+    {
+      "id": "jst_macrohistory_r6",
+      "role": "independent century-scale annual macro + equity/bond cross-check",
+      "required": true,
+      "url": "https://www.macrohistory.net/app/download/9834512569/JSTdatasetR6.xlsx",
+      "transport": "xlsx",
+      "expected_frequency": "annual",
+      "expected_start_year": 1870,
+      "country_filter": "USA / United States",
+      "candidate_fields": [
+        "cpi",
+        "eq_tr",
+        "bond_tr",
+        "bill_rate",
+        "stir",
+        "rgdpmad",
+        "rgdpbarro",
+        "ltrate"
+      ],
+      "etf": false,
+      "license": "CC BY-NC-SA 4.0",
+      "licensing_note": "Raw JST data must not be committed into this repository in Phase 0. Store only source hash, schema and coverage metadata. Any later derived-file persistence requires explicit license review and attribution.",
+      "interpretation_notes": [
+        "R6 documents rgdpmad as Real GDP per capita (PPP, 1990 Int$, Maddison).",
+        "R6 documents rgdpbarro as Real GDP per capita (index, 2005=100).",
+        "Phase 0 audits both. It does not choose either series as the Historical Macro Regime Analogue Growth input."
+      ]
+    },
+    {
+      "id": "fred_indpro",
+      "role": "primary long-history real-activity candidate",
+      "required": false,
+      "url": "https://fred.stlouisfed.org/data/INDPRO",
+      "transport": "fred_table_page",
+      "series_id": "INDPRO",
+      "expected_frequency": "monthly",
+      "expected_start_year": 1919,
+      "etf": false,
+      "automation_note": "Official source retained, but GitHub-hosted Phase 0 live fetch is non-blocking because repeated runner requests to FRED timed out. Coverage is independently verified in issue-91-phase0-external-verification.json; do not replace FRED with an unvetted mirror merely to make CI green."
+    },
+    {
+      "id": "fred_cpiaucsl",
+      "role": "official postwar inflation cross-check / possible analogue input",
+      "required": false,
+      "url": "https://fred.stlouisfed.org/data/CPIAUCSL",
+      "transport": "fred_table_page",
+      "series_id": "CPIAUCSL",
+      "expected_frequency": "monthly",
+      "expected_start_year": 1947,
+      "etf": false,
+      "automation_note": "Official source retained, but GitHub-hosted Phase 0 live fetch is non-blocking because repeated runner requests to FRED timed out. Coverage is independently verified in issue-91-phase0-external-verification.json; do not replace FRED with an unvetted mirror merely to make CI green."
+    },
+    {
+      "id": "fred_gdpc1",
+      "role": "official postwar real-GDP cross-check / possible analogue input",
+      "required": false,
+      "url": "https://fred.stlouisfed.org/data/GDPC1",
+      "transport": "fred_table_page",
+      "series_id": "GDPC1",
+      "expected_frequency": "quarterly",
+      "expected_start_year": 1947,
+      "etf": false,
+      "automation_note": "Official source retained, but GitHub-hosted Phase 0 live fetch is non-blocking because repeated runner requests to FRED timed out. Coverage is independently verified in issue-91-phase0-external-verification.json; do not replace FRED with an unvetted mirror merely to make CI green."
+    },
+    {
+      "id": "fred_gs10",
+      "role": "long-yield diagnostic only; explicitly not a bond-return series",
+      "required": false,
+      "url": "https://fred.stlouisfed.org/data/GS10",
+      "transport": "fred_table_page",
+      "series_id": "GS10",
+      "expected_frequency": "monthly",
+      "expected_start_year": 1953,
+      "etf": false,
+      "interpretation_notes": [
+        "Never substitute GS10 yield changes for 10-year Treasury total returns without a separately preregistered return-reconstruction method."
+      ],
+      "automation_note": "Official source retained, but GitHub-hosted Phase 0 live fetch is non-blocking because repeated runner requests to FRED timed out. Coverage is independently verified in issue-91-phase0-external-verification.json; do not replace FRED with an unvetted mirror merely to make CI green."
+    },
+    {
+      "id": "shiller_long_stock_history",
+      "role": "secondary pre-1928 equity / dividend / CPI extension candidate",
+      "required": false,
+      "url": "https://www.econ.yale.edu/~shiller/data.htm",
+      "transport": "documentation_page",
+      "expected_frequency": "monthly",
+      "expected_start_year": 1871,
+      "etf": false,
+      "interpretation_notes": [
+        "Use only after the downloadable dataset path and exact schema are separately frozen; Phase 0 records the documented coverage but does not use this source for outcomes."
+      ]
+    }
+  ],
+  "gold_boundary": {
+    "primary_three_asset_start_candidate": 1975,
+    "sensitivity_candidates": [
+      1972,
+      1973
+    ],
+    "boundary_must_be_frozen_before_portfolio_results": true,
+    "rationale": "Pre-1971 official dollar-gold convertibility and U.S. private-gold constraints make early gold returns economically different from a modern freely floating investable allocation."
+  },
+  "phase0_output_policy": {
+    "raw_third_party_files_committed": false,
+    "allowed_outputs": [
+      "HTTP/source SHA-256",
+      "schema/column names",
+      "first/last usable observation",
+      "row counts",
+      "missingness coverage",
+      "source/license notes",
+      "retrieval timestamp"
+    ],
+    "forbidden_outputs": [
+      "regime-conditioned asset returns",
+      "portfolio performance",
+      "weight optimization",
+      "threshold tuning",
+      "historical analogue state labels"
+    ]
+  },
+  "phase0_gate": {
+    "required_live_sources": [
+      "damodaran_us_returns",
+      "jst_macrohistory_r6"
+    ],
+    "rationale": "These two independent non-ETF long-history sources are reproducibly retrievable from GitHub Actions and cover the asset-return and century-scale macro/return backbone. FRED remains an official postwar cross-check but its live GitHub-runner retrieval is currently unreliable."
+  }
+}
