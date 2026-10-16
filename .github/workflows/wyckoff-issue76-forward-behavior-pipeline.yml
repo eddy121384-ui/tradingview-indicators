@@ -1,0 +1,71 @@
+name: Wyckoff Issue 76 forward-behavior pipeline
+
+on:
+  push:
+    branches:
+      - research/issue-76-post-repair-forward-behavior
+    paths:
+      - '.github/workflows/wyckoff-issue76-forward-behavior-pipeline.yml'
+      - 'indicators/wyckoff-regime-radar/src/chase-risk-market-regime-radar-issue68-rc.pine'
+      - 'indicators/wyckoff-regime-radar/research/generate_issue76_forward_behavior_logger_pine.py'
+      - 'indicators/wyckoff-regime-radar/research/parse_issue76_forward_behavior_logs.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue76_forward_behavior_pipeline.py'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-76-feed-and-export-contract.md'
+      - 'indicators/wyckoff-regime-radar/research/decisions/issue-76-post-repair-forward-behavior-preregistration.md'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Python syntax checks
+        run: |
+          python -m py_compile \
+            indicators/wyckoff-regime-radar/research/generate_issue76_forward_behavior_logger_pine.py \
+            indicators/wyckoff-regime-radar/research/parse_issue76_forward_behavior_logs.py \
+            indicators/wyckoff-regime-radar/research/test_issue76_forward_behavior_pipeline.py
+
+      - name: Parser fixture tests
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python test_issue76_forward_behavior_pipeline.py
+
+      - name: Generate frozen-source Pine logger
+        run: |
+          python indicators/wyckoff-regime-radar/research/generate_issue76_forward_behavior_logger_pine.py \
+            --output indicators/wyckoff-regime-radar/research/generated/wyckoff-issue76-forward-behavior-logger.pine
+
+      - name: Static research-contract checks
+        run: |
+          FILE=indicators/wyckoff-regime-radar/research/generated/wyckoff-issue76-forward-behavior-logger.pine
+          grep -F 'ISSUE76|schema=1' "$FILE"
+          grep -F 'issue76EventFormal = formalId[20]' "$FILE"
+          grep -F 'issue76EventScale = symATR[20]' "$FILE"
+          grep -F 'syminfo.tickerid == "OANDA:EURUSD"' "$FILE"
+          grep -F 'syminfo.tickerid == "TVC:JP10Y"' "$FILE"
+          grep -F 'ctxDownExGate = math.min(downsideExhaustionGate, currentBearGate)' "$FILE"
+          grep -F 'ctxUpExGate = math.min(upsideExhaustionGate, currentBullGate)' "$FILE"
+          ! grep -F 'strategy.entry' "$FILE"
+          ! grep -F 'strategy.close' "$FILE"
+          git diff --check
+
+      - name: Commit generated research logger when changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add indicators/wyckoff-regime-radar/research/generated/wyckoff-issue76-forward-behavior-logger.pine
+          if git diff --cached --quiet; then
+            echo 'Generated logger already current.'
+          else
+            git commit -m 'research: generate Issue #76 forward-behavior logger [skip ci]'
+            git push
+          fi
