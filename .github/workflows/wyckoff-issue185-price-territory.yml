@@ -16,6 +16,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_real_cohort.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/issue185_absolute_ohlc_logger.pine'
+      - 'indicators/wyckoff-regime-radar/research/validate_issue185_absolute_ohlc.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_absolute_ohlc.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
       - 'indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory/**'
   pull_request:
@@ -31,6 +34,9 @@ on:
       - 'indicators/wyckoff-regime-radar/research/analyze_issue185_real_cohort.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py'
       - 'indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py'
+      - 'indicators/wyckoff-regime-radar/research/issue185_absolute_ohlc_logger.pine'
+      - 'indicators/wyckoff-regime-radar/research/validate_issue185_absolute_ohlc.py'
+      - 'indicators/wyckoff-regime-radar/research/test_issue185_absolute_ohlc.py'
       - 'indicators/wyckoff-regime-radar/research/decisions/issue-185-price-territory-*.md'
       - 'indicators/wyckoff-regime-radar/research/artifacts/issue185_price_territory/**'
 
@@ -59,12 +65,18 @@ jobs:
           python -m py_compile indicators/wyckoff-regime-radar/research/analyze_issue185_real_cohort.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_price_territory.py
           python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_addon_policy.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/validate_issue185_absolute_ohlc.py
+          python -m py_compile indicators/wyckoff-regime-radar/research/test_issue185_absolute_ohlc.py
 
       - name: PTM engineering review tests
         working-directory: indicators/wyckoff-regime-radar/research
         run: |
           python -m pytest -q test_issue185_price_territory.py
           python -m pytest -q test_issue185_addon_policy.py
+
+      - name: Absolute OHLC source-contract tests (no private market data)
+        working-directory: indicators/wyckoff-regime-radar/research
+        run: python -m pytest -q test_issue185_absolute_ohlc.py
 
       - name: Artifact reproducibility (text artifacts, byte-for-byte)
         working-directory: indicators/wyckoff-regime-radar/research
