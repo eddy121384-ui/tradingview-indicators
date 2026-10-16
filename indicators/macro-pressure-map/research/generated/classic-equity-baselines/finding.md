@@ -54,3 +54,12 @@ With 10bp rather than 2bp per 100% equity-turnover, CAGR falls to **10.15% SMA**
 ## Volatility-managed strategy status
 
 Moreira/Muir original requires **prior-month daily realized variance**, not a 12-month rolling monthly-vol substitute. The French daily factors source exists (see https://mba.tuck.dartmouth.edu/pages/faculty/Ken.French/data_library.html; official daily CSV ZIP https://mba.tuck.dartmouth.edu/pages/faculty/Ken.French/ftp/F-F_Research_Data_Factors_daily_CSV.zip); current research execution could not retrieve ZIP bytes from this environment. Daily data **not yet downloaded or validated**, so **no volatility-target result is claimed**. Once downloaded, verify daily compound-to-monthly alignment and vintage against #166 before a separate prereg.
+
+## Supersede note (2026-10-16; section above frozen as first-calculation record)
+
+Daily data since obtained and validated (French ZIP SHA `2f29e225…7db`;
+800-month chaining MAE 0.047pp, no CIZ break) and both volatility legs
+executed under separate prereg `volatility_managed_prereg.md`
+(commit `a4c729f`): Leg 1 paper-faithful managed Sharpe **0.392 vs 0.463**
+unmanaged (improvement not reproduced); Leg 2 fair CAGR **10.44%**.
+See `volatility-managed-finding.md`. This note only updates status.
