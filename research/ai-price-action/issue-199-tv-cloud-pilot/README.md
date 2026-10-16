@@ -18,10 +18,23 @@ Claude Code on the web 雲端 session（2026-10-16，對應的 claude.ai 帳戶�
 
 結論：這個 session 沒有任何 TradingView tool 可以呼叫，因此 `search_symbols` / `get_ohlcv` **都沒有執行**，日期範圍、筆數、成交量缺值等欄位**沒有觀測值**。依 Issue 規定停在 BLOCKED，沒有改用社群 MCP、爬蟲、桌面 bridge 或私有 API 繞過。
 
+### 第二次檢查（使用者表示已完成授權；同一 session，13:12 UTC+8）
+
+同一個 session 是在 11:56 UTC+8 建立的，之後沒有重新建立。三個層次分開記錄如下：
+
+| 層次 | 檢查 | 結果 |
+|---|---|---|
+| 1. 帳戶授權 | `ListConnectors`（即時查詢、不帶篩選） | 共列出 8 個 connector：Canva、GitHub、Gmail、Google Calendar、Google Drive、Microsoft 365、Notion、Slack。**沒有 TradingView**，連「未連線」狀態也沒有出現。這代表本 session 所屬的 claude.ai 帳戶/組織中看不到這個 connector |
+| 2. 工具載入 | ToolSearch：`tradingview`、`get_ohlcv search_symbols` | 0 個工具。即使帳戶端後來授權成功，connector 也只在 session 啟動時讀取，本 session 不會補載 |
+| 3. 容器網路 | `curl` 連 `mcp.tradingview.com`、`www.tradingview.com` | proxy `connect_rejected 403`，為環境網路政策所擋。只影響 WebFetch/curl；remote connector 由 claude.ai host 代理，不經過容器網路 |
+
+主要阻擋點是第 1 層。第 2 層需要開新 session 才能解。第 3 層不擋 MCP。
+
 **疑似原因（尚未驗證）**：TradingView 尚未在**這個 claude.ai 帳戶**以 custom connector 完成 OAuth（ChatGPT 端已連接不算數），或已連接但沒有在雲端 session 啟用。Remote connector 由 claude.ai host 代理，所以容器網路 403 不一定是主因；但若要讓 WebFetch 讀官方文件，仍需放行該網域。
 
 **解除步驟**
 1. claude.ai → Settings → Connectors（https://claude.ai/customize/connectors）→ Add custom connector → URL `https://mcp.tradingview.com/mcp` → 以 TradingView Essential 以上帳號完成 OAuth。
+   授權後回到 Connectors 頁面，確認 TradingView 出現在**啟動此雲端 session 的同一個帳戶、同一個組織**底下。若帳戶屬於 Team/Enterprise 組織，custom connector 可能需要由管理員先加入。
 2. 確認該 connector 在 Claude Code 雲端 session 是啟用狀態。Connectors 是在 session 啟動時讀取的，因此**必須開一個新 session**。
 3. （選配）在雲端環境 Network access 的 Allowed domains 加入 `tradingview.com`，讓官方文件可以被讀取。
 4. 新 session 先列出 tools；確認看得到 `search_symbols`、`get_ohlcv` 後，再進行 B 段。
