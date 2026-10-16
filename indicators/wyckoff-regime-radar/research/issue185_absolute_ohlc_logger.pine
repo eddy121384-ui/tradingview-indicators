@@ -1,0 +1,46 @@
+//@version=6
+// Issue #185 -- research-only absolute OHLC supplement to the Issue #76 logs.
+// Standalone indicator: NEVER edit the frozen #76 logger or production classifier.
+// Emits one confirmed daily OHLC bar with its native level (not PRICE_LOG moves).
+// Export Pine Logs as CSV. Re-run separate date windows if >10,000 historical rows.
+indicator("Issue #185 | Absolute OHLC Research Export", shorttitle="#185 OHLC Export", overlay=false, precision=10)
+
+groupExport = "Research | Issue #185 Absolute OHLC Export"
+exportEnabled = input.bool(true, "Enable OHLC Pine Logs", group=groupExport)
+exportStart = input.time(0, "Bar start time (1970 = all)", group=groupExport)
+exportEnd = input.time(4102444800000, "Bar end time (2100 = all)", group=groupExport)
+
+isFx = syminfo.tickerid == "OANDA:EURUSD" or syminfo.tickerid == "OANDA:GBPUSD" or syminfo.tickerid == "OANDA:USDJPY"
+isYield = syminfo.tickerid == "TVC:US10Y" or syminfo.tickerid == "TVC:DE10Y" or syminfo.tickerid == "TVC:FR10Y" or syminfo.tickerid == "TVC:GB10Y" or syminfo.tickerid == "TVC:AU10Y" or syminfo.tickerid == "TVC:JP10Y"
+isD1 = timeframe.isdaily and timeframe.multiplier == 1
+representation = isFx ? "PRICE_LOG" : "YIELD_LEVEL"
+
+// Prevent accidental collection of transformed HA/Renko candles or wrong feeds.
+if barstate.isfirst and not (isFx or isYield)
+    runtime.error("#185 OHLC: use one of the exact nine frozen OANDA/TVC symbols.")
+if barstate.isfirst and not isD1
+    runtime.error("#185 OHLC: use 1D (daily) timeframe, not intraday/weekly.")
+if barstate.isfirst and not chart.is_standard
+    runtime.error("#185 OHLC: use standard candlesticks, not Heikin Ashi/Renko.")
+
+// IMPORTANT: o/h/l/c are ABSOLUTE, native TradingView OHLC price/yield levels.
+// For FX, #76 move1 = log(close[t+1] / close[t]); for yields it is
+// 100 * (close[t+1] - close[t]). The companion validator enforces this parity.
+// time (Unix milliseconds), not bar_index, is the cross-export join key.
+inWindow = time >= exportStart and time <= exportEnd
+validBar = not na(open) and not na(high) and not na(low) and not na(close)
+if exportEnabled and inWindow and validBar and barstate.isconfirmed
+    log.info(
+         "ISSUE185OHLC|schema=1" +
+         "|ticker=" + syminfo.tickerid +
+         "|tf=1D" +
+         "|repr=" + representation +
+         "|time=" + str.tostring(time) +
+         "|bar=" + str.tostring(bar_index) +
+         "|o=" + str.tostring(open, "#.############") +
+         "|h=" + str.tostring(high, "#.############") +
+         "|l=" + str.tostring(low, "#.############") +
+         "|c=" + str.tostring(close, "#.############"))
+
+// A required hidden indicator output; this logger never enters positions.
+plot(close, title="Hidden raw close (not a signal)", display=display.none)
