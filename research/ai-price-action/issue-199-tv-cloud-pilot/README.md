@@ -2,9 +2,10 @@
 
 > 2026-10-16（UTC+8）｜Parent #196，規格 Draft PR #197（未修改）
 >
-> **`CLOUD_MCP_BLOCKED` / `INTERACTIVE_PILOT_NOT_RUN` / `BULK_LICENSED_SOURCE_FOUND`（候選，皆未訂閱、未下載）**
+> **最新 Codex Cloud 結果：`CLOUD_MCP_VERIFIED` / `INTERACTIVE_PILOT_VERIFIED` / `EXPLORATORY_ONLY`。**
+> 三個標的的官方 MCP 真實日線、匿名圖與兩個未檢驗假說，見 [Codex Cloud 接手紀錄](codex-cloud-verification-2026-10-16.md)。沒有提交原始行情或圖形時序，沒有 outcome run 或 Alpha 宣稱。`production_authorized=false`。
 >
-> 本紀錄不含任何行情、K 線結果、假說或績效。`production_authorized=false`。
+> 以下 A–D 為先前 Claude session 的歷史紀錄，保留原貌；其中 BLOCKED 與日期參數限制已由上方新紀錄更新。批量研究來源仍僅是候選，授權與費率未確認。
 
 ## A｜雲端 connector 驗證：BLOCKED
 
