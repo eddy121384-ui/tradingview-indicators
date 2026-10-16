@@ -1,0 +1,177 @@
+{
+  "study": "volatility_managed_equity",
+  "prereg_commit": "a4c729fd0433c95e1350a1ac7c4e687773bf15c8",
+  "source_ref": "1fabf0f9c94c391a7c2d302caff6bbdf56062d95",
+  "daily": {
+    "sha256": "30210a64899cd4e8291b0279c9b2f2addd835b2b20863b2ce50f0dd58f79c61b",
+    "rows": 26317
+  },
+  "panel": {
+    "n": 714,
+    "first": "1967-03",
+    "last": "2026-08"
+  },
+  "leg1_paper_faithful_excess_space": {
+    "label": "paper-faithful M&M market leg (EXCESS space, ex-post c, unconstrained)",
+    "c_full_sample_ex_post": 0.000042037997330144676,
+    "n": 714,
+    "weight_stats": {
+      "median": 0.8355441256970273,
+      "p75": 1.376836268023177,
+      "p90": 2.1065644019687366,
+      "p99": 4.561797130555567,
+      "max": 7.590234692813301,
+      "frac_above_1": 0.41456582633053224,
+      "frac_above_1_5": 0.21288515406162464,
+      "mean": 1.0596319896508148
+    },
+    "unmanaged": {
+      "n": 714,
+      "cagr_excess": 0.061795832485813884,
+      "vol": 0.15689318203586844,
+      "sharpe_excess": 0.4626015452474894,
+      "max_dd": -0.5537367131927252,
+      "worst_month": -0.23092106534358714
+    },
+    "managed": {
+      "n": 714,
+      "cagr_excess": 0.05009770006473668,
+      "vol": 0.15689318203586847,
+      "sharpe_excess": 0.3919444247729872,
+      "max_dd": -0.669275731359041,
+      "worst_month": -0.2727804276736921
+    },
+    "alpha_monthly": 0.0009084803404309123,
+    "beta": 0.6970559537665604,
+    "turnover_weights_annual": 7.086712776705858,
+    "break_even_cost_per_unit_turnover": 0.00153833863861468
+  },
+  "leg2_fair_deployable": {
+    "label": "expanding-mean scale, weights [0,1], total-return + same cash/costs",
+    "full": {
+      "n": 714,
+      "first": "1967-03",
+      "last": "2026-08",
+      "cagr": 0.1043611135569269,
+      "vol": 0.13384390336414492,
+      "sharpe_like": 0.4771795038400394,
+      "max_dd": -0.4120225637496323,
+      "worst_month": -0.2259,
+      "avg_equity": 0.9069390499544225,
+      "turnover_annual": 1.0141024581867926
+    },
+    "fee10bp": {
+      "n": 714,
+      "first": "1967-03",
+      "last": "2026-08",
+      "cagr": 0.10347521075915367,
+      "vol": 0.1338251295264999,
+      "sharpe_like": 0.4711841913090108,
+      "max_dd": -0.41291786587884904,
+      "worst_month": -0.2259,
+      "avg_equity": 0.9069390499544225,
+      "turnover_annual": 1.0141024581867926
+    },
+    "mean_exposure": 0.9069390499544225,
+    "matched_fixed": {
+      "n": 714,
+      "first": "1967-03",
+      "last": "2026-08",
+      "cagr": 0.10425731070818078,
+      "vol": 0.14220127246844302,
+      "sharpe_like": 0.45655524298151917,
+      "max_dd": -0.46653680604029846,
+      "worst_month": -0.2043812063177943,
+      "avg_equity": 0.9069390499544178,
+      "turnover_annual": 0
+    },
+    "eras": {
+      "E1": {
+        "n": 154,
+        "first": "1967-03",
+        "last": "1979-12",
+        "cagr": 0.06398774871315882,
+        "vol": 0.14877365718312632,
+        "sharpe_like": 0.08475393618774615,
+        "max_dd": -0.4120225637496323,
+        "worst_month": -0.12219999999999999,
+        "avg_equity": 0.967419934967726,
+        "turnover_annual": 0.40867882205749057
+      },
+      "E2": {
+        "n": 240,
+        "first": "1980-01",
+        "last": "1999-12",
+        "cagr": 0.15814407339809988,
+        "vol": 0.1460695792916549,
+        "sharpe_like": 0.6157678624965571,
+        "max_dd": -0.24238832999999993,
+        "worst_month": -0.2259,
+        "avg_equity": 0.9475131760769056,
+        "turnover_annual": 0.7888016937175316
+      },
+      "E3": {
+        "n": 240,
+        "first": "2000-01",
+        "last": "2019-12",
+        "cagr": 0.07264721895414006,
+        "vol": 0.10842522368006928,
+        "sharpe_like": 0.5515172800874971,
+        "max_dd": -0.3604693203975159,
+        "worst_month": -0.08964019237705129,
+        "avg_equity": 0.8469709070505943,
+        "turnover_annual": 1.490880373482853
+      },
+      "E4": {
+        "n": 80,
+        "first": "2020-01",
+        "last": "2026-08",
+        "cagr": 0.12267774273643473,
+        "vol": 0.1299676860968302,
+        "sharpe_like": 0.7426108065938828,
+        "max_dd": -0.1631489074906407,
+        "worst_month": -0.08030000000000001,
+        "avg_equity": 0.8486953966478463,
+        "turnover_annual": 1.4251115052553005
+      }
+    },
+    "crises": {
+      "1987": {
+        "ret": -0.18332858874321023,
+        "avg_equity": 0.6994198615238203,
+        "n": 5
+      },
+      "2020": {
+        "ret": -0.14155779607180508,
+        "avg_equity": 0.5242462053486242,
+        "n": 3
+      },
+      "2022": {
+        "ret": -0.12717142106608414,
+        "avg_equity": 0.5349979146078737,
+        "n": 12
+      },
+      "1973-74": {
+        "ret": -0.39017169186318046,
+        "avg_equity": 0.8569797182512491,
+        "n": 24
+      },
+      "2000-02": {
+        "ret": -0.26496896155734484,
+        "avg_equity": 0.6511181351062528,
+        "n": 32
+      },
+      "2007-09": {
+        "ret": -0.2147452385727775,
+        "avg_equity": 0.5336584699347517,
+        "n": 18
+      }
+    }
+  },
+  "labels": {
+    "leg1": "paper-faithful M&M replication (ex-post c, unconstrained leverage) - NOT deployable",
+    "leg2": "deployable fair comparison (expanding calibration, 0-100%, same cash/costs)",
+    "historical": "revised-vintage, in-sample monthly, no macro"
+  },
+  "production_authorized": false
+}
