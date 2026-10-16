@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "issue": 133,
+  "source": "user-supplied TradingView Pine Logs CSV from MPM V6.6 TRAJ EXPORT",
+  "source_sha256": "cd7dc00c06cae9c2b24243986b0b20a753afdd73af273122f06a12ab23edbd5e",
+  "normalized_csv_sha256": "1d03923503e7fe82a69b033897484c48aa646279ecf70164d090ed62a5a70719",
+  "deterministic_gzip_sha256": "6087d7eceff168147b4db2e8688ce308dc12aa6b4187ff0c18f1d5e51e4beda2",
+  "rows": 388,
+  "first_date": "1994-05-31",
+  "last_date": "2026-08-31",
+  "primary_exact_window_start": "2007-01-01",
+  "note": "Full snapshot is retained for audit; primary exact-modern inference remains the preregistered modern V6.6 window and does not treat pre-2007 partial-component history as equivalent exact evidence."
+}

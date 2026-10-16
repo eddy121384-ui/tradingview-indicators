@@ -1,0 +1,114 @@
+name: Macro Pressure Map Issue 133 State Trajectory
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "indicators/macro-pressure-map/research/issue_133_state_trajectory.py"
+      - "indicators/macro-pressure-map/research/issue-133-state-trajectory-prereg.md"
+      - "indicators/macro-pressure-map/research/data/issue-133-*"
+      - ".github/workflows/macro-pressure-map-issue-133.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  state-trajectory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Issue 133 branch
+        uses: actions/checkout@v4
+        with:
+          path: current
+
+      - name: Checkout frozen modern backbone
+        uses: actions/checkout@v4
+        with:
+          ref: research/issue-127-exact-reflation-translation
+          path: modern
+
+      - name: Checkout frozen long-history backbone
+        uses: actions/checkout@v4
+        with:
+          ref: research/issue-121-long-history-rematch
+          path: long
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pandas openpyxl lxml html5lib beautifulsoup4
+
+      - name: Static validation
+        run: |
+          python -m py_compile current/indicators/macro-pressure-map/research/issue_133_state_trajectory.py
+          python - <<'PY'
+          import base64, gzip, hashlib, json
+          from pathlib import Path
+          root=Path("current/indicators/macro-pressure-map/research")
+          m=json.loads((root/"data/issue-133-exact-monthly-manifest.json").read_text())
+          gz=base64.b64decode((root/"data/issue-133-exact-monthly.csv.gz.b64").read_text().strip(), validate=True)
+          assert hashlib.sha256(gz).hexdigest()==m["deterministic_gzip_sha256"]
+          csv=gzip.decompress(gz)
+          assert hashlib.sha256(csv).hexdigest()==m["normalized_csv_sha256"]
+          assert len(csv.decode().splitlines())-1==m["rows"]
+          print({"rows":m["rows"],"first":m["first_date"],"last":m["last_date"]})
+          PY
+
+      - name: Run Issue 133 frozen evaluator
+        run: |
+          rm -rf current/indicators/macro-pressure-map/research/generated/issue-133
+          python current/indicators/macro-pressure-map/research/issue_133_state_trajectory.py \
+            --modern-root modern/indicators/macro-pressure-map/research \
+            --long-root long/indicators/macro-pressure-map/research \
+            --output-dir current/indicators/macro-pressure-map/research/generated/issue-133
+
+      - name: Validate result contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("current/indicators/macro-pressure-map/research/generated/issue-133/issue-133-result.json")
+          r=json.loads(p.read_text())
+          assert r["issue"]==133
+          assert r["production_authorized"] is False
+          assert r["modern_exact"]["verdict"] in {
+            "state_trajectory_candidate",
+            "trajectory_suggestive_not_robust",
+            "trajectory_not_confirmed",
+            "inconclusive_sample",
+          }
+          assert r["long_history_hmra"]["verdict"] in {
+            "long_history_trajectory_candidate",
+            "long_history_trajectory_era_dependent",
+            "long_history_trajectory_not_confirmed",
+            "inconclusive_long_history_trajectory_sample",
+          }
+          assert r["cross_history_synthesis"] in {
+            "cross_history_trajectory_supported",
+            "modern_only_trajectory_support",
+            "long_history_only_trajectory_support",
+            "trajectory_evidence_inconclusive",
+            "trajectory_not_robust_across_history",
+          }
+          print({
+            "modern":r["modern_exact"]["verdict"],
+            "modern_sample":r["modern_exact"]["sample"],
+            "long":r["long_history_hmra"]["verdict"],
+            "long_sample":r["long_history_hmra"]["sample"],
+            "synthesis":r["cross_history_synthesis"],
+          })
+          PY
+
+      - name: Upload Issue 133 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-133-state-trajectory
+          path: current/indicators/macro-pressure-map/research/generated/issue-133
+          retention-days: 30
+          if-no-files-found: error
