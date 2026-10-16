@@ -32,21 +32,30 @@ unconditional underweight, so the frozen combination below is deliberately
 
 - Single broad-US equity total returns (French/CRSP, NOT S&P500) + TB3MS/1200
   cash proxy (same files/columns, same publication-lag caveat, revised-vintage).
-- Classic payoff panel 1967-03..2026-08 (714 continuous months). Macro source
-  `generated/issue-183/corrected-structural-monthly.csv` has 721 rows
-  1966-05..2026-08 with 3 calendar gaps (2025-10, 2025-11, 2026-01); it is not
-  calendar-complete. Matched executable macro decisions are therefore 711
-  months (714 minus 3 gaps). Do not claim 714 matched macro decisions.
+- Primary panel 1967-03..2026-08 (714 consecutive return months, economically
+  continuous). Macro source `generated/issue-183/corrected-structural-monthly.csv`
+  has 721 rows 1966-05..2026-08 with 3 calendar gaps (2025-10, 2025-11,
+  2026-01); it is not calendar-complete. Primary augmented-vs-baseline
+  comparison retains the full 714 months with disclosed stale-factor carry in
+  those 3 months; all baselines use the same calendar convention. The 711
+  months with observed #183 macro states are a completeness/secondary
+  aligned-month diagnostic only; never concatenate non-consecutive returns,
+  silently drop 3 months, or present 711-month MaxDD/CAGR as a continuous
+  live record.
 - Gap treatment (preregistered, time-ordered, consistent with frozen B-2
   hold-on-unconfirmed): `E_DH[m]` is the B-2 applied-state equity weight for
   month m only when that month exists in the #183 file; on the 3 missing
-  months there is no new DH decision. Augmented and DH-equity-only legs hold
-  the previous month's target weight through gap months (zero macro-driven
-  turnover that month), never forward-fill from a future state and never
-  compress the calendar. Cumulative series preserve calendar order with held
-  positions; headline augmented-vs-baseline diffs are reported on the 711
-  matched executable months, with gap-month handling disclosed. If weights
-  cannot be reconstructed exactly, BLOCK that leg instead of substituting.
+  months there is no new DH decision. Augmented legs carry forward only the
+  last valid macro scale factor `s_last = min(1, E_DH_last/0.45)` and keep
+  applying the current month's independently computed baseline weight:
+  `w_aug[m] = w_base[m] × s_last`. This is zero new macro decision, not
+  necessarily zero total strategy turnover; baseline-driven trades and their
+  2bp costs continue, so `w_aug ≤ w_base` holds every month including gaps.
+  DH-equity-only budget diagnostic holds the last known DH target through
+  gaps. Never forward-fill from a future state, never compress the calendar,
+  never reinitialize B-2 across gaps or use later states retrospectively.
+  If weights cannot be reconstructed exactly, BLOCK that leg instead of
+  substituting.
 - Costs 2bp per 100% target-weight change (10bp sensitivity), initial
   deployment free, same rebalancing conventions. Eras E1–E4 and six crisis
   windows as preregistered.
@@ -79,11 +88,11 @@ unconditional underweight, so the frozen combination below is deliberately
 
 ## Frozen evaluation (no outcome-informed edits)
 
-- Head-to-head per augmented leg vs its baseline (same 711-month matched
-  executable months for headline diffs; full-calendar held series disclosed):
-  Sharpe-like diff, MaxDD diff (pp), CAGR diff (pp/yr), turnover diff,
-  crisis-window compounded diffs, era CAGRs (E1–E4 all reported, no
-  cherry-picking).
+- Head-to-head per augmented leg vs its baseline (primary: full 714-month
+  continuous months with disclosed stale-factor carry in 3 gap months; secondary:
+  711-month observed-macro diagnostic; full E1–E4 and crisis tables, no
+  cherry-picking): Sharpe-like diff, MaxDD diff (pp), CAGR diff (pp/yr),
+  turnover diff, crisis-window compounded diffs, era CAGRs.
 - Vs exposure-matched control on Sharpe-like (descriptive hindsight only).
 - Earlier-defense / re-entry-drag diagnostic only (no gate, no early
   re-entry claim): months from each #186 trough month to the first month
@@ -133,8 +142,8 @@ unconditional underweight, so the frozen combination below is deliberately
 ## Deliverables (execution round, not this round)
 
 - `macro_incremental_backtest.mjs` + mechanics tests (synthetic relative-scale
-  rule, neutral-factor-1 behavior, timing t→t+1, gap-hold, determinism)
-  reusing frozen baseline code paths.
+  rule, neutral-factor-1 behavior, timing t→t+1, stale-factor carry with
+  baseline independence, determinism) reusing frozen baseline code paths.
 - `macro-incremental-{results.json,monthly.csv,finding.md}` under
   `generated/classic-equity-baselines/`; summary table vs all baselines.
 - No Pine, no main merge, no new Issue, no threshold search, no variant rules.
