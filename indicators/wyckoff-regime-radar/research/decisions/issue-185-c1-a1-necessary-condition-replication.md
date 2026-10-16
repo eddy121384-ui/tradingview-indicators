@@ -87,8 +87,8 @@ next-bar/exit readout is **1,960.601218**. Using the **smaller** denominator
 
 `119.785810 / 1960.601218 = 6.11% < 90.00%.`
 
-Even the impossible **from-day-one** C1 bound is >83 percentage points
-below the owner-approved 90% threshold. The normal B3+3-limited bound,
+Even the impossible **from-day-one** WIDE-subgroup C1 bound is >83 percentage points
+below the owner-approved 90% threshold; the full-cohort bound below independently fails too. The normal B3+3-limited bound,
 with both valid episodes promoted immediately when eligible, is only
 `110.905896 / 1991.573703 = 5.57%`. Real C1 requires a later
 trusted positive novelty claim and can only perform worse on this metric.
@@ -99,6 +99,47 @@ assumption, censoring denominator, or exact R/O/N signal replay cannot
 turn 6.11% into 90% while respecting the frozen A1 and conservative-hold
 policy. Both B0 and B1 comparisons were required; failure against
 **B0 alone** is sufficient for the joint gate to fail.
+
+## Full registered MFE >=8 ATR harvest population — robustness check
+
+The 90% rule in §6.7 names the retrospective **MFE>=8 ATR opportunity
+set**, not exclusively WIDE. To avoid claiming a full-cohort failure
+from the WIDE subgroup alone, an **additional population-complete bound**
+was executed on **all 233** parent-eligible MFE>=8 trend episodes.
+This is the controlling §6.7 harvest check; the 72 WIDE observations above
+are a diagnostic subgroup.
+
+| Population | N | A1+A3-valid (plus explicitly allowed unknowns) | B0 gross favorable per-bar harvest | Impossible C1 *day-one* maximum | C1 maximum / B0 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| **All MFE>=8 ATR eligible** | **233** | **57**, including **2 with unavailable native reference deliberately counted as possibly releasable** | **6355.122401** | **1575.234757** | **24.79%** |
+| Strict descriptor available (all bins) | 167 | 38 | 4401.189239 | 1026.178762 | 23.32% |
+| WIDE | 72 | 2 | 1991.573703 | 119.785810 | 6.01% |
+| MID | 55 | 7 | 1438.706576 | 183.835050 | 12.78% |
+| NARROW | 40 | 29 | 970.908960 | 722.557902 | 74.42% |
+| Descriptor unavailable | 66 | 19, including the 2 unknown-reference concessions | 1953.933162 | 549.055995 | 28.10% |
+
+All these are **positive signed per-bar contributions normalized by the
+frozen entry ATR, credited at 75% exposure**. The old shadow's
+`gross favorable add-on harvest` readout uses this per-bar convention.
+For the registered group, the denominator is the B0 add-on after the
+actual B3+3 eligibility; the intentionally overstated challenger numerator
+credits the *entire trend since fresh entry* for every gate-valid episode,
+and even treats the two unmeasurable references as free passes. This
+asymmetric best-case calculation **favors** C1.
+
+**The full-cohort upper bound, 24.79%, is still less than one-third of
+the frozen >=90% requirement.** It is not vulnerable to the critique that
+WIDE-alone performance differs from the other bins. The exact C1
+release algorithm would only decrease the numerator, because it cannot
+release before parent eligibility or without an affirmative new-territory
+claim.
+
+This is a falsification of the **frozen per-bar gross favorable harvest
+definition**; it does **not** equate a positive bar-by-bar harvest with the
+sum of *positive net episode PnLs*, which is a different metric. Similarly,
+it does not purport to resolve net trading fees, bond DV01, or the
+withholding denominator. The registered joint success rule needs its
+harvest gate, and this gate fails regardless of the other two.
 
 ## Correct interpretation / next action
 
