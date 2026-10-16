@@ -1,4 +1,30 @@
-# Issue #185 — Price Territory Memory: preregistration DRAFT (not authorised)
+# Issue #185 — Price Territory Memory: discovery preregistration FROZEN (2026-10-16)
+
+**OWNER SIGNOFF — 2026-10-16, BEFORE OUTCOME RESEARCH.**
+The research owner explicitly accepted the proposed **20% / 90% / 20%** joint
+success gates and instructed the historical research to begin. Freeze scope:
+`C1_PTM_GUARD` only, existing B0 (R0 Immediate) and B1 (Warning-First)
+comparators, unchanged 25% Probe / 75% earned add-on, B3_break+3 clock,
+120-bar complete pre-probe descriptor and observed-bar expiry, full C1
+`DEGRADED/UNKNOWN` conservative hold with its opportunity costs, and the
+§6.7 gates **as written before inspecting outcomes**.
+
+The thresholds mean: ≥20% avoided negative add-on net-PnL in the frozen
+WIDE + retrospective MFE<4 ATR group, ≥90% retained gross favorable add-on
+harvest in retrospective MFE≥8 ATR, and ≤20% definite expiry withholding
+on C1-resolved, parent-eligible decisions. All three must pass against
+applicable frozen comparators with ≥30 matched observations per gate,
+otherwise INCONCLUSIVE/REJECT as specified in §6.7 and §7.
+
+**Historical discovery outcome analysis is authorised on existing Issue #76
+data only**; used prior OOS3 remains discovery, not untouched OOS. OOS5,
+deployment, production/Pine changes, new variants, optimisation, and
+outcome-driven threshold adjustment remain explicitly **not authorised**.
+This freeze commit and matching Issue #185 comment timestamp establish the
+decision **before** historical outcome work. Historical excerpts below saying
+“DRAFT / NOT AUTHORISED” refer to prior versions and are superseded by
+this scoped authorisation; they do not grant OOS5 access.
+
 
 **2026-10-15 STRICT-120 FEATURE-ONLY SOURCE GATE — RECOMPUTED.**
 All nine uploaded Issue #76 Pine Logger CSVs matched the original committed
@@ -27,10 +53,9 @@ MFE/MAE, PnL, forward-outcome or OOS5 study. Formal prereg remains **DRAFT**
 until the three pending normative Sophira risk-policy signoffs and final
 current-head CI verification.
 
-**Status: DRAFT FOR REVIEW. NOT FROZEN. NOT AUTHORISED TO RUN.** No forward
-outcome has been inspected by this draft. Writing this document does not
-authorise historical outcome research. A separate explicit instruction is
-required before any number below is executed.
+**Status: FROZEN FOR HISTORICAL DISCOVERY ONLY, OWNER-APPROVED 2026-10-16.**
+This commit precedes any outcome inspection in this round. No OOS5 run,
+release, parameter search, new candidate, strategy or risk-budget change is approved.
 
 **Revision note (v0.2.2, phase 2).** This revision lands the A1/A2/A3 guards as
 implemented code with frozen thresholds, corrects the promotion clock from
@@ -1070,16 +1095,16 @@ never rendered as `0` additional bars, and `max_added_delay_vs_v02_bars = 0` is
 never quoted as the confirmation cost (§4.3). A right-censored episode is never
 counted as a permanent no-add-on.
 
-### 6.7 Proposed economic success gates — DRAFT, owner approval required
+### 6.7 OWNER-APPROVED ex-ante economic success gates — FROZEN 2026-10-16
 
-These are **ex-ante risk-appetite proposals**, not statistics estimated from
-the 33 synthetic fixtures or the 661 feature-only cohort. None authorises an
-outcome run. Keep both B0 (R0 Immediate) and B1 (R0 + Warning-First) as frozen
+These are **owner-approved ex-ante risk-appetite rules (2026-10-16)**, not statistics estimated from
+the 33 synthetic fixtures or the 661 feature-only cohort. Owner signoff now **authorises historical discovery outcome analysis** on the
+identified Issue #76 data, but never OOS5 or production. Keep both B0 (R0 Immediate) and B1 (R0 + Warning-First) as frozen
 comparators, with identical eligibility clock, execution and costs. C1 remains
 the **only** challenger; `DEGRADED/UNKNOWN` takes the declared conservative
 hold route, with **all** observed forgone exposure charged to C1.
 
-**Pass requires all three gates together:**
+**FROZEN 2026-10-16 — Pass requires all three gates together:**
 
 1. **Avoid genuine false-trend losses:** in the pre-registered ex-ante `WIDE`
    stratum (width_atr ≥ 11.9931), and retrospective `MFE < 4 ATR` *outcome*
@@ -1119,10 +1144,10 @@ untouched holdout.
 protection rather than a cosmetic improvement; 90% retention limits
 missed genuine trends to 10%; the 20% cap prevents a selective improvement
 achieved by frequently refusing the parent's earned add-ons. They are
-provisional **normative preferences**, not empirically optimized cutoffs.
-A pass qualifies only for a **new, separate untouched-holdout study**,
-never direct deployment. The risk owner must explicitly approve or replace
-these values **before any forward outcome, PnL or MFE inspection**.
+**owner-approved normative preferences, frozen before outcome inspection**,
+not empirically optimized cutoffs. A pass qualifies only for a **new,
+separate untouched-holdout study**, never direct deployment. Any changes
+need a new prospective protocol, never this observed discovery sample.
 
 ## 7. Rejection / stop rules (predeclared)
 
@@ -1215,11 +1240,13 @@ Frozen prereg commit; analyzer commit; per-opportunity trajectory export;
 Pareto tables/plots; explicit failures and trade-offs; a verdict document
 stating which §7 rule fired, if any.
 
-## 10. Explicit non-authorisation
+## 10. Discovery-only authorisation / continuing prohibitions
 
-This draft does not authorise: historical outcome research, any parameter
-change, any production or Pine change, any strategy or sizing change, any merge,
-or any contact with OOS5. It is a specification for review, nothing more.
+User 2026-10-16 authorisation permits **discovery historical outcomes only**
+on the frozen Issue #76 inputs, using the frozen §6.7 joint tests, and forbids
+retuning to observations. Still **not authorised**: OOS5 access, any parameter,
+production/Pine, strategy/sizing or risk-budget change, merge, or deployment.
+The pre-signoff engineering rounds described below did not run outcomes.
 
 The v0.2.4 convergence round performed **no** forward outcome, PnL or MFE
 computation. It repaired the disposition accounting, replaced the invalid
