@@ -1,0 +1,14 @@
+{
+  "source": "https://mba.tuck.dartmouth.edu/pages/faculty/Ken.French/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+  "zip_sha256": "2f29e22546069914890a712680a6f81f3680ebc3543b52864484d209ca13a7db",
+  "daily_rows": 26317,
+  "first": "19260701",
+  "last": "20260831",
+  "overlap_months": 800,
+  "monthly_comparison_mae_pp": 0.04743432388453408,
+  "monthly_comparison_max_abs_pp": 0.18066737771588876,
+  "worst_month": "198905",
+  "can_claim_pit": false,
+  "volatility_strategy_authorized": false,
+  "note": "Check daily-vs-monthly source vintages before constructing inverse-variance policy."
+}
