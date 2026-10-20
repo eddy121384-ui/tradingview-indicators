@@ -5,6 +5,7 @@
 - Baselines reused byte-identical: SMA10/MOM12 recomputed 714/714 zero-disagreement vs `monthly-signals.csv`; VolFair `w_fair` recomputed vs `volatility-managed-monthly.csv` (max diff <1e-4); BH reproduced (CAGR 10.91%).
 - Panel: primary 714 consecutive months 1967-03..2026-08 with disclosed stale-factor carry in 2025-10, 2025-11, 2026-01 (`w_aug=w_base*s_last`); 711 observed-macro months secondary diagnostic only. Costs 2bp main / 10bp sensitivity, initial deployment free.
 - Research only, revised-vintage, non-PIT. `production_authorized=false`. No Pine, no merge, no new rule variants.
+- Amendment 2026-10-20 (reporting only, review `#6280467496`): 711-month secondary restricted to noncompounding fields; scorecard gate counts corrected to SMA 2/4, MOM 1/4, Vol 4/4; 714-month primary results, strategy, thresholds and prereg unchanged.
 
 ## Headline (primary 714, 2bp)
 
@@ -29,9 +30,9 @@
 | MOM12+DH − MOM12 | +0.015 | +0.00 | −0.21 | 0.515 ≥ 0.456 |
 | VolFair+DH − VolFair | +0.055 | +11.31 | +0.18 | 0.532 ≥ 0.456 |
 
-Descriptive scorecard (thresholds ≥+0.02 / ≥+1.0pp / ≥−0.10pp + Sharpe≥matched; heuristics only): SMA 0/4 (FAIL — Sharpe and CAGR gates), MOM 0/4 (FAIL — all three gates), VolFair 4/4 (scorecard-PASS). Overall: **mixed (1/3)** — descriptively favourable in one of three correlated controls only. This count is not statistical evidence, not proof of an incremental edge, and not a tradability claim.
+Descriptive scorecard (thresholds ≥+0.02 / ≥+1.0pp / ≥−0.10pp + Sharpe≥matched; heuristics only): SMA 2/4 gates (MaxDD and matched-fixed Sharpe pass; Sharpe and CAGR fail), MOM 1/4 (matched-fixed Sharpe only; MaxDD 0.00pp, Sharpe and CAGR fail), VolFair 4/4. Neither SMA nor MOM satisfies all four conjunctive requirements, so overall: **mixed (1/3)** — descriptively favourable in one of three correlated controls only. This count is not statistical evidence, not proof of an incremental edge, and not a tradability claim.
 
-Secondary 711-month diagnostic Sharpe: SMA 0.515/0.516, MOM 0.497/0.511, Vol 0.474/0.529 (within ~0.003 of primary). Stale carry does not drive the reading.
+Secondary 711-month diagnostic (noncompounding only — observed-month Sharpe, annualized vol from monthly dispersion, mean monthly net, mean exposure; the three missing months are listed explicitly and CAGR/compounded MaxDD/terminal wealth are excluded because the filtered stream is non-contiguous): Sharpe SMA 0.515/0.516, MOM 0.497/0.511, Vol 0.474/0.529 (within ~0.003 of primary). Stale carry does not drive the reading; all compounding metrics remain the primary 714-month figures above.
 
 ## Eras and crises (plain tables, no cherry-picking)
 
@@ -50,9 +51,11 @@ Months from trough to first ≥95% equity (median; never=0 for all legs):
 
 Revised vintages (French/CRSP, TB3MS proxy timing, CIZ-era daily, monthly rounding MAE 0.047pp/mo); macro inputs are revised reconstructions without contemporaneous PIT (#189: full PIT not identifiable); #183/#188 data already studied; SMA10/MOM12/VolFair are correlated long/cash controls on one vehicle/panel, not independent replications; exposure-matched fixed controls use full-sample hindsight (descriptive only); constant-mix cost caveat as in baselines; 711-month metrics are a non-continuous diagnostic, never a live record.
 
+The fixed-weight exposure match does not fully isolate incremental macro timing conditional on VolFair: VolFair+DH gains Sharpe/MaxDD while mean equity falls 90.69%→82.61%. An exposure-matched **VolFair-specific** control would be a *separately preregistered future diagnostic*, not an addition to this frozen study; nothing here should be read as that comparison.
+
 ## Files
 
-- `generated/classic-equity-baselines/macro-incremental-results.json` (full metrics, eras, crises, scorecard, re-entry tables, 711 secondary)
+- `generated/classic-equity-baselines/macro-incremental-results.json` (full metrics, eras, crises, scorecard with per-gate booleans, re-entry tables, 711 noncompounding secondary)
 - `generated/classic-equity-baselines/macro-incremental-monthly.csv` (714 rows: weights, E_DH, s_macro, stale flag, nets)
 - Engine + `test_macro_incremental.mjs` + `macro_incremental_mirror.mjs` (all PASS)
 

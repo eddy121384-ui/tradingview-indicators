@@ -17,14 +17,15 @@
   },
   "panel_secondary_711": {
     "n": 711,
-    "note": "observed-macro diagnostic only, non-continuous"
+    "note": "observed-macro diagnostic only, non-continuous, noncompounding metrics only"
   },
   "inputs": {
     "equity_sha": "ff75a22aa1b620de37b34d09e2bf863b055607ab4dfd6e1c881cf0843705bdcd",
     "cash_sha": "891e536de49f4500ba2c8259b3c161365f1064763903781235ecd373bad5d5e8",
     "matrix_sha": "b9d0b18823001b7425fd1adab9cd908af291cafedb3f6b89e5c70fc54c8ab9cb",
     "struct_sha": "5054746146c2dd91e2024d399f79888574a81fd60ec03757d480f7dbb4b101b5",
-    "daily_rows": 1202
+    "distinct_daily_months": 1202,
+    "daily_row_count": 26317
   },
   "neutral_anchor": 0.45,
   "rule": "Final_w=Baseline_w*min(1,E_DH/0.45); gaps w_aug=w_base*s_last",
@@ -1762,220 +1763,244 @@
   },
   "secondary_711": {
     "BH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.10890821698242492,
-      "vol": 0.15722551685075406,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.009689592123769351,
+      "vol_annualized": 0.15722551685075406,
       "sharpe_like": 0.4541211811049181,
-      "max_dd": -0.5031170717166412,
-      "worst_month": -0.2259,
-      "avg_equity": 1,
-      "turnover_annual": 0,
-      "switches": 0,
-      "part_up": 1,
-      "part_dn": 1,
-      "missed_pp": 0,
-      "avoided_pp": 0,
-      "terminal": 457.1559690181986
+      "avg_equity": 1
     },
     "SMA": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.1025217378873271,
-      "vol": 0.11651737982928569,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.008738677918424762,
+      "vol_annualized": 0.11651737982928569,
       "sharpe_like": 0.5148456568097577,
-      "max_dd": -0.24238832999999993,
-      "worst_month": -0.2259,
-      "avg_equity": 0.7482419127988749,
-      "turnover_annual": 1.4852320675105486,
-      "switches": 88,
-      "part_up": 0.7755102040816326,
-      "part_dn": 0.7026022304832714,
-      "missed_pp": 480.57583333333343,
-      "avoided_pp": 413.0041666666667,
-      "terminal": 324.66785306069266
+      "avg_equity": 0.7482419127988749
     },
     "MOM": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.1013610621512413,
-      "vol": 0.1192269172533442,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.008676300984528845,
+      "vol_annualized": 0.1192269172533442,
       "sharpe_like": 0.4968671932977279,
-      "max_dd": -0.28307526528575533,
-      "worst_month": -0.2259,
-      "avg_equity": 0.7229254571026723,
-      "turnover_annual": 0.8270042194092827,
-      "switches": 49,
-      "part_up": 0.746031746031746,
-      "part_dn": 0.6840148698884758,
-      "missed_pp": 487.215,
-      "avoided_pp": 412.91166666666686,
-      "terminal": 305.02525979485614
+      "avg_equity": 0.7229254571026723
     },
     "VOL": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.10411622711170954,
-      "vol": 0.13420326816393288,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.00904378862634787,
+      "vol_annualized": 0.13420326816393288,
       "sharpe_like": 0.4742790269853043,
-      "max_dd": -0.41202448401976666,
-      "worst_month": -0.2259,
-      "avg_equity": 0.9065465541490852,
-      "turnover_annual": 1.018389873417722,
-      "switches": 220,
-      "part_up": 0.9073349206349206,
-      "part_dn": 0.9049066914498138,
-      "missed_pp": 206.83575466666673,
-      "avoided_pp": 161.95470216666664,
-      "terminal": 353.6930032055885
+      "avg_equity": 0.9065465541490852
     },
     "DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.0811095365476977,
-      "vol": 0.06470915951155473,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.006694026038443503,
+      "vol_annualized": 0.06470915951155473,
       "sharpe_like": 0.5478767558687739,
-      "max_dd": -0.17630294608827313,
-      "worst_month": -0.08022299999999999,
-      "avg_equity": 0.43031504922643987,
-      "turnover_annual": 0.18696371308016868,
-      "switches": 100,
-      "part_up": 0.43673401360544123,
-      "part_dn": 0.4200159851301115,
-      "missed_pp": 847.1724504166671,
-      "avoided_pp": 630.7238475000005,
-      "terminal": 101.57331459013702
+      "avg_equity": 0.43031504922643987
     },
     "SMA_DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.09838834681635422,
-      "vol": 0.10666008159369145,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.008327736047299054,
+      "vol_annualized": 0.10666008159369145,
       "sharpe_like": 0.5161927843275598,
-      "max_dd": -0.19833940355829904,
-      "worst_month": -0.18479185185185185,
-      "avg_equity": 0.6975846225972789,
-      "turnover_annual": 1.503534927332396,
-      "switches": 126,
-      "part_up": 0.7216049382716042,
-      "part_dn": 0.6577422552664187,
-      "missed_pp": 559.645205555556,
-      "avoided_pp": 462.35102055555524,
-      "terminal": 259.88909860417016
+      "avg_equity": 0.6975846225972789
     },
     "MOM_DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.09927635437507631,
-      "vol": 0.10995270699398184,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.008424858081991985,
+      "vol_annualized": 0.10995270699398184,
       "sharpe_like": 0.5113346496675578,
-      "max_dd": -0.28307526528575533,
-      "worst_month": -0.18479185185185185,
-      "avg_equity": 0.6744466322862922,
-      "turnover_annual": 0.876879512423816,
-      "switches": 88,
-      "part_up": 0.6965789871504152,
-      "part_dn": 0.6376133828996281,
-      "missed_pp": 556.6644546296294,
-      "avoided_pp": 464.1512077777775,
-      "terminal": 272.63588269128627
+      "avg_equity": 0.6744466322862922
     },
     "VOL_DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.10589341890983861,
-      "vol": 0.11979074785389653,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.009021599967749901,
+      "vol_annualized": 0.11979074785389653,
       "sharpe_like": 0.5291187564599615,
-      "max_dd": -0.29895838295348454,
-      "worst_month": -0.18479185185185185,
-      "avg_equity": 0.8254056218159058,
-      "turnover_annual": 1.0411570047819971,
-      "switches": 257,
-      "part_up": 0.8340186589065249,
-      "part_dn": 0.811297198182569,
-      "missed_pp": 324.0643082717778,
-      "avoided_pp": 276.84595426094455,
-      "terminal": 389.0554125918699
+      "avg_equity": 0.8254056218159058
     },
     "MATCH_DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.07583203016243933,
-      "vol": 0.06785736628671074,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.006301442987169069,
+      "vol_annualized": 0.06785736628671074,
       "sharpe_like": 0.45303331760626997,
-      "max_dd": -0.24244101133882245,
-      "worst_month": -0.09422618624182964,
-      "avg_equity": 0.430558683473388,
-      "turnover_annual": 0,
-      "switches": 0,
-      "part_up": 0.4305586834733861,
-      "part_dn": 0.43055868347338927,
-      "missed_pp": 842.916457857379,
-      "avoided_pp": 598.5255317682092,
-      "terminal": 76.0080965064645
+      "avg_equity": 0.430558683473388
     },
     "MATCH_SMA_DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.09241812287108764,
-      "vol": 0.1098882501841542,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.007897795131023181,
+      "vol_annualized": 0.1098882501841542,
       "sharpe_like": 0.4540783333570355,
-      "max_dd": -0.3766106410655562,
-      "worst_month": -0.156265301525054,
-      "avg_equity": 0.6988552754435169,
-      "turnover_annual": 0,
-      "switches": 0,
-      "part_up": 0.6988552754435148,
-      "part_dn": 0.6988552754435112,
-      "missed_pp": 445.7699804326204,
-      "avoided_pp": 316.525691363214,
-      "terminal": 188.16641378412672
+      "avg_equity": 0.6988552754435169
     },
     "MATCH_MOM_DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.09106208817638173,
-      "vol": 0.10627090422333886,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.007760703618635537,
+      "vol_annualized": 0.10627090422333886,
       "sharpe_like": 0.4540544347781409,
-      "max_dd": -0.36592421964134714,
-      "worst_month": -0.15093750704429862,
-      "avg_equity": 0.6758145035792043,
-      "turnover_annual": 0,
-      "switches": 0,
-      "part_up": 0.6758145035792044,
-      "part_dn": 0.6758145035792047,
-      "missed_pp": 479.87612138603976,
-      "avoided_pp": 340.7432706504852,
-      "terminal": 174.81585592574638
+      "avg_equity": 0.6758145035792043
     },
     "MATCH_VOL_DH": {
-      "n": 711,
-      "first": "1967-03",
-      "last": "2026-08",
-      "cagr": 0.0996706994428167,
-      "vol": 0.12988534478414276,
+      "n_observed": 711,
+      "missing_months": [
+        "2025-10",
+        "2025-11",
+        "2026-01"
+      ],
+      "noncompounding_only": true,
+      "excluded_metrics": [
+        "cagr",
+        "max_dd",
+        "terminal",
+        "worst_month"
+      ],
+      "excluded_reason": "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+      "mean_monthly_net": 0.008655128584026638,
+      "vol_annualized": 0.12988534478414276,
       "sharpe_like": 0.45413803253332496,
-      "max_dd": -0.4329915947300932,
-      "worst_month": -0.18569759037160427,
-      "avg_equity": 0.8261392116402154,
-      "turnover_annual": 0,
-      "switches": 0,
-      "part_up": 0.8261392116402096,
-      "part_dn": 0.8261392116402041,
-      "missed_pp": 257.3577217375616,
-      "avoided_pp": 182.74072812526757,
-      "terminal": 278.4916766179535
+      "avg_equity": 0.8261392116402154
     }
   },
   "scorecard_descriptive_only": {
@@ -1985,6 +2010,14 @@
       "cagr_diff_pp": -0.4116993356908294,
       "sharpe_aug": 0.5195527100520789,
       "sharpe_match": 0.4561755210957624,
+      "gates": {
+        "sharpe": false,
+        "maxdd": true,
+        "cagr": false,
+        "match": true
+      },
+      "gates_passed": 2,
+      "gates_total": 4,
       "pass": false
     },
     "MOM12+DH": {
@@ -1993,6 +2026,14 @@
       "cagr_diff_pp": -0.20764385392686435,
       "sharpe_aug": 0.5145769119224938,
       "sharpe_match": 0.4561515798640195,
+      "gates": {
+        "sharpe": false,
+        "maxdd": false,
+        "cagr": false,
+        "match": true
+      },
+      "gates_passed": 1,
+      "gates_total": 4,
       "pass": false
     },
     "VolFair+DH": {
@@ -2001,6 +2042,14 @@
       "cagr_diff_pp": 0.17701107508500957,
       "sharpe_aug": 0.5319786066235614,
       "sharpe_match": 0.45623518827138076,
+      "gates": {
+        "sharpe": true,
+        "maxdd": true,
+        "cagr": true,
+        "match": true
+      },
+      "gates_passed": 4,
+      "gates_total": 4,
       "pass": true
     }
   },

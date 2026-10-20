@@ -34,5 +34,16 @@ for (let i = 1; i < monthly.length; i++) {
 }
 console.log("stale months:", nStale, staleMonths.join(","));
 if (nStale !== 3) { console.log("STALE COUNT MISMATCH"); fails++; }
+// 711 secondary must be noncompounding only
+for (const [k, v] of Object.entries(res.secondary_711)) {
+  const hasCompound = ["cagr", "max_dd", "terminal"].some((f) => f in v);
+  if (hasCompound || v.noncompounding_only !== true || v.n_observed !== 711) { console.log("711 INVALID FIELDS " + k); fails++; }
+}
+// scorecard gate counts (reporting only)
+const expectGates = { "SMA10+DH": 2, "MOM12+DH": 1, "VolFair+DH": 4 };
+for (const [k, n] of Object.entries(expectGates)) {
+  const s = res.scorecard_descriptive_only[k];
+  if (s.gates_passed !== n || s.gates_total !== 4) { console.log("GATE COUNT MISMATCH " + k); fails++; }
+}
 console.log(fails === 0 ? "MIRROR ALL OK" : "MIRROR FAILURES: " + fails);
 process.exit(fails === 0 ? 0 : 1);

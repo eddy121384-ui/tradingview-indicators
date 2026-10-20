@@ -208,13 +208,28 @@ for (const [k, w] of Object.entries(W8)) {
       return [e, { ret: s.reduce((p, x) => p * (1 + x.net), 1) - 1, avg_equity: avg(s.map((x) => x.weight)), n: s.length }];
     })) };
 }
-// 711 observed-macro secondary diagnostic (non-continuous, labelled)
+// 711 observed-macro secondary diagnostic: NONCOMPOUNDING ONLY.
+// Filtering 3 nonconsecutive months makes CAGR/compounded MaxDD invalid (prereg
+// forbids presenting them as a continuous record), so they are excluded here.
 const obsIdx = new Set(tradeMonths.filter((m) => smap.has(m)));
 const res711 = {};
 for (const [k, w] of Object.entries(W8)) {
-  const full = sims[k].filter((x) => obsIdx.has(x.date));
-  assert(full.length === 711, "711 subset");
-  res711[k] = metrics(full);
+  const rs = sims[k].filter((x) => obsIdx.has(x.date));
+  assert(rs.length === 711, "711 subset");
+  const rets = rs.map((x) => x.net);
+  const mu = avg(rets);
+  const sd = Math.sqrt(rets.reduce((a, r) => a + (r - mu) ** 2, 0) / (rets.length - 1));
+  res711[k] = {
+    n_observed: rs.length,
+    missing_months: missing.slice(),
+    noncompounding_only: true,
+    excluded_metrics: ["cagr", "max_dd", "terminal", "worst_month"],
+    excluded_reason: "non-contiguous observed-month subset; use primary 714 for compounding metrics",
+    mean_monthly_net: mu,
+    vol_annualized: sd * Math.sqrt(12),
+    sharpe_like: sd ? Math.sqrt(12) * avg(rs.map((x) => x.net - x.cash)) / sd : null,
+    avg_equity: avg(rs.map((x) => x.weight)),
+  };
 }
 // ---- 7. Re-entry drag diagnostic (8 #186 troughs, >=95% equity) ----
 const evP = parse(EVENTS);
@@ -248,8 +263,10 @@ for (const [b, a] of [["SMA10", "SMA10+DH"], ["MOM12", "MOM12+DH"], ["VolFair", 
 function score(aug, bse, match) {
   const A = res[aug].full, B = res[bse].full, M = res[match].full;
   const dS = A.sharpe_like - B.sharpe_like, dD = (A.max_dd - B.max_dd) * 100, dC = (A.cagr - B.cagr) * 100;
-  const pass = dS >= 0.02 && dD >= 1.0 && dC >= -0.10 && A.sharpe_like >= M.sharpe_like;
-  return { sharpe_diff: dS, maxdd_diff_pp: dD, cagr_diff_pp: dC, sharpe_aug: A.sharpe_like, sharpe_match: M.sharpe_like, pass };
+  const gates = { sharpe: dS >= 0.02, maxdd: dD >= 1.0, cagr: dC >= -0.10, match: A.sharpe_like >= M.sharpe_like };
+  const pass = gates.sharpe && gates.maxdd && gates.cagr && gates.match;
+  return { sharpe_diff: dS, maxdd_diff_pp: dD, cagr_diff_pp: dC, sharpe_aug: A.sharpe_like, sharpe_match: M.sharpe_like,
+    gates, gates_passed: Object.values(gates).filter(Boolean).length, gates_total: 4, pass };
 }
 const sc = {
   "SMA10+DH": score("SMA_DH", "SMA", "MATCH_SMA_DH"),
@@ -264,8 +281,9 @@ const sha = (f) => crypto.createHash("sha256").update(fs.readFileSync(f)).digest
 const out = { study: "macro_incremental", prereg: "macro_incremental_prereg.md@c984f6d",
   review: ["#6208853986 addressed", "#6211025620 stale-factor carry + 714 primary"],
   panel_primary: { n: 714, first: "1967-03", last: "2026-08", stale_months: missing },
-  panel_secondary_711: { n: 711, note: "observed-macro diagnostic only, non-continuous" },
-  inputs: { equity_sha: sha(EQUITY), cash_sha: sha(CASHF), matrix_sha: sha(MATRIX), struct_sha: sha(STRUCT), daily_rows: mkeys.length },
+  panel_secondary_711: { n: 711, note: "observed-macro diagnostic only, non-continuous, noncompounding metrics only" },
+  inputs: { equity_sha: sha(EQUITY), cash_sha: sha(CASHF), matrix_sha: sha(MATRIX), struct_sha: sha(STRUCT),
+    distinct_daily_months: mkeys.length, daily_row_count: fs.readFileSync(DAILY, "utf8").trim().split("\n").length - 1 },
   neutral_anchor: NEUTRAL, rule: "Final_w=Baseline_w*min(1,E_DH/0.45); gaps w_aug=w_base*s_last",
   determinism: "single-threaded; rerun must match",
   production_authorized: false,
