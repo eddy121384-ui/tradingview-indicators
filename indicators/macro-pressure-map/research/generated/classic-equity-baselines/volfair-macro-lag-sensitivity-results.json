@@ -55,6 +55,23 @@
     ],
     "warmup_overlap_n": 711,
     "warmup_overlap_max_abs_diff": 3.33333333379926e-7,
+    "execution_order_enforced": "L=0 replication gate precedes all L>0 weight construction and all L>0 P&L",
+    "execution_order": [
+      "lag_0_weights_and_control_built",
+      "VolFair_pnl_computed",
+      "L0_pnl_computed",
+      "C0_pnl_computed",
+      "l0_replication_gate_passed",
+      "lag_1_weights_and_control_built",
+      "L1_pnl_computed",
+      "C1_pnl_computed",
+      "lag_2_weights_and_control_built",
+      "L2_pnl_computed",
+      "C2_pnl_computed",
+      "lag_3_weights_and_control_built",
+      "L3_pnl_computed",
+      "C3_pnl_computed"
+    ],
     "l0_replication": {
       "weights_volfair_max_abs_diff_vs_204": 0,
       "weights_lag0_max_abs_diff_vs_204": 0,

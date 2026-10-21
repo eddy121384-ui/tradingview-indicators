@@ -1,9 +1,9 @@
 # VolFair+DH macro-factor lag sensitivity — results (2026-10-21)
 
-**Status:** executed under the frozen prereg `research/volfair_macro_lag_sensitivity_prereg.md` at commit `d215075820b6507df09f143b5e0ac59650f1bc7e`; GPT prereg review comment `#6307050459` approved execution. Research only, `production_authorized=false`. Draft PR #206, stacked on PR #204; **no merge, no Pine, no modification of PR #201/#204 artifacts.**
+**Status:** executed under the frozen prereg `research/volfair_macro_lag_sensitivity_prereg.md` at commit `d215075820b6507df09f143b5e0ac59650f1bc7e`; GPT prereg review comment `#6307050459` approved execution; GPT result audit `#6309472230` accepted the numerical findings and required one procedural correction, applied in §8.1. Research only, `production_authorized=false`. Draft PR #206, stacked on PR #204; **no merge, no Pine, no modification of PR #201/#204 artifacts.**
 
 - Parents (reused unchanged): PR #201 head `2ee8fc99158f8a566d98168f757f6b3f1af5a931`, PR #204 head `6497c5436c8e8fd84cca5f685b810092b4b9d2a8`, issue #183 final `411835c`.
-- Engine: `research/volfair_macro_lag_sensitivity.mjs`; mechanics: `research/test_volfair_macro_lag_sensitivity.mjs` (**53/53 PASS**); independent mirror: `research/volfair_macro_lag_sensitivity_mirror.mjs` (**0 checks failed**).
+- Engine: `research/volfair_macro_lag_sensitivity.mjs`; mechanics: `research/test_volfair_macro_lag_sensitivity.mjs` (**64/64 PASS**); independent mirror: `research/volfair_macro_lag_sensitivity_mirror.mjs` (**0 checks failed**).
 - Panel: 714 consecutive months `1967-03..2026-08`; 2bp main / 10bp sensitivity; initial deployment free; 3 inherited stale months (`2025-10`, `2025-11`, `2026-01`).
 - **Fail-stop honoured:** `L=0` reproduced PR #204 before `L=1,2,3` were evaluated. No parameter was tuned, no lag dropped, no control redefined, no extra variant added.
 
@@ -257,9 +257,32 @@ All §7 prereg integrity checks passed; any failure would have stopped the study
 | Lag availability | every `m−L` for `L=0..3` resolves inside `1966-05..2026-08`; every shifted factor finite and in `[0.5, 1]` |
 | Control integrity | `0 < k_L < 1`, zero cap-binding months, mean-exposure equality `< 1e-9`, `0 ≤ w_L ≤ w_vol ≤ 1` |
 | B-2 provenance | #183 timeline consumed as-is; not re-run, not shifted |
+| Fail-stop execution order | asserted: L=0 weights → L=0 P&L → gate → then L=1,2,3 weights and P&L |
 | Determinism | two engine runs byte-identical (JSON and CSV) |
 
-**Tests:** `test_volfair_macro_lag_sensitivity.mjs` — **53/53 PASS**, covering calendar-shift arithmetic and year boundaries, inclusive frozen gate semantics at the exact thresholds, verdict/label mapping, synthetic per-lag control mechanics, warm-up availability (the three months needed for L=3 resolve to `s=0.5`), stale carry with no calendar compression, no-future-leak, mirror execution and byte-level determinism.
+### 8.1 Execution-order correction (GPT audit `#6309472230`)
+
+The first execution (`211fcb1`) computed **all four lags' weights in one pass in §6 and all four lags' P&L in one loop in §7, before §9 ran the L=0 replication gate**. The gate did gate *acceptance and publication* of the results, but it did **not** gate the *computation* of L>0 returns. The prereg and the approval require L=0 to reproduce #204 "before any L>0 is evaluated", and the earlier claim that the engine did so was therefore **not literally true**. This is disclosed rather than glossed over.
+
+It was corrected structurally rather than by wording. The engine now:
+
+1. builds **only** the L=0 replication point (`buildLag(0)`);
+2. prices **only** VolFair, `L0` and `C0`;
+3. runs the L=0 replication gate against #204 and throws on any mismatch;
+4. only then builds and prices `L=1,2,3` (§9b).
+
+The realised sequence is recorded in `integrity.execution_order` and asserted, including that the gate event index precedes every `L{1,2,3}_pnl_computed` event. `test_volfair_macro_lag_sensitivity.mjs` checks this order **and** includes a negative control proving the ordering predicate rejects a genuine violation, so the fail-stop claim is falsifiable rather than asserted. Observed trace:
+
+```
+lag_0_weights_and_control_built, VolFair_pnl_computed, L0_pnl_computed, C0_pnl_computed,
+l0_replication_gate_passed, lag_1_weights_and_control_built, L1_pnl_computed, C1_pnl_computed,
+lag_2_weights_and_control_built, L2_pnl_computed, C2_pnl_computed,
+lag_3_weights_and_control_built, L3_pnl_computed, C3_pnl_computed
+```
+
+**Re-running changed nothing.** All 714-month primary results, era/crisis numbers, gates, decay values and the overall label are bit-for-bit identical to `211fcb1`: 2403 numeric and primitive leaves compared with maximum difference `0`, zero missing keys, zero changed values, and the monthly audit CSV is **byte-identical** (SHA256 `1F92A8E7E207F137C5554741FDBF5386744BF978DEA85F7645E64023A62A5778`). Only the two new audit fields (`integrity.execution_order`, `integrity.execution_order_enforced`) differ. No threshold, weight formula, control definition or result was altered.
+
+**Tests:** `test_volfair_macro_lag_sensitivity.mjs` — **64/64 PASS**, covering calendar-shift arithmetic and year boundaries, inclusive frozen gate semantics at the exact thresholds, verdict/label mapping, synthetic per-lag control mechanics, warm-up availability (the three months needed for L=3 resolve to `s=0.5`), stale carry with no calendar compression, no-future-leak, **fail-stop execution order with a negative control**, mirror execution and byte-level determinism.
 
 **Independent mirror:** `volfair_macro_lag_sensitivity_mirror.mjs` re-derives the calendar shift, the four controls, every 2bp/10bp net, and the full-period metrics from the published audit CSV along a separate code path with no engine import. Max absolute differences: calendar shift `0`, control reconstruction `5.6e-17`, per-lag `k` `3.1e-9`, 2bp net `5.3e-7`, 10bp net `5.4e-7`, full-period metrics `3.5e-7` — all at 6-decimal audit-storage level. **0 checks failed.**
 

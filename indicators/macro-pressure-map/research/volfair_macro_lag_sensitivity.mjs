@@ -218,10 +218,15 @@ export function compute() {
   assert(warmOverlapN === 711, `warm-up overlap ${warmOverlapN} != 711`);
   assert(warmOverlapDiff < 2e-6, "warm-up reconstruction mismatch " + warmOverlapDiff);
 
-  // ---- 6. Per-lag factor shift, weights, and per-lag matched control ----
+  // ---- 6. Factor shift, weights, and matched control (one lag at a time) ----
+  // Fail-stop ordering. The engine materialises ONLY the L=0 replication point here, runs the L=0
+  // replication gate in §9, and only then builds and prices L=1,2,3 in §9b. No L>0 weight or L>0
+  // return exists before the gate passes. The realised order is recorded in `execOrder` and is
+  // asserted, so the fail-stop claim is checkable rather than merely stated.
+  const execOrder = [];
   const legs = { VolFair: wVol };
   const lagInfo = {};
-  for (const L of LAGS) {
+  function buildLag(L) {
     const sL = [], wL = [];
     for (let i = 0; i < dates.length; i++) {
       const src = addMonths(dates[i], -L);
@@ -255,7 +260,10 @@ export function compute() {
     lagInfo[L] = { sL, wL, wCtrl, k: kL, meanVol, meanL, meanCtrl: avg(wCtrl), capBind };
     legs[`L${L}`] = wL;
     legs[`C${L}`] = wCtrl;
+    execOrder.push(`lag_${L}_weights_and_control_built`);
   }
+  // Only the replication point exists at this stage. L>0 is deliberately not constructible yet.
+  buildLag(0);
 
   // ---- 7. Backtest, metrics, eras, crises (identical conventions to #201/#204) ----
   function run(w, fee) {
@@ -298,14 +306,18 @@ export function compute() {
   }));
 
   const sims = {}, sims10 = {}, results = {};
-  for (const [name, w] of Object.entries(legs)) {
+  function backtestLeg(name) {
+    const w = legs[name];
     const r2 = run(w, FEE), r10 = run(w, FEE10);
     sims[name] = r2; sims10[name] = r10;
     results[name] = {
       full: metrics(r2), eras: eraFn(r2), crises: crisisFn(r2),
       fee10bp: { full: metrics(r10), eras: eraFn(r10), crises: crisisFn(r10) },
     };
+    execOrder.push(`${name}_pnl_computed`);
   }
+  // Fail-stop: before the gate, only VolFair and the L=0 replication point are priced.
+  for (const name of ["VolFair", "L0", "C0"]) backtestLeg(name);
 
   // ---- 8. Comparison helper (frozen gate thresholds) ----
   function compare(a, b) {
@@ -385,6 +397,29 @@ export function compute() {
   l0repl.legacy_204_verdict = j204.verdict.label;
   l0repl.era_consistency_count = era0.length;
   l0repl.crisis_consistency_count = crisis0.length;
+
+  // ---- 9b. L=0 gate PASSED — only now may L>0 be built and priced ----
+  execOrder.push("l0_replication_gate_passed");
+  for (const L of [1, 2, 3]) {
+    buildLag(L);
+    backtestLeg(`L${L}`);
+    backtestLeg(`C${L}`);
+  }
+  // Fail-stop is structural (sequential code); assert it explicitly so the claim is falsifiable.
+  {
+    const gateAt = execOrder.indexOf("l0_replication_gate_passed");
+    assert(gateAt >= 0, "execution order: gate event missing");
+    assert(execOrder.indexOf("L0_pnl_computed") >= 0 && execOrder.indexOf("L0_pnl_computed") < gateAt,
+      "execution order: L=0 P&L must be computed before the gate");
+    for (const L of [1, 2, 3]) {
+      const builtAt = execOrder.indexOf(`lag_${L}_weights_and_control_built`);
+      const pricedAt = execOrder.indexOf(`L${L}_pnl_computed`);
+      assert(builtAt > gateAt, `fail-stop violated: L=${L} weights built before the gate passed`);
+      assert(pricedAt > gateAt, `fail-stop violated: L=${L} P&L computed before the gate passed`);
+    }
+    assert(execOrder.filter((e) => /^L[123]_pnl_computed$/.test(e)).length === 3, "execution order: expected exactly three L>0 P&L events");
+  }
+  const execOrderEnforced = "L=0 replication gate precedes all L>0 weight construction and all L>0 P&L";
 
   // ---- 10. Per-lag gates, consistency, verdicts ----
   const perLag = {};
@@ -481,6 +516,7 @@ export function compute() {
       equity_panel_max_abs_diff: equityDiff, cash_panel_max_abs_diff: cashDiff,
       stale_months_verified: staleIdx.length, stale_month_keys: STALE_KEYS,
       warmup_overlap_n: warmOverlapN, warmup_overlap_max_abs_diff: warmOverlapDiff,
+      execution_order_enforced: execOrderEnforced, execution_order: execOrder,
       l0_replication: l0repl },
     results, comparisons: {
       l0_primary_vs_own_control: primary0,

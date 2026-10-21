@@ -76,6 +76,21 @@ ok(a.out.integrity.stale_months_verified === 3, "exactly three inherited missing
 ok(JSON.stringify(Object.keys(a.out.overall.per_lag)) === JSON.stringify(["0", "1", "2", "3"]), "all four predeclared lags reported (no extras)");
 ok(a.out.production_authorized === false, "production_authorized=false");
 
+// ---- 5b. fail-stop execution order: no L>0 P&L may precede the L=0 gate ----
+const order = a.out.integrity.execution_order;
+ok(Array.isArray(order) && order.length > 0, "engine records an execution-order trace");
+const gateAt = order.indexOf("l0_replication_gate_passed");
+ok(gateAt > order.indexOf("L0_pnl_computed"), "L=0 P&L is computed before the replication gate is checked");
+for (const L of [1, 2, 3]) {
+  ok(order.indexOf(`lag_${L}_weights_and_control_built`) > gateAt, `L=${L} weights are built only after the gate passes`);
+  ok(order.indexOf(`L${L}_pnl_computed`) > gateAt, `L=${L} P&L is computed only after the gate passes`);
+}
+ok(order.filter((e) => /^L[123]_pnl_computed$/.test(e)).length === 3, "exactly three L>0 P&L events, all after the gate");
+// Negative control: the ordering predicate must actually reject a genuine violation.
+const violatesFailStop = (ord) => { const g = ord.indexOf("l0_replication_gate_passed"); return [1, 2, 3].some((L) => ord.indexOf(`L${L}_pnl_computed`) < g); };
+ok(violatesFailStop(["L1_pnl_computed", "l0_replication_gate_passed"]) === true, "order predicate detects a real fail-stop violation (negative control)");
+ok(violatesFailStop(["l0_replication_gate_passed", "L1_pnl_computed", "L2_pnl_computed", "L3_pnl_computed"]) === false, "order predicate accepts a compliant order");
+
 // ---- 6. no future leak: the delayed factor is strictly older for L>0 ----
 const rowsCsv = (() => {
   const lines = fs.readFileSync(path.join(OUT, "volfair-macro-lag-sensitivity-monthly.csv"), "utf8").trim().split(/\r?\n/);
