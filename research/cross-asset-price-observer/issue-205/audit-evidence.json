@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "issue": 205,
+  "audit_kind": "capability_and_existing_metadata_only",
+  "observed_at_utc": "2026-10-21T04:00:06.839716+00:00",
+  "user_timezone": "Asia/Taipei",
+  "base_commit": "d76cb3b8404a7421b89ba0477bc127008415b1d0",
+  "branch": "research/issue-205-observer-p0-prereg-20261021",
+  "status": "P0_INVENTORY_COMPLETE_DATA_BLOCKED",
+  "prereg_status": "DRAFT_DESIGN_FIXED_DATA_MANIFEST_PENDING",
+  "firewall": {
+    "model_training_run": false,
+    "strategy_backtest_run": false,
+    "new_candidate_outcomes_computed_or_read": false,
+    "licensed_market_prices_downloaded": false,
+    "sealed_fx_csvs_opened": false,
+    "existing_research_modified": false,
+    "production_authorized": false
+  },
+  "issue_reads": [
+    {
+      "number": 205,
+      "url": "https://github.com/eddy121384-ui/tradingview-indicators/issues/205",
+      "comments_read": 0
+    },
+    {
+      "number": 196,
+      "url": "https://github.com/eddy121384-ui/tradingview-indicators/issues/196",
+      "comments_read": 4
+    },
+    {
+      "number": 198,
+      "url": "https://github.com/eddy121384-ui/tradingview-indicators/issues/198",
+      "comments_read": 0
+    },
+    {
+      "number": 43,
+      "url": "https://github.com/eddy121384-ui/tradingview-indicators/issues/43",
+      "comments_read": 0
+    },
+    {
+      "number": 188,
+      "url": "https://github.com/eddy121384-ui/tradingview-indicators/issues/188",
+      "comments_read": 1
+    },
+    {
+      "number": 119,
+      "url": "https://github.com/eddy121384-ui/tradingview-indicators/issues/119",
+      "comments_read": 11
+    }
+  ],
+  "sources": [
+    {
+      "commit": "d76cb3b8404a7421b89ba0477bc127008415b1d0",
+      "path": "AGENTS.md",
+      "git_blob": "9fe80c5c28b6f3e3db063f1c09c90d957881a0f1",
+      "sha256": "e1dfab531bdb76a6792b7b18aec34b320c9cc87ea3115781947da704bcfde15b"
+    },
+    {
+      "commit": "a83916d905d04a8ed3843eab94cdd4eba93564c2",
+      "path": "research/ai-price-action/ai-price-action-research-plan-zh-v0.1.md",
+      "git_blob": "c0861a9c2e23767a88123bfa7d2b1424bbedff84",
+      "sha256": "9e0db794dc5d4f9acd910eda98ed7fd9c1119707c9ccfcb4d4a9ef0f691fc11e"
+    },
+    {
+      "commit": "d76cb3b8404a7421b89ba0477bc127008415b1d0",
+      "path": "indicators/hidden-regime-map/research/train_hmm.py",
+      "git_blob": "ea6c7e655edf3a50806cb19b590eeb9307447b21",
+      "sha256": "05a1020f4e2a88a0874d0e18218d5fc474c0b76caae1fbc23f949f4fd62034be"
+    },
+    {
+      "commit": "d76cb3b8404a7421b89ba0477bc127008415b1d0",
+      "path": "indicators/hidden-regime-map/research/decisions/issue-39-research-core-assessment.md",
+      "git_blob": "c69f0ddc6e67a0e6769f3fa7c38bfeb51cf8391f",
+      "sha256": "73a28fcc18ab8fd0f95c9ba5a9f4428c239e75cd3046c7b9c1e0588c56041daa"
+    },
+    {
+      "commit": "5864f6852042c22594529d8d96d02d73d42c6130",
+      "path": "indicators/macro-pressure-map/research/issue-188-edge-attribution-prereg.md",
+      "git_blob": "2725aaa13fc765ea0defe08831386da148520411",
+      "sha256": "5379f20320789d0621d1eb94fb91d2232f3a6d7e7c0d6003f3905a77b575fd56"
+    },
+    {
+      "commit": "29463cd075281bee35291b08fec5df00033586db",
+      "path": "indicators/wyckoff-regime-radar/research/issue119_bbg_client.py",
+      "git_blob": "8ca6a0ce7e0a5578ed30d5ae17115d7991f9e7ca",
+      "sha256": "83cc77a74852682a961f999e3fd6c1c0c05532fd0cbfa664402443577a115676"
+    },
+    {
+      "commit": "29463cd075281bee35291b08fec5df00033586db",
+      "path": "indicators/wyckoff-regime-radar/research/issue119_bbg_common.py",
+      "git_blob": "995cc4f0ff643da7b60e3bfc5a72af60ef60bc3b",
+      "sha256": "5c7b4d745f4f85d91289fa6b3c2b5b4ee1d129ecd3a2d4cec12aa58a32fadea1"
+    },
+    {
+      "commit": "29463cd075281bee35291b08fec5df00033586db",
+      "path": "indicators/wyckoff-regime-radar/research/download_issue119_bbg_oos2_ohlcv.py",
+      "git_blob": "7f7ecb98470ba3276a0da6fdca4f4183be8befac",
+      "sha256": "f577c4a50f834c8d63a6f7597c070fb8dc3d52abb8944f4886b5af1f6959cd09"
+    },
+    {
+      "commit": "d76cb3b8404a7421b89ba0477bc127008415b1d0",
+      "path": "indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json",
+      "git_blob": "ddac98de50513864f80e96bc9651f93dca2e9460",
+      "sha256": "f012cb8651589513fdfcbd1fa25ecdd5180defc32e1fb9e610fd58d0a4108b2a"
+    }
+  ],
+  "runtime_observations": {
+    "python_executable_scope": "default python used by exec_command",
+    "modules_available": {
+      "blpapi": false,
+      "pandas": true,
+      "numpy": true
+    },
+    "ipv4_listening_port_8194": false,
+    "port_check_method": "/proc/net/tcp LISTEN state 0A and local port hex 2002; no remote session attempted",
+    "market_file_counts_in_selected_locations": {
+      "/workspace/shared": 0,
+      "/workspace/library-files": 0,
+      "/workspace/scratch": 0
+    },
+    "counted_suffixes": [
+      ".csv",
+      ".gz",
+      ".parquet",
+      ".feather"
+    ],
+    "scope_limitation": "Not an inventory of all private storage or all Python environments",
+    "bbg_smoke_branch_present_in_remote_heads": false,
+    "cloud_status_observed": {
+      "connectivity": "connected",
+      "network_policy_state": "unknown",
+      "configured_secrets_count": 0,
+      "outbound_identities_count": 0,
+      "bbg_entitlement": "UNKNOWN",
+      "cloud_processing_rights": "UNKNOWN"
+    }
+  },
+  "existing_fx_metadata_only": {
+    "source_path": "indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json",
+    "final_oos_status": "SEALED_DO_NOT_EVALUATE",
+    "pairs": {
+      "EURUSD": {
+        "rows": 2400,
+        "start_date": "2012-12-04",
+        "end_date": "2022-03-04",
+        "frozen_sha256": "990f805bc5856b4256d33375efa69a76b0f619021094548e75bd6edfa7721089"
+      },
+      "USDJPY": {
+        "rows": 2400,
+        "start_date": "2012-12-04",
+        "end_date": "2022-03-04",
+        "frozen_sha256": "4bb03153cd94814bff9759ac43fddc9e71c7c0d59c5f837219c42e860cabc71c"
+      },
+      "GBPUSD": {
+        "rows": 2400,
+        "start_date": "2012-12-04",
+        "end_date": "2022-03-04",
+        "frozen_sha256": "229b9c748c26226495432bc56e802ba8b17563a623775bdbc05627bfc49665c9"
+      },
+      "AUDUSD": {
+        "rows": 2400,
+        "start_date": "2012-12-04",
+        "end_date": "2022-03-04",
+        "frozen_sha256": "e66d77f181107fd3538e4adfa97e8470c3345e3d6e2a68fd4217fec101ac258b"
+      }
+    },
+    "use_in_issue_205": false,
+    "counts_not_recomputed_from_prices": true
+  },
+  "candidate_coverage": {
+    "core_count": 10,
+    "deferred_count": 5,
+    "acquired_core_count": 0,
+    "common_start": null,
+    "common_end": null,
+    "common_rows": null,
+    "missing_rates": null,
+    "duplicate_counts": null,
+    "available_at_validation": "NOT_PERFORMED_NO_DATA",
+    "null_means": "UNKNOWN_NOT_ZERO",
+    "planning_inception_years": "UNVERIFIED_ESTIMATES_NOT_PROVIDER_COVERAGE"
+  },
+  "public_documentation_checks": [
+    {
+      "url": "https://eodhd.com/financial-apis/api-for-historical-data-and-volumes",
+      "http_status": 200,
+      "resolved_url": "https://eodhd.com/financial-apis/api-for-historical-data-and-volumes",
+      "scope": "documentation_only_no_market_API"
+    },
+    {
+      "url": "https://eodhd.com/financial-apis/terms-conditions",
+      "http_status": 200,
+      "resolved_url": "https://eodhd.com/financial-apis/terms-conditions",
+      "scope": "documentation_only_no_market_API"
+    },
+    {
+      "url": "https://databento.com/docs/schemas-and-data-formats/ohlcv",
+      "http_status": 200,
+      "resolved_url": "https://databento.com/docs/schemas/ohlcv",
+      "scope": "documentation_only_no_market_API"
+    },
+    {
+      "url": "https://databento.com/docs/standards-and-conventions/continuous-contracts",
+      "http_status": 404,
+      "resolved_url": "https://databento.com/docs/standards-and-conventions/continuous-contracts",
+      "scope": "documentation_only_no_market_API"
+    },
+    {
+      "url": "https://databento.com/docs/symbology/continuous",
+      "http_status": 404,
+      "resolved_url": "https://databento.com/docs/symbology/continuous",
+      "scope": "documentation_only_no_market_API"
+    }
+  ],
+  "documentation_findings": {
+    "databento_ohlcv_1d": "UTC-date bars, not exchange-session daily bars; electronic trade aggregation differs from official settlement",
+    "eodhd_adjustments": "adjusted_close history is recomputed on new dividends; split-only OHLC documented via Technical API splitadjusted; no timestamp/vintage guarantee inferred",
+    "continuous_contract_semantics": "UNVERIFIED; both attempted documentation paths returned 404"
+  },
+  "workflow_read_only_check": {
+    "workflow_files_inspected": 70,
+    "path_filter_matches_for_new_files": [],
+    "scope": "Read on/paths before jobs; no workflow dispatched; verify server checks after PR creation",
+    "parsed_push_pr_event_filters": 139,
+    "parsed_matching_workflows": []
+  },
+  "reproduction_commands": [
+    [
+      "git",
+      "rev-parse",
+      "origin/main"
+    ],
+    [
+      "git",
+      "ls-remote",
+      "--heads",
+      "origin"
+    ],
+    [
+      "python",
+      "-c",
+      "import importlib.util; print({m: bool(importlib.util.find_spec(m)) for m in [\"blpapi\",\"pandas\",\"numpy\"]})"
+    ],
+    [
+      "git",
+      "show",
+      "origin/main:indicators/wyckoff-regime-radar/research/data/issue-55-static-fx-canonical-manifest.json"
+    ]
+  ],
+  "gates": {
+    "data": "BLOCKED_NO_TEN_ASSET_SNAPSHOT",
+    "time": "BLOCKED_NO_AVAILABILITY_OR_REVISION_EVIDENCE",
+    "rights": "UNKNOWN",
+    "freeze": "DRAFT",
+    "execute": "NOT_AUTHORIZED_THIS_PHASE"
+  }
+}

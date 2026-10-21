@@ -1,0 +1,16 @@
+candidate_id,status,family,proposed_bbg_id,role,price_semantics,planning_start_year_unverified,approx_years_to_2026_unverified,observed_start,observed_end,observed_rows,coverage_status,availability_status,main_risk
+SPY,CORE,equity,SPY US Equity,input_and_target,USD_US_listed_equity_ETF_price,1993,33,,,,NOT_ACQUIRED,UNKNOWN,dividends_splits_revisions_not_index_points
+QQQ,CORE,equity,QQQ US Equity,input_only,USD_US_listed_equity_ETF_price,1999,27,,,,NOT_ACQUIRED,UNKNOWN,correlated_with_SPY_not_independent_market
+SHY,CORE,rates,SHY US Equity,input_only,USD_1_to_3Y_Treasury_ETF_price,2002,24,,,,NOT_ACQUIRED,UNKNOWN,not_constant_2Y_or_yield_or_futures
+IEF,CORE,rates,IEF US Equity,input_and_target,USD_7_to_10Y_Treasury_ETF_price,2002,24,,,,NOT_ACQUIRED,UNKNOWN,duration_carry_dividends_not_constant_10Y
+UUP,CORE,usd,UUP US Equity,input_only,USD_dollar_index_futures_fund_price,2007,19,,,,NOT_ACQUIRED,UNKNOWN,embedded_roll_not_DXY_spot
+FXE,CORE,fx,FXE US Equity,input_only,USD_euro_trust_price,2006,20,,,,NOT_ACQUIRED,UNKNOWN,not_EURUSD_spot_or_financed_FX_return
+GLD,CORE,gold,GLD US Equity,input_and_target,USD_gold_trust_price,2004,22,,,,NOT_ACQUIRED,UNKNOWN,fees_and_tracking_not_spot_gold
+USO,CORE,oil,USO US Equity,input_and_target,USD_WTI_futures_fund_price,2006,20,,,,NOT_ACQUIRED,UNKNOWN,embedded_roll_2020_exposure_change_reverse_split
+HYG,CORE,credit,HYG US Equity,input_only,USD_high_yield_bond_ETF_price,2007,19,,,,NOT_ACQUIRED,UNKNOWN,duration_default_liquidity_not_pure_credit_spread
+LQD,CORE,credit,LQD US Equity,input_only,USD_investment_grade_bond_ETF_price,2002,24,,,,NOT_ACQUIRED,UNKNOWN,duration_dividends_not_OAS
+TU,DEFERRED,rates,TU1 Comdty,candidate_only,2Y_Treasury_futures_generic_not_approved,,,,,,NOT_ACQUIRED,UNKNOWN,need_actual_contracts_roll_DV01_multiplier
+ZN,DEFERRED,rates,TY1 Comdty,candidate_only,10Y_Treasury_futures_generic_not_approved,,,,,,NOT_ACQUIRED,UNKNOWN,provider_symbol_mapping_and_roll_unknown
+EURUSD,DEFERRED,fx,EURUSD Curncy,candidate_only,USD_per_EUR_spot_quote,,,,,,NOT_ACQUIRED,UNKNOWN,fix_session_timezone_not_exchange_close
+CL,DEFERRED,oil,CL1 Comdty,candidate_only,WTI_futures_generic_not_approved,,,,,,NOT_ACQUIRED,UNKNOWN,negative_prices_delivery_roll_back_adjustment
+VIX,DEFERRED,volatility,VIX Index,candidate_input_only,option_implied_nontradable_index,,,,,,NOT_ACQUIRED,UNKNOWN,not_transaction_price_or_tradable_return_target
